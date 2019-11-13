@@ -18,7 +18,7 @@ export default () => {
   useEffect(() => {
     (async () => {
       await logout();
-      client.writeQuery({
+      client?.writeQuery({
         query: currentUser,
         data: {
           current_user: null

@@ -15,7 +15,7 @@ export class AuthResolver {
   static authenticate({
     req,
     res,
-    email,
+    email
   }: {
     req: Request;
     res: Response;
@@ -24,27 +24,27 @@ export class AuthResolver {
     res.cookie(
       "authorization",
       sign({ email }, SECRET, {
-        expiresIn: req.cookies.remember ? "1 day" : "30m",
+        expiresIn: req.cookies.remember ? "1 day" : "30m"
       }),
       {
         httpOnly: true,
         expires: addMilliseconds(
           new Date(),
           req.cookies.remember ? ONE_DAY : THIRTY_MINUTES
-        ),
+        )
       }
     );
   }
 
   @Query(() => User, { nullable: true })
-  async current_user(@Ctx() { user }: IContext): Promise<User | null> {
+  async current_user(@Ctx() { user }: IContext): Promise<User | undefined> {
     if (user) {
       return await dbAuth<User>("users")
         .where({ email: user.email, locked: false })
         .first();
     }
 
-    return null;
+    return undefined;
   }
 
   @Mutation(() => AuthResult)
@@ -55,7 +55,7 @@ export class AuthResolver {
     const user = await dbAuth<User>("users")
       .first()
       .where({
-        email,
+        email
       });
 
     if (user?.locked) {
@@ -106,7 +106,7 @@ export class AuthResolver {
               oldPassword2: user.oldPassword1,
               oldPassword3: user.oldPassword2,
               locked: false,
-              unlockKey: "",
+              unlockKey: ""
             })
             .returning("*")
             .first();

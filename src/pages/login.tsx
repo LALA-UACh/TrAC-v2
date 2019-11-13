@@ -52,7 +52,7 @@ const Login: FC = () => {
     if (called && !loading && data) {
       const { user: current_user } = data.login;
       if (current_user) {
-        client.writeQuery({
+        client?.writeQuery({
           query: currentUser,
           data: {
             current_user
