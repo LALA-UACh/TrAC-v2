@@ -1,133 +1,160 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
-import { FC, SVGProps, useState } from "react";
+import { some } from "lodash";
+import { reverse } from "lodash/fp";
+import { FC, SVGProps, useCallback, useMemo } from "react";
 import { FaCircle } from "react-icons/fa";
+import { useRememberState } from "use-remember-state";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 import { RequireAuth } from "@componentes";
+import { HISTORIC_GRADES } from "@constants";
 import data from "@constants/data.json";
-import { AxisLeft } from "@vx/axis";
+import { AxisBottom, AxisLeft } from "@vx/axis";
 
+enum State {
+  Approved = "A",
+  Reapproved = "R",
+  Current = "C"
+}
 console.log("data", data);
 const SingleBar: FC<SVGProps<SVGRectElement> & {
-  taken?: boolean;
+  grey?: boolean;
   y?: number;
   height?: number;
-}> = ({ taken, y, height, ...rest }) => {
+}> = ({ grey, y, height, ...rest }) => {
   return (
     <rect
-      {...rest}
       width={40}
       y={(y ?? 0) - (height ?? 0)}
       height={height}
-      fill={taken ? "rgb(122,122,122)" : "rgb(191,191,191)"}
+      fill={grey ? "rgb(122,122,122)" : "rgb(191,191,191)"}
+      {...rest}
     />
   );
 };
 
-const XAxis: FC = () => {
+const XAxis: FC<{
+  rangeGrades: { min: number; max: number; color: string }[];
+}> = ({ rangeGrades }) => {
+  const min = useMemo(() => Math.min(...rangeGrades.map(({ min }) => min)), [
+    rangeGrades
+  ]);
+  const max = useMemo(() => Math.max(...rangeGrades.map(({ max }) => max)), [
+    rangeGrades
+  ]);
+
+  const scaleAxisX = useCallback(
+    scaleLinear()
+      .range([min, 250])
+      .domain([min, max]),
+    [min, max]
+  );
+
+  const scaleColorX = useCallback(
+    scaleLinear()
+      .range([0, 250])
+      .domain([min, max]),
+    [rangeGrades]
+  );
+
+  const AxisColor = useMemo(
+    () =>
+      rangeGrades.map(({ min, max, color }, key) => (
+        <rect
+          key={key}
+          x={5 + scaleColorX(min)}
+          y={80}
+          width={scaleColorX(max) - scaleColorX(min)}
+          height={7}
+          fill={color}
+        />
+      )),
+    [rangeGrades, scaleColorX]
+  );
+
+  const AxisNumbers = useMemo(
+    () => (
+      <AxisBottom
+        scale={scaleAxisX}
+        left={5}
+        top={80}
+        hideAxisLine={true}
+        hideTicks={true}
+        tickLength={4}
+        numTicks={5}
+        tickFormat={(n: number) => {
+          if (n.toString(10).slice(-2) === ".0") {
+            return n.toString(10).slice(0, -2);
+          }
+          return n;
+        }}
+      />
+    ),
+    [scaleAxisX]
+  );
+
   return (
     <>
-      <rect x={0 + 5} y={80} width={105} height={7} fill="rgb(214,96,77)" />
-      <text x={0 + 2} y={98} fontSize="0.8em">
-        1
-      </text>
-      <text x={43} y={98} fontSize="0.8em">
-        2
-      </text>
-      <text x={85} y={98} fontSize="0.8em">
-        3
-      </text>
-      <text x={128} y={98} fontSize="0.8em">
-        4
-      </text>
-      <text x={170} y={98} fontSize="0.8em">
-        5
-      </text>
-      <text x={210} y={98} fontSize="0.8em">
-        6
-      </text>
-      <text x={254} y={98} fontSize="0.8em">
-        7
-      </text>
-      <rect x={105 + 5} y={80} width={22} height={7} fill="rgb(244,136,115)" />
-
-      <rect x={127 + 5} y={80} width={22} height={7} fill="rgb(167,220,120)" />
-      <rect x={149 + 5} y={80} width={102} height={7} fill="rgb(102,180,62)" />
+      {AxisColor}
+      {AxisNumbers}
     </>
   );
 };
 
-const Histogram: FC<{ distribution: number[] }> = ({ distribution }) => {
-  const scale = scaleLinear()
-    .domain([0, Math.max(...distribution)])
-    .range([0, 70]);
+const Histogram: FC<{ distribution: number[]; label?: string }> = ({
+  distribution,
+  label
+}) => {
+  const barsScale = useCallback(
+    scaleLinear()
+      .domain([0, Math.max(...distribution)])
+      .range([0, 70]),
+    [distribution]
+  );
+  const axisLeftScale = useCallback(
+    scaleLinear()
+      .range([0, 50])
+      .domain([Math.max(...distribution), 0]),
+    [distribution]
+  );
 
   return (
     <svg width={300} height={130}>
       <svg x={35} y={23}>
-        <XAxis />
+        <XAxis
+          rangeGrades={[
+            { min: 1, max: 3.5, color: "#d6604d" },
+            { min: 3.5, max: 4, color: "#f48873" },
+            { min: 4, max: 4.5, color: "#a7dc78" },
+            { min: 4.5, max: 7, color: "#66b43e" }
+          ]}
+        />
         {distribution.map((n, key) => (
           <SingleBar
             x={5 + 40 * key + 2 * key}
             y={77}
             key={key}
-            taken={key === 1}
-            height={scale(n)}
+            grey={key === 1}
+            height={barsScale(n)}
           />
         ))}
-        {/* <SingleBar x={5} y={77} height={10} />
-        <SingleBar x={40 + 5 + 2} y={77} height={30} />
-        <SingleBar x={80 + 5 + 4} y={77} height={10} />
-        <SingleBar x={120 + 5 + 6} y={77} height={70} />
-        <SingleBar x={160 + 5 + 8} y={77} height={60} taken />
-        <SingleBar x={200 + 5 + 10} y={77} height={30} /> */}
       </svg>
 
       <svg x={0}>
         <text y={20} x={30} fontWeight="bold">
-          Calificaciones 1 2015
+          {label ?? "Undefined"}
         </text>
         <svg x={-5} y={40}>
           <AxisLeft
-            label="hello"
             left={40}
             top={10}
-            scale={scaleLinear()
-              .range([0, 50])
-              .domain([0, Math.max(...distribution)].reverse())}
+            scale={axisLeftScale}
             hideAxisLine={true}
             tickLength={4}
             numTicks={4}
-            // tickFormat={d => d + "%"}
           />
         </svg>
-        {/* {scale.ticks(3).map((n, key) => (
-          <text key={key} x={0} y={42 + key * 12} fontSize="0.8em">
-            {`${n} -`}
-          </text>
-        ))} */}
-        {/* <text x={0} y={42} fontSize="0.8em">
-          2,500 -
-        </text>
-        <text x={0} y={54} fontSize="0.8em">
-          2,000 -
-        </text>
-        <text x={0} y={66} fontSize="0.8em">
-          1,500 -
-        </text>
-        <text x={0} y={78} fontSize="0.8em">
-          1,000 -
-        </text>
-        <text
-          width={200}
-          x={0}
-          y={90}
-          fontSize="0.8em"
-          style={{ whiteSpace: "pre" }}
-        >
-          {"    500 -"}
-        </text> */}
       </svg>
     </svg>
   );
@@ -137,10 +164,12 @@ const CourseBox: FC<{
   name: string;
   code: string;
   credits: number;
-  historicDistribution: number[];
+  historicDistribution?: number[];
   currentDistribution?: number[];
   registration?: string;
   grade?: number;
+  currentDistributionLabel?: string;
+  historicalStates?: { state: State; grade: number }[];
 }> = ({
   name,
   code,
@@ -148,17 +177,30 @@ const CourseBox: FC<{
   historicDistribution,
   currentDistribution,
   registration,
-  grade
+  grade,
+  currentDistributionLabel,
+  historicalStates
 }) => {
-  const [max, setMax] = useState(true);
+  const [max, setMax] = useRememberState(code, false);
 
+  console.log("name :", name, historicalStates);
+  const h = useMemo(() => {
+    if (max) {
+      if (currentDistribution && historicDistribution) {
+        return 350;
+      } else {
+        return 350 - 130;
+      }
+    }
+    return 120;
+  }, [max, currentDistribution, historicDistribution]);
   return (
     <Flex
       m={1}
       color="black"
       bg="rgb(245,245,245)"
       w={max ? 350 : 180}
-      h={max ? (registration ? 350 : 350 - 130) : 120}
+      h={h}
       borderRadius={5}
       border="2px"
       borderColor="gray.400"
@@ -226,7 +268,7 @@ const CourseBox: FC<{
             </motion.div>
           )}
 
-          {max && (
+          {max && (currentDistribution || historicDistribution) && (
             <motion.div
               key="histograms"
               initial={{
@@ -248,10 +290,20 @@ const CourseBox: FC<{
               }}
             >
               {currentDistribution && (
-                <Histogram key="now" distribution={currentDistribution} />
+                <Histogram
+                  key="now"
+                  label={currentDistributionLabel}
+                  distribution={currentDistribution}
+                />
               )}
 
-              <Histogram key="historic" distribution={historicDistribution} />
+              {historicDistribution && (
+                <Histogram
+                  key="historic"
+                  label={HISTORIC_GRADES}
+                  distribution={historicDistribution}
+                />
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -259,8 +311,7 @@ const CourseBox: FC<{
       <Flex
         w="40px"
         mt="-0.5px"
-        h="100.5%"
-        // h={max ? 347 : 117}
+        h="100.6%"
         bg="rgb(117,187,81)"
         direction="column"
         alignItems="center"
@@ -275,19 +326,32 @@ const CourseBox: FC<{
           </Text>
         )}
 
-        {grade && (
+        {historicalStates && (
           <Stack spacing={0.7}>
-            {new Array(3).fill(0).map((_, k) => (
-              <Box
-                key={k}
-                as={FaCircle}
-                m={0}
-                p={0}
-                paddingBottom={1}
-                size="16px"
-                color="rgb(250,50,100)"
-              />
-            ))}
+            {historicalStates.map(({ state, grade }, key) => {
+              let color: string;
+              switch (state) {
+                case State.Reapproved:
+                  color = "rgb(250,50,100)";
+                  break;
+                case State.Current:
+                  color = "blue";
+                  break;
+                default:
+                  color = "white";
+              }
+              return (
+                <Box
+                  key={key}
+                  as={FaCircle}
+                  m={0}
+                  p={0}
+                  paddingBottom={1}
+                  size="16px"
+                  color={color}
+                />
+              );
+            })}
           </Stack>
         )}
       </Flex>
@@ -299,7 +363,7 @@ type ISemester = Array<{
   name: string;
   code: string;
   credits: number;
-  historicDistribution: number[];
+  historicDistribution?: number[];
   currentDistribution?: number[];
   registration?: string;
   grade?: number;
@@ -330,31 +394,83 @@ export default () => {
     ({
       courses
     }: {
-      courses: Array<{
+      courses: {
         code: string;
         name: string;
         credits: number;
         historicGroup: {
           distribution: Array<{ label: string; value: number }>;
-        } & any;
-      }>;
+        } | null;
+      }[];
     }) => {
       semesters.push(
         courses.map(({ code, name, credits, historicGroup }) => {
+          const values = historicGroup?.distribution.map(({ value }) => value);
+          let registration: string | undefined;
+          let grade: number | undefined;
+          let currentDistributionLabel: string | undefined;
+          let currentDistribution: number[] | undefined;
+          let first: boolean = true;
+          let historicalStates: { state: State; grade: number }[] = [];
+          reverse(data.studentAcademic.terms).forEach(({ coursesTaken }) => {
+            for (const {
+              code: codeToFind,
+              classGroup: { year, semester, distribution },
+              registration: registrationToFind,
+              grade: gradeToFind,
+              state
+            } of coursesTaken) {
+              const values = distribution.map(({ value }) => value);
+
+              if (codeToFind === code) {
+                console.log(
+                  "code, first, grade, state :",
+                  code,
+                  first,
+                  grade,
+                  state
+                );
+                if (first) {
+                  first = false;
+                  registration = registrationToFind;
+                  grade = gradeToFind;
+                  currentDistributionLabel = `Calificaciones ${semester} ${year}`;
+                  if (some(values)) {
+                    currentDistribution = values;
+                  }
+                } else {
+                  historicalStates.push({
+                    state: state as State,
+                    grade: gradeToFind
+                  });
+                }
+              }
+            }
+          });
           return {
             name,
             code,
             credits,
-            historicDistribution: historicGroup
-              ? (historicGroup as {
-                  distribution: { value: number }[];
-                }).distribution.map(({ value }) => value)
-              : []
+            historicDistribution: some(values) ? values : [],
+            registration,
+            grade,
+            currentDistributionLabel,
+            currentDistribution,
+            historicalStates
           };
         })
       );
     }
   );
+  data.studentAcademic.terms.forEach(({ coursesTaken }) => {
+    coursesTaken.forEach(({ code, classGroup, historicGroup }) => {
+      semesters.findIndex(sem => {
+        return sem.find(({ code: codeCourseSemester }) => {
+          return code === codeCourseSemester;
+        });
+      });
+    });
+  });
   // data.studentAcademic.terms.map(({ coursesTaken }) => {});
   return (
     <RequireAuth>

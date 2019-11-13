@@ -5,3 +5,4 @@ export const GRAPHQL_URL =
   typeof window === "undefined"
     ? "http://localhost:3000/api/graphql"
     : "/api/graphql";
+export const HISTORIC_GRADES = "Calificaciones históricas";
