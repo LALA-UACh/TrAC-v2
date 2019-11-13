@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { FC, ReactElement, useEffect } from "react";
-import { useQuery } from "react-apollo";
 
+import { useQuery } from "@apollo/react-hooks";
 import { currentUser } from "@graphql/queries";
 
 export const RequireAuth: FC<{ children: ReactElement; admin?: boolean }> = ({
@@ -30,10 +30,12 @@ export const RequireAuth: FC<{ children: ReactElement; admin?: boolean }> = ({
       <p style={{ whiteSpace: "pre" }}>{JSON.stringify(error, null, 4)}</p>
     );
   }
-  if (loading || !data) {
-    return <p>Loading...</p>;
-  }
-  if ((admin && !data?.current_user?.admin) || !data?.current_user?.email) {
+  if (
+    loading ||
+    !data ||
+    (admin && !data?.current_user?.admin) ||
+    !data?.current_user?.email
+  ) {
     return null;
   }
   return children;

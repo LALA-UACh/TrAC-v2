@@ -17,6 +17,6 @@ export const buildContext = ({ req, res }: { req: Request; res: Response }) => {
   return {
     req,
     res,
-    user,
+    user
   };
 };
