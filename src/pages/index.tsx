@@ -8,7 +8,10 @@ import { useRememberState } from "use-remember-state";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 import { RequireAuth } from "@componentes";
-import { DROPOUT_PREDICTION, GRADES_SCALES, HISTORIC_GRADES, PROGRAM_PGA } from "@constants";
+import {
+    DROPOUT_PREDICTION, DROPOUT_PREDICTION_ACCURACY, DROPOUT_PREDICTION_DESCRIPTION, GRADES_SCALES,
+    HISTORIC_GRADES, PROGRAM_PGA
+} from "@constants";
 import data from "@constants/data.json";
 import { AxisBottom, AxisLeft } from "@vx/axis";
 
@@ -500,51 +503,6 @@ const TimeLineTooltip: FC<{
   );
 };
 
-const RightRoundedRect: FC<SVGProps<SVGPathElement> & {
-  x?: number;
-  y?: number;
-  width: number;
-  height: number;
-  radius: number;
-  fill?: string;
-}> = ({ x = 0, y = 0, width, height, radius, fill, ...rest }) => {
-  return (
-    <path
-      d={
-        "M" +
-        x +
-        "," +
-        y +
-        "h" +
-        (width - radius) +
-        "a" +
-        radius +
-        "," +
-        radius +
-        " 0 0 1 " +
-        radius +
-        "," +
-        radius +
-        "v" +
-        (height - 2 * radius) +
-        "a" +
-        radius +
-        "," +
-        radius +
-        " 0 0 1 " +
-        -radius +
-        "," +
-        radius +
-        "h" +
-        (radius - width) +
-        "z"
-      }
-      fill={fill}
-      {...rest}
-    />
-  );
-};
-
 const TimeLine: FC<{
   PGA: number[];
   PSP: number[];
@@ -764,110 +722,91 @@ export default () => {
   );
 
   const Dropout: FC = () => {
-    const height = 200;
     const [show, setShow] = useState(true);
-    const width = show ? 350 : 50;
 
     return (
-      <motion.svg
-        animate="width"
-        width={width + 10}
-        height={270}
-        transition={{ duration: "5s" }}
-        className="unselectable"
-      >
-        <AnimatePresence>
-          {!show && (
-            <motion.g
-              key="background_hide"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => {
-                setShow(!show);
-              }}
-              cursor="pointer"
-            >
-              <RightRoundedRect
-                x={7}
-                y={270 / 2 - height / 2 + 2}
-                width={width}
-                height={height}
-                radius={8}
-                fill="rgb(184,184,184)"
-              />
-              <RightRoundedRect
-                x={5}
-                y={270 / 2 - height / 2}
-                width={width}
-                height={height}
-                radius={8}
-                fill="rgb(252,249,165)"
-              />
-            </motion.g>
-          )}
-          {show && (
-            <motion.g
-              key="background_show"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => {
-                setShow(!show);
-              }}
-              cursor="pointer"
-            >
-              <rect
-                x={7}
-                y={270 / 2 - height / 2 - 1}
-                width={width + 2}
-                height={height + 2}
-                rx={8}
-                fill="rgb(184,184,184)"
-              />
-              <rect
-                x={8}
-                y={270 / 2 - height / 2}
-                width={width}
-                height={height}
-                rx={8}
-                fill="rgb(252,249,165)"
-              />
-            </motion.g>
-          )}
-        </AnimatePresence>
-
-        <text
-          x={-210}
-          y={35}
-          transform="rotate(-90)"
-          fill="black"
-          fontWeight="bold"
+      <Flex alignItems="center">
+        <Flex
+          backgroundColor="rgb(252,249,165)"
+          boxShadow={
+            show
+              ? "0px 0px 2px 1px rgb(174,174,174)"
+              : "2px 3px 2px 1px rgb(174,174,174)"
+          }
+          borderRadius={show ? "5px 5px 5px 5px" : "0px 5px 5px 0px"}
+          alignItems="center"
+          onClick={() => setShow(show => !show)}
           cursor="pointer"
-          onClick={() => {
-            setShow(!show);
-          }}
+          transition="0.5s box-shadow ease-in-out"
         >
-          {DROPOUT_PREDICTION}
-        </text>
-      </motion.svg>
+          <Stack
+            className="unselectable"
+            isInline
+            pt={10}
+            pb={10}
+            minHeight="120px"
+          >
+            <Text
+              minHeight="120px"
+              m={0}
+              ml={4}
+              textAlign="center"
+              fontWeight="bold"
+              className="verticalText"
+              fontSize="1.2em"
+            >
+              {DROPOUT_PREDICTION}
+            </Text>
+            <AnimatePresence>
+              {show && (
+                <motion.div
+                  key="dropout-text"
+                  initial={{
+                    opacity: 0
+                  }}
+                  animate={{ opacity: 1 }}
+                  exit={{
+                    opacity: 0
+                  }}
+                >
+                  <Text width="290px" pl={5} pb={0} mb={0}>
+                    {DROPOUT_PREDICTION_DESCRIPTION}
+                  </Text>
+                  <Text fontSize="2.5em" fontWeight="bold" ml={5} mb={0}>
+                    {data.prediction_data.prob_dropout}%
+                  </Text>
+                  <Text ml={5}>
+                    ({DROPOUT_PREDICTION_ACCURACY}{" "}
+                    <b>{data.prediction_data.model_accuracy}</b>)
+                  </Text>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Stack>
+        </Flex>
+      </Flex>
     );
   };
 
   return (
     <RequireAuth>
       <>
+        <Box pb={50} width="100vw" backgroundColor="black" />
         <Stack isInline>
-          <TimeLine
-            PGA={data.PGA}
-            PSP={data.PSP}
-            ProgramPGA={data.ProgramPGA}
-          />
+          <Box>
+            <TimeLine
+              PGA={data.PGA}
+              PSP={data.PSP}
+              ProgramPGA={data.ProgramPGA}
+            />
+          </Box>
           <Dropout />
         </Stack>
+
         <Stack isInline>
-          {semestersTaken.map(({ semester, year }) => (
+          {semestersTaken.map(({ semester, year }, key) => (
             <Box
+              key={key}
               textAlign="center"
               border="3px solid grey"
               borderRadius="8px"

@@ -15,3 +15,8 @@
 /* .unselectable:hover {
   border: 2px solid red;
 } */
+.verticalText {
+  writing-mode: vertical-rl;
+  text-align: center;
+  transform: rotate(180deg);
+}

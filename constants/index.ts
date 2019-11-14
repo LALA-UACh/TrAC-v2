@@ -9,3 +9,6 @@ export const HISTORIC_GRADES = "Calificaciones históricas";
 export const GRADES_SCALES = "Escala de notas";
 export const PROGRAM_PGA = "PGA de carrera";
 export const DROPOUT_PREDICTION = "Predicción de abandono";
+export const DROPOUT_PREDICTION_DESCRIPTION =
+  "El sistema estima una probabilidad de abandono de";
+export const DROPOUT_PREDICTION_ACCURACY = "acierto del modelo:";
