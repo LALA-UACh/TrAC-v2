@@ -6,3 +6,6 @@ export const GRAPHQL_URL =
     ? "http://localhost:3000/api/graphql"
     : "/api/graphql";
 export const HISTORIC_GRADES = "Calificaciones históricas";
+export const GRADES_SCALES = "Escala de notas";
+export const PROGRAM_PGA = "PGA de carrera";
+export const DROPOUT_PREDICTION = "Predicción de abandono";
