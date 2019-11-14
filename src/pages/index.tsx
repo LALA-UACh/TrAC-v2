@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { some } from "lodash";
 import { reverse } from "lodash/fp";
 import { FC, SVGProps, useCallback, useMemo } from "react";
-import { FaCircle } from "react-icons/fa";
 import { useRememberState } from "use-remember-state";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
@@ -15,7 +14,8 @@ import { AxisBottom, AxisLeft } from "@vx/axis";
 enum State {
   Approved = "A",
   Reapproved = "R",
-  Current = "C"
+  Current = "C",
+  Canceled = "N"
 }
 console.log("data", data);
 const SingleBar: FC<SVGProps<SVGRectElement> & {
@@ -34,30 +34,32 @@ const SingleBar: FC<SVGProps<SVGRectElement> & {
   );
 };
 
-const XAxis: FC<{
-  rangeGrades: { min: number; max: number; color: string }[];
-}> = ({ rangeGrades }) => {
-  const min = useMemo(() => Math.min(...rangeGrades.map(({ min }) => min)), [
-    rangeGrades
-  ]);
-  const max = useMemo(() => Math.max(...rangeGrades.map(({ max }) => max)), [
-    rangeGrades
-  ]);
+const rangeGrades = [
+  { min: 1, max: 3.5, color: "#d6604d" },
+  { min: 3.5, max: 4, color: "#f48873" },
+  { min: 4, max: 4.5, color: "#a7dc78" },
+  { min: 4.5, max: 7, color: "#66b43e" }
+];
+const approvedGrade: number = 4;
 
-  const scaleAxisX = useCallback(
-    scaleLinear()
-      .range([min, 250])
-      .domain([min, max]),
-    [min, max]
-  );
+const minGrade = Math.min(...rangeGrades.map(({ min }) => min));
+const maxGrade = Math.max(...rangeGrades.map(({ max }) => max));
+const scaleAxisX = scaleLinear()
+  .range([minGrade, 250])
+  .domain([minGrade, maxGrade]);
 
-  const scaleColorX = useCallback(
-    scaleLinear()
-      .range([0, 250])
-      .domain([min, max]),
-    [rangeGrades]
-  );
+const scaleColorX = scaleLinear()
+  .range([0, 250])
+  .domain([minGrade, maxGrade]);
 
+const approvedColorScale = scaleLinear()
+  .range(["#b0ffa1" as any, "#5bff3b" as any])
+  .domain([approvedGrade, maxGrade]);
+const reapprovedColorScale = scaleLinear()
+  .range(["#ff4040" as any, "#ff8282" as any])
+  .domain([minGrade, approvedGrade]);
+
+const XAxis: FC = () => {
   const AxisColor = useMemo(
     () =>
       rangeGrades.map(({ min, max, color }, key) => (
@@ -122,14 +124,7 @@ const Histogram: FC<{ distribution: number[]; label?: string }> = ({
   return (
     <svg width={300} height={130}>
       <svg x={35} y={23}>
-        <XAxis
-          rangeGrades={[
-            { min: 1, max: 3.5, color: "#d6604d" },
-            { min: 3.5, max: 4, color: "#f48873" },
-            { min: 4, max: 4.5, color: "#a7dc78" },
-            { min: 4.5, max: 7, color: "#66b43e" }
-          ]}
-        />
+        <XAxis />
         {distribution.map((n, key) => (
           <SingleBar
             x={5 + 40 * key + 2 * key}
@@ -170,6 +165,7 @@ const CourseBox: FC<{
   grade?: number;
   currentDistributionLabel?: string;
   historicalStates?: { state: State; grade: number }[];
+  state?: State;
 }> = ({
   name,
   code,
@@ -179,11 +175,11 @@ const CourseBox: FC<{
   registration,
   grade,
   currentDistributionLabel,
-  historicalStates
+  historicalStates,
+  state
 }) => {
   const [max, setMax] = useRememberState(code, false);
 
-  console.log("name :", name, historicalStates);
   const h = useMemo(() => {
     if (max) {
       if (currentDistribution && historicDistribution) {
@@ -194,6 +190,22 @@ const CourseBox: FC<{
     }
     return 120;
   }, [max, currentDistribution, historicDistribution]);
+
+  const stateColor = useMemo(() => {
+    switch (state) {
+      case State.Approved:
+        return (approvedColorScale(grade || maxGrade) as unknown) as string;
+      case State.Reapproved:
+        return (reapprovedColorScale(grade || minGrade) as unknown) as string;
+      case State.Current:
+        return "blue";
+      case State.Canceled:
+        return "white";
+      default:
+        return "transparent";
+    }
+  }, [state]);
+
   return (
     <Flex
       m={1}
@@ -268,13 +280,13 @@ const CourseBox: FC<{
             </motion.div>
           )}
 
-          {max && (currentDistribution || historicDistribution) && (
+          {max && (
             <motion.div
               key="histograms"
               initial={{
                 opacity: 0,
-                transitionDuration: "0.7s",
-                transitionDelay: "0.05s",
+                transitionDuration: "0.5s",
+                transitionDelay: "0s",
                 transitionTimingFunction: "easy-in"
               }}
               animate={{ opacity: 1 }}
@@ -309,47 +321,72 @@ const CourseBox: FC<{
         </AnimatePresence>
       </Flex>
       <Flex
+        mr={"-0.5px"}
         w="40px"
         mt="-0.5px"
-        h="100.6%"
-        bg="rgb(117,187,81)"
+        h="100.5%"
+        bg={stateColor}
         direction="column"
         alignItems="center"
-        borderRadius="0px 2px 2px 0px"
-        mr="-0.5px"
+        borderRadius="0px 3px 3px 0px"
         zIndex={0}
         transition="0.5s height ease-in-out"
+        border="1px solid"
+        borderColor="gray.400"
       >
-        {grade && (
+        {grade !== undefined && (
           <Text mb={2} pt={1}>
-            <b>{grade}</b>
+            <b>
+              {grade
+                ? grade.toFixed(1)
+                : (() => {
+                    switch (state) {
+                      case State.Approved:
+                        return "AP";
+                      case State.Reapproved:
+                        return "RE";
+                      case State.Canceled:
+                        return "AN";
+                      default:
+                        return "BUGGED";
+                    }
+                  })()}
+            </b>
           </Text>
         )}
 
-        {historicalStates && (
+        {some(historicalStates) && (
           <Stack spacing={0.7}>
-            {historicalStates.map(({ state, grade }, key) => {
+            {historicalStates?.map(({ state, grade: historicalGrade }, key) => {
               let color: string;
               switch (state) {
                 case State.Reapproved:
-                  color = "rgb(250,50,100)";
+                  color = (reapprovedColorScale(
+                    historicalGrade
+                  ) as unknown) as string;
                   break;
                 case State.Current:
                   color = "blue";
                   break;
-                default:
+                case State.Canceled:
                   color = "white";
+                default:
+                  color = "black";
               }
               return (
                 <Box
                   key={key}
-                  as={FaCircle}
                   m={0}
                   p={0}
-                  paddingBottom={1}
-                  size="16px"
+                  paddingBottom="0px"
                   color={color}
-                />
+                  height={"16px"}
+                  width={"16px"}
+                >
+                  <svg width={16} height={16}>
+                    <circle cx={8} cy={8} r="6" stroke="white" fill={color} />
+                  </svg>
+                </Box>
               );
             })}
           </Stack>
@@ -367,6 +404,7 @@ type ISemester = Array<{
   currentDistribution?: number[];
   registration?: string;
   grade?: number;
+  state?: State;
 }>;
 
 const Semester: FC<{ semester: ISemester }> = ({ semester }) => {
@@ -378,15 +416,6 @@ const Semester: FC<{ semester: ISemester }> = ({ semester }) => {
     </Stack>
   );
 };
-/**
- * name: string;
-  code: string;
-  credits: number;
-  historicDistribution: number[];
-  currentDistribution?: number[];
-  registration?:string;
-  grade?:number;
- */
 
 export default () => {
   let semesters: ISemester[] = [];
@@ -412,35 +441,30 @@ export default () => {
           let currentDistribution: number[] | undefined;
           let first: boolean = true;
           let historicalStates: { state: State; grade: number }[] = [];
+          let state: State | undefined;
           reverse(data.studentAcademic.terms).forEach(({ coursesTaken }) => {
             for (const {
               code: codeToFind,
               classGroup: { year, semester, distribution },
               registration: registrationToFind,
               grade: gradeToFind,
-              state
+              state: stateToFind
             } of coursesTaken) {
               const values = distribution.map(({ value }) => value);
 
               if (codeToFind === code) {
-                console.log(
-                  "code, first, grade, state :",
-                  code,
-                  first,
-                  grade,
-                  state
-                );
                 if (first) {
                   first = false;
                   registration = registrationToFind;
                   grade = gradeToFind;
                   currentDistributionLabel = `Calificaciones ${semester} ${year}`;
+                  state = stateToFind as State;
                   if (some(values)) {
                     currentDistribution = values;
                   }
                 } else {
                   historicalStates.push({
-                    state: state as State,
+                    state: stateToFind as State,
                     grade: gradeToFind
                   });
                 }
@@ -456,22 +480,14 @@ export default () => {
             grade,
             currentDistributionLabel,
             currentDistribution,
-            historicalStates
+            historicalStates,
+            state
           };
         })
       );
     }
   );
-  data.studentAcademic.terms.forEach(({ coursesTaken }) => {
-    coursesTaken.forEach(({ code, classGroup, historicGroup }) => {
-      semesters.findIndex(sem => {
-        return sem.find(({ code: codeCourseSemester }) => {
-          return code === codeCourseSemester;
-        });
-      });
-    });
-  });
-  // data.studentAcademic.terms.map(({ coursesTaken }) => {});
+
   return (
     <RequireAuth>
       <Stack isInline spacing={8}>
