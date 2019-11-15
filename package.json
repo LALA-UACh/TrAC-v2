@@ -54,6 +54,7 @@
     "react-dom": "^16.11.0",
     "react-final-form": "^6.3.0",
     "react-icons": "^3.8.0",
+    "react-use": "^13.8.0",
     "reflect-metadata": "^0.1.13",
     "semantic-ui-react": "^0.88.1",
     "string-pixel-width": "^1.10.0",

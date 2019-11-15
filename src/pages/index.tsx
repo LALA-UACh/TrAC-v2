@@ -2,12 +2,15 @@ import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
 import { some } from "lodash";
 import { reverse } from "lodash/fp";
-import { cloneElement, FC, ReactElement, SVGProps, useCallback, useMemo, useState } from "react";
+import {
+    cloneElement, createContext, FC, ReactElement, ReactNode, SVGProps, useCallback, useContext,
+    useMemo, useState
+} from "react";
+import { useSetState, useUpdateEffect } from "react-use";
 import pixelWidth from "string-pixel-width";
-import { useRememberState } from "use-remember-state";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
-import { RequireAuth } from "@componentes";
+import { RequireAuth } from "@components";
 import {
     DROPOUT_PREDICTION, DROPOUT_PREDICTION_ACCURACY, DROPOUT_PREDICTION_DESCRIPTION, GRADES_SCALES,
     HISTORIC_GRADES, PROGRAM_PGA
@@ -15,11 +18,153 @@ import {
 import data from "@constants/data.json";
 import { AxisBottom, AxisLeft } from "@vx/axis";
 
+type ISemesterTaken = { year: number; semester: string };
+
+const CoursesFlowContext = createContext<{
+  active?: string;
+  flow?: Record<string, boolean>;
+  requisites?: Record<string, boolean>;
+  semestersTaken: ISemesterTaken[];
+  explicitSemester?: string;
+  checkExplicitSemester: (
+    semestersTaken: { year: number; semester: string }[]
+  ) => boolean;
+  toggleExplicitSemester: (year: number, semester: string) => void;
+  add: (data: {
+    course: string;
+    flow: string[];
+    requisites: string[];
+    semestersTaken: ISemesterTaken[];
+  }) => void;
+  remove: (course: string) => void;
+}>({
+  add: () => {},
+  remove: () => {},
+  checkExplicitSemester: () => false,
+  toggleExplicitSemester: () => {},
+  semestersTaken: []
+});
+
+const CoursesFlow = ({ children }: { children: ReactNode }) => {
+  const [explicitSemester, setExplicitSemester] = useState<
+    string | undefined
+  >();
+  const checkExplicitSemester = useCallback(
+    (semestersTaken: { year: number; semester: string }[]) => {
+      return (
+        !!explicitSemester &&
+        !!semestersTaken.find(
+          val => `${val.semester}${val.year}` === explicitSemester
+        )
+      );
+    },
+    [explicitSemester]
+  );
+  const toggleExplicitSemester = useCallback(
+    (year: number, semester: string) => {
+      setExplicitSemester(value => {
+        const pair = `${semester}${year}`;
+        if (value !== pair) return pair;
+        return undefined;
+      });
+    },
+    [setExplicitSemester]
+  );
+
+  // ONLY ACTIVE[0] IS SHOWN AS ACTIVE
+  // AL THE REST WORKS AS HISTORY
+  const [{ active, flow, requisites, semestersTaken }, setState] = useSetState<{
+    active: string[];
+    semestersTaken: ISemesterTaken[][];
+    flow: Record<string, boolean>[];
+    requisites: Record<string, boolean>[];
+  }>({ active: [], flow: [], requisites: [], semestersTaken: [] });
+
+  const add = useCallback(
+    ({
+      course,
+      flow,
+      requisites,
+      semestersTaken
+    }: {
+      course: string;
+      flow: string[];
+      requisites: string[];
+      semestersTaken: { year: number; semester: string }[];
+    }) => {
+      // ADD MEANS: THE NEW COURSE, FLOW AND REQUISITES HAVE TO BE PUT AT THE VERY BEGINNING
+      setState(state => {
+        state.active = [course, ...state.active];
+        state.flow = [
+          flow.reduce<Record<string, boolean>>(
+            (ac, v) => ({ ...ac, [v]: true }),
+            {}
+          ),
+          ...state.flow
+        ];
+        state.requisites = [
+          requisites.reduce<Record<string, boolean>>(
+            (ac, v) => ({ ...ac, [v]: true }),
+            {}
+          ),
+          ...state.requisites
+        ];
+        state.semestersTaken = [semestersTaken, ...state.semestersTaken];
+
+        if (!checkExplicitSemester(semestersTaken)) {
+          setExplicitSemester(undefined);
+        }
+
+        return state;
+      });
+    },
+    [setState, setExplicitSemester, explicitSemester, checkExplicitSemester]
+  );
+  const remove = useCallback(
+    (course: string) => {
+      // REMOVE MEANS: IF THE COURSE IS FOUND, REMOVE IT FROM THE ACTIVE ARRAY AND FOLLOWS IT'S INDEX TO REMOVE THE CORRESPONDING DATA FROM FLOWREF AND REQUISITESREF
+      setState(state => {
+        const indexToRemove = state.active.findIndex(
+          activeCourse => activeCourse === course
+        );
+        if (indexToRemove !== -1) {
+          state.active.splice(indexToRemove, 1);
+          state.flow.splice(indexToRemove, 1);
+          state.requisites.splice(indexToRemove, 1);
+          state.semestersTaken.splice(indexToRemove, 1);
+        }
+
+        return state;
+      });
+    },
+    [setState, setExplicitSemester, explicitSemester, checkExplicitSemester]
+  );
+
+  return (
+    <CoursesFlowContext.Provider
+      value={{
+        active: active[0],
+        flow: flow[0],
+        requisites: requisites[0],
+        semestersTaken: semestersTaken[0],
+        add,
+        remove,
+        checkExplicitSemester,
+        toggleExplicitSemester,
+        explicitSemester
+      }}
+    >
+      {children}
+    </CoursesFlowContext.Provider>
+  );
+};
+
 enum State {
   Approved = "A",
   Reapproved = "R",
   Current = "C",
-  Canceled = "N"
+  Canceled = "N",
+  Pending = "P"
 }
 console.log("data", data);
 const SingleBar: FC<SVGProps<SVGRectElement> & {
@@ -120,7 +265,7 @@ const Histogram: FC<{ distribution: number[]; label?: string }> = ({
   );
   const axisLeftScale = useCallback(
     scaleLinear()
-      .range([0, 50])
+      .range([0, 70])
       .domain([Math.max(...distribution), 0]),
     [distribution]
   );
@@ -144,7 +289,7 @@ const Histogram: FC<{ distribution: number[]; label?: string }> = ({
         <text y={20} x={30} fontWeight="bold">
           {label ?? "Undefined"}
         </text>
-        <svg x={-5} y={40}>
+        <svg x={-5} y={20}>
           <AxisLeft
             left={40}
             top={10}
@@ -163,6 +308,8 @@ const CourseBox: FC<{
   name: string;
   code: string;
   credits: number;
+  requisites: string[];
+  flow: string[];
   historicDistribution?: number[];
   currentDistribution?: number[];
   registration?: string;
@@ -170,6 +317,7 @@ const CourseBox: FC<{
   currentDistributionLabel?: string;
   historicalStates?: { state: State; grade: number }[];
   state?: State;
+  semestersTaken: { year: number; semester: string }[];
 }> = ({
   name,
   code,
@@ -180,9 +328,33 @@ const CourseBox: FC<{
   grade,
   currentDistributionLabel,
   historicalStates,
-  state
+  state,
+  flow,
+  requisites,
+  semestersTaken
 }) => {
-  const [max, setMax] = useRememberState(code, false);
+  const [max, setMax] = useState(false);
+  const {
+    add,
+    remove,
+    active,
+    flow: contextFlow,
+    requisites: contextRequisites,
+    checkExplicitSemester,
+    explicitSemester
+  } = useContext(CoursesFlowContext);
+  useUpdateEffect(() => {
+    if (max) {
+      add({
+        course: code,
+        flow,
+        requisites,
+        semestersTaken
+      });
+    } else {
+      remove(code);
+    }
+  }, [max]);
 
   const h = useMemo(() => {
     if (max) {
@@ -210,6 +382,37 @@ const CourseBox: FC<{
     }
   }, [state]);
 
+  const opacity = useMemo(() => {
+    if (active) {
+      if (active === code || contextFlow?.[code] || contextRequisites?.[code]) {
+        return 1;
+      }
+    }
+
+    if (explicitSemester) {
+      if (checkExplicitSemester(semestersTaken)) {
+        return 1;
+      }
+      return 0.5;
+    }
+    if (!active && !explicitSemester) {
+      return 1;
+    }
+    return 0.5;
+  }, [active]);
+  const borderColor = useMemo(() => {
+    if (contextFlow?.[code]) {
+      return "red.400";
+    }
+    if (contextRequisites?.[code]) {
+      return "blue.400";
+    }
+    if (checkExplicitSemester(semestersTaken)) {
+      return "yellow.400";
+    }
+    return "gray.400";
+  }, [active, code, explicitSemester, checkExplicitSemester, semestersTaken]);
+
   return (
     <Flex
       m={1}
@@ -218,11 +421,12 @@ const CourseBox: FC<{
       w={max ? 350 : 180}
       h={h}
       borderRadius={5}
+      opacity={opacity}
       border="2px"
-      borderColor="gray.400"
+      borderColor={borderColor}
       borderWidth="2px"
       cursor="pointer"
-      transition="0.5s width ease-in-out, 0.5s height ease-in-out"
+      transition="0.5s all ease-in-out"
       onClick={() => {
         setMax(!max);
       }}
@@ -284,6 +488,56 @@ const CourseBox: FC<{
             </motion.div>
           )}
 
+          <AnimatePresence>
+            {(contextFlow?.[code] || contextRequisites?.[code]) && (
+              <motion.div
+                key="req_circle"
+                initial={{
+                  opacity: 0,
+                  transitionDuration: "0.5s",
+                  transitionDelay: "0s",
+                  transitionTimingFunction: "easy-in"
+                }}
+                animate={{ opacity: 1 }}
+                exit={{
+                  opacity: 0,
+                  transitionDuration: "0.0s",
+                  transitionTimingFunction: "linear",
+                  transitionDelay: "0s"
+                }}
+                style={{ position: "absolute", right: 8, top: 80 }}
+              >
+                <Box>
+                  <svg width={32} height={32}>
+                    <circle
+                      r={15}
+                      cx={16}
+                      cy={16}
+                      stroke={
+                        contextFlow?.[code]
+                          ? "rgb(66,153,225)"
+                          : "rgb(245,101,101)"
+                      }
+                      fill="transparent"
+                    />
+                    <text
+                      x={4}
+                      y={21}
+                      fontWeight="bold"
+                      fill={
+                        contextFlow?.[code]
+                          ? "rgb(66,153,225)"
+                          : "rgb(245,101,101)"
+                      }
+                    >
+                      {contextFlow?.[code] ? "Fluj" : "Req"}
+                    </text>
+                  </svg>
+                </Box>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {max && (
             <motion.div
               key="histograms"
@@ -336,7 +590,7 @@ const CourseBox: FC<{
         zIndex={0}
         transition="0.5s height ease-in-out"
         border="1px solid"
-        borderColor="gray.400"
+        borderColor={borderColor}
       >
         {grade !== undefined && (
           <Text mb={2} pt={1}>
@@ -404,11 +658,14 @@ type ISemester = Array<{
   name: string;
   code: string;
   credits: number;
+  flow: string[];
+  requisites: string[];
   historicDistribution?: number[];
   currentDistribution?: number[];
   registration?: string;
   grade?: number;
   state?: State;
+  semestersTaken: { year: number; semester: string }[];
 }>;
 
 function toRoman(num: number): string {
@@ -507,7 +764,8 @@ const TimeLine: FC<{
   PGA: number[];
   PSP: number[];
   ProgramPGA: number[];
-}> = ({ PGA, PSP, ProgramPGA }) => {
+  semestersTaken: { year: number; semester: string }[];
+}> = ({ PGA, PSP, ProgramPGA, semestersTaken }) => {
   const YAxisScale = scaleLinear()
     .range([0, 130])
     .domain([maxGrade, minGrade]);
@@ -522,6 +780,7 @@ const TimeLine: FC<{
   const width = Math.max((PGA.length - 1) * 120 + 60, 650);
   const height = 270;
   const scale = 0.7;
+  const { explicitSemester } = useContext(CoursesFlowContext);
 
   return (
     <svg
@@ -570,10 +829,6 @@ const TimeLine: FC<{
         {PROGRAM_PGA}
       </text>
 
-      {/* <path d="M10,40 h50 q5,0 5,5 v10 q0,5 -5,5 h-50 z" fill="#4EDFA5" />
-        <path d={rightRoundedRect(0, 0, 50, 100, 5)} fill="#4EDFA5" />
-      </svg> */}
-
       {new Array(PGA.length).fill(0).map((_, key) => {
         return (
           <g key={key}>
@@ -610,14 +865,6 @@ const TimeLine: FC<{
       {new Array(PGA.length).fill(0).map((_, key) => {
         return (
           <g key={key}>
-            <TimeLineTooltip grade={PSP[key]}>
-              <circle
-                cy={GradeScale(PSP[key])}
-                cx={key * 70 + 70}
-                r={5}
-                fill={PSP_COLOR}
-              />
-            </TimeLineTooltip>
             <TimeLineTooltip grade={PGA[key]}>
               <circle
                 cy={GradeScale(PGA[key])}
@@ -634,10 +881,127 @@ const TimeLine: FC<{
                 fill={PROGRAM_PGA_COLOR}
               />
             </TimeLineTooltip>
+            <TimeLineTooltip grade={PSP[key]}>
+              <circle
+                cy={GradeScale(PSP[key])}
+                cx={key * 70 + 70}
+                r={5}
+                fill={
+                  `${semestersTaken[key].semester}${semestersTaken[key].year}` ===
+                  explicitSemester
+                    ? "rgb(236,201,75)"
+                    : PSP_COLOR
+                }
+                style={{ transition: "0.5s all ease-in-out" }}
+              />
+            </TimeLineTooltip>
           </g>
         );
       })}
     </svg>
+  );
+};
+
+const Dropout: FC = () => {
+  const [show, setShow] = useState(true);
+
+  return (
+    <Flex alignItems="center">
+      <Flex
+        backgroundColor="rgb(252,249,165)"
+        boxShadow={
+          show
+            ? "0px 0px 2px 1px rgb(174,174,174)"
+            : "2px 3px 2px 1px rgb(174,174,174)"
+        }
+        borderRadius={show ? "5px 5px 5px 5px" : "0px 5px 5px 0px"}
+        alignItems="center"
+        onClick={() => setShow(show => !show)}
+        cursor="pointer"
+        transition="0.5s box-shadow ease-in-out"
+      >
+        <Stack
+          className="unselectable"
+          isInline
+          pt={10}
+          pb={10}
+          minHeight="120px"
+        >
+          <Text
+            minHeight="120px"
+            m={0}
+            ml={4}
+            textAlign="center"
+            fontWeight="bold"
+            className="verticalText"
+            fontSize="1.2em"
+          >
+            {DROPOUT_PREDICTION}
+          </Text>
+          <AnimatePresence>
+            {show && (
+              <motion.div
+                key="dropout-text"
+                initial={{
+                  opacity: 0
+                }}
+                animate={{ opacity: 1 }}
+                exit={{
+                  opacity: 0
+                }}
+              >
+                <Text width="290px" pl={5} pb={0} mb={0}>
+                  {DROPOUT_PREDICTION_DESCRIPTION}
+                </Text>
+                <Text fontSize="2.5em" fontWeight="bold" ml={5} mb={0}>
+                  {data.prediction_data.prob_dropout}%
+                </Text>
+                <Text ml={5}>
+                  ({DROPOUT_PREDICTION_ACCURACY}{" "}
+                  <b>{data.prediction_data.model_accuracy}</b>)
+                </Text>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Stack>
+      </Flex>
+    </Flex>
+  );
+};
+
+const SemesterTakenBox: FC<{ year: number; semester: string }> = ({
+  year,
+  semester
+}) => {
+  const {
+    toggleExplicitSemester,
+    semestersTaken,
+    explicitSemester
+  } = useContext(CoursesFlowContext);
+  return (
+    <Box
+      textAlign="center"
+      border="3px solid"
+      borderColor={
+        `${semester}${year}` === explicitSemester ||
+        semestersTaken?.find(v => v.semester === semester && v.year === year)
+          ? "yellow.400"
+          : "grey"
+      }
+      borderRadius="8px"
+      backgroundColor="rgb(245,245,245)"
+      p="6px"
+      m={3}
+      fontSize="1.2em"
+      cursor="pointer"
+      className="unselectable"
+      transition="0.5s all ease-in-out"
+      onClick={() => {
+        toggleExplicitSemester(year, semester);
+      }}
+    >
+      <b>{`${semester}S ${year}`}</b>
+    </Box>
   );
 };
 
@@ -660,21 +1024,33 @@ export default () => {
         historicGroup: {
           distribution: Array<{ label: string; value: number }>;
         } | null;
+        flujoMaterias: string[];
+        requisites: string[];
       }[];
     }) => {
       semesters.push({
-        semester: courses.map(({ code, name, credits, historicGroup }) => {
-          const values = historicGroup?.distribution.map(({ value }) => value);
-          let registration: string | undefined;
-          let grade: number | undefined;
-          let currentDistributionLabel: string | undefined;
-          let currentDistribution: number[] | undefined;
-          let first: boolean = true;
-          let historicalStates: { state: State; grade: number }[] = [];
-          let state: State | undefined;
+        semester: courses.map(
+          ({
+            code,
+            name,
+            credits,
+            historicGroup,
+            flujoMaterias,
+            requisites
+          }) => {
+            const values = historicGroup?.distribution.map(
+              ({ value }) => value
+            );
+            let registration: string | undefined;
+            let grade: number | undefined;
+            let currentDistributionLabel: string | undefined;
+            let currentDistribution: number[] | undefined;
+            let first: boolean = true;
+            let historicalStates: { state: State; grade: number }[] = [];
+            let state: State | undefined;
+            const semestersTaken: { year: number; semester: string }[] = [];
 
-          reverse(data.studentAcademic.terms).forEach(
-            ({ coursesTaken, year, semester }) => {
+            reverse(data.studentAcademic.terms).forEach(({ coursesTaken }) => {
               for (const {
                 code: codeToFind,
                 classGroup: { year, semester, distribution },
@@ -700,97 +1076,34 @@ export default () => {
                       grade: gradeToFind
                     });
                   }
+                  semestersTaken.push({ year, semester });
                 }
               }
-            }
-          );
-          return {
-            name,
-            code,
-            credits,
-            historicDistribution: some(values) ? values : [],
-            registration,
-            grade,
-            currentDistributionLabel,
-            currentDistribution,
-            historicalStates,
-            state
-          };
-        })
+            });
+            return {
+              name,
+              code,
+              credits,
+              historicDistribution: some(values) ? values : [],
+              registration,
+              grade,
+              currentDistributionLabel,
+              currentDistribution,
+              historicalStates,
+              state,
+              flow: flujoMaterias,
+              requisites,
+              semestersTaken
+            };
+          }
+        )
       });
     }
   );
 
-  const Dropout: FC = () => {
-    const [show, setShow] = useState(true);
-
-    return (
-      <Flex alignItems="center">
-        <Flex
-          backgroundColor="rgb(252,249,165)"
-          boxShadow={
-            show
-              ? "0px 0px 2px 1px rgb(174,174,174)"
-              : "2px 3px 2px 1px rgb(174,174,174)"
-          }
-          borderRadius={show ? "5px 5px 5px 5px" : "0px 5px 5px 0px"}
-          alignItems="center"
-          onClick={() => setShow(show => !show)}
-          cursor="pointer"
-          transition="0.5s box-shadow ease-in-out"
-        >
-          <Stack
-            className="unselectable"
-            isInline
-            pt={10}
-            pb={10}
-            minHeight="120px"
-          >
-            <Text
-              minHeight="120px"
-              m={0}
-              ml={4}
-              textAlign="center"
-              fontWeight="bold"
-              className="verticalText"
-              fontSize="1.2em"
-            >
-              {DROPOUT_PREDICTION}
-            </Text>
-            <AnimatePresence>
-              {show && (
-                <motion.div
-                  key="dropout-text"
-                  initial={{
-                    opacity: 0
-                  }}
-                  animate={{ opacity: 1 }}
-                  exit={{
-                    opacity: 0
-                  }}
-                >
-                  <Text width="290px" pl={5} pb={0} mb={0}>
-                    {DROPOUT_PREDICTION_DESCRIPTION}
-                  </Text>
-                  <Text fontSize="2.5em" fontWeight="bold" ml={5} mb={0}>
-                    {data.prediction_data.prob_dropout}%
-                  </Text>
-                  <Text ml={5}>
-                    ({DROPOUT_PREDICTION_ACCURACY}{" "}
-                    <b>{data.prediction_data.model_accuracy}</b>)
-                  </Text>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Stack>
-        </Flex>
-      </Flex>
-    );
-  };
-
   return (
     <RequireAuth>
-      <>
+      <CoursesFlow>
         <Box pb={50} width="100vw" backgroundColor="black" />
         <Stack isInline>
           <Box>
@@ -798,26 +1111,15 @@ export default () => {
               PGA={data.PGA}
               PSP={data.PSP}
               ProgramPGA={data.ProgramPGA}
+              semestersTaken={semestersTaken}
             />
           </Box>
           <Dropout />
         </Stack>
 
-        <Stack isInline>
+        <Stack isInline pl="50px">
           {semestersTaken.map(({ semester, year }, key) => (
-            <Box
-              key={key}
-              textAlign="center"
-              border="3px solid grey"
-              borderRadius="8px"
-              backgroundColor="rgb(245,245,245)"
-              p="6px"
-              m={3}
-              fontSize="1.2em"
-              cursor="pointer"
-            >
-              <b>{`${semester}S ${year}`}</b>
-            </Box>
+            <SemesterTakenBox key={key} semester={semester} year={year} />
           ))}
         </Stack>
         <Stack isInline spacing={8}>
@@ -825,7 +1127,7 @@ export default () => {
             <Semester key={key} semester={semester} n={key + 1} />
           ))}
         </Stack>
-      </>
+      </CoursesFlow>
     </RequireAuth>
   );
 };

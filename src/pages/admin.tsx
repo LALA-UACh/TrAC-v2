@@ -1,4 +1,4 @@
-import { RequireAuth } from "@componentes";
+import { RequireAuth } from "@components";
 
 export default () => {
   return (
