@@ -380,7 +380,14 @@ const CourseBox: FC<{
       default:
         return "transparent";
     }
-  }, [state]);
+  }, [
+    state,
+    grade,
+    maxGrade,
+    minGrade,
+    approvedColorScale,
+    reapprovedColorScale
+  ]);
 
   const opacity = useMemo(() => {
     if (active) {
@@ -399,7 +406,15 @@ const CourseBox: FC<{
       return 1;
     }
     return 0.5;
-  }, [active]);
+  }, [
+    active,
+    code,
+    contextFlow,
+    contextRequisites,
+    explicitSemester,
+    semestersTaken,
+    checkExplicitSemester
+  ]);
   const borderColor = useMemo(() => {
     if (contextFlow?.[code]) {
       return "red.400";
@@ -411,7 +426,241 @@ const CourseBox: FC<{
       return "yellow.400";
     }
     return "gray.400";
-  }, [active, code, explicitSemester, checkExplicitSemester, semestersTaken]);
+  }, [
+    active,
+    code,
+    explicitSemester,
+    checkExplicitSemester,
+    semestersTaken,
+    contextFlow,
+    contextRequisites
+  ]);
+
+  const NameComponent = useMemo(
+    () => (
+      <Stack spacing={1}>
+        <Text>
+          <b>{code}</b>
+        </Text>
+        <Text fontSize={9} maxWidth="150px">
+          {name}
+        </Text>
+      </Stack>
+    ),
+    [code, name]
+  );
+
+  const RegistrationComponent = useMemo(
+    () =>
+      registration &&
+      max && (
+        <motion.div
+          key="status"
+          initial={{
+            opacity: 0,
+            transitionDuration: "0.2s",
+            transitionDelay: "0.1s",
+            transitionTimingFunction: "easy-in"
+          }}
+          animate={{ opacity: 1 }}
+          exit={{
+            opacity: 0,
+            transitionDuration: "0s",
+            transitionDelay: "0s",
+            transitionTimingFunction: "easy-in"
+          }}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "80px"
+          }}
+        >
+          <Text fontSize="9px">
+            <b>{registration}</b>
+          </Text>
+        </motion.div>
+      ),
+    [max, registration]
+  );
+
+  const CreditsComponent = useMemo(
+    () =>
+      !max && (
+        <motion.div
+          key="sct"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          style={{
+            position: "absolute",
+            bottom: "10px",
+            left: "10px"
+          }}
+        >
+          <Text fontSize="9px">
+            <b>SCT: {credits}</b>
+          </Text>
+        </motion.div>
+      ),
+    [max, credits]
+  );
+
+  const ReqCircleComponent = useMemo(
+    () =>
+      (contextFlow?.[code] || contextRequisites?.[code]) && (
+        <motion.div
+          key="req_circle"
+          initial={{
+            opacity: 0,
+            transitionDuration: "0.5s",
+            transitionDelay: "0s",
+            transitionTimingFunction: "easy-in"
+          }}
+          animate={{ opacity: 1 }}
+          exit={{
+            opacity: 0,
+            transitionDuration: "0.0s",
+            transitionTimingFunction: "linear",
+            transitionDelay: "0s"
+          }}
+          style={{ position: "absolute", right: 8, top: 80 }}
+        >
+          <Box>
+            <svg width={32} height={32}>
+              <circle
+                r={15}
+                cx={16}
+                cy={16}
+                stroke={
+                  contextFlow?.[code] ? "rgb(66,153,225)" : "rgb(245,101,101)"
+                }
+                fill="transparent"
+              />
+              <text
+                x={4}
+                y={21}
+                fontWeight="bold"
+                fill={
+                  contextFlow?.[code] ? "rgb(66,153,225)" : "rgb(245,101,101)"
+                }
+              >
+                {contextFlow?.[code] ? "Fluj" : "Req"}
+              </text>
+            </svg>
+          </Box>
+        </motion.div>
+      ),
+    [contextFlow, contextRequisites, code]
+  );
+
+  const HistogramsComponent = useMemo(
+    () =>
+      max && (
+        <motion.div
+          key="histograms"
+          initial={{
+            opacity: 0,
+            transitionDuration: "0.5s",
+            transitionDelay: "0s",
+            transitionTimingFunction: "easy-in"
+          }}
+          animate={{ opacity: 1 }}
+          exit={{
+            opacity: 0,
+            transitionDuration: "0.0s",
+            transitionTimingFunction: "linear",
+            transitionDelay: "0s"
+          }}
+          style={{
+            position: "absolute",
+            bottom: 2
+          }}
+        >
+          {currentDistribution && (
+            <Histogram
+              key="now"
+              label={currentDistributionLabel}
+              distribution={currentDistribution}
+            />
+          )}
+
+          {historicDistribution && (
+            <Histogram
+              key="historic"
+              label={HISTORIC_GRADES}
+              distribution={historicDistribution}
+            />
+          )}
+        </motion.div>
+      ),
+    [max, historicDistribution, currentDistribution, currentDistributionLabel]
+  );
+
+  const GradeComponent = useMemo(
+    () =>
+      grade !== undefined && (
+        <Text mb={2} pt={1}>
+          <b>
+            {grade
+              ? grade.toFixed(1)
+              : (() => {
+                  switch (state) {
+                    case State.Approved:
+                      return "AP";
+                    case State.Reapproved:
+                      return "RE";
+                    case State.Canceled:
+                      return "AN";
+                    default:
+                      return "BUGGED";
+                  }
+                })()}
+          </b>
+        </Text>
+      ),
+    [grade]
+  );
+
+  const HistoricalCirclesComponent = useMemo(
+    () =>
+      some(historicalStates) && (
+        <Stack spacing={0.7}>
+          {historicalStates?.map(({ state, grade: historicalGrade }, key) => {
+            let color: string;
+            switch (state) {
+              case State.Reapproved:
+                color = (reapprovedColorScale(
+                  historicalGrade
+                ) as unknown) as string;
+                break;
+              case State.Current:
+                color = "blue";
+                break;
+              case State.Canceled:
+                color = "white";
+              default:
+                color = "black";
+            }
+            return (
+              <Box
+                key={key}
+                m={0}
+                p={0}
+                paddingBottom="0px"
+                color={color}
+                height={"16px"}
+                width={"16px"}
+              >
+                <svg width={16} height={16}>
+                  <circle cx={8} cy={8} r="6" stroke="white" fill={color} />
+                </svg>
+              </Box>
+            );
+          })}
+        </Stack>
+      ),
+    [historicalStates]
+  );
 
   return (
     <Flex
@@ -433,149 +682,15 @@ const CourseBox: FC<{
       className="unselectable"
     >
       <Flex w="100%" h="100%" pt={2} pl={2} pos="relative">
-        <Stack spacing={1}>
-          <Text>
-            <b>{code}</b>
-          </Text>
-          <Text fontSize={9} maxWidth="150px">
-            {name}
-          </Text>
-        </Stack>
+        {NameComponent}
 
         <AnimatePresence>
-          {registration && max && (
-            <motion.div
-              key="status"
-              initial={{
-                opacity: 0,
-                transitionDuration: "0.2s",
-                transitionDelay: "0.1s",
-                transitionTimingFunction: "easy-in"
-              }}
-              animate={{ opacity: 1 }}
-              exit={{
-                opacity: 0,
-                transitionDuration: "0s",
-                transitionDelay: "0s",
-                transitionTimingFunction: "easy-in"
-              }}
-              style={{
-                position: "absolute",
-                top: "10px",
-                right: "80px"
-              }}
-            >
-              <Text fontSize="9px">
-                <b>{registration}</b>
-              </Text>
-            </motion.div>
-          )}
-          {!max && (
-            <motion.div
-              key="sct"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              style={{
-                position: "absolute",
-                bottom: "10px",
-                left: "10px"
-              }}
-            >
-              <Text fontSize="9px">
-                <b>SCT: {credits}</b>
-              </Text>
-            </motion.div>
-          )}
+          {RegistrationComponent}
+          {CreditsComponent}
 
-          <AnimatePresence>
-            {(contextFlow?.[code] || contextRequisites?.[code]) && (
-              <motion.div
-                key="req_circle"
-                initial={{
-                  opacity: 0,
-                  transitionDuration: "0.5s",
-                  transitionDelay: "0s",
-                  transitionTimingFunction: "easy-in"
-                }}
-                animate={{ opacity: 1 }}
-                exit={{
-                  opacity: 0,
-                  transitionDuration: "0.0s",
-                  transitionTimingFunction: "linear",
-                  transitionDelay: "0s"
-                }}
-                style={{ position: "absolute", right: 8, top: 80 }}
-              >
-                <Box>
-                  <svg width={32} height={32}>
-                    <circle
-                      r={15}
-                      cx={16}
-                      cy={16}
-                      stroke={
-                        contextFlow?.[code]
-                          ? "rgb(66,153,225)"
-                          : "rgb(245,101,101)"
-                      }
-                      fill="transparent"
-                    />
-                    <text
-                      x={4}
-                      y={21}
-                      fontWeight="bold"
-                      fill={
-                        contextFlow?.[code]
-                          ? "rgb(66,153,225)"
-                          : "rgb(245,101,101)"
-                      }
-                    >
-                      {contextFlow?.[code] ? "Fluj" : "Req"}
-                    </text>
-                  </svg>
-                </Box>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {ReqCircleComponent}
 
-          {max && (
-            <motion.div
-              key="histograms"
-              initial={{
-                opacity: 0,
-                transitionDuration: "0.5s",
-                transitionDelay: "0s",
-                transitionTimingFunction: "easy-in"
-              }}
-              animate={{ opacity: 1 }}
-              exit={{
-                opacity: 0,
-                transitionDuration: "0.0s",
-                transitionTimingFunction: "linear",
-                transitionDelay: "0s"
-              }}
-              style={{
-                position: "absolute",
-                bottom: 2
-              }}
-            >
-              {currentDistribution && (
-                <Histogram
-                  key="now"
-                  label={currentDistributionLabel}
-                  distribution={currentDistribution}
-                />
-              )}
-
-              {historicDistribution && (
-                <Histogram
-                  key="historic"
-                  label={HISTORIC_GRADES}
-                  distribution={historicDistribution}
-                />
-              )}
-            </motion.div>
-          )}
+          {HistogramsComponent}
         </AnimatePresence>
       </Flex>
       <Flex
@@ -592,63 +707,9 @@ const CourseBox: FC<{
         border="1px solid"
         borderColor={borderColor}
       >
-        {grade !== undefined && (
-          <Text mb={2} pt={1}>
-            <b>
-              {grade
-                ? grade.toFixed(1)
-                : (() => {
-                    switch (state) {
-                      case State.Approved:
-                        return "AP";
-                      case State.Reapproved:
-                        return "RE";
-                      case State.Canceled:
-                        return "AN";
-                      default:
-                        return "BUGGED";
-                    }
-                  })()}
-            </b>
-          </Text>
-        )}
+        {GradeComponent}
 
-        {some(historicalStates) && (
-          <Stack spacing={0.7}>
-            {historicalStates?.map(({ state, grade: historicalGrade }, key) => {
-              let color: string;
-              switch (state) {
-                case State.Reapproved:
-                  color = (reapprovedColorScale(
-                    historicalGrade
-                  ) as unknown) as string;
-                  break;
-                case State.Current:
-                  color = "blue";
-                  break;
-                case State.Canceled:
-                  color = "white";
-                default:
-                  color = "black";
-              }
-              return (
-                <Box
-                  key={key}
-                  m={0}
-                  p={0}
-                  paddingBottom="0px"
-                  color={color}
-                  height={"16px"}
-                  width={"16px"}
-                >
-                  <svg width={16} height={16}>
-                    <circle cx={8} cy={8} r="6" stroke="white" fill={color} />
-                  </svg>
-                </Box>
-              );
-            })}
-          </Stack>
-        )}
+        {HistoricalCirclesComponent}
       </Flex>
     </Flex>
   );
@@ -668,7 +729,7 @@ type ISemester = Array<{
   semestersTaken: { year: number; semester: string }[];
 }>;
 
-function toRoman(num: number): string {
+const toRoman = (num: number): string => {
   if (num < 1) {
     return "";
   }
@@ -691,18 +752,21 @@ function toRoman(num: number): string {
     return "I" + toRoman(num - 1);
   }
   return "";
-}
+};
 
 const Semester: FC<{ semester: ISemester; n: number }> = ({ semester, n }) => {
-  return (
-    <Stack>
-      <Text color="rgb(70,130,180)" textAlign="center" fontSize="1.5em">
-        <b>{toRoman(n)}</b>
-      </Text>
-      {semester.map((course, key) => (
-        <CourseBox key={key} {...course} />
-      ))}
-    </Stack>
+  return useMemo(
+    () => (
+      <Stack>
+        <Text color="rgb(70,130,180)" textAlign="center" fontSize="1.5em">
+          <b>{toRoman(n)}</b>
+        </Text>
+        {semester.map((course, key) => (
+          <CourseBox key={key} {...course} />
+        ))}
+      </Stack>
+    ),
+    [semester, n]
   );
 };
 
@@ -727,9 +791,9 @@ const TimeLineTooltip: FC<{
       }),
     [children, setShow]
   );
-  return (
-    <g>
-      {Children}
+
+  const Tooltip = useMemo(
+    () => (
       <AnimatePresence>
         {show && (
           <motion.g
@@ -756,9 +820,27 @@ const TimeLineTooltip: FC<{
           </motion.g>
         )}
       </AnimatePresence>
+    ),
+    [show, grade, children, rectWidth]
+  );
+
+  return (
+    <g>
+      {Children}
+      {Tooltip}
     </g>
   );
 };
+
+const YAxisScale = scaleLinear()
+  .range([0, 130])
+  .domain([maxGrade, minGrade]);
+const GradeScale = scaleLinear()
+  .range([40, 170])
+  .domain([maxGrade, minGrade]);
+const PSP_COLOR = "rgb(70,130,180)";
+const PGA_COLOR = "rgb(173,66,244)";
+const PROGRAM_PGA_COLOR = "rgb(102,102,102)";
 
 const TimeLine: FC<{
   PGA: number[];
@@ -766,70 +848,66 @@ const TimeLine: FC<{
   ProgramPGA: number[];
   semestersTaken: { year: number; semester: string }[];
 }> = ({ PGA, PSP, ProgramPGA, semestersTaken }) => {
-  const YAxisScale = scaleLinear()
-    .range([0, 130])
-    .domain([maxGrade, minGrade]);
-  const GradeScale = scaleLinear()
-    .range([40, 170])
-    .domain([maxGrade, minGrade]);
-
-  const PSP_COLOR = "rgb(70,130,180)";
-  const PGA_COLOR = "rgb(173,66,244)";
-  const PROGRAM_PGA_COLOR = "rgb(102,102,102)";
-
-  const width = Math.max((PGA.length - 1) * 120 + 60, 650);
+  const width = useMemo(() => Math.max((PGA.length - 1) * 120 + 60, 650), [
+    PGA
+  ]);
   const height = 270;
   const scale = 0.7;
   const { explicitSemester } = useContext(CoursesFlowContext);
 
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width * scale} ${height * scale}`}
-    >
-      <text y={20} x={10} fontSize="1em" fontWeight="bold">
-        {GRADES_SCALES}
-      </text>
-      <AxisLeft
-        scale={YAxisScale}
-        left={40}
-        top={40}
-        hideAxisLine={false}
-        tickLength={4}
-        numTicks={5}
-      />
-      <line
-        x1={39}
-        y1={170}
-        x2={PGA.length * 100 + 160}
-        y2={40 + 130}
-        stroke="black"
-      />
-      <line
-        x1={39}
-        y1={GradeScale(approvedGrade)}
-        x2={340}
-        y2={GradeScale(approvedGrade)}
-        stroke="black"
-        strokeDasharray="2"
-      />
+  const CirclesComponent = useMemo(
+    () =>
+      PGA.map((PGAGrade, key) => {
+        return (
+          <g key={key}>
+            <TimeLineTooltip grade={PGAGrade}>
+              <circle
+                cy={GradeScale(PGAGrade)}
+                cx={key * 70 + 70}
+                r={5}
+                fill={PGA_COLOR}
+              />
+            </TimeLineTooltip>
+            <TimeLineTooltip grade={ProgramPGA[key]}>
+              <circle
+                cy={GradeScale(ProgramPGA[key])}
+                cx={key * 70 + 70}
+                r={5}
+                fill={PROGRAM_PGA_COLOR}
+              />
+            </TimeLineTooltip>
+            <TimeLineTooltip grade={PSP[key]}>
+              <circle
+                cy={GradeScale(PSP[key])}
+                cx={key * 70 + 70}
+                r={5}
+                fill={
+                  `${semestersTaken[key].semester}${semestersTaken[key].year}` ===
+                  explicitSemester
+                    ? "rgb(236,201,75)"
+                    : PSP_COLOR
+                }
+                style={{ transition: "0.5s all ease-in-out" }}
+              />
+            </TimeLineTooltip>
+          </g>
+        );
+      }),
+    [
+      PSP,
+      PGA,
+      ProgramPGA,
+      semestersTaken,
+      explicitSemester,
+      PSP_COLOR,
+      PGA_COLOR,
+      GradeScale
+    ]
+  );
 
-      <circle cx={150} cy={12} r={5} fill={PSP_COLOR} />
-
-      <text x={160} y={20}>
-        PSP
-      </text>
-      <circle cx={250} cy={12} r={5} fill={PGA_COLOR} />
-      <text x={260} y={20}>
-        PGA
-      </text>
-      <circle cx={350} cy={12} r={5} fill={PROGRAM_PGA_COLOR} />
-      <text x={360} y={20}>
-        {PROGRAM_PGA}
-      </text>
-
-      {new Array(PGA.length).fill(0).map((_, key) => {
+  const StrokesComponent = useMemo(
+    () =>
+      PGA.map((_, key) => {
         return (
           <g key={key}>
             {PSP[key + 1] !== undefined && (
@@ -861,111 +939,142 @@ const TimeLine: FC<{
             )}
           </g>
         );
-      })}
-      {new Array(PGA.length).fill(0).map((_, key) => {
-        return (
-          <g key={key}>
-            <TimeLineTooltip grade={PGA[key]}>
-              <circle
-                cy={GradeScale(PGA[key])}
-                cx={key * 70 + 70}
-                r={5}
-                fill={PGA_COLOR}
-              />
-            </TimeLineTooltip>
-            <TimeLineTooltip grade={ProgramPGA[key]}>
-              <circle
-                cy={GradeScale(ProgramPGA[key])}
-                cx={key * 70 + 70}
-                r={5}
-                fill={PROGRAM_PGA_COLOR}
-              />
-            </TimeLineTooltip>
-            <TimeLineTooltip grade={PSP[key]}>
-              <circle
-                cy={GradeScale(PSP[key])}
-                cx={key * 70 + 70}
-                r={5}
-                fill={
-                  `${semestersTaken[key].semester}${semestersTaken[key].year}` ===
-                  explicitSemester
-                    ? "rgb(236,201,75)"
-                    : PSP_COLOR
-                }
-                style={{ transition: "0.5s all ease-in-out" }}
-              />
-            </TimeLineTooltip>
-          </g>
-        );
-      })}
+      }),
+    [PSP, PGA, ProgramPGA, PSP_COLOR, GradeScale, PROGRAM_PGA_COLOR]
+  );
+  const LabelAxisComponent = useMemo(
+    () => (
+      <>
+        <text y={20} x={10} fontSize="1em" fontWeight="bold">
+          {GRADES_SCALES}
+        </text>
+        <AxisLeft
+          scale={YAxisScale}
+          left={40}
+          top={40}
+          hideAxisLine={false}
+          tickLength={4}
+          numTicks={5}
+        />
+        <line
+          x1={39}
+          y1={170}
+          x2={PGA.length * 100 + 160}
+          y2={40 + 130}
+          stroke="black"
+        />
+        <line
+          x1={39}
+          y1={GradeScale(approvedGrade)}
+          x2={340}
+          y2={GradeScale(approvedGrade)}
+          stroke="black"
+          strokeDasharray="2"
+        />
+
+        <circle cx={150} cy={12} r={5} fill={PSP_COLOR} />
+
+        <text x={160} y={20}>
+          PSP
+        </text>
+        <circle cx={250} cy={12} r={5} fill={PGA_COLOR} />
+        <text x={260} y={20}>
+          PGA
+        </text>
+        <circle cx={350} cy={12} r={5} fill={PROGRAM_PGA_COLOR} />
+        <text x={360} y={20}>
+          {PROGRAM_PGA}
+        </text>
+      </>
+    ),
+    [
+      PROGRAM_PGA,
+      PROGRAM_PGA_COLOR,
+      PGA_COLOR,
+      PSP_COLOR,
+      GradeScale,
+      approvedGrade,
+      YAxisScale,
+      GRADES_SCALES
+    ]
+  );
+  const viewBox = useMemo(() => `0 0 ${width * scale} ${height * scale}`, [
+    width,
+    height,
+    scale
+  ]);
+  return (
+    <svg width={width} height={height} viewBox={viewBox}>
+      {LabelAxisComponent}
+      {StrokesComponent}
+      {CirclesComponent}
     </svg>
   );
 };
 
-const Dropout: FC = () => {
-  const [show, setShow] = useState(true);
+const Dropout: FC<{ probability: number; accuracy: number }> = ({
+  probability,
+  accuracy
+}) => {
+  const [show, setShow] = useState(false);
 
-  return (
-    <Flex alignItems="center">
-      <Flex
-        backgroundColor="rgb(252,249,165)"
-        boxShadow={
-          show
-            ? "0px 0px 2px 1px rgb(174,174,174)"
-            : "2px 3px 2px 1px rgb(174,174,174)"
-        }
-        borderRadius={show ? "5px 5px 5px 5px" : "0px 5px 5px 0px"}
-        alignItems="center"
-        onClick={() => setShow(show => !show)}
-        cursor="pointer"
-        transition="0.5s box-shadow ease-in-out"
-      >
-        <Stack
-          className="unselectable"
-          isInline
-          pt={10}
-          pb={10}
-          minHeight="120px"
+  return useMemo(
+    () => (
+      <Flex alignItems="center">
+        <Flex
+          backgroundColor="rgb(252,249,165)"
+          boxShadow={
+            show
+              ? "0px 0px 2px 1px rgb(174,174,174)"
+              : "2px 3px 2px 1px rgb(174,174,174)"
+          }
+          borderRadius={show ? "5px 5px 5px 5px" : "0px 5px 5px 0px"}
+          alignItems="center"
+          onClick={() => setShow(show => !show)}
+          cursor="pointer"
+          transition="0.5s box-shadow ease-in-out"
         >
-          <Text
-            minHeight="120px"
-            m={0}
-            ml={4}
-            textAlign="center"
-            fontWeight="bold"
-            className="verticalText"
-            fontSize="1.2em"
-          >
-            {DROPOUT_PREDICTION}
-          </Text>
-          <AnimatePresence>
-            {show && (
-              <motion.div
-                key="dropout-text"
-                initial={{
-                  opacity: 0
-                }}
-                animate={{ opacity: 1 }}
-                exit={{
-                  opacity: 0
-                }}
-              >
-                <Text width="290px" pl={5} pb={0} mb={0}>
-                  {DROPOUT_PREDICTION_DESCRIPTION}
-                </Text>
-                <Text fontSize="2.5em" fontWeight="bold" ml={5} mb={0}>
-                  {data.prediction_data.prob_dropout}%
-                </Text>
-                <Text ml={5}>
-                  ({DROPOUT_PREDICTION_ACCURACY}{" "}
-                  <b>{data.prediction_data.model_accuracy}</b>)
-                </Text>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Stack>
+          <Stack className="unselectable" isInline pt={10} pb={10}>
+            <Text
+              height="120px"
+              m={0}
+              ml={4}
+              textAlign="center"
+              fontWeight="bold"
+              className="verticalText"
+              fontSize="1.2em"
+            >
+              {DROPOUT_PREDICTION}
+            </Text>
+            <AnimatePresence>
+              {show && (
+                <motion.div
+                  key="dropout-text"
+                  initial={{
+                    opacity: 0
+                  }}
+                  animate={{ opacity: 1 }}
+                  exit={{
+                    opacity: 0
+                  }}
+                >
+                  <Text width="290px" pl={5} pb={0} mb={0}>
+                    {DROPOUT_PREDICTION_DESCRIPTION}
+                  </Text>
+                  <Text fontSize="2.5em" fontWeight="bold" ml={5} mb={0}>
+                    {probability}%
+                  </Text>
+                  <Text ml={5}>
+                    ({DROPOUT_PREDICTION_ACCURACY} <b>{accuracy}</b>)
+                  </Text>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Stack>
+        </Flex>
       </Flex>
-    </Flex>
+    ),
+    [show, setShow, probability, accuracy]
   );
 };
 
@@ -978,30 +1087,33 @@ const SemesterTakenBox: FC<{ year: number; semester: string }> = ({
     semestersTaken,
     explicitSemester
   } = useContext(CoursesFlowContext);
-  return (
-    <Box
-      textAlign="center"
-      border="3px solid"
-      borderColor={
-        `${semester}${year}` === explicitSemester ||
-        semestersTaken?.find(v => v.semester === semester && v.year === year)
-          ? "yellow.400"
-          : "grey"
-      }
-      borderRadius="8px"
-      backgroundColor="rgb(245,245,245)"
-      p="6px"
-      m={3}
-      fontSize="1.2em"
-      cursor="pointer"
-      className="unselectable"
-      transition="0.5s all ease-in-out"
-      onClick={() => {
-        toggleExplicitSemester(year, semester);
-      }}
-    >
-      <b>{`${semester}S ${year}`}</b>
-    </Box>
+  return useMemo(
+    () => (
+      <Box
+        textAlign="center"
+        border="3px solid"
+        borderColor={
+          `${semester}${year}` === explicitSemester ||
+          semestersTaken?.find(v => v.semester === semester && v.year === year)
+            ? "yellow.400"
+            : "grey"
+        }
+        borderRadius="8px"
+        backgroundColor="rgb(245,245,245)"
+        p="6px"
+        m={3}
+        fontSize="1.2em"
+        cursor="pointer"
+        className="unselectable"
+        transition="0.5s all ease-in-out"
+        onClick={() => {
+          toggleExplicitSemester(year, semester);
+        }}
+      >
+        <b>{`${semester}S ${year}`}</b>
+      </Box>
+    ),
+    [semester, year, toggleExplicitSemester, semestersTaken, explicitSemester]
   );
 };
 
@@ -1114,7 +1226,10 @@ export default () => {
               semestersTaken={semestersTaken}
             />
           </Box>
-          <Dropout />
+          <Dropout
+            probability={data.studentAcademic.student_dropout.prob_dropout}
+            accuracy={data.studentAcademic.student_dropout.model_accuracy}
+          />
         </Stack>
 
         <Stack isInline pl="50px">
