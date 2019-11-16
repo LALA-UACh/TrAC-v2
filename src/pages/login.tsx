@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
+import { useUpdateEffect } from "react-use";
 import {
     Button, Checkbox, Form as FormSemantic, Grid, Icon, Input, Message, Segment
 } from "semantic-ui-react";
@@ -15,13 +16,13 @@ import { LOCKED_USER, WRONG_INFO } from "@constants";
 import { currentUser } from "@graphql/queries";
 
 const Login: FC = () => {
-  const [session, setSession] = useState<boolean>(() =>
+  const [session, setSession] = useState(() =>
     Cookies.get("remember") ? true : false
   );
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     if (session) {
-      Cookies.set("remember", "1");
+      Cookies.set("remember", "1", { expires: 30 });
     } else {
       Cookies.remove("remember");
     }
@@ -30,7 +31,7 @@ const Login: FC = () => {
   const [login, { data, loading, called, client }] = useMutation<
     {
       login: {
-        user?: { email: string; name: string; admin: string };
+        user?: { email: string; name: string; admin: boolean };
         error?: string;
       };
     },
@@ -49,16 +50,13 @@ const Login: FC = () => {
   `);
 
   useEffect(() => {
-    if (called && !loading && data) {
-      const { user: current_user } = data.login;
-      if (current_user) {
-        client?.writeQuery({
-          query: currentUser,
-          data: {
-            current_user
-          }
-        });
-      }
+    if (called && !loading && data?.login.user) {
+      client?.writeQuery({
+        query: currentUser,
+        data: {
+          current_user: data.login.user
+        }
+      });
     }
   }, [called, loading, called, data]);
 

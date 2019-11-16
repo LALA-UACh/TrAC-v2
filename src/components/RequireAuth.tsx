@@ -8,9 +8,9 @@ export const RequireAuth: FC<{ children: ReactElement; admin?: boolean }> = ({
   children,
   admin
 }) => {
-  const { loading, error, data } = useQuery<{
-    current_user?: { email: string; admin: boolean };
-  }>(currentUser, { ssr: false });
+  const { loading, error, data } = useQuery(currentUser, {
+    ssr: false
+  });
   const { push } = useRouter();
 
   useEffect(() => {

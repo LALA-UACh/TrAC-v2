@@ -1,6 +1,5 @@
 import { some } from "lodash";
 import { reverse } from "lodash/fp";
-import ScrollContainer from "react-indiana-drag-scroll";
 
 import { Box, Stack } from "@chakra-ui/core";
 import { RequireAuth } from "@components";
@@ -12,6 +11,7 @@ import { TimeLine } from "@components/dashboard/Timeline";
 import { State } from "@constants";
 import data from "@constants/data.json";
 import { ICourse, IDistribution, ISemesterTaken } from "@interfaces";
+import ScrollContainer from "@pablosz/react-indiana-drag-scroll";
 
 console.log("data", data);
 export default () => {
@@ -133,9 +133,8 @@ export default () => {
     <RequireAuth>
       <CoursesFlow>
         <Box pb={50} width="100vw" backgroundColor="black" />
-        <ScrollContainer>
+        <ScrollContainer activationDistance={1}>
           <Stack isInline>
-            <div style={{}}></div>
             <Box>
               <TimeLine
                 PGA={data.PGA}
@@ -157,7 +156,11 @@ export default () => {
           </Stack>
         </ScrollContainer>
 
-        <ScrollContainer hideScrollbars={false}>
+        <ScrollContainer
+          hideScrollbars={false}
+          vertical={false}
+          activationDistance={1}
+        >
           <Stack isInline spacing={8}>
             {semesters.map(({ semester }, key) => (
               <Semester key={key} semester={semester} n={key + 1} />

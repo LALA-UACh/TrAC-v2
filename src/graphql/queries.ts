@@ -1,6 +1,12 @@
-import gql from "graphql-tag";
+import gql, { DocumentNode } from "graphql-tag-ts";
 
-export const currentUser = gql`
+export const currentUser: DocumentNode<{
+  current_user?: {
+    email: string;
+    name: string;
+    admin: boolean;
+  };
+}> = gql`
   query {
     current_user {
       email

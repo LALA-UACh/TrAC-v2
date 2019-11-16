@@ -12,6 +12,7 @@ import { buildContext } from "@utils/buildContext";
 const schema = buildSchema({
   resolvers: Object.values(resolvers),
   authChecker,
+  emitSchemaFile: true
 });
 
 const app = express();
@@ -23,11 +24,11 @@ app.use(cookieParser());
     schema: await schema,
     playground: {
       settings: {
-        "request.credentials": "include",
-      },
+        "request.credentials": "include"
+      }
     },
     context: ({ req, res }) => buildContext({ req, res }),
-    introspection: true,
+    introspection: true
   });
   apolloServer.applyMiddleware({ app, path: "/api/graphql" });
 
