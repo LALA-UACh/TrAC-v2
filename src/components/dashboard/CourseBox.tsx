@@ -5,7 +5,7 @@ import { FC, useContext, useMemo, useState } from "react";
 import { useUpdateEffect } from "react-use";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
-import { HISTORIC_GRADES, State } from "@constants";
+import { HISTORIC_GRADES, StateCourse } from "@constants";
 import { ICourse } from "@interfaces";
 import { approvedGrade, maxGrade, minGrade } from "@temp";
 
@@ -79,13 +79,13 @@ export const CourseBox: FC<ICourse> = ({
 
   const stateColor = useMemo(() => {
     switch (state) {
-      case State.Approved:
+      case StateCourse.Approved:
         return (approvedColorScale(grade || maxGrade) as unknown) as string;
-      case State.Reapproved:
+      case StateCourse.Reapproved:
         return (reapprovedColorScale(grade || minGrade) as unknown) as string;
-      case State.Current:
+      case StateCourse.Current:
         return "blue";
-      case State.Canceled:
+      case StateCourse.Canceled:
         return "white";
       default:
         return "transparent";
@@ -317,11 +317,11 @@ export const CourseBox: FC<ICourse> = ({
               ? grade.toFixed(1)
               : (() => {
                   switch (state) {
-                    case State.Approved:
+                    case StateCourse.Approved:
                       return "AP";
-                    case State.Reapproved:
+                    case StateCourse.Reapproved:
                       return "RE";
-                    case State.Canceled:
+                    case StateCourse.Canceled:
                       return "AN";
                     default:
                       return "BUGGED";
@@ -340,15 +340,15 @@ export const CourseBox: FC<ICourse> = ({
           {historicalStates?.map(({ state, grade: historicalGrade }, key) => {
             let color: string;
             switch (state) {
-              case State.Reapproved:
+              case StateCourse.Reapproved:
                 color = (reapprovedColorScale(
                   historicalGrade
                 ) as unknown) as string;
                 break;
-              case State.Current:
+              case StateCourse.Current:
                 color = "blue";
                 break;
-              case State.Canceled:
+              case StateCourse.Canceled:
                 color = "white";
               default:
                 color = "black";

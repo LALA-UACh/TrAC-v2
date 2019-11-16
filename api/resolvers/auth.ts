@@ -1,7 +1,7 @@
 import { addMilliseconds } from "date-fns";
 import { Request, Response } from "express";
 import { sign } from "jsonwebtoken";
-import { Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Args, Ctx, FieldResolver, Mutation, Query, Resolver } from "type-graphql";
 
 import { LOCKED_USER, USED_OLD_PASSWORD, WRONG_INFO } from "@constants";
 import { ONE_DAY, SECRET, THIRTY_MINUTES } from "@consts";
@@ -10,7 +10,7 @@ import { AuthResult, LoginInput, UnlockInput } from "@entities/auth";
 import { User } from "@entities/user";
 import { IContext } from "@interfaces";
 
-@Resolver()
+@Resolver(() => User)
 export class AuthResolver {
   static authenticate({
     req,
@@ -34,6 +34,11 @@ export class AuthResolver {
         )
       }
     );
+  }
+
+  @FieldResolver()
+  id() {
+    return 1;
   }
 
   @Query(() => User, { nullable: true })

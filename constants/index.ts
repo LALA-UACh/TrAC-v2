@@ -12,7 +12,7 @@ export const DROPOUT_PREDICTION = "Predicción de abandono";
 export const DROPOUT_PREDICTION_DESCRIPTION =
   "El sistema estima una probabilidad de abandono de";
 export const DROPOUT_PREDICTION_ACCURACY = "acierto del modelo:";
-export enum State {
+export enum StateCourse {
   Approved = "A",
   Reapproved = "R",
   Current = "C",

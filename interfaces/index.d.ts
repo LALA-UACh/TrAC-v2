@@ -1,4 +1,4 @@
-import { State } from "@constants";
+import { StateCourse } from "@constants";
 import { buildContext } from "@utils/buildContext";
 
 export type IContext = ReturnType<typeof buildContext>;
@@ -11,12 +11,14 @@ export type ICourse = {
   credits: number;
   flow: string[];
   requisites: string[];
+  //  ↑ Static course info
+  //  ↓ Taken course info
   registration?: string;
   grade?: number;
-  state?: State;
+  state?: StateCourse;
   semestersTaken: { year: number; semester: string }[];
   currentDistributionLabel?: string;
-  historicalStates: { state: State; grade: number }[];
+  historicalStates: { state: StateCourse; grade: number }[];
   historicDistribution?: IDistribution[];
   currentDistribution?: IDistribution[];
 };

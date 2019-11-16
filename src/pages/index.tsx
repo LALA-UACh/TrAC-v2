@@ -8,7 +8,7 @@ import { Dropout } from "@components/dashboard/Dropout";
 import { Semester } from "@components/dashboard/Semester";
 import { SemesterTakenBox } from "@components/dashboard/SemesterTakenBox";
 import { TimeLine } from "@components/dashboard/Timeline";
-import { State } from "@constants";
+import { StateCourse } from "@constants";
 import data from "@constants/data.json";
 import { ICourse, IDistribution, ISemesterTaken } from "@interfaces";
 import ScrollContainer from "@pablosz/react-indiana-drag-scroll";
@@ -63,8 +63,11 @@ export default () => {
             let currentDistributionLabel: string | undefined;
             let currentDistribution: IDistribution[] | undefined;
             let first: boolean = true;
-            const historicalStates: { state: State; grade: number }[] = [];
-            let state: State | undefined;
+            const historicalStates: {
+              state: StateCourse;
+              grade: number;
+            }[] = [];
+            let state: StateCourse | undefined;
             const semestersTaken: { year: number; semester: string }[] = [];
 
             reverse(data.studentAcademic.terms).forEach(({ coursesTaken }) => {
@@ -89,13 +92,13 @@ export default () => {
                     registration = registrationToFind;
                     grade = gradeToFind;
                     currentDistributionLabel = `Calificaciones ${semester} ${year}`;
-                    state = stateToFind as State;
+                    state = stateToFind as StateCourse;
                     if (some(currentDistributionValues, ({ value }) => value)) {
                       currentDistribution = currentDistributionValues;
                     }
                   } else {
                     historicalStates.push({
-                      state: stateToFind as State,
+                      state: stateToFind as StateCourse,
                       grade: gradeToFind
                     });
                   }

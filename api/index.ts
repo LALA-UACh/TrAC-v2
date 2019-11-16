@@ -3,14 +3,14 @@ import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import cookieParser from "cookie-parser";
 import express from "express";
+import { resolve } from "path";
 import { buildSchema } from "type-graphql";
 
-import * as resolvers from "@resolvers";
 import { authChecker } from "@utils/authChecker";
 import { buildContext } from "@utils/buildContext";
 
 const schema = buildSchema({
-  resolvers: Object.values(resolvers),
+  resolvers: [resolve(__dirname, "./resolvers/*.ts")],
   authChecker,
   emitSchemaFile: true
 });
