@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc --noEmit && next build",
     "dev": "cross-env NODE_ENV=development concurrently \"yarn dev-api\" \"wait-on tcp:4000 && next\"",
-    "dev-api": "ts-node-dev -r dotenv/config --ignore-watch node_modules --project tsconfig.api.json -r dotenv/ -r tsconfig-paths/register --inspect=127.0.0.1:9231 -- api/index.ts",
+    "dev-api": "ts-node-dev -r dotenv/config --respawn --ignore-watch node_modules --project tsconfig.api.json -r dotenv/ -r tsconfig-paths/register --inspect=127.0.0.1:9231 -- api/index.ts",
     "start": "cross-env NODE_ENV=production concurrently \"wait-on tcp:4000 && next start\" \"yarn start-api\"",
     "start-api": "ts-node --project tsconfig.api.json -r tsconfig-paths/register -r dotenv/config api/index.ts"
   },
@@ -18,7 +18,6 @@
     "@chakra-ui/core": "^0.4.1",
     "@emotion/core": "^10.0.22",
     "@emotion/styled": "^10.0.23",
-    "@pablosz/react-indiana-drag-scroll": "^1.4.3",
     "@vx/axis": "^0.0.192",
     "@vx/group": "^0.0.192",
     "@vx/mock-data": "^0.0.192",
@@ -40,7 +39,7 @@
     "final-form": "^4.18.6",
     "framer-motion": "^1.6.15",
     "graphql": "^14.5.8",
-    "graphql-tag-ts": "^0.1.8",
+    "graphql-tag-ts": "^0.1.9",
     "http-proxy-middleware": "^0.20.0",
     "js-cookie": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
@@ -56,14 +55,15 @@
     "react-dom": "^16.12.0",
     "react-final-form": "^6.3.0",
     "react-icons": "^3.8.0",
-    "react-indiana-drag-scroll": "^1.4.3",
+    "react-indiana-drag-scroll": "^1.5.1",
     "react-use": "^13.8.0",
     "reflect-metadata": "^0.1.13",
     "semantic-ui-react": "^0.88.1",
     "string-pixel-width": "^1.10.0",
     "styled-components": "^4.4.1",
     "type-graphql": "^0.17.5",
-    "use-remember-state": "^1.1.2"
+    "use-remember-state": "^1.1.2",
+    "utility-types": "^3.10.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 
 import { SECRET } from "@consts";
-import { AuthResolver } from "@resolvers";
+import { AuthResolver } from "@resolvers/auth";
 
 export const buildContext = ({ req, res }: { req: Request; res: Response }) => {
   let user: { email: string } | undefined;

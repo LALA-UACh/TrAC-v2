@@ -5,6 +5,15 @@ export const dbAuth = knex({
   connection: {
     host: "localhost",
     user: "postgres",
-    database: "auth-lala",
-  },
+    database: "auth-lala"
+  }
+});
+
+export const dbLALA = knex({
+  client: "pg",
+  connection: {
+    host: "localhost",
+    user: "postgres",
+    database: "lalauach"
+  }
 });

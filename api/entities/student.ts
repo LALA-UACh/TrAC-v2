@@ -1,21 +1,31 @@
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ID, Int, ObjectType } from "type-graphql";
 
 import { Program } from "./program";
+import { Term } from "./term";
 
 @ObjectType()
 export class Student {
+  // student_program => student_id
   @Field(() => ID)
   id: string;
 
+  // student_program => program_id
   @Field()
   program: Program;
 
-  @Field()
-  curriculum: string;
+  // student_program => curriculum
+  @Field(() => Int)
+  curriculum: number;
 
-  @Field()
+  // student_program => start_year
+  @Field(() => Int)
   start_year: number;
 
+  // student_program => mention
   @Field()
   mention: string;
+
+  // student_term => *
+  @Field(() => [Term])
+  terms: Term[];
 }

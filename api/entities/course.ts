@@ -1,83 +1,42 @@
-import { Field, ObjectType, registerEnumType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 
-import { StateCourse } from "@constants";
-
-registerEnumType(StateCourse, {
-  name: "StateCourse",
-  description: "Possible states of a taken course"
-});
-
-@ObjectType()
-export class Semester {
-  @Field()
-  year: number;
-
-  @Field()
-  semester: number;
-}
-
-@ObjectType()
-export class DistributionValue {
-  @Field()
-  min: number;
-
-  @Field()
-  max: number;
-
-  @Field()
-  value: number;
-}
-
-@ObjectType()
-export class State {
-  @Field(() => StateCourse)
-  state: StateCourse;
-}
-
-@ObjectType()
-export class TakenCourse {
-  @Field()
-  registration: string;
-
-  @Field()
-  grade: number;
-
-  @Field()
-  state: State;
-
-  @Field(() => [State])
-  historicalStates: State[];
-
-  @Field(() => [Semester])
-  taken: Semester[];
-
-  @Field(() => [DistributionValue])
-  currentDistribution: DistributionValue[];
-}
+import { DistributionValue } from "./distribution";
 
 @ObjectType()
 export class Course {
+  // course => code, program_structure => code
   @Field()
   code: string;
 
+  // course => name
   @Field()
   name: string;
 
-  @Field()
+  // program_structure => credits
+  @Field(() => Int)
   credits: number;
 
+  // program_structure => mention
   @Field()
   mention: string;
 
+  @Field(() => Int)
+  // program_structure => semester
+  semester: number; // 1-11 | semester where this course belongs in it's curriculum
+
+  // program_structure => requisites
+  @Field()
+  requisitesRaw: string;
+
+  // LOGIC => program_structure => requisites
   @Field(() => [Course])
   flow: Course[];
 
+  // LOGIC => program_structure => requisites
   @Field(() => [Course])
   requisites: Course[];
 
+  // ?? // TODO Distribution database definition
   @Field(() => [DistributionValue])
   historicalDistribution: DistributionValue[];
-
-  @Field({ nullable: true })
-  takenInfo?: TakenCourse;
 }

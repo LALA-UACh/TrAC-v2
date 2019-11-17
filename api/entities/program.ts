@@ -1,21 +1,26 @@
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 
 import { Course } from "./course";
 
 @ObjectType()
 export class Program {
-  @Field(() => ID)
-  id: string;
+  // program => id
+  @Field(() => Int)
+  id: number;
 
+  // program => name
   @Field()
   name: string;
 
+  // program => desc
   @Field()
   desc: string;
 
+  // program => state
   @Field()
   state: string;
 
+  // program_structure => *
   @Field(() => [Course])
-  semester: Course[];
+  courses: Course[];
 }

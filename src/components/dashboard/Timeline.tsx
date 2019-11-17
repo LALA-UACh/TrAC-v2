@@ -1,6 +1,6 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
-import { cloneElement, FC, ReactElement, useContext, useMemo, useState } from "react";
+import { cloneElement, FC, memo, ReactElement, useContext, useMemo, useState } from "react";
 import pixelWidth from "string-pixel-width";
 
 import { GRADES_SCALES, PROGRAM_PGA } from "@constants";
@@ -71,13 +71,12 @@ const TimeLineTooltip: FC<{
   );
 };
 
-CoursesFlowContext;
 export const TimeLine: FC<{
   PGA: number[];
   PSP: number[];
   ProgramPGA: number[];
   semestersTaken: { year: number; semester: string }[];
-}> = ({ PGA, PSP, ProgramPGA, semestersTaken }) => {
+}> = memo(({ PGA, PSP, ProgramPGA, semestersTaken }) => {
   const width = useMemo(() => Math.max((PGA.length - 1) * 120 + 60, 650), [
     PGA
   ]);
@@ -257,4 +256,4 @@ export const TimeLine: FC<{
       {CirclesComponent}
     </svg>
   );
-};
+});

@@ -1,6 +1,6 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
-import { some } from "lodash";
+import some from "lodash/some";
 import { FC, useContext, useMemo, useState } from "react";
 import { useUpdateEffect } from "react-use";
 

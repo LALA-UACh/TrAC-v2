@@ -8,28 +8,94 @@ type AuthResult {
   error: String
 }
 
+type Course {
+  code: String!
+  name: String!
+  credits: Int!
+  mention: String!
+  semester: Int!
+  requisitesRaw: String!
+  flow: [Course!]!
+  requisites: [Course!]!
+  historicalDistribution: [DistributionValue!]!
+}
+
+type DistributionValue {
+  min: Int!
+  max: Int!
+  value: Int!
+}
+
 type Mutation {
   login(email: String!, password: String!): AuthResult!
   logout: Boolean!
   unlock(email: String!, password: String!, unlockKey: String!): AuthResult!
 }
 
+type Program {
+  id: Int!
+  name: String!
+  desc: String!
+  state: String!
+  courses: [Course!]!
+}
+
 type Query {
   current_user: User
+  program(id: Int!): Program
+  student(program_id: Int, student_id: String!): Student
+}
+
+"""Possible states of a taken course"""
+enum StateCourse {
+  Approved
+  Reapproved
+  Current
+  Canceled
+  Pending
+}
+
+type StateGrade {
+  state: StateCourse!
+  grade: Float!
+}
+
+type Student {
+  id: ID!
+  program: Program!
+  curriculum: Int!
+  start_year: Int!
+  mention: String!
+  terms: [Term!]!
+}
+
+type TakenCourse {
+  id: ID!
+  code: String!
+  name: String!
+  registration: String!
+  grade: Float!
+  state: StateCourse!
+  historicalStates: [StateGrade!]!
+  currentDistribution: [DistributionValue!]!
+}
+
+type Term {
+  id: ID!
+  student_id: String!
+  year: Int!
+  semester: Int!
+  situation: String!
+  PSP: Float!
+  PGA: Float!
+  ProgramPGA: Float!
+  takenCourses: [Course!]!
 }
 
 type User {
   email: String!
   name: String!
-  password: String!
-  oldPassword1: String!
-  oldPassword2: String!
-  oldPassword3: String!
-  locked: Boolean!
-  tries: Float!
-  unlockKey: String!
   admin: Boolean!
   type: String!
-  id: String!
   show_dropout: Boolean!
 }

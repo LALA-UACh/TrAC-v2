@@ -1,6 +1,6 @@
 import { scaleLinear } from "d3-scale";
-import { toString } from "lodash";
-import { FC, SVGProps, useCallback, useMemo } from "react";
+import toString from "lodash/toString";
+import { FC, memo, SVGProps, useCallback, useMemo } from "react";
 
 import { IDistribution } from "@interfaces";
 import { maxGrade, minGrade, rangeGrades } from "@temp";
@@ -10,20 +10,17 @@ const SingleBar: FC<SVGProps<SVGRectElement> & {
   grey?: boolean;
   y?: number;
   height?: number;
-}> = ({ grey, y, height, ...rest }) => {
-  return useMemo(
-    () => (
-      <rect
-        width={40}
-        y={(y ?? 0) - (height ?? 0)}
-        height={height}
-        fill={grey ? "rgb(122,122,122)" : "rgb(191,191,191)"}
-        {...rest}
-      />
-    ),
-    [grey, y, height, rest]
+}> = memo(({ grey, y, height, ...rest }) => {
+  return (
+    <rect
+      width={40}
+      y={(y ?? 0) - (height ?? 0)}
+      height={height}
+      fill={grey ? "rgb(122,122,122)" : "rgb(191,191,191)"}
+      {...rest}
+    />
   );
-};
+});
 
 const averageTwo = (a: number | undefined, b: number | undefined) => {
   return ((a ?? b ?? 0) + (b ?? a ?? 0)) / 2;
@@ -109,7 +106,7 @@ export const Histogram: FC<{
   distribution: IDistribution[];
   label?: string;
   grade?: number;
-}> = ({ distribution, label, grade }) => {
+}> = memo(({ distribution, label, grade }) => {
   const barsScale = useCallback(
     scaleLinear()
       .domain([0, Math.max(...distribution.map(({ value }) => value))])
@@ -197,4 +194,4 @@ export const Histogram: FC<{
       </svg>
     </svg>
   );
-};
+});

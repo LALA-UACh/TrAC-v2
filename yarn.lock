@@ -1069,15 +1069,6 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@pablosz/react-indiana-drag-scroll@^1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@pablosz/react-indiana-drag-scroll/-/react-indiana-drag-scroll-1.4.3.tgz#19f797c1699544dc5bd1c4a90d96a343538e5030"
-  integrity sha512-8LYfKxirWMsg0ZUfwyW3mH2MUyCQYAJwAmsQOajjiu5mdJOYSbvpltpgbKOFEqq2oQCPkuMoxiHfMX6RmdhjUg==
-  dependencies:
-    classnames "^2.2.6"
-    debounce "^1.2.0"
-    easy-bem "^1.0.0"
-
 "@popmotion/easing@^1.0.1", "@popmotion/easing@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@popmotion/easing/-/easing-1.0.2.tgz#17d925c45b4bf44189e5a38038d149df42d8c0b4"
@@ -4535,10 +4526,10 @@ graphql-subscriptions@^1.0.0, graphql-subscriptions@^1.1.0:
   dependencies:
     iterall "^1.2.1"
 
-graphql-tag-ts@^0.1.8:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/graphql-tag-ts/-/graphql-tag-ts-0.1.8.tgz#f4185b54ed15956bba550a1aac1267be3acfd43e"
-  integrity sha512-uyriS/GuupSPduvWOB1hGaAfpZWVeYSjGSUbGGT0u1JUgD+AWZimN7JghyWOBrX5ADsIl8DBCIMegpHZbhraNA==
+graphql-tag-ts@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/graphql-tag-ts/-/graphql-tag-ts-0.1.9.tgz#ba28cf603dc5bee7420f51cfa336aec0262c643c"
+  integrity sha512-Od23n0GOJAcRR0Qzt7sDXapz2vJytRxLj5hbdrY2LoZAag/74FxCfATf6fO7V7OVQzHxFwSnMfLFskTey/Y13w==
   dependencies:
     graphql-tag "^2.10.1"
 
@@ -7470,10 +7461,10 @@ react-icons@^3.8.0:
   dependencies:
     camelcase "^5.0.0"
 
-react-indiana-drag-scroll@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/react-indiana-drag-scroll/-/react-indiana-drag-scroll-1.4.3.tgz#036e5cadb2c0c41aaebf9a42c649fddab4cde056"
-  integrity sha512-i5+J5P+r7N6wQ/qj6QXsze1KjwsRO2TOxmxhV3658PdQ0vnpfUeb2WBxeN3az2j3wzPqv/WRqBWddsBci/2PGA==
+react-indiana-drag-scroll@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/react-indiana-drag-scroll/-/react-indiana-drag-scroll-1.5.1.tgz#ea54f6887e74677eafb96e452b2abe06676f2b95"
+  integrity sha512-FGASnNo2zE3aiBy9AuWYgLWh1qodtNs+j8hZjnGDPSDdqjdTJ4TZrIKaOthcUlfpwqoStSbjupt7ugioTE5QNQ==
   dependencies:
     classnames "^2.2.6"
     debounce "^1.2.0"
@@ -9072,6 +9063,11 @@ util@^0.11.0:
   integrity sha512-HShAsny+zS2TZfaXxD9tYj4HQGlBezXZMZuM/S5PKLLoZkShZiGk9o5CzukI1LVHZvjdvZ2Sj1aW/Ndn2NB/HQ==
   dependencies:
     inherits "2.0.3"
+
+utility-types@^3.10.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/utility-types/-/utility-types-3.10.0.tgz#ea4148f9a741015f05ed74fd615e1d20e6bed82b"
+  integrity sha512-O11mqxmi7wMKCo6HKFt5AhO4BwY3VV68YU07tgxfz8zJTIxr4BpsezN49Ffwy9j3ZpwwJp4fkRwjRzq3uWE6Rg==
 
 utils-merge@1.0.1:
   version "1.0.1"

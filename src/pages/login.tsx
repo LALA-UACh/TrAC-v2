@@ -2,7 +2,7 @@ import sha1 from "crypto-js/sha1";
 import { ValidationErrors } from "final-form";
 import gql from "graphql-tag";
 import Cookies from "js-cookie";
-import { useRouter } from "next/router";
+import Router from "next/router";
 import { FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { useUpdateEffect } from "react-use";
@@ -102,10 +102,10 @@ const Login: FC = () => {
         validate={({ email, password }) => {
           const errors: ValidationErrors = {};
           if (!email || !isEmail(email)) {
-            errors["email"] = "Ingrese un Email Válido";
+            errors.email = "Ingrese un Email Válido";
           }
           if (!password || !isLength(password, { min: 3, max: 100 })) {
-            errors["password"] = "Ingrese una contraseña de largo válido";
+            errors.password = "Ingrese una contraseña de largo válido";
           }
           return errors;
         }}
@@ -171,10 +171,9 @@ export default () => {
     currentUser,
     { ssr: false }
   );
-  const { push } = useRouter();
   useEffect(() => {
     if (!loading && data && data?.current_user?.email) {
-      push("/");
+      Router.push("/");
     }
   }, [loading, data]);
 

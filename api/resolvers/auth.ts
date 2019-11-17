@@ -1,7 +1,7 @@
 import { addMilliseconds } from "date-fns";
 import { Request, Response } from "express";
 import { sign } from "jsonwebtoken";
-import { Args, Ctx, FieldResolver, Mutation, Query, Resolver } from "type-graphql";
+import { Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { LOCKED_USER, USED_OLD_PASSWORD, WRONG_INFO } from "@constants";
 import { ONE_DAY, SECRET, THIRTY_MINUTES } from "@consts";
@@ -34,11 +34,6 @@ export class AuthResolver {
         )
       }
     );
-  }
-
-  @FieldResolver()
-  id() {
-    return 1;
   }
 
   @Query(() => User, { nullable: true })
