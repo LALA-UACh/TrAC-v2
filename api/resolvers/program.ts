@@ -1,5 +1,5 @@
 import { Arg, FieldResolver, Int, Query, Resolver, Root } from "type-graphql";
-import { $PropertyType } from "utility-types";
+import { $ElementType, $PropertyType } from "utility-types";
 
 import { dbLALA } from "@db";
 import { Course } from "@entities/course";
@@ -79,7 +79,7 @@ export class ProgramResolver {
     @Root() { id: program_id }: Pick<Program, "id">
   ): Promise<
     Pick<
-      Course,
+      $ElementType<$PropertyType<Program, "courses">, number>,
       "semester" | "code" | "credits" | "requisitesRaw" | "mention"
     >[]
   > {
@@ -132,19 +132,21 @@ export class CourseResolver {
   }
 
   @FieldResolver()
-  async flow(): Promise<Course[]> {
+  async flow(): Promise<$PropertyType<Course, "flow">> {
     // TODO Courses flow resolver
     return [];
   }
 
   @FieldResolver()
-  async requisites(): Promise<Course[]> {
+  async requisites(): Promise<$PropertyType<Course, "requisites">> {
     // TODO Courses requisites resolver
     return [];
   }
 
   @FieldResolver()
-  async historicalDistribution(): Promise<unknown[]> {
+  async historicalDistribution(): Promise<
+    $PropertyType<Course, "historicalDistribution">[]
+  > {
     // TODO Courses historical distribution resolver
     return [];
   }

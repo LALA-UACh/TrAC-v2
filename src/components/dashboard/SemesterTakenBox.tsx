@@ -31,7 +31,7 @@ export const SemesterTakenBox: FC<{ year: number; semester: string }> = ({
         fontSize="1.2em"
         cursor="pointer"
         className="unselectable"
-        transition="0.5s all ease-in-out"
+        transition="0.4s all ease-in-out"
         onClick={() => {
           toggleExplicitSemester(year, semester);
         }}

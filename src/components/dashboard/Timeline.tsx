@@ -124,7 +124,7 @@ export const TimeLine: FC<{
                     ? "rgb(236,201,75)"
                     : PSP_COLOR
                 }
-                style={{ transition: "0.5s all ease-in-out" }}
+                style={{ transition: "0.4s all ease-in-out" }}
               />
             </TimeLineTooltip>
           </g>

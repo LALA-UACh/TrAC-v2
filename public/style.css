@@ -12,11 +12,36 @@
   -webkit-user-select: none;
   -o-user-select: none;
 }
-/* .unselectable:hover {
-  border: 2px solid red;
-} */
 .verticalText {
   writing-mode: vertical-rl;
   text-align: center;
   transform: rotate(180deg);
+}
+.histogram_box {
+  position: absolute !important;
+  bottom: 0 !important;
+  transform-origin: 0% 100%;
+  -moz-transform-origin: 0% 100%;
+  -ms-transform-origin: 0% 100%;
+  -o-transform-origin: 0% 100%;
+  -webkit-transform-origin: 0% 100%;
+  transition-timing-function: ease-in-out;
+  -webkit-transition-timing-function: ease-in-out;
+  -o-transition-timing-function: ease-in-out;
+  -moz-transition-timing-function: ease-in-out;
+}
+.registration_box {
+  position: absolute;
+  top: 10px;
+  right: 80px;
+}
+.credits_box {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+}
+.req_circle_box {
+  position: absolute;
+  right: 8px;
+  top: 80px;
 }

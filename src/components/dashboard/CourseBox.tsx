@@ -167,23 +167,13 @@ export const CourseBox: FC<ICourse> = ({
         <motion.div
           key="status"
           initial={{
-            opacity: 0,
-            transitionDuration: "0.2s",
-            transitionDelay: "0.1s",
-            transitionTimingFunction: "easy-in"
+            opacity: 0
           }}
           animate={{ opacity: 1 }}
           exit={{
-            opacity: 0,
-            transitionDuration: "0s",
-            transitionDelay: "0s",
-            transitionTimingFunction: "easy-in"
+            opacity: 0
           }}
-          style={{
-            position: "absolute",
-            top: "10px",
-            right: "80px"
-          }}
+          className="registration_box"
         >
           <Text fontSize="9px">
             <b>{registration}</b>
@@ -201,11 +191,7 @@ export const CourseBox: FC<ICourse> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          style={{
-            position: "absolute",
-            bottom: "10px",
-            left: "10px"
-          }}
+          className="credits_box"
         >
           <Text fontSize="9px">
             <b>SCT: {credits}</b>
@@ -221,19 +207,13 @@ export const CourseBox: FC<ICourse> = ({
         <motion.div
           key="req_circle"
           initial={{
-            opacity: 0,
-            transitionDuration: "0.5s",
-            transitionDelay: "0s",
-            transitionTimingFunction: "easy-in"
+            opacity: 0
           }}
           animate={{ opacity: 1 }}
           exit={{
-            opacity: 0,
-            transitionDuration: "0.0s",
-            transitionTimingFunction: "linear",
-            transitionDelay: "0s"
+            opacity: 0
           }}
-          style={{ position: "absolute", right: 8, top: 80 }}
+          className="req_circle_box"
         >
           <Box>
             <svg width={32} height={32}>
@@ -263,6 +243,32 @@ export const CourseBox: FC<ICourse> = ({
     [contextFlow, contextRequisites, code]
   );
 
+  const HistogramNow = useMemo(
+    () =>
+      currentDistribution && (
+        <Histogram
+          key="now"
+          label={currentDistributionLabel}
+          distribution={currentDistribution}
+          grade={grade}
+        />
+      ),
+    [currentDistribution, currentDistributionLabel, grade]
+  );
+
+  const HistogramHistoric = useMemo(
+    () =>
+      historicDistribution && (
+        <Histogram
+          key="historic"
+          label={HISTORIC_GRADES}
+          distribution={historicDistribution}
+          grade={grade}
+        />
+      ),
+    [historicDistribution, grade]
+  );
+
   const HistogramsComponent = useMemo(
     () =>
       max && (
@@ -270,42 +276,24 @@ export const CourseBox: FC<ICourse> = ({
           key="histograms"
           initial={{
             opacity: 0,
-            transitionDuration: "0.5s",
-            transitionDelay: "0s",
-            transitionTimingFunction: "easy-in"
+            scale: 0
           }}
-          animate={{ opacity: 1 }}
+          animate={{
+            scale: 1,
+            opacity: 1
+          }}
           exit={{
             opacity: 0,
-            transitionDuration: "0.0s",
-            transitionTimingFunction: "linear",
-            transitionDelay: "0s"
+            scale: 0.4
           }}
-          style={{
-            position: "absolute",
-            bottom: 2
-          }}
+          className="histogram_box"
         >
-          {currentDistribution && (
-            <Histogram
-              key="now"
-              label={currentDistributionLabel}
-              distribution={currentDistribution}
-              grade={grade}
-            />
-          )}
+          {HistogramNow}
 
-          {historicDistribution && (
-            <Histogram
-              key="historic"
-              label={HISTORIC_GRADES}
-              distribution={historicDistribution}
-              grade={grade}
-            />
-          )}
+          {HistogramHistoric}
         </motion.div>
       ),
-    [max, historicDistribution, currentDistribution, currentDistributionLabel]
+    [max]
   );
 
   const GradeComponent = useMemo(
@@ -387,7 +375,7 @@ export const CourseBox: FC<ICourse> = ({
       borderColor={borderColor}
       borderWidth="2px"
       cursor="pointer"
-      transition="0.5s all ease-in-out"
+      transition="0.4s all ease-in-out"
       onClick={() => {
         setMax(max => !max);
       }}
@@ -415,7 +403,7 @@ export const CourseBox: FC<ICourse> = ({
         alignItems="center"
         borderRadius="0px 3px 3px 0px"
         zIndex={0}
-        transition="0.5s height ease-in-out"
+        transition="0.4s height ease-in-out"
         border="1px solid"
         borderColor={borderColor}
       >

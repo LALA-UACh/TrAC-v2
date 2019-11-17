@@ -26,10 +26,11 @@ export const Dropout: FC<{ probability: number; accuracy: number }> = ({
           alignItems="center"
           onClick={() => setShow(show => !show)}
           cursor="pointer"
-          transition="0.5s box-shadow ease-in-out"
+          transition="0.4s box-shadow ease-in-out"
         >
           <Stack className="unselectable" isInline pt={10} pb={10}>
             <Text
+              minWidth="55px"
               height="120px"
               m={0}
               ml={4}

@@ -1,4 +1,11 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType, registerEnumType } from "type-graphql";
+
+import { UserType } from "@constants";
+
+registerEnumType(UserType, {
+  name: "UserType",
+  description: "Possible options of an user type"
+});
 
 @ObjectType()
 export class User {
@@ -11,8 +18,8 @@ export class User {
   @Field()
   admin: boolean;
 
-  @Field()
-  type: string;
+  @Field(() => UserType)
+  type: UserType;
 
   @Field()
   show_dropout: boolean;

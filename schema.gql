@@ -96,6 +96,12 @@ type User {
   email: String!
   name: String!
   admin: Boolean!
-  type: String!
+  type: UserType!
   show_dropout: Boolean!
+}
+
+"""Possible options of an user type"""
+enum UserType {
+  Director
+  Student
 }
