@@ -7,6 +7,7 @@ export const dbAuth = knex({
     user: "postgres",
     database: "auth-lala"
   }
+  // debug: true
 });
 
 export const dbLALA = knex({

@@ -3,6 +3,7 @@ import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import cookieParser from "cookie-parser";
 import express from "express";
+import { GraphQLJSON, GraphQLJSONObject } from "graphql-type-json";
 import { resolve } from "path";
 import { buildSchema } from "type-graphql";
 
@@ -10,7 +11,11 @@ import { authChecker } from "@utils/authChecker";
 import { buildContext } from "@utils/buildContext";
 
 const schema = buildSchema({
-  resolvers: [resolve(__dirname, "./resolvers/*.ts")],
+  resolvers: [
+    resolve(__dirname, "./resolvers/*.ts"),
+    GraphQLJSON.toString(),
+    GraphQLJSONObject.toString()
+  ],
   authChecker,
   emitSchemaFile: true
 });

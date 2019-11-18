@@ -25,7 +25,7 @@ class StateGrade {
 export class TakenCourse implements Pick<Course, "code" | "name"> {
   // student_course => id | still unknown if needed
   @Field(() => ID)
-  id: number;
+  id: string;
 
   // student_course => course_taken
   @Field()

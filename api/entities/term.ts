@@ -1,13 +1,12 @@
 import { Field, ID, Int, ObjectType } from "type-graphql";
 
-import { Course } from "./course";
 import { TakenCourse } from "./takenCourse";
 
 @ObjectType()
 export class Term {
   // student_term => id | still unknown if needed
   @Field(() => ID)
-  id: number;
+  id: string;
 
   // student_term => student_id
   @Field()
@@ -38,6 +37,6 @@ export class Term {
   ProgramPGA: number;
 
   // student_course => *
-  @Field(() => [Course])
+  @Field(() => [TakenCourse])
   takenCourses: TakenCourse[];
 }

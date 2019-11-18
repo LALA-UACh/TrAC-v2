@@ -1,25 +1,52 @@
-import { Arg, FieldResolver, Int, Query, Resolver, Root } from "type-graphql";
-import { $ElementType, $PropertyType } from "utility-types";
+import { Arg, Authorized, Ctx, FieldResolver, Int, Query, Resolver, Root } from "type-graphql";
+import { $PropertyType } from "utility-types";
 
-import { dbLALA } from "@db";
+import { COURSE_TABLE, PROGRAM_STRUCTURE_TABLE, PROGRAM_TABLE, USER_PROGRAMS_TABLE } from "@consts";
+import { dbAuth, dbLALA } from "@db";
 import { Course } from "@entities/course";
 import { Program } from "@entities/program";
+import { IContext } from "@interfaces";
+import { ArrayPropertyType } from "@typings/utils";
 
 @Resolver(() => Program)
 export class ProgramResolver {
+  @Authorized()
   @Query(() => Program, { nullable: true })
   async program(
-    @Arg("id", () => Int) id: number
+    @Arg("id", () => Int) id: number,
+    @Ctx() { user }: IContext
   ): Promise<Pick<Program, "id" | "name" | "desc" | "state"> | undefined> {
+    if (
+      user === undefined ||
+      (await dbAuth<{ program: string }>(USER_PROGRAMS_TABLE)
+        .select(PROGRAM_TABLE)
+        .where({ program: id, email: user.email })
+        .first()) === undefined
+    ) {
+      throw new Error("You are not allowed to request this program!");
+    }
+
     return await dbLALA<{
       id: number;
       name: string;
       desc: string;
       state: string;
-    }>("program")
+    }>(PROGRAM_TABLE)
       .select("id", "name", "desc", "state")
       .where({ id })
       .first();
+  }
+
+  @Authorized()
+  @Query(() => [Program])
+  async myPrograms(@Ctx() { user }: IContext): Promise<Pick<Program, "id">[]> {
+    return (
+      await dbAuth<{ program: string }>(USER_PROGRAMS_TABLE)
+        .select(PROGRAM_TABLE)
+        .where({ email: user?.email })
+    ).map(({ program }) => ({
+      id: parseInt(program, 10)
+    }));
   }
 
   @FieldResolver()
@@ -29,7 +56,7 @@ export class ProgramResolver {
     return (
       name ??
       (
-        await dbLALA<{ name: string }>("program")
+        await dbLALA<{ name: string }>(PROGRAM_TABLE)
           .select("name")
           .where({ id })
           .first()
@@ -46,7 +73,7 @@ export class ProgramResolver {
     return (
       desc ??
       (
-        await dbLALA<{ desc: string }>("program")
+        await dbLALA<{ desc: string }>(PROGRAM_TABLE)
           .select("desc")
           .where({ id })
           .first()
@@ -63,7 +90,7 @@ export class ProgramResolver {
     return (
       state ??
       (
-        await dbLALA<{ state: string }>("program")
+        await dbLALA<{ state: string }>(PROGRAM_TABLE)
           .select("state")
           .where({ id })
           .first()
@@ -79,7 +106,7 @@ export class ProgramResolver {
     @Root() { id: program_id }: Pick<Program, "id">
   ): Promise<
     Pick<
-      $ElementType<$PropertyType<Program, "courses">, number>,
+      ArrayPropertyType<Program, "courses">,
       "semester" | "code" | "credits" | "requisitesRaw" | "mention"
     >[]
   > {
@@ -89,7 +116,7 @@ export class ProgramResolver {
       credits: number;
       requisites: string;
       mention: string;
-    }>("program_structure")
+    }>(PROGRAM_STRUCTURE_TABLE)
       .select("semester", "code", "credits", "requisites", "mention")
       .distinct("curriculum")
       .where({ program_id });
@@ -120,7 +147,7 @@ export class CourseResolver {
   ): Promise<$PropertyType<Course, "name">> {
     return (
       (
-        await dbLALA<{ name: string }>("course")
+        await dbLALA<{ name: string }>(COURSE_TABLE)
           .select("name")
           .where({ code })
           .first()

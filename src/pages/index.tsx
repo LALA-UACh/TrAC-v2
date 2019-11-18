@@ -1,17 +1,21 @@
 import reverse from "lodash/fp/reverse";
 import some from "lodash/some";
+import { useEffect } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
 
 import { Box, Stack } from "@chakra-ui/core";
-import { RequireAuth } from "@components";
 import { CoursesFlow } from "@components/dashboard/CoursesFlow";
 import { Dropout } from "@components/dashboard/Dropout";
+import { SearchBar } from "@components/dashboard/SearchBar";
 import { Semester } from "@components/dashboard/Semester";
 import { SemesterTakenBox } from "@components/dashboard/SemesterTakenBox";
 import { TimeLine } from "@components/dashboard/Timeline";
+import { RequireAuth } from "@components/RequireAuth";
 import { StateCourse } from "@constants";
 import data from "@constants/data.json";
+import { searchProgramQuery, searchStudentQuery } from "@graphql/queries";
 import { ICourse, IDistribution, ISemesterTaken } from "@interfaces";
+import { usePromiseLazyQuery } from "@utils/usePromiseLazyQuery";
 
 console.log("data", data);
 export default () => {
@@ -24,6 +28,24 @@ export default () => {
   let semesters: {
     semester: ICourse[];
   }[] = [];
+  const [
+    searchProgram,
+    {
+      data: searchProgramData,
+      loading: searchProgramLoading,
+      called: searchProgramCalled,
+      error: searchProgramError
+    }
+  ] = usePromiseLazyQuery(searchProgramQuery);
+  const [
+    searchStudent,
+    {
+      data: searchStudentData,
+      loading: searchStudentLoading,
+      called: searchStudentCalled,
+      error: searchStudentError
+    }
+  ] = usePromiseLazyQuery(searchStudentQuery);
   data.programStructure.terms.map(
     ({
       courses
@@ -132,12 +154,43 @@ export default () => {
     }
   );
 
+  useEffect(() => {
+    if (searchProgramData) {
+      searchProgramData;
+    }
+    console.log({
+      searchProgramData,
+      searchProgramLoading,
+      searchProgramCalled,
+      searchProgramError
+    });
+  });
+
   return (
     <RequireAuth>
+      <SearchBar
+        error={`${searchProgramError?.graphQLErrors
+          .map(({ message }) => message)
+          .join("\n") ?? ""}\n\n${searchStudentError?.graphQLErrors
+          .map(({ message }) => message)
+          .join("\n") ?? ""}`.trim()}
+        searchResult="| Plan: 2015 | estudiante: 19233043-2"
+        isSearchLoading={searchProgramLoading || searchStudentLoading}
+        onSearch={async ({ student_id, program_id }) => {
+          const [programSearch, studentSearch] = await Promise.all([
+            searchProgram({ variables: { program_id } }),
+            searchStudent({ variables: { student_id, program_id } })
+          ]);
+
+          if (programSearch.data?.program && studentSearch.data?.student) {
+            return true;
+          }
+          return false;
+        }}
+      />
       <CoursesFlow>
-        <Box pb={50} width="100vw" backgroundColor="black" />
-        <ScrollContainer activationDistance={5}>
-          <Stack isInline>
+        <ScrollContainer activationDistance={5} hideScrollbars={false}>
+          <Stack isInline flexWrap="wrap">
             <Box>
               <TimeLine
                 PGA={data.PGA}

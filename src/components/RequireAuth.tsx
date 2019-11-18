@@ -1,26 +1,22 @@
-import { useRouter } from "next/router";
-import { FC, ReactElement, useEffect } from "react";
+import Router from "next/router";
+import { FC, useEffect } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
 import { currentUser } from "@graphql/queries";
 
-export const RequireAuth: FC<{ children: ReactElement; admin?: boolean }> = ({
-  children,
-  admin
-}) => {
+export const RequireAuth: FC<{ admin?: boolean }> = ({ children, admin }) => {
   const { loading, error, data } = useQuery(currentUser, {
     ssr: false
   });
-  const { push } = useRouter();
 
   useEffect(() => {
     if (!loading && data) {
       if (data?.current_user?.email) {
         if (admin && !data?.current_user?.admin) {
-          push("/");
+          Router.push("/");
         }
       } else {
-        push("/login");
+        Router.push("/login");
       }
     }
   }, [loading, data, admin]);
@@ -38,5 +34,5 @@ export const RequireAuth: FC<{ children: ReactElement; admin?: boolean }> = ({
   ) {
     return null;
   }
-  return children;
+  return <>{children}</>;
 };

@@ -5,12 +5,20 @@ import { SECRET } from "@consts";
 import { AuthResolver } from "@resolvers/auth";
 
 export const buildContext = ({ req, res }: { req: Request; res: Response }) => {
-  let user: { email: string } | undefined;
+  let user: { email: string; admin: boolean } | undefined;
 
   try {
     if (req.cookies.authorization) {
-      user = verify(req.cookies.authorization, SECRET) as { email: string };
-      AuthResolver.authenticate({ req, res, email: user.email });
+      user = verify(req.cookies.authorization, SECRET) as {
+        email: string;
+        admin: boolean;
+      };
+      AuthResolver.authenticate({
+        req,
+        res,
+        email: user.email,
+        admin: user.admin
+      });
     }
   } catch {}
 

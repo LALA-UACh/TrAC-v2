@@ -26,10 +26,19 @@ type DistributionValue {
   value: Int!
 }
 
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
 type Mutation {
   login(email: String!, password: String!): AuthResult!
   logout: Boolean!
   unlock(email: String!, password: String!, unlockKey: String!): AuthResult!
+  addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
+  upsertUsers(users: [UpsertedUser!]!): [User!]!
+  lockMailUser(email: String!): JSONObject!
+  mailAllLockedUsers: [JSONObject!]!
 }
 
 type Program {
@@ -43,7 +52,9 @@ type Program {
 type Query {
   current_user: User
   program(id: Int!): Program
+  myPrograms: [Program!]!
   student(program_id: Int, student_id: String!): Student
+  users: [User!]!
 }
 
 """Possible states of a taken course"""
@@ -89,7 +100,18 @@ type Term {
   PSP: Float!
   PGA: Float!
   ProgramPGA: Float!
-  takenCourses: [Course!]!
+  takenCourses: [TakenCourse!]!
+}
+
+input UpsertedUser {
+  oldEmail: String
+  email: String!
+  name: String = "default_name"
+  type: UserType = Student
+  tries: Float = 0
+  id: String = ""
+  show_dropout: Boolean = false
+  locked: Boolean = true
 }
 
 type User {
@@ -97,7 +119,17 @@ type User {
   name: String!
   admin: Boolean!
   type: UserType!
+  id: String
   show_dropout: Boolean!
+  programs: [Program!]!
+  locked: Boolean!
+  tries: Float!
+  unlockKey: String!
+}
+
+input UserProgram {
+  email: String!
+  program: Float!
 }
 
 """Possible options of an user type"""

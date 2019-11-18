@@ -1,6 +1,7 @@
-import { Arg, FieldResolver, Int, Query, Resolver, Root } from "type-graphql";
+import { Arg, Authorized, FieldResolver, Int, Query, Resolver, Root } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
+import { COURSE_TABLE, STUDENT_PROGRAM_TABLE } from "@consts";
 import { dbLALA } from "@db";
 import { Student } from "@entities/student";
 import { TakenCourse } from "@entities/takenCourse";
@@ -8,6 +9,7 @@ import { Term } from "@entities/term";
 
 @Resolver(() => Student)
 export class StudentResolver {
+  @Authorized()
   @Query(() => Student, { nullable: true })
   async student(
     @Arg("student_id") student_id: string,
@@ -18,7 +20,7 @@ export class StudentResolver {
       curriculum: number;
       start_year: number;
       mention: string;
-    }>("student_program")
+    }>(STUDENT_PROGRAM_TABLE)
       .select("program_id", "curriculum", "start_year", "mention")
       .where({
         student_id,
@@ -85,7 +87,7 @@ export class TakenCourseResolver {
   ): Promise<$PropertyType<TakenCourse, "name">> {
     return (
       (
-        await dbLALA<{ name: string }>("course")
+        await dbLALA<{ name: string }>(COURSE_TABLE)
           .select("name")
           .where({ code })
           .first()
