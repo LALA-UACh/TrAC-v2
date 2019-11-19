@@ -1,39 +1,30 @@
 import _ from "lodash";
-import { FunctionComponent, useEffect } from "react";
+import { FC, useEffect } from "react";
 import { Grid, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import Loader from "@components/Loader";
+import { Loader } from "@components/Loader";
 
-import ImportPrograms from "./importPrograms";
-import UpdateProgram from "./updateProgram";
+import { ImportPrograms } from "./ImportPrograms";
+import { UpdatePrograms } from "./UpdatePrograms";
 
-const sortKeys = (obj: IPrograms): IPrograms =>
-  _.map(obj, ({ email, program }) => ({
-    email,
-    program
-  }));
-
-const Programs: FunctionComponent = () => {
+export const Programs: FC<{
+  programs: { email: string; programs: number[] }[];
+}> = ({ programs }) => {
   const [column, setColumn] = useRememberState("TracAdminProgramsColumn", "");
-  const [direction, setDirection] = useRememberState(
-    "TracAdminProgramsDirection",
-    "ascending" as "ascending" | "descending"
-  );
-  const [sortedPrograms, setSortedPrograms] = useRememberState(
-    "TracAdminSortedPrograms",
-    [] as IPrograms
-  );
-  -useEffect(() => {
-    getPrograms();
-  }, []);
+  const [direction, setDirection] = useRememberState<
+    "ascending" | "descending"
+  >("TracAdminProgramsDirection", "ascending");
+  const [sortedPrograms, setSortedPrograms] = useRememberState<
+    { email: string; programs: number[] }[]
+  >("TracAdminSortedPrograms", []);
 
   useEffect(() => {
     if (!_.isEmpty(programs))
       if (direction === "ascending") {
-        setSortedPrograms(sortKeys(_.sortBy(programs, [column])));
+        setSortedPrograms(_.sortBy(programs, [column]));
       } else {
-        setSortedPrograms(sortKeys(_.sortBy(programs, [column])).reverse());
+        setSortedPrograms(_.sortBy(programs, [column]).reverse());
       }
   }, [programs, column, direction]);
 
@@ -45,6 +36,9 @@ const Programs: FunctionComponent = () => {
       setDirection(direction === "ascending" ? "descending" : "ascending");
     }
   };
+
+  const loading = false;
+  // TODO: Programs query loading
 
   return (
     <Grid>
@@ -81,14 +75,15 @@ const Programs: FunctionComponent = () => {
           </Table.Header>
 
           <Table.Body>
-            {_.map(sortedPrograms, (value, key) => (
-              <UpdateProgram key={key} program={value}>
+            {_.map(sortedPrograms, ({ email, programs }, key) => (
+              <UpdatePrograms key={key} program={{ email, programs }}>
                 <Table.Row style={{ cursor: "pointer" }}>
-                  {_.map(value, (v, k) => {
-                    return <Table.Cell key={k}>{v}</Table.Cell>;
-                  })}
+                  <Table.Cell>{email}</Table.Cell>
+                  <Table.Cell>
+                    {_.truncate(programs.join(" | "), { length: 50 })}
+                  </Table.Cell>
                 </Table.Row>
-              </UpdateProgram>
+              </UpdatePrograms>
             ))}
           </Table.Body>
         </Table>
@@ -96,5 +91,3 @@ const Programs: FunctionComponent = () => {
     </Grid>
   );
 };
-
-export default Programs;

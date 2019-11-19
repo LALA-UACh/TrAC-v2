@@ -35,6 +35,7 @@ type Mutation {
   login(email: String!, password: String!): AuthResult!
   logout: Boolean!
   unlock(email: String!, password: String!, unlockKey: String!): AuthResult!
+  updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
   addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
   upsertUsers(users: [UpsertedUser!]!): [User!]!
   lockMailUser(email: String!): JSONObject!
@@ -52,6 +53,7 @@ type Program {
 type Query {
   current_user: User
   program(id: Int!): Program
+  programs: [Program!]!
   myPrograms: [Program!]!
   student(program_id: Int, student_id: String!): Student
   users: [User!]!
@@ -103,13 +105,19 @@ type Term {
   takenCourses: [TakenCourse!]!
 }
 
+input UpdateUserPrograms {
+  email: String!
+  oldPrograms: [Int!]!
+  programs: [Int!]!
+}
+
 input UpsertedUser {
   oldEmail: String
   email: String!
   name: String = "default_name"
   type: UserType = Student
   tries: Float = 0
-  id: String = ""
+  rut_id: String = ""
   show_dropout: Boolean = false
   locked: Boolean = true
 }
@@ -119,7 +127,7 @@ type User {
   name: String!
   admin: Boolean!
   type: UserType!
-  id: String
+  rut_id: String
   show_dropout: Boolean!
   programs: [Program!]!
   locked: Boolean!
@@ -129,7 +137,7 @@ type User {
 
 input UserProgram {
   email: String!
-  program: Float!
+  program: Int!
 }
 
 """Possible options of an user type"""

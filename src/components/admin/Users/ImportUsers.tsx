@@ -1,34 +1,25 @@
+import classNames from "classnames";
+import csv from "csvtojson";
+import _ from "lodash";
+import { FC } from "react";
+import Dropzone from "react-dropzone";
+import { Button, Form, Grid, Icon, Modal, TextArea } from "semantic-ui-react";
+import { useRememberState } from "use-remember-state";
 import { isJSON } from "validator";
 
-import { AdminContext } from "@components/admin/Context";
-import classNames from "@components/admin/Programs/importPrograms/node_modules/classnames";
-import csv from "@components/admin/Programs/importPrograms/node_modules/csvtojson";
-import _ from "@components/admin/Programs/importPrograms/node_modules/lodash";
-import {
-    FunctionComponent, useContext
-} from "@components/admin/Programs/importPrograms/node_modules/react";
-import Dropzone from "@components/admin/Programs/importPrograms/node_modules/react-dropzone";
-import {
-    Button, Form, Grid, Icon, Modal, TextArea
-} from "@components/admin/Programs/importPrograms/node_modules/semantic-ui-react";
-import {
-    useRememberState
-} from "@components/admin/Programs/importPrograms/node_modules/use-remember-state";
+export const ImportUsers: FC = () => {
+  const [data, setData] = useRememberState("AdminImportUsersData", "email\n");
+  const [open, setOpen] = useRememberState("AdminImportUsersOpen", false);
 
-const ImportPrograms: FunctionComponent = () => {
-  const [data, setData] = useRememberState(
-    "AdminImportProgramsData",
-    "email,program\n"
-  );
-  const [open, setOpen] = useRememberState("AdminImportProgramsOpen", false);
-  const { importPrograms } = useContext(AdminContext);
+  const importUsers = (...any: any) => {};
+  // TODO: importUsers mutation
 
   const handleSubmit = () => {
     try {
       if (isJSON(data) && _.isArray(JSON.parse(data))) {
-        importPrograms(JSON.parse(data));
+        importUsers(JSON.parse(data));
         setOpen(false);
-        setData("email,program\n");
+        setData("email\n");
       } else {
         csv({
           ignoreEmpty: true
@@ -36,9 +27,9 @@ const ImportPrograms: FunctionComponent = () => {
           .fromString(data)
           .then(
             json => {
-              importPrograms(json);
+              importUsers(json);
               setOpen(false);
-              setData("email,program\n");
+              setData("email\n");
             },
             error => {
               console.error(error);
@@ -55,14 +46,14 @@ const ImportPrograms: FunctionComponent = () => {
       open={open}
       trigger={
         <Button primary icon labelPosition="left">
-          <Icon name="calendar plus outline" />
-          Importar Programas
+          <Icon name="add user" />
+          Upsert Usuarios
         </Button>
       }
       onClose={() => setOpen(false)}
       onOpen={() => setOpen(true)}
     >
-      <Modal.Header>Importar Programas</Modal.Header>
+      <Modal.Header>Upsert Usuarios</Modal.Header>
       <Modal.Content>
         <Grid centered>
           <Grid.Row>
@@ -112,7 +103,7 @@ const ImportPrograms: FunctionComponent = () => {
                 onClick={() => handleSubmit()}
               >
                 <Icon name="plus circle" />
-                Importar
+                Upsert
               </Form.Button>
 
               <TextArea
@@ -122,9 +113,9 @@ const ImportPrograms: FunctionComponent = () => {
                 onChange={(_event, { value }) => {
                   setData(_.toString(value));
                 }}
+                rows={(data.match(/\n/g) || []).length + 3}
                 style={{ width: "45em" }}
                 placeholder=".json o .csv"
-                rows={(data.match(/\n/g) || []).length + 3}
                 value={data}
               />
             </Form>
@@ -134,5 +125,3 @@ const ImportPrograms: FunctionComponent = () => {
     </Modal>
   );
 };
-
-export default ImportPrograms;

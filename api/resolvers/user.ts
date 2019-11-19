@@ -5,24 +5,46 @@ import { Arg, Authorized, FieldResolver, Mutation, Query, Resolver, Root } from 
 import { ADMIN, PROGRAM_TABLE, USER_PROGRAMS_TABLE, USERS_TABLE } from "@consts";
 import { dbAuth, dbLALA } from "@db";
 import { Program } from "@entities/program";
-import { UpsertedUser, User, UserProgram } from "@entities/user";
-import { Mail, sendMail } from "@utils/mail";
+import { UpdateUserPrograms, UpsertedUser, User, UserProgram } from "@entities/user";
+import { sendMail, UnlockMail } from "@utils/mail";
 
 @Resolver(() => User)
 export class UserResolver {
   @Authorized([ADMIN])
   @Query(() => [User])
-  async users() {
-    return await dbAuth<
-      Pick<User, "email" | "name" | "admin" | "type" | "id" | "show_dropout">
-    >(USERS_TABLE).select(
-      "email",
-      "name",
-      "admin",
-      "type",
-      "id",
-      "show_dropout"
-    );
+  async users(): Promise<User[]> {
+    return await dbAuth<User>(USERS_TABLE)
+      .select("*")
+      .select("id as rut_id");
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => [User])
+  async updateUserPrograms(
+    @Arg("userPrograms")
+    { email, programs, oldPrograms }: UpdateUserPrograms
+  ) {
+    const trx = await dbAuth.transaction();
+    try {
+      await trx(USER_PROGRAMS_TABLE)
+        .delete()
+        .whereIn("program", oldPrograms)
+        .andWhere({
+          email
+        });
+
+      await trx(USER_PROGRAMS_TABLE).insert(
+        programs.map(program => ({ email, program }))
+      );
+      await trx.commit();
+    } catch (err) {
+      await trx.rollback();
+      throw err;
+    }
+
+    return await dbAuth<User>(USERS_TABLE)
+      .select("*")
+      .select("id as rut_id");
   }
 
   @Authorized([ADMIN])
@@ -50,7 +72,9 @@ export class UserResolver {
     }
     "".replace(/^update\s.*\sset\s/i, "");
 
-    return await dbAuth(USERS_TABLE).select("*");
+    return await dbAuth(USERS_TABLE)
+      .select("*")
+      .select("id as rut_id");
   }
 
   @Authorized([ADMIN])
@@ -64,7 +88,7 @@ export class UserResolver {
           name,
           type,
           tries,
-          id,
+          rut_id: id,
           show_dropout,
           locked
         }) => {
@@ -94,7 +118,9 @@ export class UserResolver {
       )
     );
 
-    return await dbAuth(USERS_TABLE).select("*");
+    return await dbAuth(USERS_TABLE)
+      .select("*")
+      .select("id as rut_id");
   }
 
   @Authorized([ADMIN])
@@ -113,7 +139,7 @@ export class UserResolver {
       });
       return await sendMail({
         to: email,
-        html: Mail({ email, unlockKey }),
+        html: UnlockMail({ email, unlockKey }),
         subject: "Activación cuenta LALA TrAC"
       });
     }
@@ -136,7 +162,7 @@ export class UserResolver {
 
       const result = await sendMail({
         to: email,
-        html: Mail({ email, unlockKey }),
+        html: UnlockMail({ email, unlockKey }),
         subject: "Activación cuenta LALA TrAC"
       });
       results.push(result);

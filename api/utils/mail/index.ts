@@ -36,4 +36,4 @@ export const sendMail = async (
   });
 };
 
-export { default as Mail } from "./mail";
+export { UnlockMail } from "./mail";

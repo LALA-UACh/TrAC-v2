@@ -20,6 +20,6 @@ export enum StateCourse {
   Pending = "P"
 }
 export enum UserType {
-  Director = "director",
-  Student = "student"
+  Director = "Director",
+  Student = "Student"
 }

@@ -1,5 +1,5 @@
 import { IsEmail } from "class-validator";
-import { Authorized, Field, InputType, ObjectType, registerEnumType } from "type-graphql";
+import { Authorized, Field, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
 
 import { UserType } from "@constants";
 import { ADMIN } from "@consts";
@@ -26,7 +26,7 @@ export class User {
   type: UserType;
 
   @Field({ nullable: true })
-  id?: string;
+  rut_id?: string;
 
   @Field()
   show_dropout: boolean;
@@ -61,7 +61,7 @@ export class UserProgram {
   @Field()
   email: string;
 
-  @Field()
+  @Field(() => Int)
   program: number;
 }
 
@@ -83,11 +83,24 @@ export class UpsertedUser implements Partial<User> {
   tries: number;
 
   @Field({ defaultValue: "" })
-  id: string;
+  rut_id: string;
 
   @Field({ defaultValue: false })
   show_dropout: boolean;
 
   @Field({ defaultValue: true })
   locked: boolean;
+}
+
+@InputType()
+export class UpdateUserPrograms {
+  @IsEmail()
+  @Field()
+  email: string;
+
+  @Field(() => [Int])
+  oldPrograms: number[];
+
+  @Field(() => [Int])
+  programs: number[];
 }

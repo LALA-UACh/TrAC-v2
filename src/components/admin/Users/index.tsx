@@ -1,47 +1,49 @@
-import _ from "lodash";
-import { FunctionComponent, useEffect } from "react";
+import { sortBy } from "lodash";
+import { FC, useEffect } from "react";
 import { Button, Grid, Icon, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import Confirm from "@components/Confirm";
-import Loader from "@components/Loader";
+import { Confirm } from "@components/Confirm";
+import { UserType } from "@constants";
 
-import ImportUsers from "./importUsers";
-import UpdateUser from "./updateUser";
+import { ImportUsers } from "./ImportUsers";
+import { UpdateUser } from "./UpdateUser";
 
-const sortKeys = (obj: IUsers): IUsers =>
-  _.map(obj, ({ email, name, locked, tries, type, id, show_dropout }) => ({
-    email,
-    name,
-    locked,
-    tries,
-    type,
-    id,
-    show_dropout
-  }));
-
-const Users: FunctionComponent = () => {
+export const Users: FC<{
+  users: {
+    email: string;
+    name: string;
+    tries: number;
+    type: UserType;
+    id?: string;
+    show_dropout: boolean;
+    locked: boolean;
+  }[];
+}> = ({ users }) => {
   const [column, setColumn] = useRememberState("TracAdminUsersColumn", "");
   const [direction, setDirection] = useRememberState(
     "TracAdminUsersDirection",
     "ascending" as "ascending" | "descending"
   );
 
-  const [sortedUsers, setSortedUsers] = useRememberState(
-    "TracAdminSortedUsers",
-    [] as IUsers
-  );
+  const [sortedUsers, setSortedUsers] = useRememberState<
+    {
+      email: string;
+      name: string;
+      tries: number;
+      type: UserType;
+      id?: string;
+      show_dropout: boolean;
+      locked: boolean;
+    }[]
+  >("TracAdminSortedUsers", []);
 
   useEffect(() => {
-    getUsers();
-  }, []);
-
-  useEffect(() => {
-    if (!_.isEmpty(users))
+    if (users.length > 0)
       if (direction === "ascending") {
-        setSortedUsers(sortKeys(_.sortBy(users, [column])));
+        setSortedUsers(sortBy(users, [column]));
       } else {
-        setSortedUsers(sortKeys(_.sortBy(users, [column])).reverse());
+        setSortedUsers(sortBy(users, [column]).reverse());
       }
   }, [users, column, direction]);
 
@@ -54,9 +56,11 @@ const Users: FunctionComponent = () => {
     }
   };
 
+  const mailLockedUsers = () => {};
+  // TODO: mailLockedUsers mutation
+
   return (
     <Grid>
-      <Loader active={loading} />
       <Grid.Row centered>
         <ImportUsers />
       </Grid.Row>
@@ -134,45 +138,39 @@ const Users: FunctionComponent = () => {
           </Table.Header>
 
           <Table.Body>
-            {_.map(sortedUsers, (value, key) => (
-              <UpdateUser key={key} user={value}>
-                <Table.Row style={{ cursor: "pointer" }}>
-                  {_.map(value, (v, k) => {
-                    switch (k) {
-                      case "locked":
-                        return (
-                          <Table.Cell key={k}>
-                            {v ? (
-                              <Icon circular name="lock" />
-                            ) : (
-                              <Icon circular name="lock open" />
-                            )}
-                          </Table.Cell>
-                        );
-                      case "show_dropout":
-                        return (
-                          <Table.Cell key={k}>
-                            {v ? (
-                              <Icon circular name="check circle outline" />
-                            ) : (
-                              <Icon circular name="times circle outline" />
-                            )}
-                          </Table.Cell>
-                        );
-                      case "admin":
-                        return null;
-                      default:
-                        return <Table.Cell key={k}>{v}</Table.Cell>;
-                    }
-                  })}
-                </Table.Row>
-              </UpdateUser>
-            ))}
+            {sortedUsers.map(
+              ({ email, name, locked, tries, type, id, show_dropout }, key) => (
+                <UpdateUser
+                  key={key}
+                  user={{ email, name, locked, tries, type, id, show_dropout }}
+                >
+                  <Table.Row style={{ cursor: "pointer" }}>
+                    <Table.Cell>{email}</Table.Cell>
+                    <Table.Cell>{name}</Table.Cell>
+                    <Table.Cell>
+                      {locked ? (
+                        <Icon circular name="lock" />
+                      ) : (
+                        <Icon circular name="lock open" />
+                      )}
+                    </Table.Cell>
+                    <Table.Cell>{tries}</Table.Cell>
+                    <Table.Cell>{type}</Table.Cell>
+                    <Table.Cell>{id}</Table.Cell>
+                    <Table.Cell>
+                      {show_dropout ? (
+                        <Icon circular name="check circle outline" />
+                      ) : (
+                        <Icon circular name="times circle outline" />
+                      )}
+                    </Table.Cell>
+                  </Table.Row>
+                </UpdateUser>
+              )
+            )}
           </Table.Body>
         </Table>
       </Grid.Row>
     </Grid>
   );
 };
-
-export default Users;

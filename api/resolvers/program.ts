@@ -1,7 +1,9 @@
 import { Arg, Authorized, Ctx, FieldResolver, Int, Query, Resolver, Root } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
-import { COURSE_TABLE, PROGRAM_STRUCTURE_TABLE, PROGRAM_TABLE, USER_PROGRAMS_TABLE } from "@consts";
+import {
+    ADMIN, COURSE_TABLE, PROGRAM_STRUCTURE_TABLE, PROGRAM_TABLE, USER_PROGRAMS_TABLE
+} from "@consts";
 import { dbAuth, dbLALA } from "@db";
 import { Course } from "@entities/course";
 import { Program } from "@entities/program";
@@ -35,6 +37,12 @@ export class ProgramResolver {
       .select("id", "name", "desc", "state")
       .where({ id })
       .first();
+  }
+
+  @Authorized([ADMIN])
+  @Query(() => [Program])
+  async programs() {
+    return await dbLALA<Program>(PROGRAM_TABLE).select("id");
   }
 
   @Authorized()

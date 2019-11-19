@@ -7,7 +7,7 @@ const DOMAIN =
     ? requireEnv(["DOMAIN"]).DOMAIN
     : "http://localhost:3000";
 
-const Mail = ({
+export const UnlockMail = ({
   email,
   unlockKey
 }: {
@@ -46,5 +46,3 @@ const Mail = ({
     </div>
   `;
 };
-
-export default Mail;

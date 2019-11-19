@@ -1,10 +1,10 @@
 import { FC } from "react";
 import { Icon, Menu, MenuItemProps } from "semantic-ui-react";
 
-const adminMenu: FC<{ active: string; setActive: (value: string) => void }> = ({
-  active,
-  setActive
-}) => {
+export const AdminMenu: FC<{
+  active: string;
+  setActive: (value: string) => void;
+}> = ({ active, setActive }) => {
   const handleClick: (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     data: MenuItemProps
@@ -29,4 +29,3 @@ const adminMenu: FC<{ active: string; setActive: (value: string) => void }> = ({
     </Menu>
   );
 };
-export default adminMenu;

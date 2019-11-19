@@ -1,4 +1,4 @@
-import { cloneElement, FunctionComponent, useEffect, useState } from "react";
+import { cloneElement, FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {
     Button, Checkbox, Form as FormSemantic, Grid, Icon, Input, Modal
@@ -6,10 +6,19 @@ import {
 import { useRememberState } from "use-remember-state";
 
 import { Box, Flex } from "@chakra-ui/core";
-import Confirm from "@components/Confirm";
+import { Confirm } from "@components/Confirm";
+import { UserType } from "@constants";
 
-const UpdateUser: FunctionComponent<{
-  user: IUser;
+export const UpdateUser: FC<{
+  user: {
+    email: string;
+    name: string;
+    tries: number;
+    type: UserType;
+    id?: string;
+    show_dropout: boolean;
+    locked: boolean;
+  };
   children: JSX.Element;
 }> = ({ children, user }) => {
   const [open, setOpen] = useRememberState(
@@ -31,6 +40,15 @@ const UpdateUser: FunctionComponent<{
     setLocked(user.locked);
   }, [user.locked]);
 
+  // const updateUser = (...a: any) => {};
+  // TODO: updateUser mutation
+
+  // TODO: lockUser mutation
+
+  const lockUser = (...any: any) => {};
+
+  const deleteUser = (...any: any) => {};
+  // TODO: deleteUser mutation
   return (
     <Modal
       trigger={cloneElement(children, {
@@ -43,16 +61,28 @@ const UpdateUser: FunctionComponent<{
       <Modal.Header>{user.email}</Modal.Header>
 
       <Form
-        onSubmit={({ email, name, tries, type, id = "" }: IUser) => {
-          updateUser(user, {
-            email,
-            name,
-            tries,
-            type,
-            id,
-            locked,
-            show_dropout
-          });
+        onSubmit={({
+          email,
+          name,
+          tries,
+          type,
+          id = ""
+        }: {
+          email: string;
+          name: string;
+          tries: number;
+          type: UserType;
+          id: string;
+        }) => {
+          // updateUser(user, {
+          //   email,
+          //   name,
+          //   tries,
+          //   type,
+          //   id,
+          //   locked,
+          //   show_dropout
+          // });
         }}
       >
         {({ handleSubmit, form: { reset }, pristine }) => (
@@ -76,12 +106,10 @@ const UpdateUser: FunctionComponent<{
                   setShowDropout(user.show_dropout);
                 }}
                 disabled={
-                  (pristine &&
-                    locked === user.locked &&
-                    show_dropout === user.show_dropout) ||
-                  loading
+                  pristine &&
+                  locked === user.locked &&
+                  show_dropout === user.show_dropout
                 }
-                loading={loading}
               >
                 <Icon circular name="redo" />
               </Button>
@@ -119,7 +147,7 @@ const UpdateUser: FunctionComponent<{
                     <Field
                       name="type"
                       type="radio"
-                      value="director"
+                      value={UserType.Director}
                       initialValue={user.type}
                     >
                       {({ input }) => (
@@ -134,7 +162,7 @@ const UpdateUser: FunctionComponent<{
                     <Field
                       name="type"
                       type="radio"
-                      value="student"
+                      value={UserType.Student}
                       initialValue={user.type}
                     >
                       {({ input }) => (
@@ -178,12 +206,10 @@ const UpdateUser: FunctionComponent<{
                   labelPosition="left"
                   primary
                   disabled={
-                    (pristine &&
-                      locked === user.locked &&
-                      show_dropout === user.show_dropout) ||
-                    loading
+                    pristine &&
+                    locked === user.locked &&
+                    show_dropout === user.show_dropout
                   }
-                  loading={loading}
                 >
                   <Icon name="save outline" />
                   Guardar
@@ -206,8 +232,6 @@ const UpdateUser: FunctionComponent<{
                       lockUser(user.email);
                       setOpen(true);
                     }}
-                    disabled={loading}
-                    loading={loading}
                   >
                     <Icon name={user.locked ? "mail" : "lock"} />
                     {user.locked
@@ -242,5 +266,3 @@ const UpdateUser: FunctionComponent<{
     </Modal>
   );
 };
-
-export default UpdateUser;

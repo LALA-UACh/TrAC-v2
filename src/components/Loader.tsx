@@ -1,6 +1,6 @@
-import { Loader } from "semantic-ui-react";
+import { Loader as LoaderSemantic } from "semantic-ui-react";
 
-export default ({ active = false }) => {
+export const Loader = ({ active = false }) => {
   return (
     <>
       {active && (
@@ -11,10 +11,10 @@ export default ({ active = false }) => {
             height: "100vh",
             top: 0,
             left: 0,
-            zIndex: -1,
+            zIndex: -1
           }}
         >
-          <Loader active />
+          <LoaderSemantic active />
         </div>
       )}
     </>

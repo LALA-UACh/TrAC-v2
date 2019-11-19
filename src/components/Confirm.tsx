@@ -1,25 +1,25 @@
-import { cloneElement, useState } from "react";
-import { Confirm } from "semantic-ui-react";
+import { cloneElement, FC, useState } from "react";
+import { Confirm as ConfirmSemantic } from "semantic-ui-react";
 
-export default ({
-  children,
-  content,
-  confirmButton,
-  cancelButton,
-  header,
-  size = "small",
-}: {
+export const Confirm: FC<{
   children: JSX.Element;
   content?: string;
   confirmButton?: string;
   cancelButton?: string;
   header?: string;
   size?: "mini" | "tiny" | "small" | "large" | "fullscreen";
+}> = ({
+  children,
+  content,
+  confirmButton,
+  cancelButton,
+  header,
+  size = "small"
 }) => {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Confirm
+      <ConfirmSemantic
         open={open}
         onConfirm={() => {
           if (children.props.onClick) children.props.onClick();
@@ -35,7 +35,7 @@ export default ({
       {cloneElement(children, {
         onClick: () => {
           setOpen(true);
-        },
+        }
       })}
     </>
   );
