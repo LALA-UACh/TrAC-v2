@@ -1,5 +1,6 @@
 import { Field, ID, Int, ObjectType } from "type-graphql";
 
+import { Dropout } from "./dropout";
 import { Program } from "./program";
 import { Term } from "./term";
 
@@ -28,4 +29,7 @@ export class Student {
   // student_term => *
   @Field(() => [Term])
   terms: Term[];
+
+  @Field({ nullable: true })
+  dropout?: Dropout;
 }

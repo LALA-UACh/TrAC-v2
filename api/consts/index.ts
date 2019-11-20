@@ -15,3 +15,4 @@ export const PROGRAM_TABLE = "program";
 export const PROGRAM_STRUCTURE_TABLE = "program_structure";
 export const COURSE_TABLE = "course";
 export const STUDENT_PROGRAM_TABLE = "student_program";
+export const TRACKING_TABLE = "tracking";

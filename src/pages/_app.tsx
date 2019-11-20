@@ -6,6 +6,7 @@ import NProgress from "nprogress";
 
 import { ApolloProvider } from "@apollo/react-hooks";
 import { theme, ThemeProvider } from "@chakra-ui/core";
+import { Tracking } from "@components/Tracking";
 import { withApollo } from "@utils/withApollo";
 
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -18,13 +19,15 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
 
     return (
       <ApolloProvider client={apollo}>
-        <Head>
-          <title>TrAC</title>
-        </Head>
+        <Tracking>
+          <Head>
+            <title>TrAC</title>
+          </Head>
 
-        <ThemeProvider theme={theme}>
-          <Component {...pageProps} />
-        </ThemeProvider>
+          <ThemeProvider theme={theme}>
+            <Component {...pageProps} />
+          </ThemeProvider>
+        </Tracking>
       </ApolloProvider>
     );
   }

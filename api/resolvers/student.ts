@@ -78,6 +78,12 @@ export class StudentResolver {
     // TODO Student terms resolver
     return [];
   }
+
+  @FieldResolver()
+  async dropout(@Root() { id }: Pick<Student, "id">) {
+    // TODO: Student dropout resolver
+    return null;
+  }
 }
 
 @Resolver(() => Term)

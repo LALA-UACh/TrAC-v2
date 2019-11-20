@@ -17,4 +17,15 @@ export const dbLALA = knex({
     user: "postgres",
     database: "lalauach",
   },
+  // debug: true,
+});
+
+export const dbTracking = knex({
+  client: "pg",
+  connection: {
+    host: "localhost",
+    user: "postgres",
+    database: "tracking",
+  },
+  debug: true,
 });

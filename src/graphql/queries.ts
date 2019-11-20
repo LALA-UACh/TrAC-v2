@@ -214,3 +214,20 @@ export const myProgramsQuery: DocumentNode<{
     }
   }
 `;
+
+export const trackingQuery: DocumentNode<
+  never,
+  {
+    data: {
+      app_id: string;
+      datetime_client: Date;
+      data: string;
+    };
+  }
+> = gql`
+  mutation($data: TrackInput!) {
+    track(data: $data) {
+      id
+    }
+  }
+`;

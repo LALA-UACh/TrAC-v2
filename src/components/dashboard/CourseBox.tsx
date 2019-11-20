@@ -25,7 +25,7 @@ export const CourseBox: FC<ICourse> = ({
   state,
   flow,
   requisites,
-  semestersTaken
+  semestersTaken,
 }) => {
   const [max, setMax] = useState(false);
   const {
@@ -35,7 +35,7 @@ export const CourseBox: FC<ICourse> = ({
     flow: contextFlow,
     requisites: contextRequisites,
     checkExplicitSemester,
-    explicitSemester
+    explicitSemester,
   } = useContext(CoursesFlowContext);
   useUpdateEffect(() => {
     if (max) {
@@ -43,7 +43,7 @@ export const CourseBox: FC<ICourse> = ({
         course: code,
         flow,
         requisites,
-        semestersTaken
+        semestersTaken,
       });
     } else {
       remove(code);
@@ -96,7 +96,7 @@ export const CourseBox: FC<ICourse> = ({
     maxGrade,
     minGrade,
     approvedColorScale,
-    reapprovedColorScale
+    reapprovedColorScale,
   ]);
 
   const opacity = useMemo(() => {
@@ -123,7 +123,7 @@ export const CourseBox: FC<ICourse> = ({
     contextRequisites,
     explicitSemester,
     semestersTaken,
-    checkExplicitSemester
+    checkExplicitSemester,
   ]);
   const borderColor = useMemo(() => {
     if (contextFlow?.[code]) {
@@ -143,7 +143,7 @@ export const CourseBox: FC<ICourse> = ({
     checkExplicitSemester,
     semestersTaken,
     contextFlow,
-    contextRequisites
+    contextRequisites,
   ]);
 
   const NameComponent = useMemo(
@@ -167,11 +167,11 @@ export const CourseBox: FC<ICourse> = ({
         <motion.div
           key="status"
           initial={{
-            opacity: 0
+            opacity: 0,
           }}
           animate={{ opacity: 1 }}
           exit={{
-            opacity: 0
+            opacity: 0,
           }}
           className="registration_box"
         >
@@ -207,11 +207,11 @@ export const CourseBox: FC<ICourse> = ({
         <motion.div
           key="req_circle"
           initial={{
-            opacity: 0
+            opacity: 0,
           }}
           animate={{ opacity: 1 }}
           exit={{
-            opacity: 0
+            opacity: 0,
           }}
           className="req_circle_box"
         >
@@ -276,15 +276,15 @@ export const CourseBox: FC<ICourse> = ({
           key="histograms"
           initial={{
             opacity: 0,
-            scale: 0
+            scale: 0,
           }}
           animate={{
             scale: 1,
-            opacity: 1
+            opacity: 1,
           }}
           exit={{
             opacity: 0,
-            scale: 0.4
+            scale: 0.4,
           }}
           className="histogram_box"
         >

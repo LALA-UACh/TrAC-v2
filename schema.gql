@@ -20,10 +20,21 @@ type Course {
   historicalDistribution: [DistributionValue!]!
 }
 
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
 type DistributionValue {
   min: Int!
   max: Int!
   value: Int!
+}
+
+type Dropout {
+  prob_dropout: Float!
+  model_accuracy: Float!
+  active: Boolean!
 }
 
 """
@@ -51,6 +62,7 @@ type Mutation {
   login(email: EmailAddress!, password: String!): AuthResult!
   logout: Boolean!
   unlock(email: EmailAddress!, password: String!, unlockKey: String!): AuthResult!
+  track(data: TrackInput!): Track!
   updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
   addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
   upsertUsers(users: [UpsertedUser!]!): [User!]!
@@ -97,6 +109,7 @@ type Student {
   start_year: Int!
   mention: String!
   terms: [Term!]!
+  dropout: Dropout
 }
 
 type TakenCourse {
@@ -120,6 +133,21 @@ type Term {
   PGA: Float!
   ProgramPGA: Float!
   takenCourses: [TakenCourse!]!
+}
+
+type Track {
+  id: Float!
+  app_id: String!
+  user_id: String!
+  datetime: DateTime!
+  datetime_client: DateTime!
+  data: String!
+}
+
+input TrackInput {
+  app_id: String!
+  datetime_client: DateTime!
+  data: String!
 }
 
 input UpdateUserPrograms {
