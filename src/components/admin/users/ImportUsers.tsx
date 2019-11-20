@@ -1,43 +1,78 @@
 import classNames from "classnames";
 import csv from "csvtojson";
-import _ from "lodash";
-import { FC } from "react";
+import { toString } from "lodash";
+import toInteger from "lodash/toInteger";
+import { FC, useEffect, useState } from "react";
 import Dropzone from "react-dropzone";
-import { Button, Form, Grid, Icon, Modal, TextArea } from "semantic-ui-react";
+import { Button, Form, Grid, Icon, Message, Modal, TextArea } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 import { isJSON } from "validator";
+import isEmail from "validator/lib/isEmail";
+
+import { useMutation } from "@apollo/react-hooks";
+import { adminUpsertUsers, allUsersAdmin } from "@graphql/adminQueries";
 
 export const ImportUsers: FC = () => {
   const [data, setData] = useRememberState("AdminImportUsersData", "email\n");
   const [open, setOpen] = useRememberState("AdminImportUsersOpen", false);
 
-  const importUsers = (...any: any) => {};
-  // TODO: importUsers mutation
+  const [isEnabled, setIsEnabled] = useState(false);
 
-  const handleSubmit = () => {
-    try {
-      if (isJSON(data) && _.isArray(JSON.parse(data))) {
-        importUsers(JSON.parse(data));
-        setOpen(false);
-        setData("email\n");
-      } else {
-        csv({
-          ignoreEmpty: true
+  const [parsedData, setParsedData] = useState<any[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const parsedData: any[] = await (async () => {
+        if (isJSON(data) && Array.isArray(JSON.parse(data))) {
+          return JSON.parse(data);
+        }
+        return await csv({ ignoreEmpty: true }).fromString(data);
+      })();
+      setParsedData(
+        parsedData.map(({ tries, ...rest }) => {
+          return {
+            tries: tries && toInteger(tries),
+            ...rest,
+          };
         })
-          .fromString(data)
-          .then(
-            json => {
-              importUsers(json);
-              setOpen(false);
-              setData("email\n");
-            },
-            error => {
-              console.error(error);
-            }
-          );
+      );
+    })();
+  }, [data, setParsedData]);
+
+  useEffect(() => {
+    setIsEnabled(
+      parsedData.length > 0 &&
+        parsedData.every(({ email }) => {
+          return isEmail(email?.toString() ?? "");
+        })
+    );
+  });
+
+  const [importUsers, { error, loading }] = useMutation(adminUpsertUsers, {
+    update: (cache, { data }) => {
+      if (data?.upsertUsers) {
+        cache.writeQuery({
+          query: allUsersAdmin,
+          data: {
+            users: data.upsertUsers,
+          },
+        });
       }
-    } catch (err) {
-      console.error(err);
+    },
+  });
+
+  const handleSubmit = async () => {
+    if (isEnabled) {
+      try {
+        await importUsers({
+          variables: {
+            users: parsedData,
+          },
+        });
+        setOpen(false);
+      } catch (err) {
+        console.error(JSON.stringify(err, null, 2));
+      }
     }
   };
 
@@ -74,16 +109,10 @@ export const ImportUsers: FC = () => {
                   <div
                     {...getRootProps()}
                     className={classNames("dropzone", {
-                      "dropzone--isActive": isDragActive
+                      "dropzone--isActive": isDragActive,
                     })}
                   >
-                    <Button
-                      icon
-                      labelPosition="left"
-                      circular
-                      size="huge"
-                      color="brown"
-                    >
+                    <Button icon labelPosition="left" circular size="huge" color="brown">
                       <Icon name="upload" />
                       Subir archivo
                     </Button>
@@ -93,6 +122,19 @@ export const ImportUsers: FC = () => {
               }}
             </Dropzone>
           </Grid.Row>
+          {error && (
+            <Grid.Row>
+              <Message error>
+                <Message.Content>{error.message}</Message.Content>
+              </Message>
+            </Grid.Row>
+          )}
+          {!isEnabled && parsedData.length > 0 && (
+            <Message error>
+              <Message.Content>Cada fila debe contener al menos un correo válido</Message.Content>
+            </Message>
+          )}
+
           <Grid.Row>
             <Form>
               <Form.Button
@@ -101,17 +143,18 @@ export const ImportUsers: FC = () => {
                 size="big"
                 color="blue"
                 onClick={() => handleSubmit()}
+                disabled={!isEnabled || loading}
+                loading={loading}
               >
                 <Icon name="plus circle" />
                 Upsert
               </Form.Button>
-
               <TextArea
                 ref={ref => {
                   if (ref) ref.focus();
                 }}
                 onChange={(_event, { value }) => {
-                  setData(_.toString(value));
+                  setData(toString(value));
                 }}
                 rows={(data.match(/\n/g) || []).length + 3}
                 style={{ width: "45em" }}

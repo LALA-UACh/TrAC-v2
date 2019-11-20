@@ -1,9 +1,7 @@
-import _ from "lodash";
+import { sortBy, truncate } from "lodash";
 import { FC, useEffect } from "react";
 import { Grid, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
-
-import { Loader } from "@components/Loader";
 
 import { ImportPrograms } from "./ImportPrograms";
 import { UpdatePrograms } from "./UpdatePrograms";
@@ -12,21 +10,21 @@ export const Programs: FC<{
   programs: { email: string; programs: number[] }[];
 }> = ({ programs }) => {
   const [column, setColumn] = useRememberState("TracAdminProgramsColumn", "");
-  const [direction, setDirection] = useRememberState<
-    "ascending" | "descending"
-  >("TracAdminProgramsDirection", "ascending");
+  const [direction, setDirection] = useRememberState<"ascending" | "descending">(
+    "TracAdminProgramsDirection",
+    "ascending"
+  );
   const [sortedPrograms, setSortedPrograms] = useRememberState<
     { email: string; programs: number[] }[]
   >("TracAdminSortedPrograms", []);
 
   useEffect(() => {
-    if (!_.isEmpty(programs))
-      if (direction === "ascending") {
-        setSortedPrograms(_.sortBy(programs, [column]));
-      } else {
-        setSortedPrograms(_.sortBy(programs, [column]).reverse());
-      }
-  }, [programs, column, direction]);
+    if (direction === "ascending") {
+      setSortedPrograms(sortBy(programs, [column]));
+    } else {
+      setSortedPrograms(sortBy(programs, [column]).reverse());
+    }
+  }, [programs, column, direction, setSortedPrograms]);
 
   const handleSort = (clickedColumn: string) => () => {
     if (column !== clickedColumn) {
@@ -37,12 +35,8 @@ export const Programs: FC<{
     }
   };
 
-  const loading = false;
-  // TODO: Programs query loading
-
   return (
     <Grid>
-      <Loader active={loading} />
       <Grid.Row centered>
         <ImportPrograms />
       </Grid.Row>
@@ -75,13 +69,11 @@ export const Programs: FC<{
           </Table.Header>
 
           <Table.Body>
-            {_.map(sortedPrograms, ({ email, programs }, key) => (
+            {sortedPrograms.map(({ email, programs }, key) => (
               <UpdatePrograms key={key} program={{ email, programs }}>
                 <Table.Row style={{ cursor: "pointer" }}>
                   <Table.Cell>{email}</Table.Cell>
-                  <Table.Cell>
-                    {_.truncate(programs.join(" | "), { length: 50 })}
-                  </Table.Cell>
+                  <Table.Cell>{truncate(programs.join(" | "), { length: 50 })}</Table.Cell>
                 </Table.Row>
               </UpdatePrograms>
             ))}

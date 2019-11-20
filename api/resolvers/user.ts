@@ -1,3 +1,4 @@
+import { EmailAddressResolver as EmailAddress } from "graphql-scalars";
 import { GraphQLJSONObject } from "graphql-type-json";
 import { generate } from "randomstring";
 import { Arg, Authorized, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
@@ -141,7 +142,7 @@ export class UserResolver {
 
   @Authorized([ADMIN])
   @Mutation(() => GraphQLJSONObject)
-  async lockMailUser(@Arg("email") email: string): Promise<object> {
+  async lockMailUser(@Arg("email", () => EmailAddress) email: string): Promise<object> {
     const user = await dbAuth<Pick<User, "email">>(USERS_TABLE)
       .select("email")
       .where({ email })
@@ -149,10 +150,12 @@ export class UserResolver {
 
     if (user) {
       const unlockKey = generate();
-      await dbAuth<User>(USERS_TABLE).update({
-        locked: true,
-        unlockKey,
-      });
+      await dbAuth<User>(USERS_TABLE)
+        .update({
+          locked: true,
+          unlockKey,
+        })
+        .where({ email });
       return await sendMail({
         to: email,
         html: UnlockMail({
@@ -190,6 +193,16 @@ export class UserResolver {
       results.push(result);
     }
     return results;
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => [User])
+  async deleteUser(@Arg("email", () => EmailAddress) email: string): Promise<User[]> {
+    await dbAuth<User>(USERS_TABLE)
+      .delete()
+      .where({ email });
+
+    return await dbAuth<User>(USERS_TABLE).select("*");
   }
 
   @FieldResolver()

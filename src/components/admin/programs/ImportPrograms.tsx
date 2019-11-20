@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import csv from "csvtojson";
-import _ from "lodash";
+import { conformsTo, toInteger, toString } from "lodash";
 import { FC, useEffect, useState } from "react";
 import Dropzone from "react-dropzone";
 import { Button, Form, Grid, Icon, Message, Modal, TextArea } from "semantic-ui-react";
@@ -12,18 +12,13 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import { addUsersProgramsAdmin, allProgramsAdmin, allUsersAdmin } from "@graphql/adminQueries";
 
 export const ImportPrograms: FC = () => {
-  const [data, setData] = useRememberState(
-    "AdminImportProgramsData",
-    "email,program\n",
-  );
+  const [data, setData] = useRememberState("AdminImportProgramsData", "email,program\n");
   const { data: allPrograms } = useQuery(allProgramsAdmin);
   const [open, setOpen] = useRememberState("AdminImportProgramsOpen", false);
 
   const [isEnabled, setIsEnabled] = useState(false);
 
-  const [parsedData, setParsedData] = useState<
-    { email?: string; program?: number }[]
-  >([]);
+  const [parsedData, setParsedData] = useState<{ email?: string; program?: number }[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -36,8 +31,8 @@ export const ImportPrograms: FC = () => {
       setParsedData(
         parsedData.map(({ email, program }) => ({
           email,
-          program: program ? _.toInteger(program) : undefined,
-        })),
+          program: program ? toInteger(program) : undefined,
+        }))
       );
     })();
   }, [data, setParsedData]);
@@ -49,22 +44,21 @@ export const ImportPrograms: FC = () => {
         parsedData.length > 0 &&
           parsedData.every(({ email, program }) => {
             if (email && program) {
-              return _.conformsTo(
+              return conformsTo(
                 { email, program },
                 {
                   email: (v: string) => isEmail(v),
-                  program: (v: string) =>
-                    allProgramsMapped.includes(_.toInteger(v)),
-                },
+                  program: (v: string) => allProgramsMapped.includes(toInteger(v)),
+                }
               );
             }
             return false;
-          }),
+          })
       );
     })();
   }, [parsedData, allPrograms]);
 
-  const [importPrograms, { error: errorImportPrograms }] = useMutation(
+  const [importPrograms, { error: errorImportPrograms, loading }] = useMutation(
     addUsersProgramsAdmin,
     {
       variables: {
@@ -80,12 +74,8 @@ export const ImportPrograms: FC = () => {
           });
         }
       },
-    },
+    }
   );
-
-  if (errorImportPrograms) {
-    throw new Error(errorImportPrograms.message);
-  }
 
   return (
     <Modal
@@ -105,9 +95,8 @@ export const ImportPrograms: FC = () => {
           <Grid.Row>
             <Message>
               <Message.Content>
-                El contenido es validado automaticamente, verificando que los
-                email estén correctamente formateados y los programas existen en
-                la lista de programas actuales
+                El contenido es validado automaticamente, verificando que los email estén
+                correctamente formateados y los programas existen en la lista de programas actuales
               </Message.Content>
             </Message>
           </Grid.Row>
@@ -132,13 +121,7 @@ export const ImportPrograms: FC = () => {
                       "dropzone--isActive": isDragActive,
                     })}
                   >
-                    <Button
-                      icon
-                      labelPosition="left"
-                      circular
-                      size="huge"
-                      color="brown"
-                    >
+                    <Button icon labelPosition="left" circular size="huge" color="brown">
                       <Icon name="upload" />
                       Subir archivo
                     </Button>
@@ -148,6 +131,13 @@ export const ImportPrograms: FC = () => {
               }}
             </Dropzone>
           </Grid.Row>
+          {errorImportPrograms && (
+            <Grid.Row>
+              <Message error>
+                <Message.Content>{errorImportPrograms.message}</Message.Content>
+              </Message>
+            </Grid.Row>
+          )}
           <Grid.Row>
             <Form>
               <Form.Button
@@ -155,10 +145,15 @@ export const ImportPrograms: FC = () => {
                 labelPosition="left"
                 size="big"
                 color="blue"
-                onClick={() => {
-                  importPrograms();
+                onClick={async () => {
+                  try {
+                    await importPrograms();
+                  } catch (err) {
+                    console.error(JSON.stringify(err, null, 2));
+                  }
                 }}
-                disabled={!isEnabled}
+                disabled={!isEnabled || loading}
+                loading={loading}
               >
                 <Icon name="plus circle" />
                 Importar
@@ -169,7 +164,7 @@ export const ImportPrograms: FC = () => {
                   if (ref) ref.focus();
                 }}
                 onChange={(_event, { value }) => {
-                  setData(_.toString(value));
+                  setData(toString(value));
                 }}
                 style={{ width: "45em" }}
                 placeholder=".json o .csv"

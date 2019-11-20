@@ -10,6 +10,7 @@ import { dbAuth } from "@db";
 import { AuthResult, LoginInput, UnlockInput } from "@entities/auth";
 import { User } from "@entities/user";
 import { IContext } from "@interfaces";
+import { sendMail, UnlockMail } from "@utils/mail";
 
 @Resolver()
 export class AuthResolver {
@@ -84,7 +85,24 @@ export class AuthResolver {
               tries: 3,
               unlockKey,
             });
-          // TODO Implement mail service
+
+          sendMail({
+            to: email,
+            html: UnlockMail({
+              email,
+              unlockKey,
+            }),
+            subject: "Activación cuenta LALA TrAC",
+          })
+            .then(result => {
+              console.log(`New locked user! ${email}`, JSON.stringify(result, null, 2));
+            })
+            .catch(err => {
+              console.error(
+                `Error trying to send an email to new locke user! ${email}`,
+                JSON.stringify(err, null, 2)
+              );
+            });
           return { error: LOCKED_USER };
         } else {
           await dbAuth<User>(USERS_TABLE).increment("tries", 1);

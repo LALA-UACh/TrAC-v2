@@ -14,32 +14,27 @@ const Admin: FC = () => {
 
   const { data, loading, error } = useQuery(allUsersAdmin);
 
-  const UsersComponent = useMemo(() => {
-    return <Users users={data?.users ?? []} />;
-  }, [loading, data]);
-
-  const ProgramsComponent = useMemo(() => {
-    const programs =
-      data?.users.map(({ email, programs }) => {
-        console.log(email, programs);
-        return { email, programs: programs.map(({ id }) => id) };
-      }) ?? [];
-    return <Programs programs={programs} />;
-  }, [loading, data]);
-
   const ActiveTab = useMemo(() => {
     switch (active) {
       case "users":
-        return UsersComponent;
+        return <Users users={data?.users ?? []} />;
       case "programs":
-        return ProgramsComponent;
+        return (
+          <Programs
+            programs={
+              data?.users.map(({ email, programs }) => {
+                return { email, programs: programs.map(({ id }) => id) };
+              }) ?? []
+            }
+          />
+        );
       default:
         return null;
     }
   }, [active, data, loading]);
 
   if (error) {
-    console.error(JSON.stringify(error, null, 4));
+    console.error(JSON.stringify(error, null, 2));
     return (
       <Message error>
         <Message.Content>{error.message}</Message.Content>

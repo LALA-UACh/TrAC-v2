@@ -169,3 +169,39 @@ export const adminUpsertUsers: DocumentNode<
     }
   }
 `;
+
+export const adminDeleteUser: DocumentNode<
+  {
+    deleteUser: IfImplements<
+      {
+        email: string;
+        name: string;
+        tries: number;
+        type: UserType;
+        rut_id?: string;
+        show_dropout: boolean;
+        locked: boolean;
+        programs: { id: number }[];
+      },
+      User
+    >[];
+  },
+  {
+    email: string;
+  }
+> = gql`
+  mutation($email: EmailAddress!) {
+    deleteUser(email: $email) {
+      email
+      name
+      tries
+      type
+      rut_id
+      show_dropout
+      locked
+      programs {
+        id
+      }
+    }
+  }
+`;

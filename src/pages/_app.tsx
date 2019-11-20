@@ -3,8 +3,8 @@ import App from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
-import { ApolloProvider } from "react-apollo";
 
+import { ApolloProvider } from "@apollo/react-hooks";
 import { theme, ThemeProvider } from "@chakra-ui/core";
 import { withApollo } from "@utils/withApollo";
 

@@ -44,8 +44,9 @@ type Mutation {
   updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
   addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
   upsertUsers(users: [UpsertedUser!]!): [User!]!
-  lockMailUser(email: String!): JSONObject!
+  lockMailUser(email: EmailAddress!): JSONObject!
   mailAllLockedUsers: [JSONObject!]!
+  deleteUser(email: EmailAddress!): [User!]!
 }
 
 type Program {
