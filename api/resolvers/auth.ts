@@ -32,7 +32,10 @@ export class AuthResolver {
       }),
       {
         httpOnly: true,
-        expires: addMilliseconds(Date.now(), req?.cookies?.remember ? ONE_DAY : THIRTY_MINUTES),
+        expires: addMilliseconds(
+          Date.now(),
+          req?.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
+        ),
       }
     );
   }
@@ -95,7 +98,10 @@ export class AuthResolver {
             subject: "Activación cuenta LALA TrAC",
           })
             .then(result => {
-              console.log(`New locked user! ${email}`, JSON.stringify(result, null, 2));
+              console.log(
+                `New locked user! ${email}`,
+                JSON.stringify(result, null, 2)
+              );
             })
             .catch(err => {
               console.error(

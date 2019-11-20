@@ -9,11 +9,13 @@ import isEmail from "validator/lib/isEmail";
 import isJSON from "validator/lib/isJSON";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { addUsersProgramsAdmin, allProgramsAdmin, allUsersAdmin } from "@graphql/adminQueries";
+import {
+    addUsersProgramsAdminMutation, allProgramsAdminQuery, allUsersAdminQuery
+} from "@graphql/adminQueries";
 
 export const ImportPrograms: FC = () => {
   const [data, setData] = useRememberState("AdminImportProgramsData", "email,program\n");
-  const { data: allPrograms } = useQuery(allProgramsAdmin);
+  const { data: allPrograms } = useQuery(allProgramsAdminQuery);
   const [open, setOpen] = useRememberState("AdminImportProgramsOpen", false);
 
   const [isEnabled, setIsEnabled] = useState(false);
@@ -59,7 +61,7 @@ export const ImportPrograms: FC = () => {
   }, [parsedData, allPrograms]);
 
   const [importPrograms, { error: errorImportPrograms, loading }] = useMutation(
-    addUsersProgramsAdmin,
+    addUsersProgramsAdminMutation,
     {
       variables: {
         user_programs: parsedData,
@@ -67,7 +69,7 @@ export const ImportPrograms: FC = () => {
       update: (cache, { data }) => {
         if (data?.addUsersPrograms) {
           cache.writeQuery({
-            query: allUsersAdmin,
+            query: allUsersAdminQuery,
             data: {
               users: data.addUsersPrograms,
             },

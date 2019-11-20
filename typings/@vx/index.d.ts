@@ -33,7 +33,11 @@ declare module "@vx/axis" {
     tickValues?: number[];
     tickComponent?:
       | React.ReactNode
-      | ((obj: { x: number; y: number; formattedValue: string }) => React.ReactNode);
+      | ((obj: {
+          x: number;
+          y: number;
+          formattedValue: string;
+        }) => React.ReactNode);
     top?: number;
     children?: (renderProps: {
       axisFromPoint: Point;

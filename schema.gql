@@ -37,6 +37,16 @@ The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](
 """
 scalar JSONObject
 
+type LockedUserResult {
+  mailResult: JSONObject!
+  users: [User!]!
+}
+
+type MultipleLockedUserResult {
+  mailResults: [JSONObject!]!
+  users: [User!]!
+}
+
 type Mutation {
   login(email: EmailAddress!, password: String!): AuthResult!
   logout: Boolean!
@@ -44,7 +54,7 @@ type Mutation {
   updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
   addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
   upsertUsers(users: [UpsertedUser!]!): [User!]!
-  lockMailUser(email: EmailAddress!): JSONObject!
+  lockMailUser(email: EmailAddress!): LockedUserResult!
   mailAllLockedUsers: [JSONObject!]!
   deleteUser(email: EmailAddress!): [User!]!
 }

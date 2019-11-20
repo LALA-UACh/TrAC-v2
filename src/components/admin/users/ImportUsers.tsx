@@ -10,7 +10,7 @@ import { isJSON } from "validator";
 import isEmail from "validator/lib/isEmail";
 
 import { useMutation } from "@apollo/react-hooks";
-import { adminUpsertUsers, allUsersAdmin } from "@graphql/adminQueries";
+import { adminUpsertUsersMutation, allUsersAdminQuery } from "@graphql/adminQueries";
 
 export const ImportUsers: FC = () => {
   const [data, setData] = useRememberState("AdminImportUsersData", "email\n");
@@ -48,11 +48,11 @@ export const ImportUsers: FC = () => {
     );
   });
 
-  const [importUsers, { error, loading }] = useMutation(adminUpsertUsers, {
+  const [importUsers, { error, loading }] = useMutation(adminUpsertUsersMutation, {
     update: (cache, { data }) => {
       if (data?.upsertUsers) {
         cache.writeQuery({
-          query: allUsersAdmin,
+          query: allUsersAdminQuery,
           data: {
             users: data.upsertUsers,
           },

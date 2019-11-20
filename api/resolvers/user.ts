@@ -1,12 +1,31 @@
 import { EmailAddressResolver as EmailAddress } from "graphql-scalars";
 import { GraphQLJSONObject } from "graphql-type-json";
 import { generate } from "randomstring";
-import { Arg, Authorized, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 
-import { ADMIN, PROGRAM_TABLE, USER_PROGRAMS_TABLE, USERS_TABLE } from "@consts";
+import {
+  ADMIN,
+  PROGRAM_TABLE,
+  USER_PROGRAMS_TABLE,
+  USERS_TABLE,
+} from "@consts";
 import { dbAuth, dbLALA } from "@db";
 import { Program } from "@entities/program";
-import { UpdateUserPrograms, UpsertedUser, User, UserProgram } from "@entities/user";
+import {
+  LockedUserResult,
+  UpdateUserPrograms,
+  UpsertedUser,
+  User,
+  UserProgram,
+} from "@entities/user";
 import { sendMail, UnlockMail } from "@utils/mail";
 
 @Resolver(() => User)
@@ -65,7 +84,9 @@ export class UserResolver {
         `${dbAuth(USER_PROGRAMS_TABLE)
           .insert(
             user_programs.filter(({ program }) =>
-              programsList.find(({ id }) => program.toString() === id.toString())
+              programsList.find(
+                ({ id }) => program.toString() === id.toString()
+              )
             )
           )
           .toString()} ON CONFLICT DO NOTHING`
@@ -82,38 +103,25 @@ export class UserResolver {
     users: UpsertedUser[]
   ): Promise<User[]> {
     await Promise.all(
-      users.map(async ({ oldEmail, email, name, type, tries, rut_id, show_dropout, locked }) => {
-        /**
-         * If there is an old email, we assume that we are
-         * updating an existing user
-         */
-        if (oldEmail) {
-          return dbAuth<User>(USERS_TABLE)
-            .update({
-              email,
-              name,
-              type,
-              tries,
-              rut_id,
-              show_dropout,
-              locked,
-            })
-            .where({
-              email: oldEmail,
-            });
-        } else {
+      users.map(
+        async ({
+          oldEmail,
+          email,
+          name,
+          type,
+          tries,
+          rut_id,
+          show_dropout,
+          locked,
+        }) => {
           /**
-           * Otherwise, we have to check if the email already exists
-           * to decide if inserts or updates
+           * If there is an old email, we assume that we are
+           * updating an existing user
            */
-          const foundUser = await dbAuth<User>(USERS_TABLE)
-            .select("email")
-            .where({ email })
-            .first();
-
-          if (foundUser) {
+          if (oldEmail) {
             return dbAuth<User>(USERS_TABLE)
               .update({
+                email,
                 name,
                 type,
                 tries,
@@ -121,28 +129,54 @@ export class UserResolver {
                 show_dropout,
                 locked,
               })
-              .where({ email });
-          }
+              .where({
+                email: oldEmail,
+              });
+          } else {
+            /**
+             * Otherwise, we have to check if the email already exists
+             * to decide if inserts or updates
+             */
+            const foundUser = await dbAuth<User>(USERS_TABLE)
+              .select("email")
+              .where({ email })
+              .first();
 
-          return dbAuth<User>(USERS_TABLE).insert({
-            email,
-            name,
-            type,
-            tries,
-            rut_id,
-            show_dropout,
-            locked,
-          });
+            if (foundUser) {
+              return dbAuth<User>(USERS_TABLE)
+                .update({
+                  name,
+                  type,
+                  tries,
+                  rut_id,
+                  show_dropout,
+                  locked,
+                })
+                .where({ email });
+            }
+
+            return dbAuth<User>(USERS_TABLE).insert({
+              email,
+              name,
+              type,
+              tries,
+              rut_id,
+              show_dropout,
+              locked,
+            });
+          }
         }
-      })
+      )
     );
 
     return await dbAuth(USERS_TABLE).select("*");
   }
 
   @Authorized([ADMIN])
-  @Mutation(() => GraphQLJSONObject)
-  async lockMailUser(@Arg("email", () => EmailAddress) email: string): Promise<object> {
+  @Mutation(() => LockedUserResult)
+  async lockMailUser(
+    @Arg("email", () => EmailAddress) email: string
+  ): Promise<LockedUserResult> {
     const user = await dbAuth<Pick<User, "email">>(USERS_TABLE)
       .select("email")
       .where({ email })
@@ -156,14 +190,22 @@ export class UserResolver {
           unlockKey,
         })
         .where({ email });
-      return await sendMail({
-        to: email,
-        html: UnlockMail({
-          email,
-          unlockKey,
+      const [mailResult, users] = await Promise.all([
+        sendMail({
+          to: email,
+          html: UnlockMail({
+            email,
+            unlockKey,
+          }),
+          subject: "Activación cuenta LALA TrAC",
         }),
-        subject: "Activación cuenta LALA TrAC",
-      });
+        dbAuth<User>(USERS_TABLE).select("*"),
+      ]);
+
+      return {
+        mailResult,
+        users,
+      };
     }
 
     throw new Error(`User ${email} not found!`);
@@ -171,11 +213,11 @@ export class UserResolver {
 
   @Authorized([ADMIN])
   @Mutation(() => [GraphQLJSONObject])
-  async mailAllLockedUsers(): Promise<object[]> {
+  async mailAllLockedUsers(): Promise<Record<string, any>> {
     const users = await dbAuth<Pick<User, "email">>(USERS_TABLE)
       .select("email")
       .where({ locked: true });
-    const results: object[] = [];
+    const mailResults: Record<string, any>[] = [];
     for (const { email } of users) {
       const unlockKey = generate();
       await dbAuth<User>(USERS_TABLE)
@@ -190,14 +232,16 @@ export class UserResolver {
         }),
         subject: "Activación cuenta LALA TrAC",
       });
-      results.push(result);
+      mailResults.push(result);
     }
-    return results;
+    return mailResults;
   }
 
   @Authorized([ADMIN])
   @Mutation(() => [User])
-  async deleteUser(@Arg("email", () => EmailAddress) email: string): Promise<User[]> {
+  async deleteUser(
+    @Arg("email", () => EmailAddress) email: string
+  ): Promise<User[]> {
     await dbAuth<User>(USERS_TABLE)
       .delete()
       .where({ email });

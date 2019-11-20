@@ -6,7 +6,31 @@ import { Student } from "@entities/student";
 import { User } from "@entities/user";
 import { IfImplements } from "@typings/utils";
 
-export const currentUser: DocumentNode<{
+export const loginMutation: DocumentNode<
+  {
+    login: {
+      user?: { email: string; name: string; admin: boolean };
+      error?: string;
+    };
+  },
+  {
+    email: string;
+    password: string;
+  }
+> = gql`
+  mutation($email: EmailAddress!, $password: String!) {
+    login(email: $email, password: $password) {
+      user {
+        email
+        name
+        admin
+      }
+      error
+    }
+  }
+`;
+
+export const currentUserQuery: DocumentNode<{
   current_user?: IfImplements<
     {
       email: string;
@@ -22,6 +46,14 @@ export const currentUser: DocumentNode<{
       name
       admin
     }
+  }
+`;
+
+export const logoutMutation: DocumentNode<{
+  logout: boolean;
+}> = gql`
+  mutation {
+    logout
   }
 `;
 

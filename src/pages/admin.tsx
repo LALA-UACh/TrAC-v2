@@ -7,12 +7,12 @@ import { AdminMenu } from "@components/admin/Menu";
 import { Programs } from "@components/admin/programs";
 import { Users } from "@components/admin/users";
 import { RequireAuth } from "@components/RequireAuth";
-import { allUsersAdmin } from "@graphql/adminQueries";
+import { allUsersAdminQuery } from "@graphql/adminQueries";
 
 const Admin: FC = () => {
   const [active, setActive] = useRememberState("admin_menu_tab", "users");
 
-  const { data, loading, error } = useQuery(allUsersAdmin);
+  const { data, loading, error } = useQuery(allUsersAdminQuery);
 
   const ActiveTab = useMemo(() => {
     switch (active) {

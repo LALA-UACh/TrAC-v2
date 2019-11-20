@@ -1,30 +1,23 @@
-import gql from "graphql-tag";
-import { useRouter } from "next/router";
+import Router from "next/router";
 import { useEffect } from "react";
 
 import { useMutation } from "@apollo/react-hooks";
-import { currentUser } from "@graphql/queries";
+import { currentUserQuery, logoutMutation } from "@graphql/queries";
 
 export default () => {
-  const { replace } = useRouter();
-  const [logout, { client }] = useMutation(
-    gql`
-      mutation {
-        logout
-      }
-    `,
-    { ignoreResults: true }
-  );
+  const [logout] = useMutation(logoutMutation, {
+    ignoreResults: true,
+    update: cache => {
+      cache.writeQuery({
+        query: currentUserQuery,
+        data: { current_user: null },
+      });
+    },
+  });
   useEffect(() => {
     (async () => {
       await logout();
-      client?.writeQuery({
-        query: currentUser,
-        data: {
-          current_user: null
-        }
-      });
-      replace("/login");
+      Router.replace("/login");
     })();
   }, []);
   return null;

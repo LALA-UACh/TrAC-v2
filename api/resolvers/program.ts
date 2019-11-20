@@ -1,4 +1,13 @@
-import { Arg, Authorized, Ctx, FieldResolver, Int, Query, Resolver, Root } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  FieldResolver,
+  Int,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 import { $PropertyType } from "utility-types";
 
 import {
@@ -201,7 +210,9 @@ export class CourseResolver {
   }
 
   @FieldResolver()
-  async historicalDistribution(): Promise<$PropertyType<Course, "historicalDistribution">[]> {
+  async historicalDistribution(): Promise<
+    $PropertyType<Course, "historicalDistribution">[]
+  > {
     // TODO Courses historical distribution resolver
     return [];
   }

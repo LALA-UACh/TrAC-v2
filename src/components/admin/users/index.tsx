@@ -1,4 +1,3 @@
-import gql from "graphql-tag-ts";
 import { sortBy } from "lodash";
 import { FC, useEffect, useState } from "react";
 import { Button, Grid, Icon, Message, Table } from "semantic-ui-react";
@@ -7,6 +6,7 @@ import { useRememberState } from "use-remember-state";
 import { useMutation } from "@apollo/react-hooks";
 import { Confirm } from "@components/Confirm";
 import { UserType } from "@constants";
+import { adminMailLockedUsersMutation } from "@graphql/adminQueries";
 
 import { ImportUsers } from "./ImportUsers";
 import { UpdateUser } from "./UpdateUser";
@@ -63,11 +63,7 @@ export const Users: FC<{
   const [
     mailLockedUsers,
     { data: dataMailLockedUsers, error: errorMailLockedUsers, loading: loadingMailLockedUsers },
-  ] = useMutation<{ mailAllLockedUsers: object[] }>(gql`
-    mutation {
-      mailAllLockedUsers
-    }
-  `);
+  ] = useMutation(adminMailLockedUsersMutation);
 
   return (
     <Grid>

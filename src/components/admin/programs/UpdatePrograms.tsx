@@ -4,7 +4,9 @@ import { Button, Dropdown, Grid, Icon, Label, Modal } from "semantic-ui-react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Confirm } from "@components/Confirm";
-import { allProgramsAdmin, allUsersAdmin, updateUserProgramsAdmin } from "@graphql/adminQueries";
+import {
+    allProgramsAdminQuery, allUsersAdminQuery, updateUserProgramsAdminMutation
+} from "@graphql/adminQueries";
 
 export const UpdatePrograms: FC<{
   program: { email: string; programs: number[] };
@@ -12,7 +14,7 @@ export const UpdatePrograms: FC<{
 }> = ({ children, program }) => {
   const [open, setOpen] = useState(false);
 
-  const { data: allPrograms } = useQuery(allProgramsAdmin);
+  const { data: allPrograms } = useQuery(allProgramsAdminQuery);
 
   const [selectedPrograms, setSelectedPrograms] = useState(program.programs);
 
@@ -20,24 +22,24 @@ export const UpdatePrograms: FC<{
     setSelectedPrograms(program.programs);
   }, [program.programs]);
 
-  const [updateProgram] = useMutation(updateUserProgramsAdmin, {
+  const [updateProgram] = useMutation(updateUserProgramsAdminMutation, {
     variables: {
       update_user: {
         oldPrograms: program.programs,
         email: program.email,
-        programs: selectedPrograms
-      }
+        programs: selectedPrograms,
+      },
     },
     update: (cache, { data }) => {
       if (data?.updateUserPrograms) {
         cache.writeQuery({
-          query: allUsersAdmin,
+          query: allUsersAdminQuery,
           data: {
-            users: data.updateUserPrograms
-          }
+            users: data.updateUserPrograms,
+          },
         });
       }
-    }
+    },
   });
   const deletePrograms = () => {
     updateProgram({
@@ -45,16 +47,16 @@ export const UpdatePrograms: FC<{
         update_user: {
           email: program.email,
           oldPrograms: program.programs,
-          programs: []
-        }
-      }
+          programs: [],
+        },
+      },
     });
   };
 
   return (
     <Modal
       trigger={cloneElement(children, {
-        onClick: () => setOpen(true)
+        onClick: () => setOpen(true),
       })}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
@@ -99,12 +101,10 @@ export const UpdatePrograms: FC<{
               options={
                 allPrograms?.programs.map(({ id: value }) => ({
                   text: value,
-                  value
+                  value,
                 })) ?? []
               }
-              onChange={(_, { value }) =>
-                setSelectedPrograms(value as number[])
-              }
+              onChange={(_, { value }) => setSelectedPrograms(value as number[])}
               value={selectedPrograms}
             />
           </Grid.Row>

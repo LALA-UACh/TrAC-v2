@@ -1,6 +1,5 @@
 import sha1 from "crypto-js/sha1";
 import { ValidationErrors } from "final-form";
-import gql from "graphql-tag";
 import Cookies from "js-cookie";
 import Router from "next/router";
 import { FC, useEffect, useState } from "react";
@@ -13,12 +12,10 @@ import { isEmail, isLength } from "validator";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { LOCKED_USER, WRONG_INFO } from "@constants";
-import { currentUser } from "@graphql/queries";
+import { currentUserQuery, loginMutation } from "@graphql/queries";
 
 const Login: FC = () => {
-  const [session, setSession] = useState(() =>
-    Cookies.get("remember") ? true : false
-  );
+  const [session, setSession] = useState(() => (Cookies.get("remember") ? true : false));
 
   useUpdateEffect(() => {
     if (session) {
@@ -28,37 +25,18 @@ const Login: FC = () => {
     }
   }, [session]);
 
-  const [login, { data, loading, called, client }] = useMutation<
-    {
-      login: {
-        user?: { email: string; name: string; admin: boolean };
-        error?: string;
-      };
-    },
-    { email: string; password: string }
-  >(gql`
-    mutation($email: EmailAddress!, $password: String!) {
-      login(email: $email, password: $password) {
-        user {
-          email
-          name
-          admin
-        }
-        error
+  const [login, { data, loading }] = useMutation(loginMutation, {
+    update: (cache, { data }) => {
+      if (data?.login.user) {
+        cache.writeQuery({
+          query: currentUserQuery,
+          data: {
+            current_user: data.login.user,
+          },
+        });
       }
-    }
-  `);
-
-  useEffect(() => {
-    if (called && !loading && data?.login.user) {
-      client?.writeQuery({
-        query: currentUser,
-        data: {
-          current_user: data.login.user,
-        },
-      });
-    }
-  }, [called, loading, called, data]);
+    },
+  });
 
   return (
     <Grid centered padded>
@@ -85,13 +63,7 @@ const Login: FC = () => {
       )}
 
       <Form
-        onSubmit={({
-          email,
-          password,
-        }: {
-          email: string;
-          password: string;
-        }) => {
+        onSubmit={({ email, password }: { email: string; password: string }) => {
           login({
             variables: {
               email,
@@ -167,10 +139,9 @@ const Login: FC = () => {
 };
 
 export default () => {
-  const { data, loading } = useQuery<{ current_user?: { email: string } }>(
-    currentUser,
-    { ssr: false }
-  );
+  const { data, loading } = useQuery<{ current_user?: { email: string } }>(currentUserQuery, {
+    ssr: false,
+  });
   useEffect(() => {
     if (!loading && data && data?.current_user?.email) {
       Router.push("/");

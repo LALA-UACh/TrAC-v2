@@ -21,11 +21,14 @@ const mailOptions = {
 
 export const sendMail = async (
   opts: MailOptions,
-  success = (info: any) => console.log("Email sent successfully: " + stringify(info)),
+  success = (info: any) =>
+    console.log("Email sent successfully: " + stringify(info)),
   failure = (err: any) => console.error("Error sending mail: " + stringify(err))
 ) => {
   if (!GMAIL_USERNAME || !GMAIL_PASSWORD) {
-    throw new Error("Put the environment variables GMAIL_USERNAME and GMAIL_PASSWORD");
+    throw new Error(
+      "Put the environment variables GMAIL_USERNAME and GMAIL_PASSWORD"
+    );
   }
   return await transporter.sendMail({
     ...mailOptions,

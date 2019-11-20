@@ -1,4 +1,3 @@
-import gql from "graphql-tag-ts";
 import toInteger from "lodash/toInteger";
 import { cloneElement, FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
@@ -12,7 +11,9 @@ import { useMutation } from "@apollo/react-hooks";
 import { Box, Flex } from "@chakra-ui/core";
 import { Confirm } from "@components/Confirm";
 import { UserType } from "@constants";
-import { adminDeleteUser, adminUpsertUsers, allUsersAdmin } from "@graphql/adminQueries";
+import {
+    adminDeleteUserMutation, adminLockMailUserMutation, adminUpsertUsersMutation, allUsersAdminQuery
+} from "@graphql/adminQueries";
 
 export const UpdateUser: FC<{
   user: {
@@ -33,12 +34,12 @@ export const UpdateUser: FC<{
   }, [user.email]);
 
   const [updateUser, { error: errorUpdate, loading: loadingUpdateUser }] = useMutation(
-    adminUpsertUsers,
+    adminUpsertUsersMutation,
     {
       update: (cache, { data }) => {
         if (data?.upsertUsers) {
           cache.writeQuery({
-            query: allUsersAdmin,
+            query: allUsersAdminQuery,
             data: {
               users: data.upsertUsers,
             },
@@ -55,27 +56,32 @@ export const UpdateUser: FC<{
   const [
     lockMailUser,
     { loading: loadingLockMailUser, error: errorLockMailUser, data: dataLockMailUser },
-  ] = useMutation<
-    { lockMailUser: object },
-    {
-      email: string;
-    }
-  >(gql`
-    mutation($email: EmailAddress!) {
-      lockMailUser(email: $email)
-    }
-  `);
+  ] = useMutation(adminLockMailUserMutation, {
+    variables: {
+      email: user.email,
+    },
+    update: (cache, { data }) => {
+      if (data) {
+        cache.writeQuery({
+          query: allUsersAdminQuery,
+          data: {
+            users: data.lockMailUser.users,
+          },
+        });
+      }
+    },
+  });
 
   const [openMailMessage, setOpenMailMessage] = useState(false);
 
-  const [deleteUser, { loading: loadingDeleteUser }] = useMutation(adminDeleteUser, {
+  const [deleteUser, { loading: loadingDeleteUser }] = useMutation(adminDeleteUserMutation, {
     variables: {
       email: user.email,
     },
     update: (cache, { data }) => {
       if (data?.deleteUser) {
         cache.writeQuery({
-          query: allUsersAdmin,
+          query: allUsersAdminQuery,
           data: {
             users: data.deleteUser,
           },
@@ -324,11 +330,7 @@ export const UpdateUser: FC<{
                       secondary
                       onClick={async () => {
                         try {
-                          await lockMailUser({
-                            variables: {
-                              email: user.email,
-                            },
-                          });
+                          await lockMailUser();
                         } catch (err) {
                           console.error(JSON.stringify(err, null, 2));
                         }
@@ -387,7 +389,8 @@ export const UpdateUser: FC<{
                       <Message.Content>
                         {errorLockMailUser && <Message.Header>Error!</Message.Header>}
                         {errorLockMailUser && errorLockMailUser.message}
-                        {dataLockMailUser && JSON.stringify(dataLockMailUser.lockMailUser, null, 2)}
+                        {dataLockMailUser &&
+                          JSON.stringify(dataLockMailUser.lockMailUser.mailResult, null, 2)}
                       </Message.Content>
                     </Message>
                   </Grid.Row>

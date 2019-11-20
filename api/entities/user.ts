@@ -1,6 +1,6 @@
 import { EmailAddressResolver as EmailAddress } from "graphql-scalars";
+import { GraphQLJSONObject } from "graphql-type-json";
 import {
-  ArgsType,
   Authorized,
   Field,
   InputType,
@@ -72,11 +72,6 @@ export class UserProgram {
   program: number;
 }
 
-@ArgsType()
-export class UpsertUserType {
-  @Field(() => [UpsertedUser])
-  users: UpsertedUser[];
-}
 @InputType()
 export class UpsertedUser implements Partial<User> {
   @Field(() => EmailAddress, {
@@ -120,4 +115,22 @@ export class UpdateUserPrograms {
 
   @Field(() => [Int])
   programs: number[];
+}
+
+@ObjectType()
+export class LockedUserResult {
+  @Field(() => GraphQLJSONObject)
+  mailResult: Record<string, any>;
+
+  @Field(() => [User])
+  users: User[];
+}
+
+@ObjectType()
+export class MultipleLockedUserResult {
+  @Field(() => [GraphQLJSONObject])
+  mailResults: Record<string, any>[];
+
+  @Field(() => [User])
+  users: User[];
 }

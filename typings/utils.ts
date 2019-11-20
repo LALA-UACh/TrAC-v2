@@ -8,7 +8,7 @@ export type IfImplements<A, B> = B extends A ? A : never;
 /**
  * Extract the property type from an array inside the field of an object
  */
-export type ArrayPropertyType<O extends object, F extends keyof O> = $ElementType<
-  $PropertyType<O, F>,
-  number
->;
+export type ArrayPropertyType<
+  O extends object,
+  F extends keyof O
+> = $ElementType<$PropertyType<O, F>, number>;

@@ -5,38 +5,47 @@ import { Program } from "@entities/program";
 import { User } from "@entities/user";
 import { IfImplements } from "@typings/utils";
 
-export const allUsersAdmin: DocumentNode<{
-  users: IfImplements<
-    {
-      email: string;
-      name: string;
-      tries: number;
-      type: UserType;
-      rut_id?: string;
-      show_dropout: boolean;
-      locked: boolean;
-      programs: { id: number }[];
-    },
-    User
-  >[];
-}> = gql`
-  query {
-    users {
-      email
-      name
-      tries
-      type
-      rut_id
-      show_dropout
-      locked
-      programs {
-        id
-      }
+type IAllUsersAdmin = IfImplements<
+  {
+    email: string;
+    name: string;
+    tries: number;
+    type: UserType;
+    rut_id?: string;
+    show_dropout: boolean;
+    locked: boolean;
+    programs: { id: number }[];
+  },
+  User
+>[];
+
+const AllUsersAdminFragment = gql`
+  fragment allUsersAdminFragment on User {
+    email
+    name
+    tries
+    type
+    rut_id
+    show_dropout
+    locked
+    programs {
+      id
     }
   }
 `;
 
-export const allProgramsAdmin: DocumentNode<{
+export const allUsersAdminQuery: DocumentNode<{
+  users: IAllUsersAdmin;
+}> = gql`
+  query {
+    users {
+      ...allUsersAdminFragment
+    }
+  }
+  ${AllUsersAdminFragment}
+`;
+
+export const allProgramsAdminQuery: DocumentNode<{
   programs: IfImplements<{ id: number }, Program>[];
 }> = gql`
   query {
@@ -46,21 +55,9 @@ export const allProgramsAdmin: DocumentNode<{
   }
 `;
 
-export const addUsersProgramsAdmin: DocumentNode<
+export const addUsersProgramsAdminMutation: DocumentNode<
   {
-    addUsersPrograms: IfImplements<
-      {
-        email: string;
-        name: string;
-        tries: number;
-        type: UserType;
-        rut_id?: string;
-        show_dropout: boolean;
-        locked: boolean;
-        programs: { id: number }[];
-      },
-      User
-    >[];
+    addUsersPrograms: IAllUsersAdmin[];
   },
   {
     user_programs: {
@@ -71,35 +68,15 @@ export const addUsersProgramsAdmin: DocumentNode<
 > = gql`
   mutation($user_programs: [UserProgram!]!) {
     addUsersPrograms(user_programs: $user_programs) {
-      email
-      name
-      tries
-      type
-      rut_id
-      show_dropout
-      locked
-      programs {
-        id
-      }
+      ...allUsersAdminFragment
     }
   }
+  ${AllUsersAdminFragment}
 `;
 
-export const updateUserProgramsAdmin: DocumentNode<
+export const updateUserProgramsAdminMutation: DocumentNode<
   {
-    updateUserPrograms: IfImplements<
-      {
-        email: string;
-        name: string;
-        tries: number;
-        type: UserType;
-        rut_id?: string;
-        show_dropout: boolean;
-        locked: boolean;
-        programs: { id: number }[];
-      },
-      User
-    >[];
+    updateUserPrograms: IAllUsersAdmin;
   },
   {
     update_user: {
@@ -111,35 +88,15 @@ export const updateUserProgramsAdmin: DocumentNode<
 > = gql`
   mutation($update_user: UpdateUserPrograms!) {
     updateUserPrograms(userPrograms: $update_user) {
-      email
-      name
-      tries
-      type
-      rut_id
-      show_dropout
-      locked
-      programs {
-        id
-      }
+      ...allUsersAdminFragment
     }
   }
+  ${AllUsersAdminFragment}
 `;
 
-export const adminUpsertUsers: DocumentNode<
+export const adminUpsertUsersMutation: DocumentNode<
   {
-    upsertUsers: IfImplements<
-      {
-        email: string;
-        name: string;
-        tries: number;
-        type: UserType;
-        rut_id?: string;
-        show_dropout: boolean;
-        locked: boolean;
-        programs: { id: number }[];
-      },
-      User
-    >[];
+    upsertUsers: IAllUsersAdmin;
   },
   {
     users: {
@@ -156,35 +113,15 @@ export const adminUpsertUsers: DocumentNode<
 > = gql`
   mutation($users: [UpsertedUser!]!) {
     upsertUsers(users: $users) {
-      email
-      name
-      tries
-      type
-      rut_id
-      show_dropout
-      locked
-      programs {
-        id
-      }
+      ...allUsersAdminFragment
     }
   }
+  ${AllUsersAdminFragment}
 `;
 
-export const adminDeleteUser: DocumentNode<
+export const adminDeleteUserMutation: DocumentNode<
   {
-    deleteUser: IfImplements<
-      {
-        email: string;
-        name: string;
-        tries: number;
-        type: UserType;
-        rut_id?: string;
-        show_dropout: boolean;
-        locked: boolean;
-        programs: { id: number }[];
-      },
-      User
-    >[];
+    deleteUser: IAllUsersAdmin;
   },
   {
     email: string;
@@ -192,16 +129,36 @@ export const adminDeleteUser: DocumentNode<
 > = gql`
   mutation($email: EmailAddress!) {
     deleteUser(email: $email) {
-      email
-      name
-      tries
-      type
-      rut_id
-      show_dropout
-      locked
-      programs {
-        id
+      ...allUsersAdminFragment
+    }
+  }
+  ${AllUsersAdminFragment}
+`;
+
+export const adminLockMailUserMutation: DocumentNode<
+  {
+    lockMailUser: {
+      mailResult: Record<string, any>;
+      users: IAllUsersAdmin;
+    };
+  },
+  { email: string }
+> = gql`
+  mutation($email: EmailAddress!) {
+    lockMailUser(email: $email) {
+      mailResult
+      users {
+        ...allUsersAdminFragment
       }
     }
+  }
+  ${AllUsersAdminFragment}
+`;
+
+export const adminMailLockedUsersMutation: DocumentNode<{
+  mailAllLockedUsers: Record<string, any>[];
+}> = gql`
+  mutation {
+    mailAllLockedUsers
   }
 `;

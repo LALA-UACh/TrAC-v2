@@ -1,4 +1,12 @@
-import { Arg, Authorized, FieldResolver, Int, Query, Resolver, Root } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  FieldResolver,
+  Int,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 import { $PropertyType } from "utility-types";
 
 import { COURSE_TABLE, STUDENT_PROGRAM_TABLE } from "@consts";
@@ -57,7 +65,14 @@ export class StudentResolver {
   ): Promise<
     Pick<
       Term,
-      "id" | "student_id" | "year" | "semester" | "situation" | "PSP" | "PGA" | "ProgramPGA"
+      | "id"
+      | "student_id"
+      | "year"
+      | "semester"
+      | "situation"
+      | "PSP"
+      | "PGA"
+      | "ProgramPGA"
     >[]
   > {
     // TODO Student terms resolver
@@ -71,7 +86,9 @@ export class TermResolver {
   async takenCourses(
     @Root()
     { id, student_id }: Pick<Term, "id" | "student_id">
-  ): Promise<Pick<TakenCourse, "id" | "code" | "registration" | "grade" | "state">[]> {
+  ): Promise<
+    Pick<TakenCourse, "id" | "code" | "registration" | "grade" | "state">[]
+  > {
     // TODO Term taken courses resolver
     return [];
   }
