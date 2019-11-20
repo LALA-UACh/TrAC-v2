@@ -17,7 +17,7 @@ export class AuthResolver {
     req,
     res,
     email,
-    admin
+    admin,
   }: {
     req: Request;
     res: Response;
@@ -27,14 +27,11 @@ export class AuthResolver {
     res.cookie(
       "authorization",
       sign({ email, admin }, SECRET, {
-        expiresIn: req?.cookies?.remember ? "1 day" : "30m"
+        expiresIn: req?.cookies?.remember ? "1 day" : "30m",
       }),
       {
         httpOnly: true,
-        expires: addMilliseconds(
-          Date.now(),
-          req?.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
-        )
+        expires: addMilliseconds(Date.now(), req?.cookies?.remember ? ONE_DAY : THIRTY_MINUTES),
       }
     );
   }
@@ -43,7 +40,10 @@ export class AuthResolver {
   async current_user(@Ctx() { user }: IContext): Promise<User | undefined> {
     if (user) {
       return await dbAuth<User>(USERS_TABLE)
-        .where({ email: user.email, locked: false })
+        .where({
+          email: user.email,
+          locked: false,
+        })
         .first();
     }
 
@@ -53,19 +53,25 @@ export class AuthResolver {
   @Mutation(() => AuthResult)
   async login(
     @Ctx() { req, res }: IContext,
-    @Args() { email, password: passwordInput }: LoginInput
+    @Args()
+    { email, password: passwordInput }: LoginInput
   ): Promise<AuthResult> {
     let user = await dbAuth<User>(USERS_TABLE)
       .first()
       .where({
-        email
+        email,
       });
 
     if (user) {
       if (user.locked) {
         return { error: LOCKED_USER };
       } else if (user.password === passwordInput) {
-        AuthResolver.authenticate({ req, res, email, admin: user.admin });
+        AuthResolver.authenticate({
+          req,
+          res,
+          email,
+          admin: user.admin,
+        });
 
         return { user };
       } else {
@@ -76,7 +82,7 @@ export class AuthResolver {
             .update({
               locked: true,
               tries: 3,
-              unlockKey
+              unlockKey,
             });
           // TODO Implement mail service
           return { error: LOCKED_USER };
@@ -100,7 +106,8 @@ export class AuthResolver {
   @Mutation(() => AuthResult)
   async unlock(
     @Ctx() { req, res }: IContext,
-    @Args() { email, password: passwordInput, unlockKey }: UnlockInput
+    @Args()
+    { email, password: passwordInput, unlockKey }: UnlockInput
   ): Promise<AuthResult> {
     let user = await dbAuth<User>(USERS_TABLE)
       .where({ email, unlockKey })
@@ -114,7 +121,9 @@ export class AuthResolver {
         case user.oldPassword1:
         case user.oldPassword2:
         case user.oldPassword3: {
-          return { error: USED_OLD_PASSWORD };
+          return {
+            error: USED_OLD_PASSWORD,
+          };
         }
         default: {
           user = await dbAuth<User>(USERS_TABLE)
@@ -126,7 +135,7 @@ export class AuthResolver {
               oldPassword3: user.oldPassword2,
               locked: false,
               tries: 0,
-              unlockKey: ""
+              unlockKey: "",
             })
             .returning("*")
             .first();
@@ -135,7 +144,7 @@ export class AuthResolver {
               req,
               res,
               email,
-              admin: user?.admin ?? false
+              admin: user?.admin ?? false,
             });
             return { user };
           }

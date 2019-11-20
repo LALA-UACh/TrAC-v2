@@ -2,7 +2,11 @@ import { Arg, Authorized, Ctx, FieldResolver, Int, Query, Resolver, Root } from 
 import { $PropertyType } from "utility-types";
 
 import {
-    ADMIN, COURSE_TABLE, PROGRAM_STRUCTURE_TABLE, PROGRAM_TABLE, USER_PROGRAMS_TABLE
+  ADMIN,
+  COURSE_TABLE,
+  PROGRAM_STRUCTURE_TABLE,
+  PROGRAM_TABLE,
+  USER_PROGRAMS_TABLE,
 } from "@consts";
 import { dbAuth, dbLALA } from "@db";
 import { Course } from "@entities/course";
@@ -13,16 +17,23 @@ import { ArrayPropertyType } from "@typings/utils";
 @Resolver(() => Program)
 export class ProgramResolver {
   @Authorized()
-  @Query(() => Program, { nullable: true })
+  @Query(() => Program, {
+    nullable: true,
+  })
   async program(
     @Arg("id", () => Int) id: number,
     @Ctx() { user }: IContext
   ): Promise<Pick<Program, "id" | "name" | "desc" | "state"> | undefined> {
     if (
       user === undefined ||
-      (await dbAuth<{ program: string }>(USER_PROGRAMS_TABLE)
+      (await dbAuth<{
+        program: string;
+      }>(USER_PROGRAMS_TABLE)
         .select(PROGRAM_TABLE)
-        .where({ program: id, email: user.email })
+        .where({
+          program: id,
+          email: user.email,
+        })
         .first()) === undefined
     ) {
       throw new Error("You are not allowed to request this program!");
@@ -53,13 +64,14 @@ export class ProgramResolver {
         .select(PROGRAM_TABLE)
         .where({ email: user?.email })
     ).map(({ program }) => ({
-      id: parseInt(program, 10)
+      id: parseInt(program, 10),
     }));
   }
 
   @FieldResolver()
   async name(
-    @Root() { name, id }: Partial<Program>
+    @Root()
+    { name, id }: Partial<Program>
   ): Promise<$PropertyType<Program, "name">> {
     return (
       name ??
@@ -76,7 +88,8 @@ export class ProgramResolver {
   }
   @FieldResolver()
   async desc(
-    @Root() { desc, id }: Partial<Program>
+    @Root()
+    { desc, id }: Partial<Program>
   ): Promise<$PropertyType<Program, "desc">> {
     return (
       desc ??
@@ -93,7 +106,8 @@ export class ProgramResolver {
   }
   @FieldResolver()
   async state(
-    @Root() { state, id }: Partial<Program>
+    @Root()
+    { state, id }: Partial<Program>
   ): Promise<$PropertyType<Program, "state">> {
     return (
       state ??
@@ -111,7 +125,8 @@ export class ProgramResolver {
 
   @FieldResolver()
   async courses(
-    @Root() { id: program_id }: Pick<Program, "id">
+    @Root()
+    { id: program_id }: Pick<Program, "id">
   ): Promise<
     Pick<
       ArrayPropertyType<Program, "courses">,
@@ -136,12 +151,18 @@ export class ProgramResolver {
           code,
           credits,
           requisitesRaw: requisites,
-          mention
+          mention,
         };
       }
       throw new Error(
         "Unexpected null! " +
-          JSON.stringify({ semester, code, credits, requisites, mention })
+          JSON.stringify({
+            semester,
+            code,
+            credits,
+            requisites,
+            mention,
+          })
       );
     });
   }
@@ -151,7 +172,8 @@ export class ProgramResolver {
 export class CourseResolver {
   @FieldResolver()
   async name(
-    @Root() { code }: Pick<Course, "code">
+    @Root()
+    { code }: Pick<Course, "code">
   ): Promise<$PropertyType<Course, "name">> {
     return (
       (
@@ -179,9 +201,7 @@ export class CourseResolver {
   }
 
   @FieldResolver()
-  async historicalDistribution(): Promise<
-    $PropertyType<Course, "historicalDistribution">[]
-  > {
+  async historicalDistribution(): Promise<$PropertyType<Course, "historicalDistribution">[]> {
     // TODO Courses historical distribution resolver
     return [];
   }

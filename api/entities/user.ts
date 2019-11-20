@@ -1,5 +1,13 @@
-import { IsEmail } from "class-validator";
-import { Authorized, Field, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
+import { EmailAddressResolver as EmailAddress } from "graphql-scalars";
+import {
+  ArgsType,
+  Authorized,
+  Field,
+  InputType,
+  Int,
+  ObjectType,
+  registerEnumType,
+} from "type-graphql";
 
 import { UserType } from "@constants";
 import { ADMIN } from "@consts";
@@ -8,12 +16,12 @@ import { Program } from "./program";
 
 registerEnumType(UserType, {
   name: "UserType",
-  description: "Possible options of an user type"
+  description: "Possible options of an user type",
 });
 
 @ObjectType()
 export class User {
-  @Field()
+  @Field(() => EmailAddress)
   email: string;
 
   @Field()
@@ -57,26 +65,36 @@ export class User {
 
 @InputType()
 export class UserProgram {
-  @IsEmail()
-  @Field()
+  @Field(() => EmailAddress)
   email: string;
 
   @Field(() => Int)
   program: number;
 }
 
+@ArgsType()
+export class UpsertUserType {
+  @Field(() => [UpsertedUser])
+  users: UpsertedUser[];
+}
 @InputType()
 export class UpsertedUser implements Partial<User> {
-  @Field({ nullable: true })
+  @Field(() => EmailAddress, {
+    nullable: true,
+  })
   oldEmail?: string;
 
-  @Field()
+  @Field(() => EmailAddress)
   email: string;
 
-  @Field({ defaultValue: "default_name" })
+  @Field({
+    defaultValue: "default_name",
+  })
   name: string;
 
-  @Field(() => UserType, { defaultValue: UserType.Student })
+  @Field(() => UserType, {
+    defaultValue: UserType.Student,
+  })
   type: UserType;
 
   @Field({ defaultValue: 0 })
@@ -94,8 +112,7 @@ export class UpsertedUser implements Partial<User> {
 
 @InputType()
 export class UpdateUserPrograms {
-  @IsEmail()
-  @Field()
+  @Field(() => EmailAddress)
   email: string;
 
   @Field(() => [Int])

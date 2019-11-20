@@ -1,16 +1,18 @@
-import { IsEmail, IsHash, Length } from "class-validator";
+import { IsHash, Length } from "class-validator";
+import { EmailAddressResolver as EmailAddress } from "graphql-scalars";
 import { ArgsType, Field, ObjectType } from "type-graphql";
 
 import { User } from "./user";
 
 @ArgsType()
 export class LoginInput {
-  @Field()
-  @IsEmail()
+  @Field(() => EmailAddress)
   email: string;
 
   @Field()
-  @IsHash("sha1", { message: "password must be a hash" })
+  @IsHash("sha1", {
+    message: "password must be a hash",
+  })
   password: string;
 }
 

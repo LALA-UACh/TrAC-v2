@@ -17,7 +17,7 @@ export const buildContext = ({ req, res }: { req: Request; res: Response }) => {
         req,
         res,
         email: user.email,
-        admin: user.admin
+        admin: user.admin,
       });
     }
   } catch {}
@@ -25,6 +25,6 @@ export const buildContext = ({ req, res }: { req: Request; res: Response }) => {
   return {
     req,
     res,
-    user
+    user,
   };
 };

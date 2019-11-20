@@ -7,7 +7,7 @@ import { DistributionValue } from "./distribution";
 
 registerEnumType(StateCourse, {
   name: "StateCourse",
-  description: "Possible states of a taken course"
+  description: "Possible states of a taken course",
 });
 
 @ObjectType()

@@ -1,6 +1,6 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
-import { StateCourse, UserType } from "@constants";
+import { StateCourse } from "@constants";
 import { Program } from "@entities/program";
 import { Student } from "@entities/student";
 import { User } from "@entities/user";
@@ -40,8 +40,14 @@ export const searchProgramQuery: DocumentNode<
           mention: string;
           semester: number;
           flow: { code: string }[];
-          requisites: { code: string }[];
-          historicalDistribution: { min: number; max: number; value: number }[];
+          requisites: {
+            code: string;
+          }[];
+          historicalDistribution: {
+            min: number;
+            max: number;
+            value: number;
+          }[];
         }[];
       },
       Program
@@ -82,7 +88,10 @@ export const searchStudentQuery: DocumentNode<
     student: IfImplements<
       {
         id: string;
-        program: { id: number; name: string };
+        program: {
+          id: number;
+          name: string;
+        };
         curriculum: number;
         start_year: number;
         mention: string;
@@ -102,7 +111,10 @@ export const searchStudentQuery: DocumentNode<
             registration: string;
             grade: number;
             state: StateCourse;
-            historicalStates: Array<{ state: StateCourse; grade: number }>;
+            historicalStates: Array<{
+              state: StateCourse;
+              grade: number;
+            }>;
             currentDistribution: Array<{
               min: number;
               max: number;
@@ -114,7 +126,10 @@ export const searchStudentQuery: DocumentNode<
       Student
     >;
   },
-  { student_id: string; program_id?: number }
+  {
+    student_id: string;
+    program_id?: number;
+  }
 > = gql`
   query($student_id: String!, $program_id: Int) {
     student(student_id: $student_id, program_id: $program_id) {
@@ -164,121 +179,6 @@ export const myProgramsQuery: DocumentNode<{
     myPrograms {
       id
       name
-    }
-  }
-`;
-
-export const allUsersAdmin: DocumentNode<{
-  users: IfImplements<
-    {
-      email: string;
-      name: string;
-      tries: number;
-      type: UserType;
-      rut_id?: string;
-      show_dropout: boolean;
-      locked: boolean;
-      programs: { id: number }[];
-    },
-    User
-  >[];
-}> = gql`
-  query {
-    users {
-      email
-      name
-      tries
-      type
-      rut_id
-      show_dropout
-      locked
-      programs {
-        id
-      }
-    }
-  }
-`;
-
-export const allProgramsAdmin: DocumentNode<{
-  programs: IfImplements<{ id: number }, Program>[];
-}> = gql`
-  query {
-    programs {
-      id
-    }
-  }
-`;
-
-export const addUsersProgramsAdmin: DocumentNode<
-  {
-    addUsersPrograms: IfImplements<
-      {
-        email: string;
-        name: string;
-        tries: number;
-        type: UserType;
-        rut_id?: string;
-        show_dropout: boolean;
-        locked: boolean;
-        programs: { id: number }[];
-      },
-      User
-    >[];
-  },
-  { user_programs: { email: string; program: number }[] }
-> = gql`
-  mutation($user_programs: [UserProgram!]!) {
-    addUsersPrograms(user_programs: $user_programs) {
-      email
-      name
-      tries
-      type
-      rut_id
-      show_dropout
-      locked
-      programs {
-        id
-      }
-    }
-  }
-`;
-
-export const updateUserProgramsAdmin: DocumentNode<
-  {
-    updateUserPrograms: IfImplements<
-      {
-        email: string;
-        name: string;
-        tries: number;
-        type: UserType;
-        rut_id?: string;
-        show_dropout: boolean;
-        locked: boolean;
-        programs: { id: number }[];
-      },
-      User
-    >[];
-  },
-  {
-    update_user: {
-      email: string;
-      programs: number[];
-      oldPrograms: number[];
-    };
-  }
-> = gql`
-  mutation($update_user: UpdateUserPrograms!) {
-    updateUserPrograms(userPrograms: $update_user) {
-      email
-      name
-      tries
-      type
-      rut_id
-      show_dropout
-      locked
-      programs {
-        id
-      }
     }
   }
 `;

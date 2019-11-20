@@ -1,8 +1,24 @@
 export const rangeGrades = [
-  { min: 1, max: 3.4, color: "#d6604d" },
-  { min: 3.5, max: 3.9, color: "#f48873" },
-  { min: 4, max: 4.4, color: "#a7dc78" },
-  { min: 4.5, max: 7, color: "#66b43e" }
+  {
+    min: 1,
+    max: 3.4,
+    color: "#d6604d",
+  },
+  {
+    min: 3.5,
+    max: 3.9,
+    color: "#f48873",
+  },
+  {
+    min: 4,
+    max: 4.4,
+    color: "#a7dc78",
+  },
+  {
+    min: 4.5,
+    max: 7,
+    color: "#66b43e",
+  },
 ];
 export const approvedGrade: number = 4;
 

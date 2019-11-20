@@ -7,7 +7,7 @@ import { AdminMenu } from "@components/admin/Menu";
 import { Programs } from "@components/admin/programs";
 import { Users } from "@components/admin/users";
 import { RequireAuth } from "@components/RequireAuth";
-import { allUsersAdmin } from "@graphql/queries";
+import { allUsersAdmin } from "@graphql/adminQueries";
 
 const Admin: FC = () => {
   const [active, setActive] = useRememberState("admin_menu_tab", "users");

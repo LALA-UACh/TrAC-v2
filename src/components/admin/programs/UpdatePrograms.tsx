@@ -4,7 +4,7 @@ import { Button, Dropdown, Grid, Icon, Label, Modal } from "semantic-ui-react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Confirm } from "@components/Confirm";
-import { allProgramsAdmin, allUsersAdmin, updateUserProgramsAdmin } from "@graphql/queries";
+import { allProgramsAdmin, allUsersAdmin, updateUserProgramsAdmin } from "@graphql/adminQueries";
 
 export const UpdatePrograms: FC<{
   program: { email: string; programs: number[] };

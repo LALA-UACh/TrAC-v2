@@ -1,8 +1,8 @@
 declare module "@vx/axis" {
-import { ScaleLinear } from "d3-scale";
-import React, { ReactText } from "react";
+  import { ScaleLinear } from "d3-scale";
+  import React, { ReactText } from "react";
 
-    interface Point {
+  interface Point {
     x: number;
     y: number;
   }
@@ -33,11 +33,7 @@ import React, { ReactText } from "react";
     tickValues?: number[];
     tickComponent?:
       | React.ReactNode
-      | ((obj: {
-          x: number;
-          y: number;
-          formattedValue: string;
-        }) => React.ReactNode);
+      | ((obj: { x: number; y: number; formattedValue: string }) => React.ReactNode);
     top?: number;
     children?: (renderProps: {
       axisFromPoint: Point;

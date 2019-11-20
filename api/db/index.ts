@@ -5,8 +5,8 @@ export const dbAuth = knex({
   connection: {
     host: "localhost",
     user: "postgres",
-    database: "auth-lala"
-  }
+    database: "auth-lala",
+  },
   // debug: true
 });
 
@@ -15,6 +15,6 @@ export const dbLALA = knex({
   connection: {
     host: "localhost",
     user: "postgres",
-    database: "lalauach"
-  }
+    database: "lalauach",
+  },
 });

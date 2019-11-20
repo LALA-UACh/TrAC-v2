@@ -18,9 +18,9 @@ export const withApollo = nextWithApollo(
         uri: GRAPHQL_URL,
         batchInterval: 50,
         includeExtensions: true,
-        credentials: "same-origin"
+        credentials: "same-origin",
       }),
       cache: new InMemoryCache({}).restore(initialState || {}),
-      connectToDevTools: process.env.NODE_ENV !== "production"
+      connectToDevTools: process.env.NODE_ENV !== "production",
     })
 );

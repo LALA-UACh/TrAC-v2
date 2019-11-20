@@ -9,12 +9,12 @@ import isEmail from "validator/lib/isEmail";
 import isJSON from "validator/lib/isJSON";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { addUsersProgramsAdmin, allProgramsAdmin, allUsersAdmin } from "@graphql/queries";
+import { addUsersProgramsAdmin, allProgramsAdmin, allUsersAdmin } from "@graphql/adminQueries";
 
 export const ImportPrograms: FC = () => {
   const [data, setData] = useRememberState(
     "AdminImportProgramsData",
-    "email,program\n"
+    "email,program\n",
   );
   const { data: allPrograms } = useQuery(allProgramsAdmin);
   const [open, setOpen] = useRememberState("AdminImportProgramsOpen", false);
@@ -36,8 +36,8 @@ export const ImportPrograms: FC = () => {
       setParsedData(
         parsedData.map(({ email, program }) => ({
           email,
-          program: program ? _.toInteger(program) : undefined
-        }))
+          program: program ? _.toInteger(program) : undefined,
+        })),
       );
     })();
   }, [data, setParsedData]);
@@ -54,12 +54,12 @@ export const ImportPrograms: FC = () => {
                 {
                   email: (v: string) => isEmail(v),
                   program: (v: string) =>
-                    allProgramsMapped.includes(_.toInteger(v))
-                }
+                    allProgramsMapped.includes(_.toInteger(v)),
+                },
               );
             }
             return false;
-          })
+          }),
       );
     })();
   }, [parsedData, allPrograms]);
@@ -68,19 +68,19 @@ export const ImportPrograms: FC = () => {
     addUsersProgramsAdmin,
     {
       variables: {
-        user_programs: parsedData
+        user_programs: parsedData,
       },
       update: (cache, { data }) => {
         if (data?.addUsersPrograms) {
           cache.writeQuery({
             query: allUsersAdmin,
             data: {
-              users: data.addUsersPrograms
-            }
+              users: data.addUsersPrograms,
+            },
           });
         }
-      }
-    }
+      },
+    },
   );
 
   if (errorImportPrograms) {
@@ -129,7 +129,7 @@ export const ImportPrograms: FC = () => {
                   <div
                     {...getRootProps()}
                     className={classNames("dropzone", {
-                      "dropzone--isActive": isDragActive
+                      "dropzone--isActive": isDragActive,
                     })}
                   >
                     <Button

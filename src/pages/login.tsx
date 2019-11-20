@@ -37,7 +37,7 @@ const Login: FC = () => {
     },
     { email: string; password: string }
   >(gql`
-    mutation($email: String!, $password: String!) {
+    mutation($email: EmailAddress!, $password: String!) {
       login(email: $email, password: $password) {
         user {
           email
@@ -54,8 +54,8 @@ const Login: FC = () => {
       client?.writeQuery({
         query: currentUser,
         data: {
-          current_user: data.login.user
-        }
+          current_user: data.login.user,
+        },
       });
     }
   }, [called, loading, called, data]);
@@ -87,7 +87,7 @@ const Login: FC = () => {
       <Form
         onSubmit={({
           email,
-          password
+          password,
         }: {
           email: string;
           password: string;
@@ -95,8 +95,8 @@ const Login: FC = () => {
           login({
             variables: {
               email,
-              password: sha1(password).toString()
-            }
+              password: sha1(password).toString(),
+            },
           });
         }}
         validate={({ email, password }) => {

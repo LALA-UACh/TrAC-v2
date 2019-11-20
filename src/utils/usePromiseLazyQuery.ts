@@ -9,16 +9,11 @@ import { LazyQueryHookOptions, QueryLazyOptions, useLazyQuery } from "@apollo/re
  * @param query GraphQL Query Tag
  * @param options Standard Apollo GraphQL query options
  */
-export function usePromiseLazyQuery<
-  TData = any,
-  TVariables = OperationVariables
->(
+export function usePromiseLazyQuery<TData = any, TVariables = OperationVariables>(
   query: DocumentNode<TData, TVariables>,
   options?: LazyQueryHookOptions<TData, TVariables>
 ): [
-  (
-    options: QueryLazyOptions<TVariables>
-  ) => Promise<QueryResult<TData, TVariables>>,
+  (options: QueryLazyOptions<TVariables>) => Promise<QueryResult<TData, TVariables>>,
   QueryResult<TData, TVariables>
 ] {
   const [execute, result] = useLazyQuery<TData, TVariables>(query, options);

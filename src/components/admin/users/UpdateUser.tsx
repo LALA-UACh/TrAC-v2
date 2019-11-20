@@ -52,7 +52,7 @@ export const UpdateUser: FC<{
   return (
     <Modal
       trigger={cloneElement(children, {
-        onClick: () => setOpen(true)
+        onClick: () => setOpen(true),
       })}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
@@ -66,7 +66,7 @@ export const UpdateUser: FC<{
           name,
           tries,
           type,
-          id = ""
+          id = "",
         }: {
           email: string;
           name: string;
@@ -98,7 +98,7 @@ export const UpdateUser: FC<{
                 style={{
                   position: "absolute",
                   right: "0.5em",
-                  top: "0.5em"
+                  top: "0.5em",
                 }}
                 onClick={() => {
                   reset(user);

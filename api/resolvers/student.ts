@@ -10,10 +10,16 @@ import { Term } from "@entities/term";
 @Resolver(() => Student)
 export class StudentResolver {
   @Authorized()
-  @Query(() => Student, { nullable: true })
+  @Query(() => Student, {
+    nullable: true,
+  })
   async student(
-    @Arg("student_id") student_id: string,
-    @Arg("program_id", () => Int, { nullable: true }) program_id?: number
+    @Arg("student_id")
+    student_id: string,
+    @Arg("program_id", () => Int, {
+      nullable: true,
+    })
+    program_id?: number
   ) {
     const data = await dbLALA<{
       program_id: number;
@@ -24,7 +30,7 @@ export class StudentResolver {
       .select("program_id", "curriculum", "start_year", "mention")
       .where({
         student_id,
-        program_id
+        program_id,
       })
       .orderBy("start_year", "desc")
       .first();
@@ -37,8 +43,8 @@ export class StudentResolver {
         start_year,
         mention,
         program: {
-          id: program_id
-        }
+          id: program_id,
+        },
       };
     }
 
@@ -51,14 +57,7 @@ export class StudentResolver {
   ): Promise<
     Pick<
       Term,
-      | "id"
-      | "student_id"
-      | "year"
-      | "semester"
-      | "situation"
-      | "PSP"
-      | "PGA"
-      | "ProgramPGA"
+      "id" | "student_id" | "year" | "semester" | "situation" | "PSP" | "PGA" | "ProgramPGA"
     >[]
   > {
     // TODO Student terms resolver
@@ -70,10 +69,9 @@ export class StudentResolver {
 export class TermResolver {
   @FieldResolver()
   async takenCourses(
-    @Root() { id, student_id }: Pick<Term, "id" | "student_id">
-  ): Promise<
-    Pick<TakenCourse, "id" | "code" | "registration" | "grade" | "state">[]
-  > {
+    @Root()
+    { id, student_id }: Pick<Term, "id" | "student_id">
+  ): Promise<Pick<TakenCourse, "id" | "code" | "registration" | "grade" | "state">[]> {
     // TODO Term taken courses resolver
     return [];
   }
@@ -83,7 +81,8 @@ export class TermResolver {
 export class TakenCourseResolver {
   @FieldResolver()
   async name(
-    @Root() { code }: Pick<TakenCourse, "code">
+    @Root()
+    { code }: Pick<TakenCourse, "code">
   ): Promise<$PropertyType<TakenCourse, "name">> {
     return (
       (
@@ -100,7 +99,8 @@ export class TakenCourseResolver {
 
   @FieldResolver()
   async historicalStates(
-    @Root() { id, code }: Pick<TakenCourse, "id" | "code">
+    @Root()
+    { id, code }: Pick<TakenCourse, "id" | "code">
   ): Promise<$PropertyType<TakenCourse, "historicalStates">[]> {
     // TODO Taken course historical states resolver
     return [];
@@ -108,7 +108,8 @@ export class TakenCourseResolver {
 
   @FieldResolver()
   async currentDistribution(
-    @Root() { id, code }: Pick<TakenCourse, "id" | "code">
+    @Root()
+    { id, code }: Pick<TakenCourse, "id" | "code">
   ): Promise<$PropertyType<TakenCourse, "currentDistribution">[]> {
     // TODO Taken course current distribution resolver
     return [];
