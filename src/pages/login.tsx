@@ -72,19 +72,25 @@ const Login: FC = () => {
       )}
 
       <Form
-        onSubmit={({
-          email,
-          password,
-        }: {
-          email: string;
-          password: string;
-        }) => {
-          login({
+        onSubmit={async (
+          {
+            email,
+            password,
+          }: {
+            email: string;
+            password: string;
+          },
+          { change }
+        ) => {
+          const { data } = await login({
             variables: {
               email,
               password: sha1(password).toString(),
             },
           });
+          if (data?.login.error) {
+            change("password", "");
+          }
         }}
         validate={({ email, password }) => {
           const errors: ValidationErrors = {};

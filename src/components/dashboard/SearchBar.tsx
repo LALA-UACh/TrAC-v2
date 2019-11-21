@@ -147,12 +147,18 @@ export const SearchBar: FC<{
                   if (ok) {
                     addStudentOption(student_id);
                     setStudentId("");
+                    Tracking.current.track({
+                      action: "click",
+                      effect: "load-student",
+                      target: "searchButton",
+                    });
+                  } else {
+                    Tracking.current.track({
+                      action: "click",
+                      effect: "wrong-student",
+                      target: "searchButton",
+                    });
                   }
-                  Tracking.current.track({
-                    action: "click",
-                    effect: "load-student",
-                    target: "searchButton",
-                  });
                 }
               }}
               size="medium"

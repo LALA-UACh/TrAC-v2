@@ -95,6 +95,7 @@ export class ProgramResolver {
       })()
     );
   }
+
   @FieldResolver()
   async desc(
     @Root()
@@ -113,6 +114,7 @@ export class ProgramResolver {
       })()
     );
   }
+
   @FieldResolver()
   async state(
     @Root()

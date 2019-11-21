@@ -158,19 +158,20 @@ export class AuthResolver {
           };
         }
         default: {
-          user = await dbAuth<User>(USERS_TABLE)
-            .where({ email })
-            .update({
-              password: passwordInput,
-              oldPassword1: user.password,
-              oldPassword2: user.oldPassword1,
-              oldPassword3: user.oldPassword2,
-              locked: false,
-              tries: 0,
-              unlockKey: "",
-            })
-            .returning("*")
-            .first();
+          user = (
+            await dbAuth<User>(USERS_TABLE)
+              .where({ email })
+              .update({
+                password: passwordInput,
+                oldPassword1: user.password,
+                oldPassword2: user.oldPassword1,
+                oldPassword3: user.oldPassword2,
+                locked: false,
+                tries: 0,
+                unlockKey: "",
+              })
+              .returning("*")
+          )[0];
           if (user) {
             AuthResolver.authenticate({
               req,

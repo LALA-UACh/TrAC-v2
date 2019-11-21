@@ -50,6 +50,34 @@ export const currentUserQuery: DocumentNode<{
   }
 `;
 
+export const unlockMutation: DocumentNode<
+  {
+    unlock: {
+      user?: IfImplements<
+        { email: string; name: string; admin: boolean },
+        User
+      >;
+      error?: string;
+    };
+  },
+  {
+    email: string;
+    password: string;
+    unlockKey: string;
+  }
+> = gql`
+  mutation($email: EmailAddress!, $password: String!, $unlockKey: String!) {
+    unlock(email: $email, password: $password, unlockKey: $unlockKey) {
+      user {
+        email
+        name
+        admin
+      }
+      error
+    }
+  }
+`;
+
 export const logoutMutation: DocumentNode<{
   logout: boolean;
 }> = gql`
