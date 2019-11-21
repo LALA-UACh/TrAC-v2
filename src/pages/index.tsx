@@ -11,6 +11,7 @@ import { Semester } from "@components/dashboard/Semester";
 import { SemesterTakenBox } from "@components/dashboard/SemesterTakenBox";
 import { TimeLine } from "@components/dashboard/Timeline";
 import { RequireAuth } from "@components/RequireAuth";
+import { Tracking } from "@components/Tracking";
 import { StateCourse } from "@constants";
 import data from "@constants/data.json";
 import { searchProgramQuery, searchStudentQuery } from "@graphql/queries";
@@ -22,7 +23,7 @@ export default () => {
   let semestersTaken: ISemesterTaken[] = data.studentAcademic.terms.map(
     ({ year, semester }) => ({
       year,
-      semester
+      semester,
     })
   );
   let semesters: {
@@ -34,8 +35,8 @@ export default () => {
       data: searchProgramData,
       loading: searchProgramLoading,
       called: searchProgramCalled,
-      error: searchProgramError
-    }
+      error: searchProgramError,
+    },
   ] = usePromiseLazyQuery(searchProgramQuery);
   const [
     searchStudent,
@@ -43,12 +44,12 @@ export default () => {
       data: searchStudentData,
       loading: searchStudentLoading,
       called: searchStudentCalled,
-      error: searchStudentError
-    }
+      error: searchStudentError,
+    },
   ] = usePromiseLazyQuery(searchStudentQuery);
   data.programStructure.terms.map(
     ({
-      courses
+      courses,
     }: {
       courses: {
         code: string;
@@ -69,7 +70,7 @@ export default () => {
             credits,
             historicGroup,
             flujoMaterias,
-            requisites
+            requisites,
           }) => {
             let historicDistribution:
               | IDistribution[]
@@ -77,7 +78,7 @@ export default () => {
               ({ value, label }) => ({
                 value,
                 min: parseFloat(label.split("-")[0]),
-                max: parseFloat(label.split("-")[1])
+                max: parseFloat(label.split("-")[1]),
               })
             );
             let registration: string | undefined;
@@ -98,13 +99,13 @@ export default () => {
                 classGroup: { year, semester, distribution },
                 registration: registrationToFind,
                 grade: gradeToFind,
-                state: stateToFind
+                state: stateToFind,
               } of coursesTaken) {
                 let currentDistributionValues = distribution.map(
                   ({ value, label }) => ({
                     value,
                     min: parseFloat(label.split("-")[0]),
-                    max: parseFloat(label.split("-")[1])
+                    max: parseFloat(label.split("-")[1]),
                   })
                 );
 
@@ -121,7 +122,7 @@ export default () => {
                   } else {
                     historicalStates.push({
                       state: stateToFind as StateCourse,
-                      grade: gradeToFind
+                      grade: gradeToFind,
                     });
                   }
                   semestersTaken.push({ year, semester });
@@ -146,10 +147,10 @@ export default () => {
               state,
               flow: flujoMaterias,
               requisites,
-              semestersTaken
+              semestersTaken,
             };
           }
-        )
+        ),
       });
     }
   );
@@ -162,7 +163,7 @@ export default () => {
       searchProgramData,
       searchProgramLoading,
       searchProgramCalled,
-      searchProgramError
+      searchProgramError,
     });
   });
 
@@ -179,7 +180,7 @@ export default () => {
         onSearch={async ({ student_id, program_id }) => {
           const [programSearch, studentSearch] = await Promise.all([
             searchProgram({ variables: { program_id } }),
-            searchStudent({ variables: { student_id, program_id } })
+            searchStudent({ variables: { student_id, program_id } }),
           ]);
 
           if (programSearch.data?.program && studentSearch.data?.student) {
@@ -223,6 +224,7 @@ export default () => {
             ))}
           </Stack>
         </ScrollContainer>
+        <Tracking />
       </CoursesFlow>
     </RequireAuth>
   );

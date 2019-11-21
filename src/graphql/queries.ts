@@ -215,7 +215,7 @@ export const myProgramsQuery: DocumentNode<{
   }
 `;
 
-export const trackingQuery: DocumentNode<
+export const trackMutation: DocumentNode<
   never,
   {
     data: {
