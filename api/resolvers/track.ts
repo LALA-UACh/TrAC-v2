@@ -1,5 +1,6 @@
-import { Arg, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
+import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
 
+import { UserType } from "@constants";
 import { TRACKING_TABLE } from "@consts";
 import { dbTracking } from "@db";
 import { Track, TrackInput } from "@entities/track";
@@ -8,18 +9,27 @@ import { IContext } from "@interfaces";
 @Resolver(() => Track)
 export class TrackResolver {
   @Authorized()
-  @Mutation(() => Track)
+  @Mutation(() => Boolean)
   async track(
-    @Arg("data") { app_id, datetime_client, data }: TrackInput,
+    @Args() { datetime_client, data }: TrackInput,
     @Ctx() { user }: IContext
   ) {
-    console.log("TRACK");
-    await dbTracking<Track>(TRACKING_TABLE).insert({
-      app_id,
-      user_id: user?.email,
-      datetime: new Date(),
-      datetime_client,
-      data,
-    });
+    dbTracking<Track>(TRACKING_TABLE)
+      .insert({
+        app_id:
+          user?.type === UserType.Director ? "TrAC-director" : "TrAC-student",
+        user_id: user?.email,
+        datetime: new Date(),
+        datetime_client,
+        data,
+      })
+      .then(() => {})
+      .catch(err => {
+        console.error(
+          `Error on tracking insert! `,
+          JSON.stringify(err, null, 2)
+        );
+      });
+    return true;
   }
 }

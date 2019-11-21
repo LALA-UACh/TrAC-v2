@@ -10,7 +10,7 @@ export default () => {
     update: cache => {
       cache.writeQuery({
         query: currentUserQuery,
-        data: { current_user: null },
+        data: { currentUser: null },
       });
     },
   });

@@ -27,5 +27,5 @@ export const dbTracking = knex({
     user: "postgres",
     database: "tracking",
   },
-  debug: true,
+  // debug: true,
 });

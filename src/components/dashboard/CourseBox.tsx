@@ -5,6 +5,7 @@ import { FC, useContext, useMemo, useState } from "react";
 import { useUpdateEffect } from "react-use";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
+import { TrackingContext } from "@components/Tracking";
 import { HISTORIC_GRADES, StateCourse } from "@constants";
 import { ICourse } from "@interfaces";
 import { approvedGrade, maxGrade, minGrade } from "@temp";
@@ -27,7 +28,9 @@ export const CourseBox: FC<ICourse> = ({
   requisites,
   semestersTaken,
 }) => {
-  const [max, setMax] = useState(false);
+  const Tracking = useContext(TrackingContext);
+
+  const [open, setOpen] = useState(false);
   const {
     add,
     remove,
@@ -38,7 +41,7 @@ export const CourseBox: FC<ICourse> = ({
     explicitSemester,
   } = useContext(CoursesFlowContext);
   useUpdateEffect(() => {
-    if (max) {
+    if (open) {
       add({
         course: code,
         flow,
@@ -48,7 +51,7 @@ export const CourseBox: FC<ICourse> = ({
     } else {
       remove(code);
     }
-  }, [max]);
+  }, [open]);
 
   const approvedColorScale = useMemo(
     () =>
@@ -67,7 +70,7 @@ export const CourseBox: FC<ICourse> = ({
   );
 
   const h = useMemo(() => {
-    if (max) {
+    if (open) {
       if (currentDistribution && historicDistribution) {
         return 350;
       } else {
@@ -75,7 +78,7 @@ export const CourseBox: FC<ICourse> = ({
       }
     }
     return 120;
-  }, [max, currentDistribution, historicDistribution]);
+  }, [open, currentDistribution, historicDistribution]);
 
   const stateColor = useMemo(() => {
     switch (state) {
@@ -163,7 +166,7 @@ export const CourseBox: FC<ICourse> = ({
   const RegistrationComponent = useMemo(
     () =>
       registration &&
-      max && (
+      open && (
         <motion.div
           key="status"
           initial={{
@@ -180,12 +183,12 @@ export const CourseBox: FC<ICourse> = ({
           </Text>
         </motion.div>
       ),
-    [max, registration]
+    [open, registration]
   );
 
   const CreditsComponent = useMemo(
     () =>
-      !max && (
+      !open && (
         <motion.div
           key="sct"
           initial={{ opacity: 0 }}
@@ -198,7 +201,7 @@ export const CourseBox: FC<ICourse> = ({
           </Text>
         </motion.div>
       ),
-    [max, credits]
+    [open, credits]
   );
 
   const ReqCircleComponent = useMemo(
@@ -271,7 +274,7 @@ export const CourseBox: FC<ICourse> = ({
 
   const HistogramsComponent = useMemo(
     () =>
-      max && (
+      open && (
         <motion.div
           key="histograms"
           initial={{
@@ -293,7 +296,7 @@ export const CourseBox: FC<ICourse> = ({
           {HistogramHistoric}
         </motion.div>
       ),
-    [max]
+    [open]
   );
 
   const GradeComponent = useMemo(
@@ -367,7 +370,7 @@ export const CourseBox: FC<ICourse> = ({
       m={1}
       color="black"
       bg="rgb(245,245,245)"
-      w={max ? 350 : 180}
+      w={open ? 350 : 180}
       h={h}
       borderRadius={5}
       opacity={opacity}
@@ -377,7 +380,13 @@ export const CourseBox: FC<ICourse> = ({
       cursor="pointer"
       transition="0.4s all ease-in-out"
       onClick={() => {
-        setMax(max => !max);
+        setOpen(open => !open);
+
+        Tracking.current.track({
+          action: "click",
+          target: `course-box-${code}`,
+          effect: `${open ? "close" : "open"}-course-box`,
+        });
       }}
       className="unselectable"
     >

@@ -1,23 +1,47 @@
-import gql from "graphql-tag-ts";
-import { createContext, FC, useContext, useEffect } from "react";
-import { useLogger } from "react-use";
+import {
+  createContext,
+  FC,
+  MutableRefObject,
+  useContext,
+  useEffect,
+} from "react";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 import { trackMutation } from "@graphql/queries";
 
-import { CoursesFlowContext } from "./dashboard/CoursesFlow";
-
-type TrackingTemplateData = {
-  program: number;
-  curriculum: number;
-  student: string;
-  showingProgress: boolean;
-  showingPrediction: boolean;
-  coursesOpen: string;
+export type TrackingTemplateData = {
+  program?: number; // OK
+  curriculum?: number; // OK
+  student?: string; // OK
+  showingProgress?: boolean; // OK
+  showingPrediction?: boolean; // OK
+  coursesOpen?: string; // OK
   action: string;
   effect: string;
   target: string;
-}; // TODO: Remove any
+};
+
+export type TrackingRef = Partial<
+  Pick<
+    TrackingTemplateData,
+    | "program"
+    | "curriculum"
+    | "student"
+    | "showingProgress"
+    | "showingPrediction"
+    | "coursesOpen"
+  >
+> & {
+  track: (data: {
+    action: string;
+    effect: string;
+    target: string;
+  }) => Promise<any>;
+};
+
+export const TrackingContext = createContext<MutableRefObject<TrackingRef>>({
+  current: { track: async () => {} },
+});
 
 const trackingTemplate = ({
   program,
@@ -30,102 +54,55 @@ const trackingTemplate = ({
   effect,
   target,
 }: TrackingTemplateData) => {
-  return `program=${program},curriculum=${curriculum},student=${student},showing-progress=${
+  return `program=${program || null},curriculum=${curriculum ||
+    null},student=${student || null},showing-progress=${
     showingProgress ? 1 : 0
   },showing-prediction=${
     showingPrediction ? 1 : 0
-  },courses-open=${coursesOpen},action=${action},effect=${effect},target=${target}`;
+  },courses-open=${coursesOpen ||
+    null},action=${action},effect=${effect},target=${target}`;
 };
 
-export const TrackingContext = createContext<{
-  track: (data: {
-    app_id?: string;
-    data: TrackingTemplateData;
-  }) => Promise<any>;
-}>({ track: async () => {} });
+export const Tracking: FC<{
+  program?: number;
+  curriculum?: number;
+  student?: string;
+}> = () => {
+  const TrackingData = useContext(TrackingContext);
 
-export const Tracking: FC = () => {
-  const coursesFlow = useContext(CoursesFlowContext);
-  const { data, error } = useQuery<{
-    student: {
-      id: string;
-      curriculum: number;
-    };
-    program: {
-      id: number;
-    };
-  }>(
-    gql`
-      query {
-        student {
-          id
-          curriculum
-        }
-        program {
-          id
-        }
-      }
-    `,
-    {
-      fetchPolicy: "cache-only",
-    }
-  );
-
-  const [track] = useMutation(trackMutation);
+  const [trackMutate] = useMutation(trackMutation, {
+    ignoreResults: true,
+  });
 
   useEffect(() => {
-    if (data && error) {
-      // TODO: Remove "&& error"
-      track({
+    TrackingData.current.track = async ({ action, effect, target }) => {
+      const {
+        program,
+        curriculum,
+        student,
+        coursesOpen,
+        showingPrediction,
+        showingProgress,
+      } = TrackingData.current;
+
+      trackMutate({
         variables: {
-          data: {
-            app_id: "TrAC",
-            datetime_client: new Date(),
-            //@ts-ignore
-            data: trackingTemplate({
-              program: data.program.id,
-              curriculum: data.student.curriculum,
-              student: data.student.id,
-            }),
-          },
+          data: trackingTemplate({
+            program,
+            curriculum,
+            student,
+            coursesOpen,
+            showingPrediction,
+            showingProgress,
+            action,
+            effect,
+            target,
+          }),
+          datetime_client: new Date(),
         },
       });
-    }
-  }, [data]);
-
-  useLogger("tracking", {
-    data,
-    error,
-    coursesFlow,
-  });
-  // const { mutate } = useApolloClient();
-  // const track = useCallback(
-  //   async ({
-  //     app_id = "TrAC",
-  //     data,
-  //   }: {
-  //     app_id?: string;
-  //     data: TrackingTemplateData;
-  //   }) => {
-  //     mutate({
-  //       mutation: trackingQuery,
-  //       variables: {
-  //         data: {
-  //           app_id,
-  //           data: trackingTemplate(data),
-  //           datetime_client: new Date(),
-  //         },
-  //       },
-  //     })
-  //       .then(a => {
-  //         console.log("61a", a);
-  //       })
-  //       .catch(e => {
-  //         console.log("63e", e);
-  //       });
-  //   },
-  //   [mutate]
-  // );
+    };
+  }, [trackMutate]);
 
   return null;
 };

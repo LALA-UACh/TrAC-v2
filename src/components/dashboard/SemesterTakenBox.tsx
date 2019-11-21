@@ -1,17 +1,19 @@
 import { FC, useContext, useMemo } from "react";
 
 import { Box } from "@chakra-ui/core";
+import { TrackingContext } from "@components/Tracking";
 
 import { CoursesFlowContext } from "./CoursesFlow";
 
 export const SemesterTakenBox: FC<{ year: number; semester: string }> = ({
   year,
-  semester
+  semester,
 }) => {
+  const Tracking = useContext(TrackingContext);
   const {
     toggleExplicitSemester,
     semestersTaken,
-    explicitSemester
+    explicitSemester,
   } = useContext(CoursesFlowContext);
   return useMemo(
     () => (
@@ -33,7 +35,12 @@ export const SemesterTakenBox: FC<{ year: number; semester: string }> = ({
         className="unselectable"
         transition="0.4s all ease-in-out"
         onClick={() => {
-          toggleExplicitSemester(year, semester);
+          const open = toggleExplicitSemester(year, semester);
+          Tracking.current.track({
+            action: "click",
+            target: `semester-taken-box-${year}-${semester}`,
+            effect: `${open ? "highlight" : "unhighlight"}-semester-taken`,
+          });
         }}
       >
         <b>{`${semester}S ${year}`}</b>

@@ -4,7 +4,12 @@ import { sign } from "jsonwebtoken";
 import { generate } from "randomstring";
 import { Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
-import { LOCKED_USER, USED_OLD_PASSWORD, WRONG_INFO } from "@constants";
+import {
+  LOCKED_USER,
+  USED_OLD_PASSWORD,
+  UserType,
+  WRONG_INFO,
+} from "@constants";
 import { ONE_DAY, SECRET, THIRTY_MINUTES, USERS_TABLE } from "@consts";
 import { dbAuth } from "@db";
 import { AuthResult, LoginInput, UnlockInput } from "@entities/auth";
@@ -19,29 +24,31 @@ export class AuthResolver {
     res,
     email,
     admin,
+    type,
   }: {
     req: Request;
     res: Response;
     email: string;
     admin: boolean;
+    type: UserType;
   }) {
     res.cookie(
       "authorization",
-      sign({ email, admin }, SECRET, {
-        expiresIn: req?.cookies?.remember ? "1 day" : "30m",
+      sign({ email, admin, type }, SECRET, {
+        expiresIn: req.cookies?.remember ? "1 day" : "30m",
       }),
       {
         httpOnly: true,
         expires: addMilliseconds(
           Date.now(),
-          req?.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
+          req.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
         ),
       }
     );
   }
 
   @Query(() => User, { nullable: true })
-  async current_user(@Ctx() { user }: IContext): Promise<User | undefined> {
+  async currentUser(@Ctx() { user }: IContext): Promise<User | undefined> {
     if (user) {
       return await dbAuth<User>(USERS_TABLE)
         .where({
@@ -75,6 +82,7 @@ export class AuthResolver {
           res,
           email,
           admin: user.admin,
+          type: user.type,
         });
 
         return { user };
@@ -168,7 +176,8 @@ export class AuthResolver {
               req,
               res,
               email,
-              admin: user?.admin ?? false,
+              admin: user.admin,
+              type: user.type,
             });
             return { user };
           }

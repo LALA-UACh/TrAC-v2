@@ -11,8 +11,8 @@ export const RequireAuth: FC<{ admin?: boolean }> = ({ children, admin }) => {
 
   useEffect(() => {
     if (!loading && data) {
-      if (data?.current_user?.email) {
-        if (admin && !data?.current_user?.admin) {
+      if (data?.currentUser?.email) {
+        if (admin && !data?.currentUser?.admin) {
           Router.push("/");
         }
       } else {
@@ -22,9 +22,16 @@ export const RequireAuth: FC<{ admin?: boolean }> = ({ children, admin }) => {
   }, [loading, data, admin]);
 
   if (error) {
-    return <p style={{ whiteSpace: "pre" }}>{JSON.stringify(error, null, 4)}</p>;
+    return (
+      <p style={{ whiteSpace: "pre" }}>{JSON.stringify(error, null, 4)}</p>
+    );
   }
-  if (loading || !data || (admin && !data?.current_user?.admin) || !data?.current_user?.email) {
+  if (
+    loading ||
+    !data ||
+    !data?.currentUser?.email ||
+    (admin && !data?.currentUser?.admin)
+  ) {
     return null;
   }
   return <>{children}</>;

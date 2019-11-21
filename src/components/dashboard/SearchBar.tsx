@@ -1,23 +1,45 @@
 import Link from "next/link";
-import { ChangeEvent, FC, useCallback, useEffect, useMemo } from "react";
+import {
+  ChangeEvent,
+  FC,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 import Select from "react-select";
 import { Button, Icon } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 import { $ElementType } from "utility-types";
 
 import { useQuery } from "@apollo/react-hooks";
-import { Alert, AlertIcon, AlertTitle, Box, Flex, Input } from "@chakra-ui/core";
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Flex,
+  Input,
+} from "@chakra-ui/core";
+import { TrackingContext } from "@components/Tracking";
 import { myProgramsQuery } from "@graphql/queries";
 
 export const SearchBar: FC<{
   isSearchLoading: boolean;
-  onSearch: (input: { student_id: string; program_id: number }) => Promise<boolean>;
+  onSearch: (input: {
+    student_id: string;
+    program_id: number;
+  }) => Promise<boolean>;
   searchResult?: string;
   error?: string;
 }> = ({ isSearchLoading, onSearch, searchResult, error }) => {
-  const { data: myProgramsData, loading: myProgramsLoading } = useQuery(myProgramsQuery, {
-    ssr: false,
-  });
+  const Tracking = useContext(TrackingContext);
+  const { data: myProgramsData, loading: myProgramsLoading } = useQuery(
+    myProgramsQuery,
+    {
+      ssr: false,
+    }
+  );
 
   const [student_id, setStudentId] = useRememberState("student_input", "");
   const [studentOptions, setStudentOptions] = useRememberState<string[]>(
@@ -76,7 +98,9 @@ export const SearchBar: FC<{
             isLoading={isSearchLoading}
             isDisabled={isSearchLoading}
             onChange={selected => {
-              setProgram(selected as $ElementType<typeof programsOptions, number>);
+              setProgram(
+                selected as $ElementType<typeof programsOptions, number>
+              );
             }}
           />
         </Box>
@@ -93,7 +117,9 @@ export const SearchBar: FC<{
               list="student_options"
               placeholder="ID del estudiante"
               value={student_id}
-              onChange={({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+              onChange={({
+                target: { value },
+              }: ChangeEvent<HTMLInputElement>) => {
                 setStudentId(value);
               }}
               mr={4}
@@ -122,6 +148,11 @@ export const SearchBar: FC<{
                     addStudentOption(student_id);
                     setStudentId("");
                   }
+                  Tracking.current.track({
+                    action: "click",
+                    effect: "load-student",
+                    target: "searchButton",
+                  });
                 }
               }}
               size="medium"
@@ -130,7 +161,13 @@ export const SearchBar: FC<{
               Buscar
             </Button>
             {!isSearchLoading && error && (
-              <Alert status="error" borderRadius={4} whiteSpace="pre-wrap" mt={5} mb={5}>
+              <Alert
+                status="error"
+                borderRadius={4}
+                whiteSpace="pre-wrap"
+                mt={5}
+                mb={5}
+              >
                 <AlertIcon />
                 <AlertTitle mr={2}>{error}</AlertTitle>
               </Alert>
@@ -140,7 +177,17 @@ export const SearchBar: FC<{
       </Flex>
       <Box>
         <Link href="/logout">
-          <Button negative size="big">
+          <Button
+            negative
+            size="big"
+            onClick={() => {
+              Tracking.current.track({
+                action: "click",
+                effect: "logout",
+                target: "logoutButton",
+              });
+            }}
+          >
             Salir
           </Button>
         </Link>

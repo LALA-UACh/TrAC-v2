@@ -62,7 +62,7 @@ type Mutation {
   login(email: EmailAddress!, password: String!): AuthResult!
   logout: Boolean!
   unlock(email: EmailAddress!, password: String!, unlockKey: String!): AuthResult!
-  track(data: TrackInput!): Track!
+  track(datetime_client: DateTime!, data: String!): Boolean!
   updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
   addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
   upsertUsers(users: [UpsertedUser!]!): [User!]!
@@ -80,7 +80,7 @@ type Program {
 }
 
 type Query {
-  current_user: User
+  currentUser: User
   program(id: Int!): Program
   programs: [Program!]!
   myPrograms: [Program!]!
@@ -140,12 +140,6 @@ type Track {
   app_id: String!
   user_id: String!
   datetime: DateTime!
-  datetime_client: DateTime!
-  data: String!
-}
-
-input TrackInput {
-  app_id: String!
   datetime_client: DateTime!
   data: String!
 }

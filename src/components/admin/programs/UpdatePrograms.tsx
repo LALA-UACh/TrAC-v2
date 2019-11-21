@@ -5,7 +5,9 @@ import { Button, Dropdown, Grid, Icon, Label, Modal } from "semantic-ui-react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Confirm } from "@components/Confirm";
 import {
-    allProgramsAdminQuery, allUsersAdminQuery, updateUserProgramsAdminMutation
+  allProgramsAdminQuery,
+  allUsersAdminQuery,
+  updateUserProgramsAdminMutation,
 } from "@graphql/adminQueries";
 
 export const UpdatePrograms: FC<{
@@ -104,7 +106,9 @@ export const UpdatePrograms: FC<{
                   value,
                 })) ?? []
               }
-              onChange={(_, { value }) => setSelectedPrograms(value as number[])}
+              onChange={(_, { value }) =>
+                setSelectedPrograms(value as number[])
+              }
               value={selectedPrograms}
             />
           </Grid.Row>

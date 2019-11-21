@@ -1,6 +1,6 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
-import { StateCourse } from "@constants";
+import { StateCourse, UserType } from "@constants";
 import { Program } from "@entities/program";
 import { Student } from "@entities/student";
 import { User } from "@entities/user";
@@ -9,7 +9,7 @@ import { IfImplements } from "@typings/utils";
 export const loginMutation: DocumentNode<
   {
     login: {
-      user?: { email: string; name: string; admin: boolean };
+      user?: { email: string; name: string; admin: boolean; type: UserType };
       error?: string;
     };
   },
@@ -24,6 +24,7 @@ export const loginMutation: DocumentNode<
         email
         name
         admin
+        type
       }
       error
     }
@@ -31,7 +32,7 @@ export const loginMutation: DocumentNode<
 `;
 
 export const currentUserQuery: DocumentNode<{
-  current_user?: IfImplements<
+  currentUser?: IfImplements<
     {
       email: string;
       name: string;
@@ -41,7 +42,7 @@ export const currentUserQuery: DocumentNode<{
   >;
 }> = gql`
   query {
-    current_user {
+    currentUser {
       email
       name
       admin
@@ -218,16 +219,11 @@ export const myProgramsQuery: DocumentNode<{
 export const trackMutation: DocumentNode<
   never,
   {
-    data: {
-      app_id: string;
-      datetime_client: Date;
-      data: string;
-    };
+    datetime_client: Date;
+    data: string;
   }
 > = gql`
-  mutation($data: TrackInput!) {
-    track(data: $data) {
-      id
-    }
+  mutation($data: String!, $datetime_client: DateTime!) {
+    track(data: $data, datetime_client: $datetime_client)
   }
 `;

@@ -1,7 +1,8 @@
 import reverse from "lodash/fp/reverse";
 import some from "lodash/some";
-import { useEffect } from "react";
+import { FC, useEffect, useRef } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
+import { useLogger } from "react-use";
 
 import { Box, Stack } from "@chakra-ui/core";
 import { CoursesFlow } from "@components/dashboard/CoursesFlow";
@@ -11,7 +12,7 @@ import { Semester } from "@components/dashboard/Semester";
 import { SemesterTakenBox } from "@components/dashboard/SemesterTakenBox";
 import { TimeLine } from "@components/dashboard/Timeline";
 import { RequireAuth } from "@components/RequireAuth";
-import { Tracking } from "@components/Tracking";
+import { Tracking, TrackingContext, TrackingRef } from "@components/Tracking";
 import { StateCourse } from "@constants";
 import data from "@constants/data.json";
 import { searchProgramQuery, searchStudentQuery } from "@graphql/queries";
@@ -19,7 +20,9 @@ import { ICourse, IDistribution, ISemesterTaken } from "@interfaces";
 import { usePromiseLazyQuery } from "@utils/usePromiseLazyQuery";
 
 console.log("data", data);
-export default () => {
+
+const Dashboard: FC = () => {
+  const trackingData = useRef<TrackingRef>({ track: async () => {} });
   let semestersTaken: ISemesterTaken[] = data.studentAcademic.terms.map(
     ({ year, semester }) => ({
       year,
@@ -155,20 +158,24 @@ export default () => {
     }
   );
 
-  useEffect(() => {
-    if (searchProgramData) {
-      searchProgramData;
-    }
-    console.log({
-      searchProgramData,
-      searchProgramLoading,
-      searchProgramCalled,
-      searchProgramError,
-    });
+  useLogger("index", {
+    searchProgramData,
+    searchStudentData,
   });
 
+  useEffect(() => {
+    if (searchStudentData) {
+      trackingData.current.program = searchStudentData.student.program.id;
+      trackingData.current.curriculum = searchStudentData.student.curriculum;
+      trackingData.current.showingProgress = true;
+      trackingData.current.student = searchStudentData.student.id;
+    } else {
+      trackingData.current.showingProgress = false;
+    }
+  }, [searchStudentData]);
+
   return (
-    <RequireAuth>
+    <TrackingContext.Provider value={trackingData}>
       <SearchBar
         error={`${searchProgramError?.graphQLErrors
           .map(({ message }) => message)
@@ -226,6 +233,14 @@ export default () => {
         </ScrollContainer>
         <Tracking />
       </CoursesFlow>
+    </TrackingContext.Provider>
+  );
+};
+
+export default () => {
+  return (
+    <RequireAuth>
+      <Dashboard />
     </RequireAuth>
   );
 };

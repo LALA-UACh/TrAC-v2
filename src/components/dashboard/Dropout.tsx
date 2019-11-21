@@ -1,16 +1,24 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FC, useMemo, useState } from "react";
+import { FC, useContext, useEffect, useMemo, useState } from "react";
 
 import { Flex, Stack, Text } from "@chakra-ui/core";
+import { TrackingContext } from "@components/Tracking";
 import {
-    DROPOUT_PREDICTION, DROPOUT_PREDICTION_ACCURACY, DROPOUT_PREDICTION_DESCRIPTION
+  DROPOUT_PREDICTION,
+  DROPOUT_PREDICTION_ACCURACY,
+  DROPOUT_PREDICTION_DESCRIPTION,
 } from "@constants";
 
 export const Dropout: FC<{ probability: number; accuracy: number }> = ({
   probability,
-  accuracy
+  accuracy,
 }) => {
   const [show, setShow] = useState(false);
+
+  const Tracking = useContext(TrackingContext);
+  useEffect(() => {
+    Tracking.current.showingPrediction = show;
+  }, [show]);
 
   return useMemo(
     () => (
@@ -24,7 +32,15 @@ export const Dropout: FC<{ probability: number; accuracy: number }> = ({
           }
           borderRadius={show ? "5px 5px 5px 5px" : "0px 5px 5px 0px"}
           alignItems="center"
-          onClick={() => setShow(show => !show)}
+          onClick={() => {
+            setShow(show => !show);
+
+            Tracking.current.track({
+              action: "click",
+              effect: show ? "close-dropout" : "open-dropout",
+              target: "dropout",
+            });
+          }}
           cursor="pointer"
           transition="0.4s box-shadow ease-in-out"
         >
@@ -46,11 +62,11 @@ export const Dropout: FC<{ probability: number; accuracy: number }> = ({
                 <motion.div
                   key="dropout-text"
                   initial={{
-                    opacity: 0
+                    opacity: 0,
                   }}
                   animate={{ opacity: 1 }}
                   exit={{
-                    opacity: 0
+                    opacity: 0,
                   }}
                 >
                   <Text width="290px" pl={5} pb={0} mb={0}>

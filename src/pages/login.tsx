@@ -6,7 +6,14 @@ import { FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { useUpdateEffect } from "react-use";
 import {
-    Button, Checkbox, Form as FormSemantic, Grid, Icon, Input, Message, Segment
+  Button,
+  Checkbox,
+  Form as FormSemantic,
+  Grid,
+  Icon,
+  Input,
+  Message,
+  Segment,
 } from "semantic-ui-react";
 import { isEmail, isLength } from "validator";
 
@@ -15,7 +22,9 @@ import { LOCKED_USER, WRONG_INFO } from "@constants";
 import { currentUserQuery, loginMutation } from "@graphql/queries";
 
 const Login: FC = () => {
-  const [session, setSession] = useState(() => (Cookies.get("remember") ? true : false));
+  const [session, setSession] = useState(() =>
+    Cookies.get("remember") ? true : false
+  );
 
   useUpdateEffect(() => {
     if (session) {
@@ -31,7 +40,7 @@ const Login: FC = () => {
         cache.writeQuery({
           query: currentUserQuery,
           data: {
-            current_user: data.login.user,
+            currentUser: data.login.user,
           },
         });
       }
@@ -63,7 +72,13 @@ const Login: FC = () => {
       )}
 
       <Form
-        onSubmit={({ email, password }: { email: string; password: string }) => {
+        onSubmit={({
+          email,
+          password,
+        }: {
+          email: string;
+          password: string;
+        }) => {
           login({
             variables: {
               email,
@@ -139,16 +154,19 @@ const Login: FC = () => {
 };
 
 export default () => {
-  const { data, loading } = useQuery<{ current_user?: { email: string } }>(currentUserQuery, {
-    ssr: false,
-  });
+  const { data, loading } = useQuery<{ currentUser?: { email: string } }>(
+    currentUserQuery,
+    {
+      ssr: false,
+    }
+  );
   useEffect(() => {
-    if (!loading && data && data?.current_user?.email) {
+    if (!loading && data && data?.currentUser?.email) {
       Router.push("/");
     }
   }, [loading, data]);
 
-  if (loading || !data || data?.current_user?.email) {
+  if (loading || !data || data?.currentUser?.email) {
     return null;
   }
   return <Login />;

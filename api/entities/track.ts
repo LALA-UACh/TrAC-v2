@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from "type-graphql";
+import { ArgsType, Field, ObjectType } from "type-graphql";
 
 @ObjectType()
 export class Track {
@@ -21,11 +21,8 @@ export class Track {
   data: string;
 }
 
-@InputType()
+@ArgsType()
 export class TrackInput implements Partial<Track> {
-  @Field()
-  app_id: string;
-
   @Field()
   datetime_client: Date;
 

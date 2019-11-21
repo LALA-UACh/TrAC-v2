@@ -1,6 +1,13 @@
-import { createContext, ReactNode, useCallback, useState } from "react";
-import { useSetState } from "react-use";
+import {
+  createContext,
+  FC,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
+import { TrackingContext } from "@components/Tracking";
 import { ISemesterTaken } from "@interfaces";
 
 export const CoursesFlowContext = createContext<{
@@ -12,7 +19,7 @@ export const CoursesFlowContext = createContext<{
   checkExplicitSemester: (
     semestersTaken: { year: number; semester: string }[]
   ) => boolean;
-  toggleExplicitSemester: (year: number, semester: string) => void;
+  toggleExplicitSemester: (year: number, semester: string) => boolean;
   add: (data: {
     course: string;
     flow: string[];
@@ -24,11 +31,12 @@ export const CoursesFlowContext = createContext<{
   add: () => {},
   remove: () => {},
   checkExplicitSemester: () => false,
-  toggleExplicitSemester: () => {},
-  semestersTaken: []
+  toggleExplicitSemester: () => false,
+  semestersTaken: [],
 });
 
-export const CoursesFlow = ({ children }: { children: ReactNode }) => {
+export const CoursesFlow: FC = ({ children }) => {
+  const Tracking = useContext(TrackingContext);
   const [explicitSemester, setExplicitSemester] = useState<
     string | undefined
   >();
@@ -45,30 +53,39 @@ export const CoursesFlow = ({ children }: { children: ReactNode }) => {
   );
   const toggleExplicitSemester = useCallback(
     (year: number, semester: string) => {
+      let open = false;
       setExplicitSemester(value => {
         const pair = `${semester}${year}`;
-        if (value !== pair) return pair;
+        if (value !== pair) {
+          open = true;
+          return pair;
+        }
         return undefined;
       });
+      return open;
     },
     [setExplicitSemester]
   );
 
   // ONLY ACTIVE[0] IS SHOWN AS ACTIVE
   // AL THE REST WORKS AS HISTORY
-  const [{ active, flow, requisites, semestersTaken }, setState] = useSetState<{
+  const [{ active, flow, requisites, semestersTaken }, setState] = useState<{
     active: string[];
     semestersTaken: ISemesterTaken[][];
     flow: Record<string, boolean>[];
     requisites: Record<string, boolean>[];
   }>({ active: [], flow: [], requisites: [], semestersTaken: [] });
 
+  useEffect(() => {
+    Tracking.current.coursesOpen = active.join("|");
+  }, [active]);
+
   const add = useCallback(
     ({
       course,
       flow,
       requisites,
-      semestersTaken
+      semestersTaken,
     }: {
       course: string;
       flow: string[];
@@ -83,14 +100,14 @@ export const CoursesFlow = ({ children }: { children: ReactNode }) => {
             (ac, v) => ({ ...ac, [v]: true }),
             {}
           ),
-          ...state.flow
+          ...state.flow,
         ];
         state.requisites = [
           requisites.reduce<Record<string, boolean>>(
             (ac, v) => ({ ...ac, [v]: true }),
             {}
           ),
-          ...state.requisites
+          ...state.requisites,
         ];
         state.semestersTaken = [semestersTaken, ...state.semestersTaken];
 
@@ -98,10 +115,10 @@ export const CoursesFlow = ({ children }: { children: ReactNode }) => {
           setExplicitSemester(undefined);
         }
 
-        return state;
+        return { ...state };
       });
     },
-    [setState, setExplicitSemester, explicitSemester, checkExplicitSemester]
+    [setState, setExplicitSemester, checkExplicitSemester]
   );
   const remove = useCallback(
     (course: string) => {
@@ -111,16 +128,27 @@ export const CoursesFlow = ({ children }: { children: ReactNode }) => {
           activeCourse => activeCourse === course
         );
         if (indexToRemove !== -1) {
-          state.active.splice(indexToRemove, 1);
-          state.flow.splice(indexToRemove, 1);
-          state.requisites.splice(indexToRemove, 1);
-          state.semestersTaken.splice(indexToRemove, 1);
+          const stateActive = state.active.slice(0);
+          stateActive.splice(indexToRemove, 1);
+          state.active = stateActive;
+
+          const stateFlow = state.flow.slice(0);
+          stateFlow.splice(indexToRemove, 1);
+          state.flow = stateFlow;
+
+          const stateRequisites = state.requisites.slice(0);
+          stateRequisites.splice(indexToRemove, 1);
+          state.requisites = stateRequisites;
+
+          const stateSemestersTaken = state.semestersTaken.slice(0);
+          stateSemestersTaken.splice(indexToRemove, 1);
+          state.semestersTaken = stateSemestersTaken;
         }
 
-        return state;
+        return { ...state };
       });
     },
-    [setState, setExplicitSemester, explicitSemester, checkExplicitSemester]
+    [setState, setExplicitSemester, checkExplicitSemester]
   );
 
   return (
@@ -134,7 +162,7 @@ export const CoursesFlow = ({ children }: { children: ReactNode }) => {
         remove,
         checkExplicitSemester,
         toggleExplicitSemester,
-        explicitSemester
+        explicitSemester,
       }}
     >
       {children}
