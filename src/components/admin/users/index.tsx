@@ -1,4 +1,4 @@
-import { sortBy } from "lodash";
+import { sortBy, truncate } from "lodash";
 import { FC, useEffect, useState } from "react";
 import { Button, Grid, Icon, Message, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
@@ -62,15 +62,19 @@ export const Users: FC<{
 
   const [
     mailLockedUsers,
-    { data: dataMailLockedUsers, error: errorMailLockedUsers, loading: loadingMailLockedUsers },
+    {
+      data: dataMailLockedUsers,
+      error: errorMailLockedUsers,
+      loading: loadingMailLockedUsers,
+    },
   ] = useMutation(adminMailLockedUsersMutation);
 
   return (
-    <Grid>
-      <Grid.Row centered>
+    <Grid centered>
+      <Grid.Row>
         <ImportUsers />
       </Grid.Row>
-      <Grid.Row centered>
+      <Grid.Row>
         <Grid centered>
           <Grid.Row>
             <Confirm
@@ -109,17 +113,22 @@ export const Users: FC<{
               >
                 <Icon name="close" onClick={() => setOpenMailMessage(false)} />
                 <Message.Content>
-                  {errorMailLockedUsers && <Message.Header>Error!</Message.Header>}
+                  {errorMailLockedUsers && (
+                    <Message.Header>Error!</Message.Header>
+                  )}
                   {errorMailLockedUsers && errorMailLockedUsers.message}
-                  {dataMailLockedUsers && dataMailLockedUsers.mailAllLockedUsers.length > 0 ? (
+                  {dataMailLockedUsers &&
+                  dataMailLockedUsers.mailAllLockedUsers.length > 0 ? (
                     <Message.List>
-                      {dataMailLockedUsers.mailAllLockedUsers.map((value, key) => {
-                        return (
-                          <Message.Item style={{ width: "50%" }} key={key}>
-                            {JSON.stringify(value, null, 2)}
-                          </Message.Item>
-                        );
-                      })}
+                      {dataMailLockedUsers.mailAllLockedUsers.map(
+                        (value, key) => {
+                          return (
+                            <Message.Item style={{ width: "50%" }} key={key}>
+                              {JSON.stringify(value, null, 2)}
+                            </Message.Item>
+                          );
+                        }
+                      )}
                     </Message.List>
                   ) : (
                     "No existen usuarios bloqueados a los cual enviar correos electrónicos de desbloqueo"
@@ -131,13 +140,12 @@ export const Users: FC<{
         </Grid>
       </Grid.Row>
 
-      <Grid.Row centered>
+      <Grid.Row>
         <Table
           padded
           selectable
           celled
           size="large"
-          style={{ width: "1em" }}
           textAlign="center"
           sortable
         >
@@ -189,29 +197,46 @@ export const Users: FC<{
           </Table.Header>
 
           <Table.Body>
-            {sortedUsers.map(({ email, name, locked, tries, type, rut_id, show_dropout }, key) => (
-              <UpdateUser
-                key={key}
-                user={{ email, name, locked, tries, type, rut_id, show_dropout }}
-              >
-                <Table.Row style={{ cursor: "pointer" }}>
-                  <Table.Cell>{email}</Table.Cell>
-                  <Table.Cell>{name}</Table.Cell>
-                  <Table.Cell>
-                    <Icon circular name={locked ? "lock" : "lock open"} />
-                  </Table.Cell>
-                  <Table.Cell>{tries}</Table.Cell>
-                  <Table.Cell>{type}</Table.Cell>
-                  <Table.Cell>{rut_id}</Table.Cell>
-                  <Table.Cell>
-                    <Icon
-                      circular
-                      name={show_dropout ? "check circle outline" : "times circle outline"}
-                    />
-                  </Table.Cell>
-                </Table.Row>
-              </UpdateUser>
-            ))}
+            {sortedUsers.map(
+              (
+                { email, name, locked, tries, type, rut_id, show_dropout },
+                key
+              ) => (
+                <UpdateUser
+                  key={key}
+                  user={{
+                    email,
+                    name,
+                    locked,
+                    tries,
+                    type,
+                    rut_id,
+                    show_dropout,
+                  }}
+                >
+                  <Table.Row style={{ cursor: "pointer" }}>
+                    <Table.Cell>{email}</Table.Cell>
+                    <Table.Cell>{name}</Table.Cell>
+                    <Table.Cell>
+                      <Icon circular name={locked ? "lock" : "lock open"} />
+                    </Table.Cell>
+                    <Table.Cell>{tries}</Table.Cell>
+                    <Table.Cell>{type}</Table.Cell>
+                    <Table.Cell>{truncate(rut_id, { length: 10 })}</Table.Cell>
+                    <Table.Cell>
+                      <Icon
+                        circular
+                        name={
+                          show_dropout
+                            ? "check circle outline"
+                            : "times circle outline"
+                        }
+                      />
+                    </Table.Cell>
+                  </Table.Row>
+                </UpdateUser>
+              )
+            )}
           </Table.Body>
         </Table>
       </Grid.Row>

@@ -24,7 +24,7 @@ const Admin: FC = () => {
             programs={
               data?.users.map(({ email, programs }) => {
                 return { email, programs: programs.map(({ id }) => id) };
-              }) ?? []
+              }) || []
             }
           />
         );

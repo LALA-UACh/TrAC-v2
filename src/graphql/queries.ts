@@ -214,10 +214,6 @@ export const searchStudentQuery: DocumentNode<
           registration
           grade
           state
-          historicalStates {
-            state
-            grade
-          }
           currentDistribution {
             min
             max

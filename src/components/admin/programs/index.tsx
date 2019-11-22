@@ -10,10 +10,9 @@ export const Programs: FC<{
   programs: { email: string; programs: number[] }[];
 }> = ({ programs }) => {
   const [column, setColumn] = useRememberState("TracAdminProgramsColumn", "");
-  const [direction, setDirection] = useRememberState<"ascending" | "descending">(
-    "TracAdminProgramsDirection",
-    "ascending"
-  );
+  const [direction, setDirection] = useRememberState<
+    "ascending" | "descending"
+  >("TracAdminProgramsDirection", "ascending");
   const [sortedPrograms, setSortedPrograms] = useRememberState<
     { email: string; programs: number[] }[]
   >("TracAdminSortedPrograms", []);
@@ -47,7 +46,6 @@ export const Programs: FC<{
           selectable
           celled
           size="large"
-          style={{ width: "1em" }}
           textAlign="center"
           sortable
         >
@@ -69,11 +67,13 @@ export const Programs: FC<{
           </Table.Header>
 
           <Table.Body>
-            {sortedPrograms.map(({ email, programs }, key) => (
+            {sortedPrograms.map(({ email = "", programs = [] }, key) => (
               <UpdatePrograms key={key} program={{ email, programs }}>
                 <Table.Row style={{ cursor: "pointer" }}>
                   <Table.Cell>{email}</Table.Cell>
-                  <Table.Cell>{truncate(programs.join(" | "), { length: 50 })}</Table.Cell>
+                  <Table.Cell>
+                    {truncate(programs.join(" | "), { length: 50 })}
+                  </Table.Cell>
                 </Table.Row>
               </UpdatePrograms>
             ))}
