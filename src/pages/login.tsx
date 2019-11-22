@@ -18,6 +18,7 @@ import {
 import { isEmail, isLength } from "validator";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
+import { Image } from "@chakra-ui/core";
 import { LOCKED_USER, WRONG_INFO } from "@constants";
 import { currentUserQuery, loginMutation } from "@graphql/queries";
 
@@ -50,7 +51,13 @@ const Login: FC = () => {
   return (
     <Grid centered padded>
       <Grid.Row>
-        <img alt="LALA" src="/lalalink.png" className="lalalink-image" />
+        <Image
+          alt="LALA"
+          src="/lalalink.png"
+          height="20vh"
+          objectFit="contain"
+          objectPosition="center"
+        />
       </Grid.Row>
 
       {!loading && data?.login?.error && (
