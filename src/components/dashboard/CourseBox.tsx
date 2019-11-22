@@ -129,6 +129,9 @@ export const CourseBox: FC<ICourse> = ({
     checkExplicitSemester,
   ]);
   const borderColor = useMemo(() => {
+    if (active === code) {
+      return "gray.500";
+    }
     if (contextFlow?.[code]) {
       return "red.400";
     }
@@ -225,7 +228,7 @@ export const CourseBox: FC<ICourse> = ({
                 cx={16}
                 cy={16}
                 stroke={
-                  contextFlow?.[code] ? "rgb(66,153,225)" : "rgb(245,101,101)"
+                  contextFlow?.[code] ? "rgb(245,101,101)" : "rgb(66,153,225)"
                 }
                 fill="transparent"
               />
@@ -234,7 +237,7 @@ export const CourseBox: FC<ICourse> = ({
                 y={21}
                 fontWeight="bold"
                 fill={
-                  contextFlow?.[code] ? "rgb(66,153,225)" : "rgb(245,101,101)"
+                  contextFlow?.[code] ? "rgb(245,101,101)" : "rgb(66,153,225)"
                 }
               >
                 {contextFlow?.[code] ? "Fluj" : "Req"}
@@ -299,30 +302,53 @@ export const CourseBox: FC<ICourse> = ({
     [open]
   );
 
-  const GradeComponent = useMemo(
-    () =>
-      grade !== undefined && (
+  const GradeComponent = useMemo(() => {
+    let gradeToRender = grade;
+    let stateToRender = state;
+    if (checkExplicitSemester(semestersTaken)) {
+      const historicalState = historicalStates.find(({ semester, year }) => {
+        return explicitSemester === `${semester}${year}`;
+      });
+
+      gradeToRender = historicalState?.grade ?? grade;
+      stateToRender = historicalState?.state ?? state;
+    }
+
+    return (
+      gradeToRender !== undefined && (
         <Text mb={2} pt={1}>
           <b>
-            {grade
-              ? grade.toFixed(1)
-              : (() => {
-                  switch (state) {
-                    case StateCourse.Approved:
-                      return "AP";
-                    case StateCourse.Reapproved:
-                      return "RE";
-                    case StateCourse.Canceled:
-                      return "AN";
-                    default:
-                      return "BUGGED";
-                  }
-                })()}
+            {(() => {
+              if (gradeToRender) {
+                return gradeToRender.toFixed(1);
+              }
+              switch (stateToRender) {
+                case StateCourse.Approved:
+                  return "AP";
+                case StateCourse.Reapproved:
+                  return "RE";
+                case StateCourse.Canceled:
+                  return "AN";
+                case StateCourse.Pending:
+                  return "PEN";
+                case StateCourse.Current:
+                  return "CUR";
+                default:
+                  return "BUG";
+              }
+            })()}
           </b>
         </Text>
-      ),
-    [grade]
-  );
+      )
+    );
+  }, [
+    grade,
+    state,
+    checkExplicitSemester,
+    explicitSemester,
+    semestersTaken,
+    historicalStates,
+  ]);
 
   const HistoricalCirclesComponent = useMemo(
     () =>
@@ -376,7 +402,7 @@ export const CourseBox: FC<ICourse> = ({
       opacity={opacity}
       border="2px"
       borderColor={borderColor}
-      borderWidth="2px"
+      borderWidth={active === code ? "4px" : "2px"}
       cursor="pointer"
       transition="0.4s all ease-in-out"
       onClick={() => {
@@ -405,7 +431,7 @@ export const CourseBox: FC<ICourse> = ({
       <Flex
         mr={"-0.5px"}
         w="40px"
-        mt="-0.5px"
+        mt="-0.4px"
         h="100.5%"
         bg={stateColor}
         direction="column"

@@ -121,15 +121,6 @@ export class TakenCourseResolver {
   }
 
   @FieldResolver()
-  async historicalStates(
-    @Root()
-    { id, code }: Pick<TakenCourse, "id" | "code">
-  ): Promise<$PropertyType<TakenCourse, "historicalStates">[]> {
-    // TODO Taken course historical states resolver
-    return [];
-  }
-
-  @FieldResolver()
   async currentDistribution(
     @Root()
     { id, code }: Pick<TakenCourse, "id" | "code">

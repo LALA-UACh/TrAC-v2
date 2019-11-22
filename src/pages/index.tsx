@@ -92,46 +92,54 @@ const Dashboard: FC = () => {
             const historicalStates: {
               state: StateCourse;
               grade: number;
+              year: number;
+              semester: number;
             }[] = [];
             let state: StateCourse | undefined;
             const semestersTaken: { year: number; semester: string }[] = [];
 
-            reverse(data.studentAcademic.terms).forEach(({ coursesTaken }) => {
-              for (const {
-                code: codeToFind,
-                classGroup: { year, semester, distribution },
-                registration: registrationToFind,
-                grade: gradeToFind,
-                state: stateToFind,
-              } of coursesTaken) {
-                let currentDistributionValues = distribution.map(
-                  ({ value, label }) => ({
-                    value,
-                    min: parseFloat(label.split("-")[0]),
-                    max: parseFloat(label.split("-")[1]),
-                  })
-                );
+            reverse(data.studentAcademic.terms).forEach(
+              ({ coursesTaken, semester, year }) => {
+                for (const {
+                  code: codeToFind,
+                  classGroup: { distribution },
+                  registration: registrationToFind,
+                  grade: gradeToFind,
+                  state: stateToFind,
+                } of coursesTaken) {
+                  let currentDistributionValues = distribution.map(
+                    ({ value, label }) => ({
+                      value,
+                      min: parseFloat(label.split("-")[0]),
+                      max: parseFloat(label.split("-")[1]),
+                    })
+                  );
 
-                if (codeToFind === code) {
-                  if (first) {
-                    first = false;
-                    registration = registrationToFind;
-                    grade = gradeToFind;
-                    currentDistributionLabel = `Calificaciones ${semester} ${year}`;
-                    state = stateToFind as StateCourse;
-                    if (some(currentDistributionValues, ({ value }) => value)) {
-                      currentDistribution = currentDistributionValues;
+                  if (codeToFind === code) {
+                    if (first) {
+                      first = false;
+                      registration = registrationToFind;
+                      grade = gradeToFind;
+                      currentDistributionLabel = `Calificaciones ${semester} ${year}`;
+                      state = stateToFind as StateCourse;
+                      if (
+                        some(currentDistributionValues, ({ value }) => value)
+                      ) {
+                        currentDistribution = currentDistributionValues;
+                      }
+                    } else {
+                      historicalStates.push({
+                        state: stateToFind as StateCourse,
+                        grade: gradeToFind,
+                        year,
+                        semester: parseInt(semester),
+                      });
                     }
-                  } else {
-                    historicalStates.push({
-                      state: stateToFind as StateCourse,
-                      grade: gradeToFind,
-                    });
+                    semestersTaken.push({ year, semester });
                   }
-                  semestersTaken.push({ year, semester });
                 }
               }
-            });
+            );
             return {
               name,
               code,
@@ -198,7 +206,7 @@ const Dashboard: FC = () => {
       />
       <CoursesFlow>
         <ScrollContainer activationDistance={5} hideScrollbars={false}>
-          <Stack isInline flexWrap="wrap">
+          <Stack isInline flexWrap="wrap-reverse">
             <Box>
               <TimeLine
                 PGA={data.PGA}

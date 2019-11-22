@@ -38,8 +38,8 @@ export const SemesterTakenBox: FC<{ year: number; semester: string }> = ({
           const open = toggleExplicitSemester(year, semester);
           Tracking.current.track({
             action: "click",
-            target: `semester-taken-box-${year}-${semester}`,
-            effect: `${open ? "highlight" : "unhighlight"}-semester-taken`,
+            target: `semester-box-${year}-${semester}`,
+            effect: `${open ? "load" : "unload"}-semester`,
           });
         }}
       >

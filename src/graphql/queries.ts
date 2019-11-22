@@ -172,10 +172,6 @@ export const searchStudentQuery: DocumentNode<
             registration: string;
             grade: number;
             state: StateCourse;
-            historicalStates: Array<{
-              state: StateCourse;
-              grade: number;
-            }>;
             currentDistribution: Array<{
               min: number;
               max: number;

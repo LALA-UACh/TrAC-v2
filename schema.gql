@@ -119,7 +119,6 @@ type TakenCourse {
   registration: String!
   grade: Float!
   state: StateCourse!
-  historicalStates: [StateGrade!]!
   currentDistribution: [DistributionValue!]!
 }
 

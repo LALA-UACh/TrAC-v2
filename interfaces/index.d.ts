@@ -35,6 +35,8 @@ export type ICourse = {
   historicalStates: {
     state: StateCourse;
     grade: number;
+    semester: number;
+    year: number;
   }[];
   historicDistribution?: IDistribution[];
   currentDistribution?: IDistribution[];

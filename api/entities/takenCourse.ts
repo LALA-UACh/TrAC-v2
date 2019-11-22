@@ -47,10 +47,6 @@ export class TakenCourse implements Pick<Course, "code" | "name"> {
   @Field(() => StateCourse)
   state: StateCourse;
 
-  // student_course => state
-  @Field(() => [StateGrade])
-  historicalStates: StateGrade[];
-
   // ?? // TODO currentDistribution taken course database definition
   @Field(() => [DistributionValue])
   currentDistribution: DistributionValue[];
