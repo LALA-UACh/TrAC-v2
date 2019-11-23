@@ -11,6 +11,7 @@ import {
 
 import { UserType } from "@constants";
 import { ADMIN } from "@consts";
+import { IUserTable } from "@db/tables";
 
 import { Program } from "./program";
 
@@ -20,7 +21,7 @@ registerEnumType(UserType, {
 });
 
 @ObjectType()
-export class User {
+export class User implements Partial<IUserTable> {
   @Field(() => EmailAddress)
   email: string;
 
@@ -33,22 +34,11 @@ export class User {
   @Field(() => UserType)
   type: UserType;
 
-  @Field({ nullable: true })
-  rut_id?: string;
+  @Field()
+  rut_id: string;
 
   @Field()
   show_dropout: boolean;
-
-  @Field(() => [Program])
-  programs: Program[];
-
-  password: string;
-
-  oldPassword1: string;
-
-  oldPassword2: string;
-
-  oldPassword3: string;
 
   @Authorized([ADMIN])
   @Field()
@@ -61,6 +51,9 @@ export class User {
   @Authorized([ADMIN])
   @Field()
   unlockKey: string;
+
+  @Field(() => [Program])
+  programs: Program[];
 }
 
 @InputType()
@@ -123,7 +116,7 @@ export class LockedUserResult {
   mailResult: Record<string, any>;
 
   @Field(() => [User])
-  users: User[];
+  users: Omit<User, "programs">[];
 }
 
 @ObjectType()

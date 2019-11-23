@@ -4,7 +4,7 @@ import { TakenCourse } from "./takenCourse";
 
 @ObjectType()
 export class Term {
-  // student_term => id | still unknown if needed
+  // student_term => id
   @Field(() => ID)
   id: string;
 

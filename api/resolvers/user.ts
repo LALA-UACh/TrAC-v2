@@ -10,14 +10,18 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
+import { $PropertyType } from "utility-types";
 
+import { ADMIN } from "@consts";
+import { dbAuth } from "@db";
 import {
-  ADMIN,
-  PROGRAM_TABLE,
-  USER_PROGRAMS_TABLE,
-  USERS_TABLE,
-} from "@consts";
-import { dbAuth, dbLALA } from "@db";
+  IUserProgramsTable,
+  IUserTable,
+  ProgramTable,
+  UserProgramsTable,
+  UserProgramsTableName,
+  UserTable,
+} from "@db/tables";
 import { Program } from "@entities/program";
 import {
   LockedUserResult,
@@ -26,14 +30,20 @@ import {
   User,
   UserProgram,
 } from "@entities/user";
+import { defaultUserType } from "@utils";
 import { sendMail, UnlockMail } from "@utils/mail";
 
 @Resolver(() => User)
 export class UserResolver {
   @Authorized([ADMIN])
   @Query(() => [User])
-  async users(): Promise<User[]> {
-    return await dbAuth<User>(USERS_TABLE).select("*");
+  async users(): Promise<Omit<User, "programs">[]> {
+    return (await UserTable.select("*")).map(({ type, ...rest }) => {
+      return {
+        ...rest,
+        type: defaultUserType(type),
+      };
+    });
   }
 
   @Authorized([ADMIN])
@@ -41,20 +51,20 @@ export class UserResolver {
   async updateUserPrograms(
     @Arg("userPrograms")
     { email, programs, oldPrograms }: UpdateUserPrograms
-  ): Promise<User[]> {
+  ): Promise<Omit<User, "programs">[]> {
     const trx = await dbAuth.transaction();
     try {
-      await trx<UserProgram>(USER_PROGRAMS_TABLE)
+      await trx<IUserProgramsTable>(UserProgramsTableName)
         .delete()
         .whereIn("program", oldPrograms)
         .andWhere({
           email,
         });
 
-      await trx<UserProgram>(USER_PROGRAMS_TABLE).insert(
+      await trx<IUserProgramsTable>(UserProgramsTableName).insert(
         programs.map(program => ({
           email,
-          program,
+          program: program.toString(),
         }))
       );
       await trx.commit();
@@ -63,7 +73,12 @@ export class UserResolver {
       throw err;
     }
 
-    return await dbAuth<User>(USERS_TABLE).select("*");
+    return (await UserTable.select("*")).map(({ type, ...rest }) => {
+      return {
+        ...rest,
+        type: defaultUserType(type),
+      };
+    });
   }
 
   @Authorized([ADMIN])
@@ -71,29 +86,37 @@ export class UserResolver {
   async addUsersPrograms(
     @Arg("user_programs", () => [UserProgram])
     user_programs: UserProgram[]
-  ): Promise<User[]> {
-    const programsList = await dbLALA<Program>(PROGRAM_TABLE)
-      .whereIn(
-        "id",
-        user_programs.map(({ program }) => program)
-      )
-      .select("id");
+  ): Promise<Omit<User, "programs">[]> {
+    const programsList = await ProgramTable.whereIn(
+      "id",
+      user_programs.map(({ program }) => program)
+    ).select("id");
 
     if (programsList.length > 0) {
       await dbAuth.raw(
-        `${dbAuth(USER_PROGRAMS_TABLE)
-          .insert(
-            user_programs.filter(({ program }) =>
-              programsList.find(
+        `${UserProgramsTable.insert(
+          user_programs
+            .filter(({ program }) => {
+              return programsList.find(
                 ({ id }) => program.toString() === id.toString()
-              )
-            )
-          )
-          .toString()} ON CONFLICT DO NOTHING`
+              );
+            })
+            .map(({ email, program }) => {
+              return {
+                email,
+                program: program.toString(),
+              };
+            })
+        ).toString()} ON CONFLICT DO NOTHING`
       );
     }
 
-    return await dbAuth<User>(USERS_TABLE).select("*");
+    return (await UserTable.select("*")).map(({ type, ...rest }) => {
+      return {
+        ...rest,
+        type: defaultUserType(type),
+      };
+    });
   }
 
   @Authorized([ADMIN])
@@ -101,7 +124,7 @@ export class UserResolver {
   async upsertUsers(
     @Arg("users", () => [UpsertedUser])
     users: UpsertedUser[]
-  ): Promise<User[]> {
+  ): Promise<Omit<User, "programs">[]> {
     await Promise.all(
       users.map(
         async ({
@@ -119,43 +142,38 @@ export class UserResolver {
            * updating an existing user
            */
           if (oldEmail) {
-            return dbAuth<User>(USERS_TABLE)
-              .update({
-                email,
+            return UserTable.update({
+              email,
+              name,
+              type,
+              tries,
+              rut_id,
+              show_dropout,
+              locked,
+            }).where({
+              email: oldEmail,
+            });
+          } else {
+            /**
+             * Otherwise, we have to check if the email already exists
+             * to decide if inserts or updates
+             */
+            const foundUser = await UserTable.select("email")
+              .where({ email })
+              .first();
+
+            if (foundUser) {
+              return UserTable.update({
                 name,
                 type,
                 tries,
                 rut_id,
                 show_dropout,
                 locked,
-              })
-              .where({
-                email: oldEmail,
-              });
-          } else {
-            /**
-             * Otherwise, we have to check if the email already exists
-             * to decide if inserts or updates
-             */
-            const foundUser = await dbAuth<User>(USERS_TABLE)
-              .select("email")
-              .where({ email })
-              .first();
-
-            if (foundUser) {
-              return dbAuth<User>(USERS_TABLE)
-                .update({
-                  name,
-                  type,
-                  tries,
-                  rut_id,
-                  show_dropout,
-                  locked,
-                })
-                .where({ email });
+              }).where({ email });
             }
 
-            return dbAuth<User>(USERS_TABLE).insert({
+            return UserTable.insert({
               email,
               name,
               type,
@@ -169,7 +187,12 @@ export class UserResolver {
       )
     );
 
-    return await dbAuth(USERS_TABLE).select("*");
+    return (await UserTable.select("*")).map(({ type, ...rest }) => {
+      return {
+        ...rest,
+        type: defaultUserType(type),
+      };
+    });
   }
 
   @Authorized([ADMIN])
@@ -177,20 +200,20 @@ export class UserResolver {
   async lockMailUser(
     @Arg("email", () => EmailAddress) email: string
   ): Promise<LockedUserResult> {
-    const user = await dbAuth<Pick<User, "email">>(USERS_TABLE)
-      .select("email")
+    const user = await UserTable.select("email")
       .where({ email })
       .first();
 
     if (user) {
       const unlockKey = generate();
-      await dbAuth<User>(USERS_TABLE)
-        .update({
-          locked: true,
-          unlockKey,
-        })
-        .where({ email });
-      const [mailResult, users] = await Promise.all([
+      await UserTable.update({
+        locked: true,
+        unlockKey,
+      }).where({ email });
+      const [mailResult, users] = await Promise.all<
+        $PropertyType<LockedUserResult, "mailResult">,
+        IUserTable[]
+      >([
         sendMail({
           to: email,
           html: UnlockMail({
@@ -199,12 +222,17 @@ export class UserResolver {
           }),
           subject: "Activación cuenta LALA TrAC",
         }),
-        dbAuth<User>(USERS_TABLE).select("*"),
+        UserTable.select("*"),
       ]);
 
       return {
         mailResult,
-        users,
+        users: users.map(({ type, ...rest }) => {
+          return {
+            ...rest,
+            type: defaultUserType(type),
+          };
+        }),
       };
     }
 
@@ -214,15 +242,11 @@ export class UserResolver {
   @Authorized([ADMIN])
   @Mutation(() => [GraphQLJSONObject])
   async mailAllLockedUsers(): Promise<Record<string, any>> {
-    const users = await dbAuth<Pick<User, "email">>(USERS_TABLE)
-      .select("email")
-      .where({ locked: true });
+    const users = await UserTable.select("email").where({ locked: true });
     const mailResults: Record<string, any>[] = [];
     for (const { email } of users) {
       const unlockKey = generate();
-      await dbAuth<User>(USERS_TABLE)
-        .update({ unlockKey })
-        .where({ email });
+      await UserTable.update({ unlockKey }).where({ email });
 
       const result = await sendMail({
         to: email,
@@ -241,12 +265,15 @@ export class UserResolver {
   @Mutation(() => [User])
   async deleteUser(
     @Arg("email", () => EmailAddress) email: string
-  ): Promise<User[]> {
-    await dbAuth<User>(USERS_TABLE)
-      .delete()
-      .where({ email });
+  ): Promise<Omit<User, "programs">[]> {
+    await UserTable.delete().where({ email });
 
-    return await dbAuth<User>(USERS_TABLE).select("*");
+    return (await UserTable.select("*")).map(({ type, ...rest }) => {
+      return {
+        ...rest,
+        type: defaultUserType(type),
+      };
+    });
   }
 
   @FieldResolver()
@@ -254,8 +281,10 @@ export class UserResolver {
     @Root()
     { email }: Pick<User, "email">
   ): Promise<Pick<Program, "id">[]> {
-    return await dbAuth<UserProgram>(USER_PROGRAMS_TABLE)
-      .select("program as id")
-      .where({ email });
+    return (await UserProgramsTable.select("program").where({ email })).map(
+      ({ program }) => {
+        return { id: parseInt(program) };
+      }
+    );
   }
 }

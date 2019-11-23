@@ -1,8 +1,7 @@
 import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
 
 import { UserType } from "@constants";
-import { TRACKING_TABLE } from "@consts";
-import { dbTracking } from "@db";
+import { TrackingTable } from "@db/tables";
 import { Track, TrackInput } from "@entities/track";
 import { IContext } from "@interfaces";
 
@@ -14,15 +13,14 @@ export class TrackResolver {
     @Args() { datetime_client, data }: TrackInput,
     @Ctx() { user }: IContext
   ) {
-    dbTracking<Track>(TRACKING_TABLE)
-      .insert({
-        app_id:
-          user?.type === UserType.Director ? "TrAC-director" : "TrAC-student",
-        user_id: user?.email,
-        datetime: new Date(),
-        datetime_client,
-        data,
-      })
+    TrackingTable.insert({
+      app_id:
+        user?.type === UserType.Director ? "TrAC-director" : "TrAC-student",
+      user_id: user?.email,
+      datetime: new Date(),
+      datetime_client,
+      data,
+    })
       .then(() => {})
       .catch(err => {
         console.error(

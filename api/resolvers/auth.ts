@@ -10,11 +10,13 @@ import {
   UserType,
   WRONG_INFO,
 } from "@constants";
-import { ONE_DAY, SECRET, THIRTY_MINUTES, USERS_TABLE } from "@consts";
-import { dbAuth } from "@db";
+import { ONE_DAY, SECRET, THIRTY_MINUTES } from "@consts";
+import { UserTable } from "@db/tables";
 import { AuthResult, LoginInput, UnlockInput } from "@entities/auth";
 import { User } from "@entities/user";
 import { IContext } from "@interfaces";
+import { IfImplements } from "@typings/utils";
+import { defaultUserType } from "@utils";
 import { sendMail, UnlockMail } from "@utils/mail";
 
 @Resolver()
@@ -49,14 +51,20 @@ export class AuthResolver {
   }
 
   @Query(() => User, { nullable: true })
-  async currentUser(@Ctx() { user }: IContext): Promise<User | undefined> {
+  async currentUser(
+    @Ctx() { user }: IContext
+  ): Promise<Omit<User, "programs"> | undefined> {
     if (user) {
-      return await dbAuth<User>(USERS_TABLE)
-        .where({
-          email: user.email,
-          locked: false,
-        })
-        .first();
+      const foundUser = await UserTable.where({
+        email: user.email,
+        locked: false,
+      }).first();
+      if (foundUser) {
+        return {
+          ...foundUser,
+          type: defaultUserType(foundUser.type),
+        };
+      }
     }
 
     return undefined;
@@ -67,36 +75,46 @@ export class AuthResolver {
     @Ctx() { req, res }: IContext,
     @Args()
     { email, password: passwordInput }: LoginInput
-  ): Promise<AuthResult> {
-    let user = await dbAuth<User>(USERS_TABLE)
-      .first()
-      .where({
-        email,
-      });
+  ): Promise<
+    IfImplements<
+      {
+        error?: string;
+        user?: Omit<User, "programs">;
+      },
+      AuthResult
+    >
+  > {
+    let user = await UserTable.first().where({
+      email,
+    });
 
     if (user) {
       if (user.locked) {
         return { error: LOCKED_USER };
       } else if (user.password === passwordInput) {
+        const type = defaultUserType(user.type);
         AuthResolver.authenticate({
           req,
           res,
           email,
           admin: user.admin,
-          type: user.type,
+          type,
         });
 
-        return { user };
+        return {
+          user: {
+            ...user,
+            type,
+          },
+        };
       } else {
-        if (user.tries >= 2) {
+        if (user.tries && user.tries >= 2) {
           const unlockKey = generate();
-          await dbAuth<User>(USERS_TABLE)
-            .where({ email })
-            .update({
-              locked: true,
-              tries: 3,
-              unlockKey,
-            });
+          await UserTable.where({ email }).update({
+            locked: true,
+            tries: 3,
+            unlockKey,
+          });
 
           sendMail({
             to: email,
@@ -120,7 +138,7 @@ export class AuthResolver {
             });
           return { error: LOCKED_USER };
         } else {
-          await dbAuth<User>(USERS_TABLE).increment("tries", 1);
+          await UserTable.increment("tries", 1);
         }
       }
     }
@@ -141,10 +159,16 @@ export class AuthResolver {
     @Ctx() { req, res }: IContext,
     @Args()
     { email, password: passwordInput, unlockKey }: UnlockInput
-  ): Promise<AuthResult> {
-    let user = await dbAuth<User>(USERS_TABLE)
-      .where({ email, unlockKey })
-      .first();
+  ): Promise<
+    IfImplements<
+      {
+        error?: string;
+        user?: Omit<User, "programs">;
+      },
+      AuthResult
+    >
+  > {
+    let user = await UserTable.where({ email, unlockKey }).first();
 
     if (!user) {
       return { error: WRONG_INFO };
@@ -159,9 +183,9 @@ export class AuthResolver {
           };
         }
         default: {
+          const type = defaultUserType(user.type);
           user = (
-            await dbAuth<User>(USERS_TABLE)
-              .where({ email })
+            await UserTable.where({ email })
               .update({
                 password: passwordInput,
                 oldPassword1: user.password,
@@ -179,9 +203,14 @@ export class AuthResolver {
               res,
               email,
               admin: user.admin,
-              type: user.type,
+              type,
             });
-            return { user };
+            return {
+              user: {
+                ...user,
+                type,
+              },
+            };
           }
           return { error: WRONG_INFO };
         }

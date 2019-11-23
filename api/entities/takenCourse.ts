@@ -12,7 +12,7 @@ registerEnumType(StateCourse, {
 
 @ObjectType()
 export class TakenCourse implements Pick<Course, "code" | "name"> {
-  // student_course => id | still unknown if needed
+  // student_course => id
   @Field(() => ID)
   id: string;
 

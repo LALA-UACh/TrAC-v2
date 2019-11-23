@@ -9,8 +9,7 @@ import {
 } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
-import { COURSE_TABLE, STUDENT_PROGRAM_TABLE } from "@consts";
-import { dbLALA } from "@db";
+import { CourseTable, StudentProgramTable } from "@db/tables";
 import { Student } from "@entities/student";
 import { TakenCourse } from "@entities/takenCourse";
 import { Term } from "@entities/term";
@@ -29,13 +28,12 @@ export class StudentResolver {
     })
     program_id?: number
   ) {
-    const data = await dbLALA<{
-      program_id: number;
-      curriculum: number;
-      start_year: number;
-      mention: string;
-    }>(STUDENT_PROGRAM_TABLE)
-      .select("program_id", "curriculum", "start_year", "mention")
+    const data = await StudentProgramTable.select(
+      "program_id",
+      "curriculum",
+      "start_year",
+      "mention"
+    )
       .where({
         student_id,
         program_id,
@@ -109,8 +107,7 @@ export class TakenCourseResolver {
   ): Promise<$PropertyType<TakenCourse, "name">> {
     return (
       (
-        await dbLALA<{ name: string }>(COURSE_TABLE)
-          .select("name")
+        await CourseTable.select("name")
           .where({ code })
           .first()
       )?.name ??
