@@ -39,6 +39,7 @@ export class AuthResolver {
       }),
       {
         httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
         expires: addMilliseconds(
           Date.now(),
           req.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
