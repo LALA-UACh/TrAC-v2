@@ -1,6 +1,10 @@
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
-module.exports = {
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE !== undefined,
+});
+
+module.exports = withBundleAnalyzer({
   webpack: (config, options) => {
     if (config.resolve.plugins) {
       config.resolve.plugins.push(new TsconfigPathsPlugin());
@@ -11,4 +15,4 @@ module.exports = {
     return config;
   },
   target: "serverless",
-};
+});

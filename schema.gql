@@ -95,8 +95,8 @@ type Query {
 
 """Possible states of a taken course"""
 enum StateCourse {
-  Approved
-  Reapproved
+  Passed
+  Failed
   Current
   Canceled
   Pending

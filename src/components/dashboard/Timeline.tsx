@@ -13,9 +13,9 @@ import pixelWidth from "string-pixel-width";
 
 import { GRADES_SCALES, PROGRAM_PGA } from "@constants";
 import {
-  approvedGrade,
   maxGrade,
   minGrade,
+  passGrade,
   PGA_COLOR,
   PROGRAM_PGA_COLOR,
   PSP_COLOR,
@@ -226,9 +226,9 @@ export const TimeLine: FC<{
         />
         <line
           x1={39}
-          y1={GradeScale(approvedGrade)}
+          y1={GradeScale(passGrade)}
           x2={340}
-          y2={GradeScale(approvedGrade)}
+          y2={GradeScale(passGrade)}
           stroke="black"
           strokeDasharray="2"
         />
@@ -254,7 +254,7 @@ export const TimeLine: FC<{
       PGA_COLOR,
       PSP_COLOR,
       GradeScale,
-      approvedGrade,
+      passGrade,
       YAxisScale,
       GRADES_SCALES,
     ]

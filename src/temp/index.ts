@@ -20,7 +20,7 @@ export const rangeGrades = [
     color: "#66b43e",
   },
 ];
-export const approvedGrade: number = 4;
+export const passGrade: number = 4;
 
 export const minGrade = Math.min(...rangeGrades.map(({ min }) => min));
 export const maxGrade = Math.max(...rangeGrades.map(({ max }) => max));

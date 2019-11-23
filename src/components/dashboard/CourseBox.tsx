@@ -7,7 +7,7 @@ import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
 import { HISTORIC_GRADES, StateCourse } from "@constants";
 import { ICourse, ITakenCourse } from "@interfaces";
-import { approvedGrade, maxGrade, minGrade } from "@temp";
+import { maxGrade, minGrade, passGrade } from "@temp";
 
 import { CoursesFlowContext } from "./CoursesFlow";
 import { Histogram } from "./Histogram";
@@ -76,19 +76,19 @@ export const CourseBox: FC<ICourse> = ({
     }
   }, [open]);
 
-  const approvedColorScale = useMemo(
+  const passColorScale = useMemo(
     () =>
       scaleLinear<string, number>()
         .range(["#b0ffa1", "#5bff3b"])
-        .domain([approvedGrade, maxGrade]),
+        .domain([passGrade, maxGrade]),
     []
   );
 
-  const reapprovedColorScale = useMemo(
+  const failColorScale = useMemo(
     () =>
       scaleLinear<string, number>()
         .range(["#ff4040", "#ff8282"])
-        .domain([minGrade, approvedGrade]),
+        .domain([minGrade, passGrade]),
     []
   );
 
@@ -105,10 +105,10 @@ export const CourseBox: FC<ICourse> = ({
 
   const stateColor = useMemo(() => {
     switch (state) {
-      case StateCourse.Approved:
-        return (approvedColorScale(grade || maxGrade) as unknown) as string;
-      case StateCourse.Reapproved:
-        return (reapprovedColorScale(grade || minGrade) as unknown) as string;
+      case StateCourse.Passed:
+        return (passColorScale(grade || maxGrade) as unknown) as string;
+      case StateCourse.Failed:
+        return (failColorScale(grade || minGrade) as unknown) as string;
       case StateCourse.Current:
         return "blue";
       case StateCourse.Canceled:
@@ -116,14 +116,7 @@ export const CourseBox: FC<ICourse> = ({
       default:
         return "transparent";
     }
-  }, [
-    state,
-    grade,
-    maxGrade,
-    minGrade,
-    approvedColorScale,
-    reapprovedColorScale,
-  ]);
+  }, [state, grade, maxGrade, minGrade, passColorScale, failColorScale]);
 
   const opacity = useMemo(() => {
     if (active) {
@@ -339,9 +332,9 @@ export const CourseBox: FC<ICourse> = ({
                 return grade.toFixed(1);
               }
               switch (state) {
-                case StateCourse.Approved:
+                case StateCourse.Passed:
                   return "AP";
-                case StateCourse.Reapproved:
+                case StateCourse.Failed:
                   return "RE";
                 case StateCourse.Canceled:
                   return "AN";
@@ -366,8 +359,8 @@ export const CourseBox: FC<ICourse> = ({
           {taken.slice(1).map(({ state, grade }, key) => {
             let color: string;
             switch (state) {
-              case StateCourse.Reapproved:
-                color = (reapprovedColorScale(grade || 0) as unknown) as string;
+              case StateCourse.Failed:
+                color = (failColorScale(grade || 0) as unknown) as string;
                 break;
               case StateCourse.Current:
                 color = "blue";
