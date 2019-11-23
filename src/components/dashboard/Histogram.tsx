@@ -1,23 +1,29 @@
 import { scaleLinear } from "d3-scale";
+import { motion } from "framer-motion";
 import toString from "lodash/toString";
-import { FC, memo, SVGProps, useCallback, useMemo } from "react";
+import { FC, memo, useCallback, useMemo } from "react";
 
 import { IDistribution } from "@interfaces";
 import { maxGrade, minGrade, rangeGrades } from "@temp";
 import { AxisBottom, AxisLeft } from "@vx/axis";
 
-const SingleBar: FC<SVGProps<SVGRectElement> & {
+const SingleBar: FC<{
   grey?: boolean;
+  x?: number;
   y?: number;
   height?: number;
-}> = memo(({ grey, y, height, ...rest }) => {
+}> = memo(({ grey, y: propY, height, x }) => {
+  const fill = grey ? "rgb(122,122,122)" : "rgb(191,191,191)";
+  const y = (propY ?? 0) - (height ?? 0);
   return (
-    <rect
+    <motion.rect
       width={40}
-      y={(y ?? 0) - (height ?? 0)}
+      x={x}
+      y={y}
       height={height}
-      fill={grey ? "rgb(122,122,122)" : "rgb(191,191,191)"}
-      {...rest}
+      animate={{ fill }}
+      transition={{ duration: 1 }}
+      fill={fill}
     />
   );
 });
@@ -44,12 +50,6 @@ const XAxis: FC = () => {
         let width =
           scaleColorX(averageTwo(nextMin, max)) -
           scaleColorX(averageTwo(previousMax, min));
-
-        // if (nextMin) {
-        //   width = scaleColorX(max + (nextMin - max) / 2) - scaleColorX(min);
-        // }else  if (previousMax) {
-
-        // }
 
         return (
           <rect
@@ -151,7 +151,7 @@ export const Histogram: FC<{
             }
             return {
               min,
-              max
+              max,
             };
           })
           .findIndex(findGrade);

@@ -175,6 +175,7 @@ export const searchStudentQuery: DocumentNode<
             registration: string;
             grade: number;
             state: StateCourse;
+            parallelGroup: number;
             currentDistribution: Array<{
               min: number;
               max: number;
@@ -217,6 +218,7 @@ export const searchStudentQuery: DocumentNode<
           registration
           grade
           state
+          parallelGroup
           currentDistribution {
             min
             max

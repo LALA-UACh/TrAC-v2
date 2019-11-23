@@ -1,13 +1,12 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
-import some from "lodash/some";
 import { FC, useContext, useMemo, useState } from "react";
 import { useUpdateEffect } from "react-use";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
 import { HISTORIC_GRADES, StateCourse } from "@constants";
-import { ICourse } from "@interfaces";
+import { ICourse, ITakenCourse } from "@interfaces";
 import { approvedGrade, maxGrade, minGrade } from "@temp";
 
 import { CoursesFlowContext } from "./CoursesFlow";
@@ -17,20 +16,20 @@ export const CourseBox: FC<ICourse> = ({
   name,
   code,
   credits,
-  historicDistribution,
-  currentDistribution,
-  registration,
-  grade,
-  currentDistributionLabel,
-  historicalStates,
-  state,
   flow,
   requisites,
-  semestersTaken,
+  historicDistribution,
+  taken,
 }) => {
   const Tracking = useContext(TrackingContext);
+  const { semestersTaken } = useMemo(() => {
+    const semestersTaken = taken.map(({ semester, year }) => {
+      return { semester, year };
+    });
 
-  const [open, setOpen] = useState(false);
+    return { semestersTaken };
+  }, [taken]);
+
   const {
     add,
     remove,
@@ -40,6 +39,30 @@ export const CourseBox: FC<ICourse> = ({
     checkExplicitSemester,
     explicitSemester,
   } = useContext(CoursesFlowContext);
+
+  const {
+    state,
+    grade,
+    registration,
+    currentDistribution,
+    semester,
+    year,
+  } = useMemo<Partial<ITakenCourse>>(() => {
+    const foundSemesterTaken = checkExplicitSemester(semestersTaken);
+    if (foundSemesterTaken) {
+      const foundData = taken.find(({ semester, year }) => {
+        return (
+          year === foundSemesterTaken.year &&
+          semester === foundSemesterTaken.semester
+        );
+      });
+      return foundData || {};
+    }
+    return taken[0] || {};
+  }, [semestersTaken, explicitSemester, checkExplicitSemester, taken]);
+
+  const [open, setOpen] = useState(false);
+
   useUpdateEffect(() => {
     if (open) {
       add({
@@ -71,14 +94,14 @@ export const CourseBox: FC<ICourse> = ({
 
   const h = useMemo(() => {
     if (open) {
-      if (currentDistribution && historicDistribution) {
+      if (taken[0]?.currentDistribution && historicDistribution) {
         return 350;
       } else {
         return 350 - 130;
       }
     }
     return 120;
-  }, [open, currentDistribution, historicDistribution]);
+  }, [open, taken, historicDistribution]);
 
   const stateColor = useMemo(() => {
     switch (state) {
@@ -258,12 +281,12 @@ export const CourseBox: FC<ICourse> = ({
       currentDistribution && (
         <Histogram
           key="now"
-          label={currentDistributionLabel}
+          label={`Calificationes ${semester} ${year}`}
           distribution={currentDistribution}
           grade={grade}
         />
       ),
-    [currentDistribution, currentDistributionLabel, grade]
+    [currentDistribution, semester, year, grade]
   );
 
   const HistogramHistoric = useMemo(
@@ -303,30 +326,19 @@ export const CourseBox: FC<ICourse> = ({
           {HistogramHistoric}
         </motion.div>
       ),
-    [open]
+    [open, HistogramNow, HistogramHistoric]
   );
 
   const GradeComponent = useMemo(() => {
-    let gradeToRender = grade;
-    let stateToRender = state;
-    if (checkExplicitSemester(semestersTaken)) {
-      const historicalState = historicalStates.find(({ semester, year }) => {
-        return explicitSemester === `${semester}${year}`;
-      });
-
-      gradeToRender = historicalState?.grade ?? grade;
-      stateToRender = historicalState?.state ?? state;
-    }
-
     return (
-      gradeToRender !== undefined && (
+      grade !== undefined && (
         <Text mb={2} pt={1}>
           <b>
             {(() => {
-              if (gradeToRender) {
-                return gradeToRender.toFixed(1);
+              if (grade) {
+                return grade.toFixed(1);
               }
-              switch (stateToRender) {
+              switch (state) {
                 case StateCourse.Approved:
                   return "AP";
                 case StateCourse.Reapproved:
@@ -345,26 +357,17 @@ export const CourseBox: FC<ICourse> = ({
         </Text>
       )
     );
-  }, [
-    grade,
-    state,
-    checkExplicitSemester,
-    explicitSemester,
-    semestersTaken,
-    historicalStates,
-  ]);
+  }, [grade, state]);
 
   const HistoricalCirclesComponent = useMemo(
     () =>
-      some(historicalStates) && (
+      taken.length > 1 && (
         <Stack spacing={0.7}>
-          {historicalStates?.map(({ state, grade: historicalGrade }, key) => {
+          {taken.slice(1).map(({ state, grade }, key) => {
             let color: string;
             switch (state) {
               case StateCourse.Reapproved:
-                color = (reapprovedColorScale(
-                  historicalGrade
-                ) as unknown) as string;
+                color = (reapprovedColorScale(grade || 0) as unknown) as string;
                 break;
               case StateCourse.Current:
                 color = "blue";
@@ -392,7 +395,7 @@ export const CourseBox: FC<ICourse> = ({
           })}
         </Stack>
       ),
-    [historicalStates]
+    [taken]
   );
 
   return (
@@ -406,7 +409,7 @@ export const CourseBox: FC<ICourse> = ({
       opacity={opacity}
       border="2px"
       borderColor={borderColor}
-      borderWidth={active === code ? "4px" : "2px"}
+      borderWidth={active === code ? "3.5px" : "2px"}
       cursor="pointer"
       transition="0.4s all ease-in-out"
       onClick={() => {
@@ -442,7 +445,7 @@ export const CourseBox: FC<ICourse> = ({
         alignItems="center"
         borderRadius="0px 3px 3px 0px"
         zIndex={0}
-        transition="0.4s height ease-in-out"
+        transition="0.4s all ease-in-out"
         border="1px solid"
         borderColor={borderColor}
       >

@@ -10,12 +10,12 @@ import { useMutation } from "@apollo/react-hooks";
 import { trackMutation } from "@graphql/queries";
 
 export type TrackingTemplateData = {
-  program?: number; // OK
-  curriculum?: number; // OK
-  student?: string; // OK
-  showingProgress?: boolean; // OK
-  showingPrediction?: boolean; // OK
-  coursesOpen?: string; // OK
+  program?: number;
+  curriculum?: number;
+  student?: string;
+  showingProgress?: boolean;
+  showingPrediction?: boolean;
+  coursesOpen?: string;
   action: string;
   effect: string;
   target: string;

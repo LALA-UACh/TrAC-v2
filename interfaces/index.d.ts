@@ -16,28 +16,24 @@ export type IDistribution = {
   max: number;
   value: number;
 };
+
+export type ITakenCourse = {
+  semester: string;
+  year: number;
+  registration?: string;
+  grade?: number;
+  state?: StateCourse;
+  currentDistribution?: IDistribution[];
+  parallelGroup?: number;
+};
+
 export type ICourse = {
   name: string;
   code: string;
   credits: { label: string; value: number }[];
   flow: string[];
   requisites: string[];
-  //  ↑ Static course info
-  //  ↓ Taken course info
-  registration?: string;
-  grade?: number;
-  state?: StateCourse;
-  semestersTaken: {
-    year: number;
-    semester: string;
-  }[];
-  currentDistributionLabel?: string;
-  historicalStates: {
-    state: StateCourse;
-    grade: number;
-    semester: number;
-    year: number;
-  }[];
   historicDistribution?: IDistribution[];
-  currentDistribution?: IDistribution[];
+
+  taken: ITakenCourse[];
 };

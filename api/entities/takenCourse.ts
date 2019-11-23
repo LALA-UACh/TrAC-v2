@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
+import { Field, ID, Int, ObjectType, registerEnumType } from "type-graphql";
 
 import { StateCourse } from "@constants";
 
@@ -9,17 +9,6 @@ registerEnumType(StateCourse, {
   name: "StateCourse",
   description: "Possible states of a taken course",
 });
-
-@ObjectType()
-class StateGrade {
-  // student_course => state
-  @Field(() => StateCourse)
-  state: StateCourse;
-
-  // student_course => grade
-  @Field()
-  grade: number;
-}
 
 @ObjectType()
 export class TakenCourse implements Pick<Course, "code" | "name"> {
@@ -46,6 +35,9 @@ export class TakenCourse implements Pick<Course, "code" | "name"> {
   // student_course => state
   @Field(() => StateCourse)
   state: StateCourse;
+
+  @Field(() => Int)
+  parallelGroup: number;
 
   // ?? // TODO currentDistribution taken course database definition
   @Field(() => [DistributionValue])

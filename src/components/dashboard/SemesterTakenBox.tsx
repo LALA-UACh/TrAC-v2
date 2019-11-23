@@ -12,20 +12,28 @@ export const SemesterTakenBox: FC<{ year: number; semester: string }> = ({
   const Tracking = useContext(TrackingContext);
   const {
     toggleExplicitSemester,
+    checkExplicitSemester,
     semestersTaken,
     explicitSemester,
   } = useContext(CoursesFlowContext);
+
+  const borderColor = useMemo(() => {
+    if (
+      checkExplicitSemester({ year, semester }) ||
+      (explicitSemester === undefined &&
+        semestersTaken?.find(v => year === v.year && semester == v.semester))
+    ) {
+      return "yellow.400";
+    }
+    return "grey";
+  }, [semester, year, checkExplicitSemester, semestersTaken]);
+
   return useMemo(
     () => (
       <Box
         textAlign="center"
         border="3px solid"
-        borderColor={
-          `${semester}${year}` === explicitSemester ||
-          semestersTaken?.find(v => v.semester === semester && v.year === year)
-            ? "yellow.400"
-            : "grey"
-        }
+        borderColor={borderColor}
         borderRadius="8px"
         backgroundColor="rgb(245,245,245)"
         p="6px"
@@ -46,6 +54,6 @@ export const SemesterTakenBox: FC<{ year: number; semester: string }> = ({
         <b>{`${semester}S ${year}`}</b>
       </Box>
     ),
-    [semester, year, toggleExplicitSemester, semestersTaken, explicitSemester]
+    [semester, year, toggleExplicitSemester, borderColor]
   );
 };

@@ -17,8 +17,10 @@ export const CoursesFlowContext = createContext<{
   semestersTaken: ISemesterTaken[];
   explicitSemester?: string;
   checkExplicitSemester: (
-    semestersTaken: { year: number; semester: string }[]
-  ) => boolean;
+    semestersTaken:
+      | { year: number; semester: string }[]
+      | { year: number; semester: string }
+  ) => { year: number; semester: string } | undefined;
   toggleExplicitSemester: (year: number, semester: string) => boolean;
   add: (data: {
     course: string;
@@ -30,7 +32,7 @@ export const CoursesFlowContext = createContext<{
 }>({
   add: () => {},
   remove: () => {},
-  checkExplicitSemester: () => false,
+  checkExplicitSemester: () => undefined,
   toggleExplicitSemester: () => false,
   semestersTaken: [],
 });
@@ -41,13 +43,25 @@ export const CoursesFlow: FC = ({ children }) => {
     string | undefined
   >();
   const checkExplicitSemester = useCallback(
-    (semestersTaken: { year: number; semester: string }[]) => {
-      return (
-        !!explicitSemester &&
-        !!semestersTaken.find(
-          val => `${val.semester}${val.year}` === explicitSemester
-        )
-      );
+    (
+      semestersTaken:
+        | { year: number; semester: string }[]
+        | { year: number; semester: string }
+    ) => {
+      if (!!explicitSemester) {
+        if (Array.isArray(semestersTaken)) {
+          return semestersTaken.find(
+            v => `${v.semester}${v.year}` === explicitSemester
+          );
+        }
+        if (
+          `${semestersTaken.semester}${semestersTaken.year}` ===
+          explicitSemester
+        ) {
+          return semestersTaken;
+        }
+      }
+      return undefined;
     },
     [explicitSemester]
   );

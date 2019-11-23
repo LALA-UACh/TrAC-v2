@@ -1,5 +1,5 @@
+import { some } from "lodash";
 import reverse from "lodash/fp/reverse";
-import some from "lodash/some";
 import { FC, useEffect, useRef } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useLogger } from "react-use";
@@ -16,7 +16,12 @@ import { Tracking, TrackingContext, TrackingRef } from "@components/Tracking";
 import { StateCourse } from "@constants";
 import data from "@constants/data.json";
 import { searchProgramQuery, searchStudentQuery } from "@graphql/queries";
-import { ICourse, IDistribution, ISemesterTaken } from "@interfaces";
+import {
+  ICourse,
+  IDistribution,
+  ISemesterTaken,
+  ITakenCourse,
+} from "@interfaces";
 import { usePromiseLazyQuery } from "@utils/usePromiseLazyQuery";
 
 console.log("data", data);
@@ -84,30 +89,19 @@ const Dashboard: FC = () => {
                 max: parseFloat(label.split("-")[1]),
               })
             );
-            let registration: string | undefined;
-            let grade: number | undefined;
-            let currentDistributionLabel: string | undefined;
-            let currentDistribution: IDistribution[] | undefined;
-            let first: boolean = true;
-            const historicalStates: {
-              state: StateCourse;
-              grade: number;
-              year: number;
-              semester: number;
-            }[] = [];
-            let state: StateCourse | undefined;
-            const semestersTaken: { year: number; semester: string }[] = [];
+
+            const taken: ITakenCourse[] = [];
 
             reverse(data.studentAcademic.terms).forEach(
               ({ coursesTaken, semester, year }) => {
                 for (const {
                   code: codeToFind,
                   classGroup: { distribution },
-                  registration: registrationToFind,
-                  grade: gradeToFind,
-                  state: stateToFind,
+                  registration,
+                  grade,
+                  state,
                 } of coursesTaken) {
-                  let currentDistributionValues = distribution.map(
+                  let currentDistribution = distribution.map(
                     ({ value, label }) => ({
                       value,
                       min: parseFloat(label.split("-")[0]),
@@ -116,26 +110,15 @@ const Dashboard: FC = () => {
                   );
 
                   if (codeToFind === code) {
-                    if (first) {
-                      first = false;
-                      registration = registrationToFind;
-                      grade = gradeToFind;
-                      currentDistributionLabel = `Calificaciones ${semester} ${year}`;
-                      state = stateToFind as StateCourse;
-                      if (
-                        some(currentDistributionValues, ({ value }) => value)
-                      ) {
-                        currentDistribution = currentDistributionValues;
-                      }
-                    } else {
-                      historicalStates.push({
-                        state: stateToFind as StateCourse,
-                        grade: gradeToFind,
-                        year,
-                        semester: parseInt(semester),
-                      });
-                    }
-                    semestersTaken.push({ year, semester });
+                    taken.push({
+                      semester,
+                      year,
+                      registration,
+                      grade,
+                      state: state as StateCourse,
+                      currentDistribution,
+                      parallelGroup: 0,
+                    });
                   }
                 }
               }
@@ -144,21 +127,15 @@ const Dashboard: FC = () => {
               name,
               code,
               credits: [{ label: "SCT", value: credits }],
+              flow: flujoMaterias,
+              requisites,
               historicDistribution: some(
                 historicDistribution,
                 ({ value }) => value
               )
                 ? historicDistribution
                 : [],
-              registration,
-              grade,
-              currentDistributionLabel,
-              currentDistribution,
-              historicalStates,
-              state,
-              flow: flujoMaterias,
-              requisites,
-              semestersTaken,
+              taken,
             };
           }
         ),

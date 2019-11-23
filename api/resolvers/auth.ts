@@ -113,7 +113,7 @@ export class AuthResolver {
             })
             .catch(err => {
               console.error(
-                `Error trying to send an email to new locke user! ${email}`,
+                `Error trying to send an email to new locked user! ${email}`,
                 JSON.stringify(err, null, 2)
               );
             });

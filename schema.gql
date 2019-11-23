@@ -11,13 +11,18 @@ type AuthResult {
 type Course {
   code: String!
   name: String!
-  credits: Int!
+  credits: [Credit!]!
   mention: String!
   semester: Int!
   requisitesRaw: String!
   flow: [Course!]!
   requisites: [Course!]!
   historicalDistribution: [DistributionValue!]!
+}
+
+type Credit {
+  label: String!
+  value: Int!
 }
 
 """
@@ -97,11 +102,6 @@ enum StateCourse {
   Pending
 }
 
-type StateGrade {
-  state: StateCourse!
-  grade: Float!
-}
-
 type Student {
   id: ID!
   program: Program!
@@ -119,6 +119,7 @@ type TakenCourse {
   registration: String!
   grade: Float!
   state: StateCourse!
+  parallelGroup: Int!
   currentDistribution: [DistributionValue!]!
 }
 

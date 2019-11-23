@@ -1,10 +1,25 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
-import { cloneElement, FC, memo, ReactElement, useContext, useMemo, useState } from "react";
+import {
+  cloneElement,
+  FC,
+  memo,
+  ReactElement,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import pixelWidth from "string-pixel-width";
 
 import { GRADES_SCALES, PROGRAM_PGA } from "@constants";
-import { approvedGrade, maxGrade, minGrade, PGA_COLOR, PROGRAM_PGA_COLOR, PSP_COLOR } from "@temp";
+import {
+  approvedGrade,
+  maxGrade,
+  minGrade,
+  PGA_COLOR,
+  PROGRAM_PGA_COLOR,
+  PSP_COLOR,
+} from "@temp";
 import { AxisLeft } from "@vx/axis";
 
 import { CoursesFlowContext } from "./CoursesFlow";
@@ -26,7 +41,7 @@ const TimeLineTooltip: FC<{
         },
         onMouseLeave: () => {
           setShow(false);
-        }
+        },
       }),
     [children, setShow]
   );
@@ -78,11 +93,9 @@ export const TimeLine: FC<{
   semestersTaken: { year: number; semester: string }[];
 }> = memo(({ PGA, PSP, ProgramPGA, semestersTaken }) => {
   const width = useMemo(() => Math.max((PGA.length - 1) * 120 + 60, 650), [
-    PGA
+    PGA,
   ]);
-  const height = 270;
-  const scale = 0.7;
-  const { explicitSemester } = useContext(CoursesFlowContext);
+  const { checkExplicitSemester } = useContext(CoursesFlowContext);
 
   const GradeScale = useMemo(
     () =>
@@ -119,8 +132,10 @@ export const TimeLine: FC<{
                 cx={key * 70 + 70}
                 r={5}
                 fill={
-                  `${semestersTaken[key].semester}${semestersTaken[key].year}` ===
-                  explicitSemester
+                  checkExplicitSemester({
+                    semester: semestersTaken[key].semester,
+                    year: semestersTaken[key].year,
+                  })
                     ? "rgb(236,201,75)"
                     : PSP_COLOR
                 }
@@ -135,10 +150,10 @@ export const TimeLine: FC<{
       PGA,
       ProgramPGA,
       semestersTaken,
-      explicitSemester,
+      checkExplicitSemester,
       PSP_COLOR,
       PGA_COLOR,
-      GradeScale
+      GradeScale,
     ]
   );
 
@@ -241,13 +256,16 @@ export const TimeLine: FC<{
       GradeScale,
       approvedGrade,
       YAxisScale,
-      GRADES_SCALES
+      GRADES_SCALES,
     ]
   );
+  const height = 270;
+  const scale = 0.7;
+
   const viewBox = useMemo(() => `0 0 ${width * scale} ${height * scale}`, [
     width,
     height,
-    scale
+    scale,
   ]);
   return (
     <svg width={width} height={height} viewBox={viewBox}>
