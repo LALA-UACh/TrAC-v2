@@ -3,6 +3,14 @@ import { Field, Int, ObjectType } from "type-graphql";
 import { DistributionValue } from "./distribution";
 
 @ObjectType()
+class Credit {
+  @Field()
+  label: string;
+
+  @Field(() => Int)
+  value: number;
+}
+@ObjectType()
 export class Course {
   // course => code, program_structure => code
   @Field()
@@ -13,8 +21,8 @@ export class Course {
   name: string;
 
   // program_structure => credits
-  @Field(() => Int)
-  credits: number;
+  @Field(() => [Credit])
+  credits: Credit[];
 
   // program_structure => mention
   @Field()

@@ -199,9 +199,13 @@ export const CourseBox: FC<ICourse> = ({
           exit={{ opacity: 0 }}
           className="credits_box"
         >
-          <Text fontSize="9px">
-            <b>SCT: {credits}</b>
-          </Text>
+          {credits.map(({ label, value }, key) => {
+            return (
+              <Text fontSize="9px" key={key}>
+                <b>{`${label}: ${value}`}</b>
+              </Text>
+            );
+          })}
         </motion.div>
       ),
     [open, credits]

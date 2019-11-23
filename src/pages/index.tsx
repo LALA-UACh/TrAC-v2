@@ -143,7 +143,7 @@ const Dashboard: FC = () => {
             return {
               name,
               code,
-              credits,
+              credits: [{ label: "SCT", value: credits }],
               historicDistribution: some(
                 historicDistribution,
                 ({ value }) => value

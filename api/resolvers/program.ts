@@ -148,34 +148,53 @@ export class ProgramResolver {
       semester: number;
       code: string;
       credits: number;
+      creditsSCT: number;
       requisites: string;
       mention: string;
     }>(PROGRAM_STRUCTURE_TABLE)
-      .select("semester", "code", "credits", "requisites", "mention")
-      .distinct("curriculum")
-      .where({ program_id });
+      .select(
+        "semester",
+        "code",
+        "credits",
+        "requisites",
+        "mention",
+        "creditsSCT"
+      )
+      .where({ program_id }); // TODO: Fix query
 
-    return data.map(({ semester, code, credits, requisites, mention }) => {
-      if (semester && code && credits && requisites && mention) {
-        return {
-          semester,
-          code,
-          credits,
-          requisitesRaw: requisites,
-          mention,
-        };
-      }
-      throw new Error(
-        "Unexpected null! " +
-          JSON.stringify({
+    return data.map(
+      ({ semester, code, credits, requisites, mention, creditsSCT }) => {
+        if (
+          semester &&
+          code &&
+          credits &&
+          requisites &&
+          mention &&
+          creditsSCT
+        ) {
+          return {
             semester,
             code,
-            credits,
-            requisites,
+            credits: [
+              { label: "Credits", value: credits },
+              { label: "SCT", value: creditsSCT },
+            ],
+            requisitesRaw: requisites,
             mention,
-          })
-      );
-    });
+          };
+        }
+        throw new Error(
+          "Unexpected null! " +
+            JSON.stringify({
+              semester,
+              code,
+              credits,
+              requisites,
+              mention,
+            })
+        );
+      }
+    );
   }
 }
 

@@ -19,7 +19,7 @@ export type IDistribution = {
 export type ICourse = {
   name: string;
   code: string;
-  credits: number;
+  credits: { label: string; value: number }[];
   flow: string[];
   requisites: string[];
   //  ↑ Static course info

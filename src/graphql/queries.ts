@@ -97,7 +97,7 @@ export const searchProgramQuery: DocumentNode<
         courses: {
           code: string;
           name: string;
-          credits: number;
+          credits: { label: string; value: number }[];
           mention: string;
           semester: number;
           flow: { code: string }[];
@@ -125,7 +125,10 @@ export const searchProgramQuery: DocumentNode<
       courses {
         code
         name
-        credits
+        credits {
+          label
+          value
+        }
         mention
         semester
         flow {
