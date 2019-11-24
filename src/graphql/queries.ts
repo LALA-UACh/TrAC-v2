@@ -1,6 +1,6 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
-import { StateCourse, UserType } from "@constants";
+import { StateCourse, TermType, UserType } from "@constants";
 import { Program } from "@entities/program";
 import { Student } from "@entities/student";
 import { User } from "@entities/user";
@@ -173,7 +173,7 @@ export const searchStudentQuery: DocumentNode<
           id: number;
           student_id: string;
           year: number;
-          term: string;
+          term: TermType;
           situation: string;
           PSP: number;
           PGA: number;

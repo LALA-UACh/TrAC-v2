@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import toString from "lodash/toString";
 import { FC, memo, useCallback, useMemo } from "react";
 
+import { maxGrade, minGrade, rangeGrades } from "@constants";
 import { IDistribution } from "@interfaces";
-import { maxGrade, minGrade, rangeGrades } from "@temp";
 import { AxisBottom, AxisLeft } from "@vx/axis";
 
 const SingleBar: FC<{
@@ -32,68 +32,49 @@ const averageTwo = (a: number | undefined, b: number | undefined) => {
   return ((a ?? b ?? 0) + (b ?? a ?? 0)) / 2;
 };
 
+const scaleColorX = scaleLinear()
+  .range([0, 250])
+  .domain([minGrade, maxGrade]);
+
+const scaleAxisX = scaleLinear()
+  .range([minGrade, 250])
+  .domain([minGrade, maxGrade]);
+
+const AxisColor = rangeGrades.map(({ min, max, color }, key) => {
+  const nextMin: number | undefined = rangeGrades[key + 1]?.max;
+  const previousMax: number | undefined = rangeGrades[key - 1]?.max;
+
+  let x = scaleColorX(averageTwo(previousMax, min));
+  let width =
+    scaleColorX(averageTwo(nextMin, max)) -
+    scaleColorX(averageTwo(previousMax, min));
+
+  return (
+    <rect key={key} x={5 + x} y={80} width={width} height={7} fill={color} />
+  );
+});
+
+const AxisNumbers = (() => {
+  return (
+    <AxisBottom
+      scale={scaleAxisX}
+      left={5}
+      top={80}
+      hideAxisLine={true}
+      hideTicks={true}
+      tickLength={4}
+      numTicks={5}
+      tickFormat={(n: number) => {
+        if (toString(n).slice(-2) === ".0") {
+          return toString(n).slice(0, -2);
+        }
+        return n;
+      }}
+    />
+  );
+})();
+
 const XAxis: FC = () => {
-  const scaleColorX = useMemo(
-    () =>
-      scaleLinear()
-        .range([0, 250])
-        .domain([minGrade, maxGrade]),
-    [minGrade, maxGrade]
-  );
-  const AxisColor = useMemo(
-    () =>
-      rangeGrades.map(({ min, max, color }, key) => {
-        const nextMin: number | undefined = rangeGrades[key + 1]?.max;
-        const previousMax: number | undefined = rangeGrades[key - 1]?.max;
-
-        let x = scaleColorX(averageTwo(previousMax, min));
-        let width =
-          scaleColorX(averageTwo(nextMin, max)) -
-          scaleColorX(averageTwo(previousMax, min));
-
-        return (
-          <rect
-            key={key}
-            x={5 + x}
-            y={80}
-            width={width}
-            height={7}
-            fill={color}
-          />
-        );
-      }),
-    [rangeGrades, scaleColorX]
-  );
-
-  const scaleAxisX = useMemo(
-    () =>
-      scaleLinear()
-        .range([minGrade, 250])
-        .domain([minGrade, maxGrade]),
-    [minGrade, maxGrade]
-  );
-
-  const AxisNumbers = useMemo(
-    () => (
-      <AxisBottom
-        scale={scaleAxisX}
-        left={5}
-        top={80}
-        hideAxisLine={true}
-        hideTicks={true}
-        tickLength={4}
-        numTicks={5}
-        tickFormat={(n: number) => {
-          if (toString(n).slice(-2) === ".0") {
-            return toString(n).slice(0, -2);
-          }
-          return n;
-        }}
-      />
-    ),
-    [scaleAxisX]
-  );
-
   return (
     <>
       {AxisColor}

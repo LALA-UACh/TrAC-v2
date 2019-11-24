@@ -1,35 +1,32 @@
-import { FC, useContext, useMemo } from "react";
+import { FC, memo, useContext, useMemo } from "react";
 
 import { Box } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
 
 import { CoursesFlowContext } from "./CoursesFlow";
 
-export const SemesterTakenBox: FC<{ year: number; semester: string }> = ({
-  year,
-  semester,
-}) => {
-  const Tracking = useContext(TrackingContext);
-  const {
-    toggleExplicitSemester,
-    checkExplicitSemester,
-    semestersTaken,
-    explicitSemester,
-  } = useContext(CoursesFlowContext);
+export const SemesterTakenBox: FC<{ year: number; term: string }> = memo(
+  ({ year, term }) => {
+    const Tracking = useContext(TrackingContext);
+    const {
+      toggleExplicitSemester,
+      checkExplicitSemester,
+      semestersTaken,
+      explicitSemester,
+    } = useContext(CoursesFlowContext);
 
-  const borderColor = useMemo(() => {
-    if (
-      checkExplicitSemester({ year, semester }) ||
-      (explicitSemester === undefined &&
-        semestersTaken?.find(v => year === v.year && semester == v.semester))
-    ) {
-      return "yellow.400";
-    }
-    return "grey";
-  }, [semester, year, checkExplicitSemester, semestersTaken]);
+    const borderColor = useMemo(() => {
+      if (
+        checkExplicitSemester({ year, term: term }) ||
+        (explicitSemester === undefined &&
+          semestersTaken?.find(v => year === v.year && term == v.term))
+      ) {
+        return "yellow.400";
+      }
+      return "grey";
+    }, [term, year, checkExplicitSemester, semestersTaken]);
 
-  return useMemo(
-    () => (
+    return (
       <Box
         textAlign="center"
         border="3px solid"
@@ -43,17 +40,16 @@ export const SemesterTakenBox: FC<{ year: number; semester: string }> = ({
         className="unselectable"
         transition="0.4s all ease-in-out"
         onClick={() => {
-          const open = toggleExplicitSemester(year, semester);
+          const open = toggleExplicitSemester(year, term);
           Tracking.current.track({
             action: "click",
-            target: `semester-box-${year}-${semester}`,
+            target: `semester-box-${year}-${term}`,
             effect: `${open ? "load" : "unload"}-semester`,
           });
         }}
       >
-        <b>{`${semester}S ${year}`}</b>
+        <b>{`${term}S ${year}`}</b>
       </Box>
-    ),
-    [semester, year, toggleExplicitSemester, borderColor]
-  );
-};
+    );
+  }
+);

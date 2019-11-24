@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, memo } from "react";
 
 import { Stack, Text } from "@chakra-ui/core";
 import { ICourse } from "@interfaces";
@@ -30,12 +30,9 @@ const toRoman = (num: number): string => {
   return "";
 };
 
-export const Semester: FC<{ semester: ICourse[]; n: number }> = ({
-  semester,
-  n
-}) => {
-  return useMemo(
-    () => (
+export const Semester: FC<{ semester: ICourse[]; n: number }> = memo(
+  ({ semester, n }) => {
+    return (
       <Stack>
         <Text color="rgb(70,130,180)" textAlign="center" fontSize="1.5em">
           <b>{toRoman(n)}</b>
@@ -44,7 +41,6 @@ export const Semester: FC<{ semester: ICourse[]; n: number }> = ({
           <CourseBox key={key} {...course} />
         ))}
       </Stack>
-    ),
-    [semester, n]
-  );
-};
+    );
+  }
+);

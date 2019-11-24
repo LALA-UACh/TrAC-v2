@@ -136,12 +136,19 @@ type Term {
   id: Int!
   student_id: String!
   year: Int!
-  term: String!
+  term: TermType!
   situation: String!
   PSP: Float!
   PGA: Float!
   ProgramPGA: Float!
   takenCourses: [TakenCourse!]!
+}
+
+"""Possible states of a term, first semester, second semester or anual"""
+enum TermType {
+  First
+  Second
+  Anual
 }
 
 type Track {

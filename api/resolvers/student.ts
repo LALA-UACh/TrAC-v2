@@ -21,7 +21,7 @@ import { Program } from "@entities/program";
 import { Student } from "@entities/student";
 import { TakenCourse } from "@entities/takenCourse";
 import { Term } from "@entities/term";
-import { assertIsDefined, defaultStateCourse } from "@utils";
+import { assertIsDefined, defaultStateCourse, defaultTermType } from "@utils";
 
 type PartialTakenCourse = Pick<TakenCourse, "id" | "code">;
 type PartialTerm = Pick<Term, "id">;
@@ -143,7 +143,7 @@ export class TermResolver {
 
     assertIsDefined(termData, `term could not be found for ${id} term`);
 
-    return termData.term;
+    return defaultTermType(termData.term);
   }
 
   @FieldResolver()

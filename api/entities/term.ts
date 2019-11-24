@@ -1,6 +1,14 @@
-import { Field, Int, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType, registerEnumType } from "type-graphql";
+
+import { TermType } from "@constants";
 
 import { TakenCourse } from "./takenCourse";
+
+registerEnumType(TermType, {
+  name: "TermType",
+  description:
+    "Possible states of a term, first semester, second semester or anual",
+});
 
 @ObjectType()
 export class Term {
@@ -17,8 +25,8 @@ export class Term {
   year: number;
 
   // student_term => semester
-  @Field()
-  term: string; // 1-2-3 | first or second semester of the year, 3 if whole year
+  @Field(() => TermType)
+  term: TermType;
 
   // student_term => situation
   @Field()

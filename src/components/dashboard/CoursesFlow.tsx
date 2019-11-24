@@ -18,10 +18,10 @@ export const CoursesFlowContext = createContext<{
   explicitSemester?: string;
   checkExplicitSemester: (
     semestersTaken:
-      | { year: number; semester: string }[]
-      | { year: number; semester: string }
-  ) => { year: number; semester: string } | undefined;
-  toggleExplicitSemester: (year: number, semester: string) => boolean;
+      | { year: number; term: string }[]
+      | { year: number; term: string }
+  ) => { year: number; term: string } | undefined;
+  toggleExplicitSemester: (year: number, term: string) => boolean;
   add: (data: {
     course: string;
     flow: string[];
@@ -45,18 +45,17 @@ export const CoursesFlow: FC = ({ children }) => {
   const checkExplicitSemester = useCallback(
     (
       semestersTaken:
-        | { year: number; semester: string }[]
-        | { year: number; semester: string }
+        | { year: number; term: string }[]
+        | { year: number; term: string }
     ) => {
       if (!!explicitSemester) {
         if (Array.isArray(semestersTaken)) {
           return semestersTaken.find(
-            v => `${v.semester}${v.year}` === explicitSemester
+            v => `${v.term}${v.year}` === explicitSemester
           );
         }
         if (
-          `${semestersTaken.semester}${semestersTaken.year}` ===
-          explicitSemester
+          `${semestersTaken.term}${semestersTaken.year}` === explicitSemester
         ) {
           return semestersTaken;
         }
@@ -66,10 +65,10 @@ export const CoursesFlow: FC = ({ children }) => {
     [explicitSemester]
   );
   const toggleExplicitSemester = useCallback(
-    (year: number, semester: string) => {
+    (year: number, term: string) => {
       let open = false;
       setExplicitSemester(value => {
-        const pair = `${semester}${year}`;
+        const pair = `${term}${year}`;
         if (value !== pair) {
           open = true;
           return pair;
@@ -104,7 +103,7 @@ export const CoursesFlow: FC = ({ children }) => {
       course: string;
       flow: string[];
       requisites: string[];
-      semestersTaken: { year: number; semester: string }[];
+      semestersTaken: { year: number; term: string }[];
     }) => {
       // ADD MEANS: THE NEW COURSE, FLOW AND REQUISITES HAVE TO BE PUT AT THE VERY BEGINNING
       setState(state => {

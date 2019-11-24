@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FC, useContext, useEffect, useMemo, useState } from "react";
+import { FC, memo, useContext, useEffect, useState } from "react";
 
 import { Flex, Stack, Text } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
@@ -9,19 +9,16 @@ import {
   DROPOUT_PREDICTION_DESCRIPTION,
 } from "@constants";
 
-export const Dropout: FC<{ probability: number; accuracy: number }> = ({
-  probability,
-  accuracy,
-}) => {
-  const [show, setShow] = useState(false);
+export const Dropout: FC<{ probability: number; accuracy: number }> = memo(
+  ({ probability, accuracy }) => {
+    const [show, setShow] = useState(false);
 
-  const Tracking = useContext(TrackingContext);
-  useEffect(() => {
-    Tracking.current.showingPrediction = show;
-  }, [show]);
+    const Tracking = useContext(TrackingContext);
+    useEffect(() => {
+      Tracking.current.showingPrediction = show;
+    }, [show]);
 
-  return useMemo(
-    () => (
+    return (
       <Flex alignItems="center">
         <Flex
           backgroundColor="rgb(252,249,165)"
@@ -84,7 +81,6 @@ export const Dropout: FC<{ probability: number; accuracy: number }> = ({
           </Stack>
         </Flex>
       </Flex>
-    ),
-    [show, setShow, probability, accuracy]
-  );
-};
+    );
+  }
+);

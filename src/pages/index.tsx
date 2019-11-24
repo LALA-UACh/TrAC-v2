@@ -31,7 +31,7 @@ const Dashboard: FC = () => {
   let semestersTaken: ISemesterTaken[] = data.studentAcademic.terms.map(
     ({ year, semester }) => ({
       year,
-      semester,
+      term: semester,
     })
   );
   let semesters: {
@@ -111,7 +111,7 @@ const Dashboard: FC = () => {
 
                   if (codeToFind === code) {
                     taken.push({
-                      semester,
+                      term: semester,
                       year,
                       registration,
                       grade,
@@ -199,8 +199,8 @@ const Dashboard: FC = () => {
           </Stack>
 
           <Stack isInline pl="50px">
-            {semestersTaken.map(({ semester, year }, key) => (
-              <SemesterTakenBox key={key} semester={semester} year={year} />
+            {semestersTaken.map(({ term, year }, key) => (
+              <SemesterTakenBox key={key} term={term} year={year} />
             ))}
           </Stack>
         </ScrollContainer>

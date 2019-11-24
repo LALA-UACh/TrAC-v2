@@ -4,7 +4,7 @@ import { buildContext } from "@utils/buildContext";
 export type IContext = ReturnType<typeof buildContext>;
 export type ISemesterTaken = {
   year: number;
-  semester: string;
+  term: string;
 };
 export type IRangeGrade = {
   min: number;
@@ -18,7 +18,7 @@ export type IDistribution = {
 };
 
 export type ITakenCourse = {
-  semester: string;
+  term: string;
   year: number;
   registration?: string;
   grade?: number;

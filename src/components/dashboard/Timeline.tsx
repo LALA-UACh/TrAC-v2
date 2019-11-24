@@ -11,15 +11,16 @@ import {
 } from "react";
 import pixelWidth from "string-pixel-width";
 
-import { GRADES_SCALES, PROGRAM_PGA } from "@constants";
 import {
+  GRADES_SCALES,
   maxGrade,
   minGrade,
   passGrade,
   PGA_COLOR,
+  PROGRAM_PGA,
   PROGRAM_PGA_COLOR,
   PSP_COLOR,
-} from "@temp";
+} from "@constants";
 import { AxisLeft } from "@vx/axis";
 
 import { CoursesFlowContext } from "./CoursesFlow";
@@ -86,24 +87,24 @@ const TimeLineTooltip: FC<{
   );
 };
 
+const GradeScale = scaleLinear()
+  .range([40, 170])
+  .domain([maxGrade, minGrade]);
+
+const YAxisScale = scaleLinear()
+  .range([0, 130])
+  .domain([maxGrade, minGrade]);
+
 export const TimeLine: FC<{
   PGA: number[];
   PSP: number[];
   ProgramPGA: number[];
-  semestersTaken: { year: number; semester: string }[];
+  semestersTaken: { year: number; term: string }[];
 }> = memo(({ PGA, PSP, ProgramPGA, semestersTaken }) => {
   const width = useMemo(() => Math.max((PGA.length - 1) * 120 + 60, 650), [
     PGA,
   ]);
   const { checkExplicitSemester } = useContext(CoursesFlowContext);
-
-  const GradeScale = useMemo(
-    () =>
-      scaleLinear()
-        .range([40, 170])
-        .domain([maxGrade, minGrade]),
-    [maxGrade, minGrade]
-  );
 
   const CirclesComponent = useMemo(
     () =>
@@ -133,7 +134,7 @@ export const TimeLine: FC<{
                 r={5}
                 fill={
                   checkExplicitSemester({
-                    semester: semestersTaken[key].semester,
+                    term: semestersTaken[key].term,
                     year: semestersTaken[key].year,
                   })
                     ? "rgb(236,201,75)"
@@ -145,16 +146,7 @@ export const TimeLine: FC<{
           </g>
         );
       }),
-    [
-      PSP,
-      PGA,
-      ProgramPGA,
-      semestersTaken,
-      checkExplicitSemester,
-      PSP_COLOR,
-      PGA_COLOR,
-      GradeScale,
-    ]
+    [PSP, PGA, ProgramPGA, semestersTaken, checkExplicitSemester]
   );
 
   const StrokesComponent = useMemo(
@@ -192,15 +184,7 @@ export const TimeLine: FC<{
           </g>
         );
       }),
-    [PSP, PGA, ProgramPGA, PSP_COLOR, GradeScale, PROGRAM_PGA_COLOR]
-  );
-
-  const YAxisScale = useMemo(
-    () =>
-      scaleLinear()
-        .range([0, 130])
-        .domain([maxGrade, minGrade]),
-    [maxGrade, minGrade]
+    [PSP, PGA, ProgramPGA]
   );
 
   const LabelAxisComponent = useMemo(
@@ -248,16 +232,7 @@ export const TimeLine: FC<{
         </text>
       </>
     ),
-    [
-      PROGRAM_PGA,
-      PROGRAM_PGA_COLOR,
-      PGA_COLOR,
-      PSP_COLOR,
-      GradeScale,
-      passGrade,
-      YAxisScale,
-      GRADES_SCALES,
-    ]
+    [PGA]
   );
   const height = 270;
   const scale = 0.7;

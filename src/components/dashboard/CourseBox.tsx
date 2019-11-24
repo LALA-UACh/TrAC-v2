@@ -5,12 +5,25 @@ import { useUpdateEffect } from "react-use";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
-import { HISTORIC_GRADES, StateCourse } from "@constants";
+import {
+  HISTORIC_GRADES,
+  maxGrade,
+  minGrade,
+  passGrade,
+  StateCourse,
+} from "@constants";
 import { ICourse, ITakenCourse } from "@interfaces";
-import { maxGrade, minGrade, passGrade } from "@temp";
 
 import { CoursesFlowContext } from "./CoursesFlow";
 import { Histogram } from "./Histogram";
+
+const passColorScale = scaleLinear<string, number>()
+  .range(["#b0ffa1", "#5bff3b"])
+  .domain([passGrade, maxGrade]);
+
+const failColorScale = scaleLinear<string, number>()
+  .range(["#ff4040", "#ff8282"])
+  .domain([minGrade, passGrade]);
 
 export const CourseBox: FC<ICourse> = ({
   name,
@@ -23,8 +36,8 @@ export const CourseBox: FC<ICourse> = ({
 }) => {
   const Tracking = useContext(TrackingContext);
   const { semestersTaken } = useMemo(() => {
-    const semestersTaken = taken.map(({ semester, year }) => {
-      return { semester, year };
+    const semestersTaken = taken.map(({ term, year }) => {
+      return { term, year };
     });
 
     return { semestersTaken };
@@ -45,15 +58,14 @@ export const CourseBox: FC<ICourse> = ({
     grade,
     registration,
     currentDistribution,
-    semester,
+    term,
     year,
   } = useMemo<Partial<ITakenCourse>>(() => {
     const foundSemesterTaken = checkExplicitSemester(semestersTaken);
     if (foundSemesterTaken) {
-      const foundData = taken.find(({ semester, year }) => {
+      const foundData = taken.find(({ term, year }) => {
         return (
-          year === foundSemesterTaken.year &&
-          semester === foundSemesterTaken.semester
+          year === foundSemesterTaken.year && term === foundSemesterTaken.term
         );
       });
       return foundData || {};
@@ -76,23 +88,7 @@ export const CourseBox: FC<ICourse> = ({
     }
   }, [open]);
 
-  const passColorScale = useMemo(
-    () =>
-      scaleLinear<string, number>()
-        .range(["#b0ffa1", "#5bff3b"])
-        .domain([passGrade, maxGrade]),
-    []
-  );
-
-  const failColorScale = useMemo(
-    () =>
-      scaleLinear<string, number>()
-        .range(["#ff4040", "#ff8282"])
-        .domain([minGrade, passGrade]),
-    []
-  );
-
-  const h = useMemo(() => {
+  const height = useMemo(() => {
     if (open) {
       if (taken[0]?.currentDistribution && historicDistribution) {
         return 350;
@@ -116,7 +112,7 @@ export const CourseBox: FC<ICourse> = ({
       default:
         return "transparent";
     }
-  }, [state, grade, maxGrade, minGrade, passColorScale, failColorScale]);
+  }, [state, grade]);
 
   const opacity = useMemo(() => {
     if (active) {
@@ -274,12 +270,12 @@ export const CourseBox: FC<ICourse> = ({
       currentDistribution && (
         <Histogram
           key="now"
-          label={`Calificationes ${semester} ${year}`}
+          label={`Calificationes ${term} ${year}`}
           distribution={currentDistribution}
           grade={grade}
         />
       ),
-    [currentDistribution, semester, year, grade]
+    [currentDistribution, term, year, grade]
   );
 
   const HistogramHistoric = useMemo(
@@ -396,8 +392,8 @@ export const CourseBox: FC<ICourse> = ({
       m={1}
       color="black"
       bg="rgb(245,245,245)"
-      w={open ? 350 : 180}
-      h={h}
+      width={open ? 350 : 180}
+      height={height}
       borderRadius={5}
       opacity={opacity}
       border="2px"
