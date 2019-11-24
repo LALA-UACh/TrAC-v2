@@ -28,8 +28,8 @@ export type ITakenCourse = {
 };
 
 export type ICourse = {
-  name: string;
   code: string;
+  name: string;
   credits: { label: string; value: number }[];
   flow: string[];
   requisites: string[];

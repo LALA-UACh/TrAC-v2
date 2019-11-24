@@ -1,4 +1,8 @@
 import knex from "knex";
+import pg from "pg";
+
+pg.types.setTypeParser(20, "text", parseInt);
+pg.types.setTypeParser(1700, parseFloat);
 
 const dbPassword = process.env.POSTGRES_PASSWORD;
 

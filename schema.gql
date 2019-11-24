@@ -9,12 +9,11 @@ type AuthResult {
 }
 
 type Course {
+  id: Float!
   code: String!
   name: String!
   credits: [Credit!]!
   mention: String!
-  semester: Int!
-  requisitesRaw: String!
   flow: [Course!]!
   requisites: [Course!]!
   historicalDistribution: [DistributionValue!]!
@@ -23,6 +22,11 @@ type Course {
 type Credit {
   label: String!
   value: Int!
+}
+
+type Curriculum {
+  id: Int!
+  semesters: [Semester!]!
 }
 
 """
@@ -81,7 +85,7 @@ type Program {
   name: String!
   desc: String!
   state: String!
-  courses: [Course!]!
+  curriculums: [Curriculum!]!
 }
 
 type Query {
@@ -91,6 +95,11 @@ type Query {
   myPrograms: [Program!]!
   student(program_id: Int, student_id: String!): Student
   users: [User!]!
+}
+
+type Semester {
+  id: Int!
+  courses: [Course!]!
 }
 
 """Possible states of a taken course"""
@@ -113,7 +122,7 @@ type Student {
 }
 
 type TakenCourse {
-  id: ID!
+  id: Int!
   code: String!
   name: String!
   registration: String!
@@ -124,10 +133,10 @@ type TakenCourse {
 }
 
 type Term {
-  id: ID!
+  id: Int!
   student_id: String!
   year: Int!
-  semester: Int!
+  term: String!
   situation: String!
   PSP: Float!
   PGA: Float!
@@ -166,12 +175,12 @@ type User {
   name: String!
   admin: Boolean!
   type: UserType!
-  rut_id: String
+  rut_id: String!
   show_dropout: Boolean!
-  programs: [Program!]!
   locked: Boolean!
   tries: Float!
   unlockKey: String!
+  programs: [Program!]!
 }
 
 input UserProgram {

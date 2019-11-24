@@ -2,28 +2,28 @@ import { dbAuth, dbLALA, dbTracking } from "@db";
 
 // TODO: Specify nullable fields
 
-export interface IProgramTable {
+export interface IProgram {
   id: number;
   name: string;
   desc: string;
   state: string;
 }
 
-export const ProgramTable = dbLALA<IProgramTable>("program");
+export const ProgramTable = () => dbLALA<IProgram>("program");
 
 // -------------------------------------------------------------------------------------
 
-export interface ICourseTable {
+export interface ICourse {
   code: string;
   name: string;
   description: string;
 }
 
-export const CourseTable = dbLALA<ICourseTable>("course");
+export const CourseTable = () => dbLALA<ICourse>("course");
 
 // -------------------------------------------------------------------------------------
 
-export interface IProgramStructureTable {
+export interface IProgramStructure {
   id: number;
   program_id: number;
   curriculum: number;
@@ -37,28 +37,26 @@ export interface IProgramStructureTable {
   mode: string;
 }
 
-export const ProgramStructureTable = dbLALA<IProgramStructureTable>(
-  "program_structure"
-);
+export const ProgramStructureTable = () =>
+  dbLALA<IProgramStructure>("program_structure");
 
 // -------------------------------------------------------------------------------------
 
-export interface IStudentProgramTable {
+export interface IStudentProgram {
   id: number;
   student_id: string;
-  program_id: string;
+  program_id: number;
   curriculum: number;
   start_year: number;
   mention: string;
 }
 
-export const StudentProgramTable = dbLALA<IStudentProgramTable>(
-  "student_program"
-);
+export const StudentProgramTable = () =>
+  dbLALA<IStudentProgram>("student_program");
 
 // -------------------------------------------------------------------------------------
 
-export interface IStudentTermTable {
+export interface IStudentTerm {
   id: number;
   student_id: string;
   year: number;
@@ -69,11 +67,11 @@ export interface IStudentTermTable {
   notes: never;
 }
 
-export const StudentTermTable = dbLALA<IStudentTermTable>("student_term");
+export const StudentTermTable = () => dbLALA<IStudentTerm>("student_term");
 
 // -------------------------------------------------------------------------------------
 
-export interface IStudentCourseTable {
+export interface IStudentCourse {
   id: number;
   year: number;
   term: string;
@@ -87,11 +85,24 @@ export interface IStudentCourseTable {
   pgroup: number;
 }
 
-export const StudentCourseTable = dbLALA<IStudentCourseTable>("student_course");
+export const StudentCourseTable = () =>
+  dbLALA<IStudentCourse>("student_course");
 
 // -------------------------------------------------------------------------------------
 
-export interface IUserTable {
+export interface IStudentDropout {
+  student_id: string;
+  prob_dropout: number;
+  model_accuracy: number;
+  active: boolean;
+}
+
+export const StudentDropoutTable = () =>
+  dbLALA<IStudentDropout>("student_dropout");
+
+// -------------------------------------------------------------------------------------
+
+export interface IUser {
   email: string;
   password: string;
   name: string;
@@ -107,24 +118,23 @@ export interface IUserTable {
   show_dropout: boolean;
 }
 
-export const UserTable = dbAuth<IUserTable>("users");
+export const UserTable = () => dbAuth<IUser>("users");
 
 // -------------------------------------------------------------------------------------
 
-export interface IUserProgramsTable {
+export interface IUserPrograms {
   email: string;
   program: string;
 }
 
 export const UserProgramsTableName = "user-programs";
 
-export const UserProgramsTable = dbAuth<IUserProgramsTable>(
-  UserProgramsTableName
-);
+export const UserProgramsTable = () =>
+  dbAuth<IUserPrograms>(UserProgramsTableName);
 
 // -------------------------------------------------------------------------------------
 
-export interface ITrackTable {
+export interface ITrack {
   id: number;
 
   app_id: string;
@@ -138,6 +148,6 @@ export interface ITrackTable {
   data: string;
 }
 
-export const TrackingTable = dbTracking<ITrackTable>("tracking");
+export const TrackingTable = () => dbTracking<ITrack>("tracking");
 
 // -------------------------------------------------------------------------------------

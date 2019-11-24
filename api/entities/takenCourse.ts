@@ -1,4 +1,4 @@
-import { Field, ID, Int, ObjectType, registerEnumType } from "type-graphql";
+import { Field, Int, ObjectType, registerEnumType } from "type-graphql";
 
 import { StateCourse } from "@constants";
 
@@ -13,8 +13,8 @@ registerEnumType(StateCourse, {
 @ObjectType()
 export class TakenCourse implements Pick<Course, "code" | "name"> {
   // student_course => id
-  @Field(() => ID)
-  id: string;
+  @Field(() => Int)
+  id: number;
 
   // student_course => course_taken
   @Field()

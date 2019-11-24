@@ -83,6 +83,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
     "@babel/plugin-proposal-optional-chaining": "^7.7.4",
+    "@types/assert": "^1.4.3",
     "@types/classnames": "^2.2.9",
     "@types/concurrently": "^4.1.0",
     "@types/connect": "^3.4.32",

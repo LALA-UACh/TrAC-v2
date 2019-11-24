@@ -26,10 +26,11 @@ export class Student {
   @Field()
   mention: string;
 
-  // student_term => *
+  // student_term
   @Field(() => [Term])
   terms: Term[];
 
+  // student_dropout
   @Field({ nullable: true })
   dropout?: Dropout;
 }

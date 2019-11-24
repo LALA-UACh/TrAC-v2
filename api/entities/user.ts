@@ -11,7 +11,7 @@ import {
 
 import { UserType } from "@constants";
 import { ADMIN } from "@consts";
-import { IUserTable } from "@db/tables";
+import { IUser } from "@db/tables";
 
 import { Program } from "./program";
 
@@ -21,7 +21,7 @@ registerEnumType(UserType, {
 });
 
 @ObjectType()
-export class User implements Partial<IUserTable> {
+export class User implements Partial<IUser> {
   @Field(() => EmailAddress)
   email: string;
 
@@ -116,7 +116,7 @@ export class LockedUserResult {
   mailResult: Record<string, any>;
 
   @Field(() => [User])
-  users: Omit<User, "programs">[];
+  users: User[];
 }
 
 @ObjectType()

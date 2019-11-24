@@ -1,9 +1,9 @@
 import { ArgsType, Field, ObjectType } from "type-graphql";
 
-import { ITrackTable } from "@db/tables";
+import { ITrack } from "@db/tables";
 
 @ObjectType()
-export class Track implements ITrackTable {
+export class Track implements ITrack {
   @Field()
   id: number;
 

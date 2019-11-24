@@ -94,20 +94,25 @@ export const searchProgramQuery: DocumentNode<
         name: string;
         desc: string;
         state: string;
-        courses: {
-          code: string;
-          name: string;
-          credits: { label: string; value: number }[];
-          mention: string;
-          semester: number;
-          flow: { code: string }[];
-          requisites: {
-            code: string;
-          }[];
-          historicalDistribution: {
-            min: number;
-            max: number;
-            value: number;
+        curriculums: {
+          id: number;
+          semesters: {
+            id: number;
+            courses: {
+              code: string;
+              name: string;
+              credits: { label: string; value: number }[];
+              mention: string;
+              flow: { code: string }[];
+              requisites: {
+                code: string;
+              }[];
+              historicalDistribution: {
+                min: number;
+                max: number;
+                value: number;
+              }[];
+            }[];
           }[];
         }[];
       },
@@ -122,25 +127,30 @@ export const searchProgramQuery: DocumentNode<
       name
       desc
       state
-      courses {
-        code
-        name
-        credits {
-          label
-          value
-        }
-        mention
-        semester
-        flow {
-          code
-        }
-        requisites {
-          code
-        }
-        historicalDistribution {
-          min
-          max
-          value
+      curriculums {
+        id
+        semesters {
+          id
+          courses {
+            code
+            name
+            credits {
+              label
+              value
+            }
+            mention
+            flow {
+              code
+            }
+            requisites {
+              code
+            }
+            historicalDistribution {
+              min
+              max
+              value
+            }
+          }
         }
       }
     }
@@ -160,16 +170,16 @@ export const searchStudentQuery: DocumentNode<
         start_year: number;
         mention: string;
         terms: Array<{
-          id: string;
+          id: number;
           student_id: string;
           year: number;
-          semester: number;
+          term: string;
           situation: string;
           PSP: number;
           PGA: number;
           ProgramPGA: number;
           takenCourses: Array<{
-            id: string;
+            id: number;
             code: string;
             name: string;
             registration: string;

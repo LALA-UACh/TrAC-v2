@@ -55,10 +55,12 @@ export class AuthResolver {
     @Ctx() { user }: IContext
   ): Promise<Omit<User, "programs"> | undefined> {
     if (user) {
-      const foundUser = await UserTable.where({
-        email: user.email,
-        locked: false,
-      }).first();
+      const foundUser = await UserTable()
+        .where({
+          email: user.email,
+          locked: false,
+        })
+        .first();
       if (foundUser) {
         return {
           ...foundUser,
@@ -84,9 +86,11 @@ export class AuthResolver {
       AuthResult
     >
   > {
-    let user = await UserTable.first().where({
-      email,
-    });
+    let user = await UserTable()
+      .first()
+      .where({
+        email,
+      });
 
     if (user) {
       if (user.locked) {
@@ -110,11 +114,13 @@ export class AuthResolver {
       } else {
         if (user.tries && user.tries >= 2) {
           const unlockKey = generate();
-          await UserTable.where({ email }).update({
-            locked: true,
-            tries: 3,
-            unlockKey,
-          });
+          await UserTable()
+            .where({ email })
+            .update({
+              locked: true,
+              tries: 3,
+              unlockKey,
+            });
 
           sendMail({
             to: email,
@@ -138,7 +144,7 @@ export class AuthResolver {
             });
           return { error: LOCKED_USER };
         } else {
-          await UserTable.increment("tries", 1);
+          await UserTable().increment("tries", 1);
         }
       }
     }
@@ -168,7 +174,9 @@ export class AuthResolver {
       AuthResult
     >
   > {
-    let user = await UserTable.where({ email, unlockKey }).first();
+    let user = await UserTable()
+      .where({ email, unlockKey })
+      .first();
 
     if (!user) {
       return { error: WRONG_INFO };
@@ -185,7 +193,8 @@ export class AuthResolver {
         default: {
           const type = defaultUserType(user.type);
           user = (
-            await UserTable.where({ email })
+            await UserTable()
+              .where({ email })
               .update({
                 password: passwordInput,
                 oldPassword1: user.password,

@@ -12,6 +12,10 @@ class Credit {
 }
 @ObjectType()
 export class Course {
+  // program_structure => id
+  @Field()
+  id: number;
+
   // course => code, program_structure => code
   @Field()
   code: string;
@@ -20,21 +24,13 @@ export class Course {
   @Field()
   name: string;
 
-  // program_structure => credits
+  // program_structure => credits | creditsSCT
   @Field(() => [Credit])
   credits: Credit[];
 
   // program_structure => mention
   @Field()
   mention: string;
-
-  @Field(() => Int)
-  // program_structure => semester
-  semester: number; // 1-11 | semester where this course belongs in it's curriculum
-
-  // program_structure => requisites
-  @Field()
-  requisitesRaw: string;
 
   // LOGIC => program_structure => requisites
   @Field(() => [Course])
