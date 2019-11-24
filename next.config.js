@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
@@ -5,6 +7,9 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 });
 
 module.exports = withBundleAnalyzer({
+  env: {
+    DOMAIN: process.env.DOMAIN,
+  },
   webpack: (config, options) => {
     if (config.resolve.plugins) {
       config.resolve.plugins.push(new TsconfigPathsPlugin());
