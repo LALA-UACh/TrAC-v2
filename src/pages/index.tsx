@@ -9,18 +9,18 @@ import { CoursesFlow } from "@components/dashboard/CoursesFlow";
 import { Dropout } from "@components/dashboard/Dropout";
 import { SearchBar } from "@components/dashboard/SearchBar";
 import { Semester } from "@components/dashboard/Semester";
-import { SemesterTakenBox } from "@components/dashboard/SemesterTakenBox";
+import { TakenSemesterBox } from "@components/dashboard/TakenSemesterBox";
 import { TimeLine } from "@components/dashboard/Timeline";
 import { RequireAuth } from "@components/RequireAuth";
 import { Tracking, TrackingContext, TrackingRef } from "@components/Tracking";
-import { defaultStateCourse, defaultTermType, TermType } from "@constants";
+import { defaultStateCourse, defaultTermType } from "@constants";
 import data from "@constants/data.json";
 import { searchProgramQuery, searchStudentQuery } from "@graphql/queries";
 import {
   ICourse,
   IDistribution,
-  ISemesterTaken,
   ITakenCourse,
+  ITakenSemester,
 } from "@interfaces";
 import { usePromiseLazyQuery } from "@utils/usePromiseLazyQuery";
 
@@ -28,10 +28,10 @@ console.log("data", data);
 
 const Dashboard: FC = () => {
   const trackingData = useRef<TrackingRef>({ track: async () => {} });
-  let semestersTaken: ISemesterTaken[] = data.studentAcademic.terms.map(
+  let semestersTaken: ITakenSemester[] = data.studentAcademic.terms.map(
     ({ year, semester }) => ({
       year,
-      term: semester,
+      term: defaultTermType(semester),
     })
   );
   let semesters: {
@@ -200,20 +200,7 @@ const Dashboard: FC = () => {
 
           <Stack isInline pl="50px">
             {semestersTaken.map(({ term, year }, key) => {
-              switch (term) {
-                case TermType.First:
-                  term = "1";
-                  break;
-                case TermType.Second:
-                  term = "2";
-                  break;
-                case TermType.Anual:
-                  term = "3";
-                  break;
-                default:
-                  term = "0";
-              }
-              return <SemesterTakenBox key={key} term={term} year={year} />;
+              return <TakenSemesterBox key={key} term={term} year={year} />;
             })}
           </Stack>
         </ScrollContainer>
@@ -224,9 +211,9 @@ const Dashboard: FC = () => {
           activationDistance={5}
         >
           <Stack isInline spacing={8}>
-            {semesters.map(({ semester }, key) => (
-              <Semester key={key} semester={semester} n={key + 1} />
-            ))}
+            {semesters.map(({ semester }, key) => {
+              return <Semester key={key} semester={semester} n={key + 1} />;
+            })}
           </Stack>
         </ScrollContainer>
         <Tracking />

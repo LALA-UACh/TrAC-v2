@@ -2,10 +2,17 @@ import { FC, memo, useContext, useMemo } from "react";
 
 import { Box } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
+import {
+  TAKEN_SEMESTER_BOX_ACTIVE,
+  TAKEN_SEMESTER_BOX_BACKGROUND_COLOR,
+  TAKEN_SEMESTER_BOX_INACTIVE,
+  TAKEN_SEMESTER_BOX_TEXT_COLOR,
+  termTypeToNumber,
+} from "@constants";
 
 import { CoursesFlowContext } from "./CoursesFlow";
 
-export const SemesterTakenBox: FC<{ year: number; term: string }> = memo(
+export const TakenSemesterBox: FC<{ year: number; term: string }> = memo(
   ({ year, term }) => {
     const Tracking = useContext(TrackingContext);
     const {
@@ -21,9 +28,9 @@ export const SemesterTakenBox: FC<{ year: number; term: string }> = memo(
         (explicitSemester === undefined &&
           semestersTaken?.find(v => year === v.year && term == v.term))
       ) {
-        return "yellow.400";
+        return TAKEN_SEMESTER_BOX_ACTIVE;
       }
-      return "grey";
+      return TAKEN_SEMESTER_BOX_INACTIVE;
     }, [term, year, checkExplicitSemester, semestersTaken]);
 
     return (
@@ -32,7 +39,7 @@ export const SemesterTakenBox: FC<{ year: number; term: string }> = memo(
         border="3px solid"
         borderColor={borderColor}
         borderRadius="8px"
-        backgroundColor="rgb(245,245,245)"
+        backgroundColor={TAKEN_SEMESTER_BOX_BACKGROUND_COLOR}
         p="6px"
         m={3}
         fontSize="1.2em"
@@ -47,8 +54,9 @@ export const SemesterTakenBox: FC<{ year: number; term: string }> = memo(
             effect: `${open ? "load" : "unload"}-semester`,
           });
         }}
+        color={TAKEN_SEMESTER_BOX_TEXT_COLOR}
       >
-        <b>{`${term}S ${year}`}</b>
+        <b>{`${termTypeToNumber(term)}S ${year}`}</b>
       </Box>
     );
   }

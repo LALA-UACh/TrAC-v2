@@ -3,7 +3,13 @@ import { motion } from "framer-motion";
 import toString from "lodash/toString";
 import { FC, memo, useCallback, useMemo } from "react";
 
-import { maxGrade, minGrade, rangeGrades } from "@constants";
+import {
+  HISTOGRAM_BAR_ACTIVE,
+  HISTOGRAM_BAR_INACTIVE,
+  maxGrade,
+  minGrade,
+  rangeGrades,
+} from "@constants";
 import { IDistribution } from "@interfaces";
 import { AxisBottom, AxisLeft } from "@vx/axis";
 
@@ -13,7 +19,7 @@ const SingleBar: FC<{
   y?: number;
   height?: number;
 }> = memo(({ grey, y: propY, height, x }) => {
-  const fill = grey ? "rgb(122,122,122)" : "rgb(191,191,191)";
+  const fill = grey ? HISTOGRAM_BAR_ACTIVE : HISTOGRAM_BAR_INACTIVE;
   const y = (propY ?? 0) - (height ?? 0);
   return (
     <motion.rect

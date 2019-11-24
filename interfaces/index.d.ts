@@ -2,7 +2,7 @@ import { StateCourse } from "@constants";
 import { buildContext } from "@utils/buildContext";
 
 export type IContext = ReturnType<typeof buildContext>;
-export type ISemesterTaken = {
+export type ITakenSemester = {
   year: number;
   term: string;
 };

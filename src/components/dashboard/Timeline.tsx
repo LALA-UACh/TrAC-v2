@@ -22,6 +22,11 @@ import {
   PROGRAM_GRADE_LABEL,
   SEMESTRAL_GRADE_COLOR,
   SEMESTRAL_GRADE_LABEL,
+  TIMELINE_AXIS_COLOR,
+  TIMELINE_AXIS_TEXT_COLOR,
+  TIMELINE_EXPLICIT_CIRCLE_COLOR,
+  TIMELINE_PASS_LINE_COLOR,
+  TIMELINE_TOOLTIP_TEXT_COLOR,
 } from "@constants";
 import { AxisLeft } from "@vx/axis";
 
@@ -70,7 +75,7 @@ const TimeLineTooltip: FC<{
             <text
               x={(children.props?.cx ?? children.props?.x ?? 0) + 10}
               y={(children.props?.cy ?? children.props?.y ?? 0) - 5}
-              fill="rgb(255,255,255)"
+              fill={TIMELINE_TOOLTIP_TEXT_COLOR}
             >
               {grade}
             </text>
@@ -141,7 +146,7 @@ export const TimeLine: FC<{
                       term: semestersTaken[key].term,
                       year: semestersTaken[key].year,
                     })
-                      ? "rgb(236,201,75)"
+                      ? TIMELINE_EXPLICIT_CIRCLE_COLOR
                       : SEMESTRAL_GRADE_COLOR
                   }
                   style={{ transition: "0.4s all ease-in-out" }}
@@ -210,20 +215,29 @@ export const TimeLine: FC<{
             hideAxisLine={false}
             tickLength={4}
             numTicks={5}
+            stroke={TIMELINE_AXIS_COLOR}
+            tickStroke={TIMELINE_AXIS_COLOR}
+            tickLabelProps={() => ({
+              dx: "-0.25em",
+              dy: "0.25em",
+              fontSize: 10,
+              textAnchor: "end",
+              fill: TIMELINE_AXIS_TEXT_COLOR,
+            })}
           />
           <line
             x1={39}
             y1={170}
             x2={CUMULATED_GRADE.length * 100 + 160}
             y2={40 + 130}
-            stroke="black"
+            stroke={TIMELINE_AXIS_COLOR}
           />
           <line
             x1={39}
             y1={GradeScale(passGrade)}
             x2={340}
             y2={GradeScale(passGrade)}
-            stroke="black"
+            stroke={TIMELINE_PASS_LINE_COLOR}
             strokeDasharray="2"
           />
 

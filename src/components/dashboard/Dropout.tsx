@@ -4,9 +4,11 @@ import { FC, memo, useContext, useEffect, useState } from "react";
 import { Flex, Stack, Text } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
 import {
+  DROPOUT_BACKGROUND_COLOR,
   DROPOUT_PREDICTION,
   DROPOUT_PREDICTION_ACCURACY,
   DROPOUT_PREDICTION_DESCRIPTION,
+  DROPOUT_TEXT_COLOR,
 } from "@constants";
 
 export const Dropout: FC<{ probability: number; accuracy: number }> = memo(
@@ -21,7 +23,7 @@ export const Dropout: FC<{ probability: number; accuracy: number }> = memo(
     return (
       <Flex alignItems="center">
         <Flex
-          backgroundColor="rgb(252,249,165)"
+          backgroundColor={DROPOUT_BACKGROUND_COLOR}
           boxShadow={
             show
               ? "0px 0px 2px 1px rgb(174,174,174)"
@@ -38,6 +40,7 @@ export const Dropout: FC<{ probability: number; accuracy: number }> = memo(
               target: "dropout",
             });
           }}
+          color={DROPOUT_TEXT_COLOR}
           cursor="pointer"
           transition="0.4s box-shadow ease-in-out"
         >

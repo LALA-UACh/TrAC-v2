@@ -6,17 +6,37 @@ import { useUpdateEffect } from "react-use";
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
 import {
+  ACTIVE_COURSE_BOX_COLOR,
+  COURSE_BOX_BACKGROUND_COLOR,
+  COURSE_BOX_TEXT_COLOR,
   CURRENT_DISTRIBUTION_LABEL,
+  EXPLICIT_SEMESTER_COURSE_BOX_COLOR,
+  FLOW_CIRCLE_COLOR,
+  FLOW_CIRCLE_LABEL,
+  FLOW_COURSE_BOX_COLOR,
   HISTORIC_GRADES,
+  INACTIVE_COURSE_BOX_COLOR,
+  MAX_FAIL_SCALE_COLOR,
+  MAX_PASS_SCALE_COLOR,
   maxGrade,
+  MIN_FAIL_SCALE_COLOR,
+  MIN_PASS_SCALE_COLOR,
   minGrade,
   passGrade,
+  REQ_CIRCLE_COLOR,
+  REQ_CIRCLE_LABEL,
+  REQUISITE_COURSE_BOX_COLOR,
   STATE_CANCELED_LABEL_MINI,
+  STATE_COURSE_CANCELED_COLOR,
+  STATE_COURSE_CIRCLE_STROKE,
+  STATE_COURSE_CURRENT_COLOR,
+  STATE_COURSE_PENDING_COLOR,
   STATE_CURRENT_LABEL_MINI,
   STATE_FAILED_LABEL_MINI,
   STATE_PASSED_LABEL_MINI,
   STATE_PENDING_LABEL_MINI,
   StateCourse,
+  termTypeToNumber,
 } from "@constants";
 import { ICourse, ITakenCourse } from "@interfaces";
 
@@ -24,11 +44,11 @@ import { CoursesFlowContext } from "./CoursesFlow";
 import { Histogram } from "./Histogram";
 
 const passColorScale = scaleLinear<string, number>()
-  .range(["#b0ffa1", "#5bff3b"])
+  .range([MIN_PASS_SCALE_COLOR, MAX_PASS_SCALE_COLOR])
   .domain([passGrade, maxGrade]);
 
 const failColorScale = scaleLinear<string, number>()
-  .range(["#ff4040", "#ff8282"])
+  .range([MIN_FAIL_SCALE_COLOR, MAX_FAIL_SCALE_COLOR])
   .domain([minGrade, passGrade]);
 
 export const CourseBox: FC<ICourse> = ({
@@ -112,9 +132,11 @@ export const CourseBox: FC<ICourse> = ({
       case StateCourse.Failed:
         return (failColorScale(grade || minGrade) as unknown) as string;
       case StateCourse.Current:
-        return "blue";
+        return STATE_COURSE_CURRENT_COLOR;
       case StateCourse.Canceled:
-        return "white";
+        return STATE_COURSE_CANCELED_COLOR;
+      case StateCourse.Pending:
+        return STATE_COURSE_PENDING_COLOR;
       default:
         return "transparent";
     }
@@ -148,18 +170,18 @@ export const CourseBox: FC<ICourse> = ({
   ]);
   const borderColor = useMemo(() => {
     if (active === code) {
-      return "gray.500";
+      return ACTIVE_COURSE_BOX_COLOR;
     }
     if (contextFlow?.[code]) {
-      return "red.400";
+      return FLOW_COURSE_BOX_COLOR;
     }
     if (contextRequisites?.[code]) {
-      return "blue.400";
+      return REQUISITE_COURSE_BOX_COLOR;
     }
     if (checkExplicitSemester(semestersTaken)) {
-      return "yellow.400";
+      return EXPLICIT_SEMESTER_COURSE_BOX_COLOR;
     }
-    return "gray.400";
+    return INACTIVE_COURSE_BOX_COLOR;
   }, [
     active,
     code,
@@ -243,14 +265,14 @@ export const CourseBox: FC<ICourse> = ({
           }}
           className="req_circle_box"
         >
-          <Box>
+          <Box mt="-10px">
             <svg width={32} height={32}>
               <circle
                 r={15}
                 cx={16}
                 cy={16}
                 stroke={
-                  contextFlow?.[code] ? "rgb(245,101,101)" : "rgb(66,153,225)"
+                  contextFlow?.[code] ? FLOW_CIRCLE_COLOR : REQ_CIRCLE_COLOR
                 }
                 fill="transparent"
               />
@@ -259,10 +281,10 @@ export const CourseBox: FC<ICourse> = ({
                 y={21}
                 fontWeight="bold"
                 fill={
-                  contextFlow?.[code] ? "rgb(245,101,101)" : "rgb(66,153,225)"
+                  contextFlow?.[code] ? FLOW_CIRCLE_COLOR : REQ_CIRCLE_COLOR
                 }
               >
-                {contextFlow?.[code] ? "Fluj" : "Req"}
+                {contextFlow?.[code] ? FLOW_CIRCLE_LABEL : REQ_CIRCLE_LABEL}
               </text>
             </svg>
           </Box>
@@ -278,7 +300,10 @@ export const CourseBox: FC<ICourse> = ({
       year && (
         <Histogram
           key="now"
-          label={CURRENT_DISTRIBUTION_LABEL({ term, year })}
+          label={CURRENT_DISTRIBUTION_LABEL({
+            term: termTypeToNumber(term),
+            year,
+          })}
           distribution={currentDistribution}
           grade={grade}
         />
@@ -367,10 +392,14 @@ export const CourseBox: FC<ICourse> = ({
                 color = (failColorScale(grade || 0) as unknown) as string;
                 break;
               case StateCourse.Current:
-                color = "blue";
+                color = STATE_COURSE_CURRENT_COLOR;
                 break;
               case StateCourse.Canceled:
-                color = "white";
+                color = STATE_COURSE_CANCELED_COLOR;
+                break;
+              case StateCourse.Pending:
+                color = STATE_COURSE_PENDING_COLOR;
+                break;
               default:
                 color = "black";
             }
@@ -385,7 +414,13 @@ export const CourseBox: FC<ICourse> = ({
                 width={"16px"}
               >
                 <svg width={16} height={16}>
-                  <circle cx={8} cy={8} r="6" stroke="white" fill={color} />
+                  <circle
+                    cx={8}
+                    cy={8}
+                    r="6"
+                    stroke={STATE_COURSE_CIRCLE_STROKE}
+                    fill={color}
+                  />
                 </svg>
               </Box>
             );
@@ -398,8 +433,8 @@ export const CourseBox: FC<ICourse> = ({
   return (
     <Flex
       m={1}
-      color="black"
-      bg="rgb(245,245,245)"
+      color={COURSE_BOX_TEXT_COLOR}
+      bg={COURSE_BOX_BACKGROUND_COLOR}
       width={open ? 350 : 180}
       height={height}
       borderRadius={5}

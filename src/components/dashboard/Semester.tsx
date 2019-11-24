@@ -1,6 +1,7 @@
 import { FC, memo } from "react";
 
 import { Stack, Text } from "@chakra-ui/core";
+import { SEMESTER_HEADER_TEXT_COLOR } from "@constants";
 import { ICourse } from "@interfaces";
 
 import { CourseBox } from "./CourseBox";
@@ -34,7 +35,11 @@ export const Semester: FC<{ semester: ICourse[]; n: number }> = memo(
   ({ semester, n }) => {
     return (
       <Stack>
-        <Text color="rgb(70,130,180)" textAlign="center" fontSize="1.5em">
+        <Text
+          color={SEMESTER_HEADER_TEXT_COLOR}
+          textAlign="center"
+          fontSize="1.5em"
+        >
           <b>{toRoman(n)}</b>
         </Text>
         {semester.map((course, key) => (

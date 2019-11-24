@@ -22,7 +22,11 @@ import {
   Input,
 } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
-import { LOGOUT_BUTTON_LABEL, SEARCH_BUTTON_LABEL } from "@constants";
+import {
+  LOGOUT_BUTTON_LABEL,
+  SEARCH_BAR_BACKGROUND_COLOR,
+  SEARCH_BUTTON_LABEL,
+} from "@constants";
 import { myProgramsQuery } from "@graphql/queries";
 
 export const SearchBar: FC<{
@@ -86,7 +90,7 @@ export const SearchBar: FC<{
       width="100%"
       justifyContent="space-between"
       alignItems="center"
-      backgroundColor="rgb(52,58,64)"
+      backgroundColor={SEARCH_BAR_BACKGROUND_COLOR}
       p={3}
       cursor="default"
       wrap="wrap"

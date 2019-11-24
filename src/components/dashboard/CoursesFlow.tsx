@@ -8,13 +8,13 @@ import {
 } from "react";
 
 import { TrackingContext } from "@components/Tracking";
-import { ISemesterTaken } from "@interfaces";
+import { ITakenSemester } from "@interfaces";
 
 export const CoursesFlowContext = createContext<{
   active?: string;
   flow?: Record<string, boolean>;
   requisites?: Record<string, boolean>;
-  semestersTaken: ISemesterTaken[];
+  semestersTaken: ITakenSemester[];
   explicitSemester?: string;
   checkExplicitSemester: (
     semestersTaken:
@@ -26,7 +26,7 @@ export const CoursesFlowContext = createContext<{
     course: string;
     flow: string[];
     requisites: string[];
-    semestersTaken: ISemesterTaken[];
+    semestersTaken: ITakenSemester[];
   }) => void;
   remove: (course: string) => void;
 }>({
@@ -84,7 +84,7 @@ export const CoursesFlow: FC = ({ children }) => {
   // AL THE REST WORKS AS HISTORY
   const [{ active, flow, requisites, semestersTaken }, setState] = useState<{
     active: string[];
-    semestersTaken: ISemesterTaken[][];
+    semestersTaken: ITakenSemester[][];
     flow: Record<string, boolean>[];
     requisites: Record<string, boolean>[];
   }>({ active: [], flow: [], requisites: [], semestersTaken: [] });
