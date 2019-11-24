@@ -117,7 +117,7 @@ export const searchProgramQuery: DocumentNode<
         }[];
       },
       Program
-    >;
+    > | null;
   },
   { program_id: number }
 > = gql`
@@ -216,7 +216,7 @@ export const searchStudentQuery: DocumentNode<
         id
         student_id
         year
-        semester
+        term
         situation
         PSP
         PGA
