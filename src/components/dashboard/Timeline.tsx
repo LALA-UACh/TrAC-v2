@@ -12,14 +12,16 @@ import {
 import pixelWidth from "string-pixel-width";
 
 import {
+  CUMULATED_GRADE_COLOR,
+  CUMULATED_GRADE_LABEL,
   GRADES_SCALES,
   maxGrade,
   minGrade,
   passGrade,
-  PGA_COLOR,
-  PROGRAM_PGA,
-  PROGRAM_PGA_COLOR,
-  PSP_COLOR,
+  PROGRAM_GRADE_COLOR,
+  PROGRAM_GRADE_LABEL,
+  SEMESTRAL_GRADE_COLOR,
+  SEMESTRAL_GRADE_LABEL,
 } from "@constants";
 import { AxisLeft } from "@vx/axis";
 
@@ -96,157 +98,166 @@ const YAxisScale = scaleLinear()
   .domain([maxGrade, minGrade]);
 
 export const TimeLine: FC<{
-  PGA: number[];
-  PSP: number[];
-  ProgramPGA: number[];
+  CUMULATED_GRADE: number[];
+  SEMESTRAL_GRADE: number[];
+  PROGRAM_GRADE: number[];
   semestersTaken: { year: number; term: string }[];
-}> = memo(({ PGA, PSP, ProgramPGA, semestersTaken }) => {
-  const width = useMemo(() => Math.max((PGA.length - 1) * 120 + 60, 650), [
-    PGA,
-  ]);
-  const { checkExplicitSemester } = useContext(CoursesFlowContext);
+}> = memo(
+  ({ CUMULATED_GRADE, SEMESTRAL_GRADE, PROGRAM_GRADE, semestersTaken }) => {
+    const width = useMemo(
+      () => Math.max((CUMULATED_GRADE.length - 1) * 120 + 60, 650),
+      [CUMULATED_GRADE]
+    );
+    const { checkExplicitSemester } = useContext(CoursesFlowContext);
 
-  const CirclesComponent = useMemo(
-    () =>
-      PGA.map((PGAGrade, key) => {
-        return (
-          <g key={key}>
-            <TimeLineTooltip grade={PGAGrade}>
-              <circle
-                cy={GradeScale(PGAGrade)}
-                cx={key * 70 + 70}
-                r={5}
-                fill={PGA_COLOR}
-              />
-            </TimeLineTooltip>
-            <TimeLineTooltip grade={ProgramPGA[key]}>
-              <circle
-                cy={GradeScale(ProgramPGA[key])}
-                cx={key * 70 + 70}
-                r={5}
-                fill={PROGRAM_PGA_COLOR}
-              />
-            </TimeLineTooltip>
-            <TimeLineTooltip grade={PSP[key]}>
-              <circle
-                cy={GradeScale(PSP[key])}
-                cx={key * 70 + 70}
-                r={5}
-                fill={
-                  checkExplicitSemester({
-                    term: semestersTaken[key].term,
-                    year: semestersTaken[key].year,
-                  })
-                    ? "rgb(236,201,75)"
-                    : PSP_COLOR
-                }
-                style={{ transition: "0.4s all ease-in-out" }}
-              />
-            </TimeLineTooltip>
-          </g>
-        );
-      }),
-    [PSP, PGA, ProgramPGA, semestersTaken, checkExplicitSemester]
-  );
+    const CirclesComponent = useMemo(
+      () =>
+        CUMULATED_GRADE.map((CUMULATED_GRADE, key) => {
+          return (
+            <g key={key}>
+              <TimeLineTooltip grade={CUMULATED_GRADE}>
+                <circle
+                  cy={GradeScale(CUMULATED_GRADE)}
+                  cx={key * 70 + 70}
+                  r={5}
+                  fill={CUMULATED_GRADE_COLOR}
+                />
+              </TimeLineTooltip>
+              <TimeLineTooltip grade={PROGRAM_GRADE[key]}>
+                <circle
+                  cy={GradeScale(PROGRAM_GRADE[key])}
+                  cx={key * 70 + 70}
+                  r={5}
+                  fill={PROGRAM_GRADE_COLOR}
+                />
+              </TimeLineTooltip>
+              <TimeLineTooltip grade={SEMESTRAL_GRADE[key]}>
+                <circle
+                  cy={GradeScale(SEMESTRAL_GRADE[key])}
+                  cx={key * 70 + 70}
+                  r={5}
+                  fill={
+                    checkExplicitSemester({
+                      term: semestersTaken[key].term,
+                      year: semestersTaken[key].year,
+                    })
+                      ? "rgb(236,201,75)"
+                      : SEMESTRAL_GRADE_COLOR
+                  }
+                  style={{ transition: "0.4s all ease-in-out" }}
+                />
+              </TimeLineTooltip>
+            </g>
+          );
+        }),
+      [
+        SEMESTRAL_GRADE,
+        CUMULATED_GRADE,
+        PROGRAM_GRADE,
+        semestersTaken,
+        checkExplicitSemester,
+      ]
+    );
 
-  const StrokesComponent = useMemo(
-    () =>
-      PGA.map((_, key) => {
-        return (
-          <g key={key}>
-            {PSP[key + 1] !== undefined && (
-              <line
-                stroke={PSP_COLOR}
-                x1={key * 70 + 70}
-                y1={GradeScale(PSP[key])}
-                x2={(key + 1) * 70 + 70}
-                y2={GradeScale(PSP[key + 1])}
-              />
-            )}
-            {PGA[key + 1] !== undefined && (
-              <line
-                stroke={PGA_COLOR}
-                x1={key * 70 + 70}
-                y1={GradeScale(PGA[key])}
-                x2={(key + 1) * 70 + 70}
-                y2={GradeScale(PGA[key + 1])}
-              />
-            )}
-            {ProgramPGA[key + 1] !== undefined && (
-              <line
-                stroke={PROGRAM_PGA_COLOR}
-                x1={key * 70 + 70}
-                y1={GradeScale(ProgramPGA[key])}
-                x2={(key + 1) * 70 + 70}
-                y2={GradeScale(ProgramPGA[key + 1])}
-              />
-            )}
-          </g>
-        );
-      }),
-    [PSP, PGA, ProgramPGA]
-  );
+    const StrokesComponent = useMemo(
+      () =>
+        CUMULATED_GRADE.map((_, key) => {
+          return (
+            <g key={key}>
+              {SEMESTRAL_GRADE[key + 1] !== undefined && (
+                <line
+                  stroke={SEMESTRAL_GRADE_COLOR}
+                  x1={key * 70 + 70}
+                  y1={GradeScale(SEMESTRAL_GRADE[key])}
+                  x2={(key + 1) * 70 + 70}
+                  y2={GradeScale(SEMESTRAL_GRADE[key + 1])}
+                />
+              )}
+              {CUMULATED_GRADE[key + 1] !== undefined && (
+                <line
+                  stroke={CUMULATED_GRADE_COLOR}
+                  x1={key * 70 + 70}
+                  y1={GradeScale(CUMULATED_GRADE[key])}
+                  x2={(key + 1) * 70 + 70}
+                  y2={GradeScale(CUMULATED_GRADE[key + 1])}
+                />
+              )}
+              {PROGRAM_GRADE[key + 1] !== undefined && (
+                <line
+                  stroke={PROGRAM_GRADE_COLOR}
+                  x1={key * 70 + 70}
+                  y1={GradeScale(PROGRAM_GRADE[key])}
+                  x2={(key + 1) * 70 + 70}
+                  y2={GradeScale(PROGRAM_GRADE[key + 1])}
+                />
+              )}
+            </g>
+          );
+        }),
+      [SEMESTRAL_GRADE, CUMULATED_GRADE, PROGRAM_GRADE]
+    );
 
-  const LabelAxisComponent = useMemo(
-    () => (
-      <>
-        <text y={20} x={10} fontSize="1em" fontWeight="bold">
-          {GRADES_SCALES}
-        </text>
-        <AxisLeft
-          scale={YAxisScale}
-          left={40}
-          top={40}
-          hideAxisLine={false}
-          tickLength={4}
-          numTicks={5}
-        />
-        <line
-          x1={39}
-          y1={170}
-          x2={PGA.length * 100 + 160}
-          y2={40 + 130}
-          stroke="black"
-        />
-        <line
-          x1={39}
-          y1={GradeScale(passGrade)}
-          x2={340}
-          y2={GradeScale(passGrade)}
-          stroke="black"
-          strokeDasharray="2"
-        />
+    const LabelAxisComponent = useMemo(
+      () => (
+        <>
+          <text y={20} x={10} fontSize="1em" fontWeight="bold">
+            {GRADES_SCALES}
+          </text>
+          <AxisLeft
+            scale={YAxisScale}
+            left={40}
+            top={40}
+            hideAxisLine={false}
+            tickLength={4}
+            numTicks={5}
+          />
+          <line
+            x1={39}
+            y1={170}
+            x2={CUMULATED_GRADE.length * 100 + 160}
+            y2={40 + 130}
+            stroke="black"
+          />
+          <line
+            x1={39}
+            y1={GradeScale(passGrade)}
+            x2={340}
+            y2={GradeScale(passGrade)}
+            stroke="black"
+            strokeDasharray="2"
+          />
 
-        <circle cx={150} cy={12} r={5} fill={PSP_COLOR} />
+          <circle cx={150} cy={12} r={5} fill={SEMESTRAL_GRADE_COLOR} />
 
-        <text x={160} y={20}>
-          PSP
-        </text>
-        <circle cx={250} cy={12} r={5} fill={PGA_COLOR} />
-        <text x={260} y={20}>
-          PGA
-        </text>
-        <circle cx={350} cy={12} r={5} fill={PROGRAM_PGA_COLOR} />
-        <text x={360} y={20}>
-          {PROGRAM_PGA}
-        </text>
-      </>
-    ),
-    [PGA]
-  );
-  const height = 270;
-  const scale = 0.7;
+          <text x={160} y={20}>
+            {SEMESTRAL_GRADE_LABEL}
+          </text>
+          <circle cx={250} cy={12} r={5} fill={CUMULATED_GRADE_COLOR} />
+          <text x={260} y={20}>
+            {CUMULATED_GRADE_LABEL}
+          </text>
+          <circle cx={350} cy={12} r={5} fill={PROGRAM_GRADE_COLOR} />
+          <text x={360} y={20}>
+            {PROGRAM_GRADE_LABEL}
+          </text>
+        </>
+      ),
+      [CUMULATED_GRADE]
+    );
+    const height = 270;
+    const scale = 0.7;
 
-  const viewBox = useMemo(() => `0 0 ${width * scale} ${height * scale}`, [
-    width,
-    height,
-    scale,
-  ]);
-  return (
-    <svg width={width} height={height} viewBox={viewBox}>
-      {LabelAxisComponent}
-      {StrokesComponent}
-      {CirclesComponent}
-    </svg>
-  );
-});
+    const viewBox = useMemo(() => `0 0 ${width * scale} ${height * scale}`, [
+      width,
+      height,
+      scale,
+    ]);
+    return (
+      <svg width={width} height={height} viewBox={viewBox}>
+        {LabelAxisComponent}
+        {StrokesComponent}
+        {CirclesComponent}
+      </svg>
+    );
+  }
+);

@@ -16,7 +16,7 @@ export const AdminMenu: FC<{
     <Menu icon="labeled" pointing secondary>
       <Menu.Item name="users" active={active === "users"} onClick={handleClick}>
         <Icon name="user outline" />
-        Usuarios
+        Users
       </Menu.Item>
       <Menu.Item
         name="programs"
@@ -24,7 +24,7 @@ export const AdminMenu: FC<{
         onClick={handleClick}
       >
         <Icon name="table" />
-        Programas
+        Programs
       </Menu.Item>
     </Menu>
   );

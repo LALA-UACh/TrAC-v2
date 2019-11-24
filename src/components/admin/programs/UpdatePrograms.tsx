@@ -74,8 +74,8 @@ export const UpdatePrograms: FC<{
         <Grid centered>
           <Grid.Row>
             <Confirm
-              header="¿Está seguro que desea resetear los campos del formulario a los obtenidos desde la base de datos?"
-              content="Cualquier cambio en los campos de información va a ser perdido"
+              header="Are you sure you want to reset all the form fields?"
+              content="Any changes in those fields will be lost"
             >
               <Button
                 circular
@@ -95,7 +95,7 @@ export const UpdatePrograms: FC<{
           <Grid.Row>
             <Label size="big">Programs</Label>
             <Dropdown
-              placeholder="Añadir programas"
+              placeholder="Add programs"
               fluid
               selection
               multiple
@@ -126,13 +126,10 @@ export const UpdatePrograms: FC<{
           }}
         >
           <Icon name="save outline" />
-          Guardar
+          Save
         </Button>
 
-        <Confirm
-          header="¿Está seguro que desea eliminar todos los programa a este usuario?"
-          content="Éstos se van a eliminar de la base de datos"
-        >
+        <Confirm header="Are you sure you want to remove all the programs of this user?">
           <Button
             type="button"
             icon
@@ -144,7 +141,7 @@ export const UpdatePrograms: FC<{
             }}
           >
             <Icon name="remove circle" />
-            Eliminar
+            Remove
           </Button>
         </Confirm>
       </Modal.Actions>

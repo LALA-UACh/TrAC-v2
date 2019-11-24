@@ -5,6 +5,7 @@ import { generate } from "randomstring";
 import { Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import {
+  defaultUserType,
   LOCKED_USER,
   USED_OLD_PASSWORD,
   UserType,
@@ -16,7 +17,6 @@ import { AuthResult, LoginInput, UnlockInput } from "@entities/auth";
 import { User } from "@entities/user";
 import { IContext } from "@interfaces";
 import { IfImplements } from "@typings/utils";
-import { defaultUserType } from "@utils";
 import { sendMail, UnlockMail } from "@utils/mail";
 
 @Resolver()

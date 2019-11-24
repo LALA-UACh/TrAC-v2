@@ -22,6 +22,7 @@ import {
   Input,
 } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
+import { LOGOUT_BUTTON_LABEL, SEARCH_BUTTON_LABEL } from "@constants";
 import { myProgramsQuery } from "@graphql/queries";
 
 export const SearchBar: FC<{
@@ -164,7 +165,7 @@ export const SearchBar: FC<{
               size="medium"
             >
               <Icon name="search" />
-              Buscar
+              {SEARCH_BUTTON_LABEL}
             </Button>
             {!isSearchLoading && error && (
               <Alert
@@ -194,7 +195,7 @@ export const SearchBar: FC<{
               });
             }}
           >
-            Salir
+            {LOGOUT_BUTTON_LABEL}
           </Button>
         </Link>
       </Box>

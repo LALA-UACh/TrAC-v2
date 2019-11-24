@@ -138,9 +138,9 @@ type Term {
   year: Int!
   term: TermType!
   situation: String!
-  PSP: Float!
-  PGA: Float!
-  ProgramPGA: Float!
+  semestral_grade: Float!
+  cumulated_grade: Float!
+  program_grade: Float!
   takenCourses: [TakenCourse!]!
 }
 

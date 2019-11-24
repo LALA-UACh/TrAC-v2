@@ -4,13 +4,24 @@ import { toString } from "lodash";
 import toInteger from "lodash/toInteger";
 import { FC, useEffect, useState } from "react";
 import Dropzone from "react-dropzone";
-import { Button, Form, Grid, Icon, Message, Modal, TextArea } from "semantic-ui-react";
+import {
+  Button,
+  Form,
+  Grid,
+  Icon,
+  Message,
+  Modal,
+  TextArea,
+} from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 import { isJSON } from "validator";
 import isEmail from "validator/lib/isEmail";
 
 import { useMutation } from "@apollo/react-hooks";
-import { adminUpsertUsersMutation, allUsersAdminQuery } from "@graphql/adminQueries";
+import {
+  adminUpsertUsersMutation,
+  allUsersAdminQuery,
+} from "@graphql/adminQueries";
 
 export const ImportUsers: FC = () => {
   const [data, setData] = useRememberState("AdminImportUsersData", "email\n");
@@ -48,18 +59,21 @@ export const ImportUsers: FC = () => {
     );
   });
 
-  const [importUsers, { error, loading }] = useMutation(adminUpsertUsersMutation, {
-    update: (cache, { data }) => {
-      if (data?.upsertUsers) {
-        cache.writeQuery({
-          query: allUsersAdminQuery,
-          data: {
-            users: data.upsertUsers,
-          },
-        });
-      }
-    },
-  });
+  const [importUsers, { error, loading }] = useMutation(
+    adminUpsertUsersMutation,
+    {
+      update: (cache, { data }) => {
+        if (data?.upsertUsers) {
+          cache.writeQuery({
+            query: allUsersAdminQuery,
+            data: {
+              users: data.upsertUsers,
+            },
+          });
+        }
+      },
+    }
+  );
 
   const handleSubmit = async () => {
     if (isEnabled) {
@@ -82,13 +96,13 @@ export const ImportUsers: FC = () => {
       trigger={
         <Button primary icon labelPosition="left">
           <Icon name="add user" />
-          Upsert Usuarios
+          Upsert users
         </Button>
       }
       onClose={() => setOpen(false)}
       onOpen={() => setOpen(true)}
     >
-      <Modal.Header>Upsert Usuarios</Modal.Header>
+      <Modal.Header>Upsert users</Modal.Header>
       <Modal.Content>
         <Grid centered>
           <Grid.Row>
@@ -112,9 +126,15 @@ export const ImportUsers: FC = () => {
                       "dropzone--isActive": isDragActive,
                     })}
                   >
-                    <Button icon labelPosition="left" circular size="huge" color="brown">
+                    <Button
+                      icon
+                      labelPosition="left"
+                      circular
+                      size="huge"
+                      color="brown"
+                    >
                       <Icon name="upload" />
-                      Subir archivo
+                      Upload file
                     </Button>
                     <input {...getInputProps()} />
                   </div>
@@ -131,7 +151,9 @@ export const ImportUsers: FC = () => {
           )}
           {!isEnabled && parsedData.length > 0 && (
             <Message error>
-              <Message.Content>Cada fila debe contener al menos un correo válido</Message.Content>
+              <Message.Content>
+                Each row has to have at least a valid email
+              </Message.Content>
             </Message>
           )}
 

@@ -9,6 +9,7 @@ import {
 } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
+import { defaultStateCourse, defaultTermType } from "@constants";
 import {
   CourseTable,
   StudentCourseTable,
@@ -21,7 +22,7 @@ import { Program } from "@entities/program";
 import { Student } from "@entities/student";
 import { TakenCourse } from "@entities/takenCourse";
 import { Term } from "@entities/term";
-import { assertIsDefined, defaultStateCourse, defaultTermType } from "@utils";
+import { assertIsDefined } from "@utils";
 
 type PartialTakenCourse = Pick<TakenCourse, "id" | "code">;
 type PartialTerm = Pick<Term, "id">;
@@ -166,7 +167,9 @@ export class TermResolver {
   }
 
   @FieldResolver()
-  async PSP(@Root() { id }: PartialTerm): Promise<$PropertyType<Term, "PSP">> {
+  async semestral_grade(
+    @Root() { id }: PartialTerm
+  ): Promise<$PropertyType<Term, "semestral_grade">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
 
     const pspData = await StudentTermTable()
@@ -174,28 +177,36 @@ export class TermResolver {
       .where({ id })
       .first();
 
-    assertIsDefined(pspData, `PSP could not be found for ${id} term`);
+    assertIsDefined(
+      pspData,
+      `Semestral grade could not be found for ${id} term`
+    );
 
     return pspData.t_gpa;
   }
 
   @FieldResolver()
-  async PGA(@Root() { id }: PartialTerm): Promise<$PropertyType<Term, "PGA">> {
+  async cumulated_grade(
+    @Root() { id }: PartialTerm
+  ): Promise<$PropertyType<Term, "cumulated_grade">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
 
     const pgaData = await StudentTermTable()
       .where({ id })
       .first();
 
-    assertIsDefined(pgaData, `PGA could not be found for ${id} term`);
+    assertIsDefined(
+      pgaData,
+      `Cumulated grade could not be found for ${id} term`
+    );
 
     return pgaData.c_gpa;
   }
 
   @FieldResolver()
-  async ProgramPGA(
+  async program_grade(
     @Root() { id }: PartialTerm
-  ): Promise<$PropertyType<Term, "ProgramPGA">> {
+  ): Promise<$PropertyType<Term, "program_grade">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
 
     // TODO: ProgramPGA Resolver

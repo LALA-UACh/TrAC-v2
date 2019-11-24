@@ -6,10 +6,16 @@ import { useUpdateEffect } from "react-use";
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
 import {
+  CURRENT_DISTRIBUTION_LABEL,
   HISTORIC_GRADES,
   maxGrade,
   minGrade,
   passGrade,
+  STATE_CANCELED_LABEL_MINI,
+  STATE_CURRENT_LABEL_MINI,
+  STATE_FAILED_LABEL_MINI,
+  STATE_PASSED_LABEL_MINI,
+  STATE_PENDING_LABEL_MINI,
   StateCourse,
 } from "@constants";
 import { ICourse, ITakenCourse } from "@interfaces";
@@ -267,10 +273,12 @@ export const CourseBox: FC<ICourse> = ({
 
   const HistogramNow = useMemo(
     () =>
-      currentDistribution && (
+      currentDistribution &&
+      term &&
+      year && (
         <Histogram
           key="now"
-          label={`Calificationes ${term} ${year}`}
+          label={CURRENT_DISTRIBUTION_LABEL({ term, year })}
           distribution={currentDistribution}
           grade={grade}
         />
@@ -329,15 +337,15 @@ export const CourseBox: FC<ICourse> = ({
               }
               switch (state) {
                 case StateCourse.Passed:
-                  return "AP";
+                  return STATE_PASSED_LABEL_MINI;
                 case StateCourse.Failed:
-                  return "RE";
+                  return STATE_FAILED_LABEL_MINI;
                 case StateCourse.Canceled:
-                  return "AN";
+                  return STATE_CANCELED_LABEL_MINI;
                 case StateCourse.Pending:
-                  return "PEN";
+                  return STATE_PENDING_LABEL_MINI;
                 case StateCourse.Current:
-                  return "CUR";
+                  return STATE_CURRENT_LABEL_MINI;
                 default:
                   return "BUG";
               }

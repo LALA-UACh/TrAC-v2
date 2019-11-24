@@ -13,7 +13,7 @@ import { SemesterTakenBox } from "@components/dashboard/SemesterTakenBox";
 import { TimeLine } from "@components/dashboard/Timeline";
 import { RequireAuth } from "@components/RequireAuth";
 import { Tracking, TrackingContext, TrackingRef } from "@components/Tracking";
-import { StateCourse } from "@constants";
+import { defaultStateCourse, defaultTermType, TermType } from "@constants";
 import data from "@constants/data.json";
 import { searchProgramQuery, searchStudentQuery } from "@graphql/queries";
 import {
@@ -111,11 +111,11 @@ const Dashboard: FC = () => {
 
                   if (codeToFind === code) {
                     taken.push({
-                      term: semester,
+                      term: defaultTermType(semester),
                       year,
                       registration,
                       grade,
-                      state: state as StateCourse,
+                      state: defaultStateCourse(state),
                       currentDistribution,
                       parallelGroup: 0,
                     });
@@ -186,9 +186,9 @@ const Dashboard: FC = () => {
           <Stack isInline flexWrap="wrap-reverse">
             <Box>
               <TimeLine
-                PGA={data.PGA}
-                PSP={data.PSP}
-                ProgramPGA={data.ProgramPGA}
+                CUMULATED_GRADE={data.PGA}
+                SEMESTRAL_GRADE={data.PSP}
+                PROGRAM_GRADE={data.ProgramPGA}
                 semestersTaken={semestersTaken}
               />
             </Box>
@@ -199,9 +199,22 @@ const Dashboard: FC = () => {
           </Stack>
 
           <Stack isInline pl="50px">
-            {semestersTaken.map(({ term, year }, key) => (
-              <SemesterTakenBox key={key} term={term} year={year} />
-            ))}
+            {semestersTaken.map(({ term, year }, key) => {
+              switch (term) {
+                case TermType.First:
+                  term = "1";
+                  break;
+                case TermType.Second:
+                  term = "2";
+                  break;
+                case TermType.Anual:
+                  term = "3";
+                  break;
+                default:
+                  term = "0";
+              }
+              return <SemesterTakenBox key={key} term={term} year={year} />;
+            })}
           </Stack>
         </ScrollContainer>
 

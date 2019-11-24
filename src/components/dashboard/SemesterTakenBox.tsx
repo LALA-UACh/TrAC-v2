@@ -17,7 +17,7 @@ export const SemesterTakenBox: FC<{ year: number; term: string }> = memo(
 
     const borderColor = useMemo(() => {
       if (
-        checkExplicitSemester({ year, term: term }) ||
+        checkExplicitSemester({ year, term }) ||
         (explicitSemester === undefined &&
           semestersTaken?.find(v => year === v.year && term == v.term))
       ) {

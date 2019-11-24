@@ -78,8 +78,8 @@ export const Users: FC<{
         <Grid centered>
           <Grid.Row>
             <Confirm
-              header="¿Está seguro que desea enviar un nuevo correo electrónico a todos los usuarios bloqueados?"
-              content="Se les va a asignar un nuevo código de activación en conjunto con el correo enviado a todos los usuarios bloqueados"
+              header="Are you sure you want to send a new email to all currently locked users?"
+              content="It will be given to them a new unlock key in their email"
             >
               <Button
                 icon
@@ -97,7 +97,7 @@ export const Users: FC<{
                 disabled={loadingMailLockedUsers}
               >
                 <Icon name="mail" />
-                Código nuevo a usuarios bloqueados
+                New unlock key to locked users
               </Button>
             </Confirm>
           </Grid.Row>
@@ -131,7 +131,7 @@ export const Users: FC<{
                       )}
                     </Message.List>
                   ) : (
-                    "No existen usuarios bloqueados a los cual enviar correos electrónicos de desbloqueo"
+                    "There are not any locked users"
                   )}
                 </Message.Content>
               </Message>

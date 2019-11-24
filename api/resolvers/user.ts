@@ -12,6 +12,7 @@ import {
 } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
+import { defaultUserType } from "@constants";
 import { ADMIN } from "@consts";
 import { dbAuth } from "@db";
 import {
@@ -30,7 +31,7 @@ import {
   UserProgram,
 } from "@entities/user";
 import { ArrayPropertyType } from "@typings/utils";
-import { assertIsDefined, defaultUserType } from "@utils";
+import { assertIsDefined } from "@utils";
 import { sendMail, UnlockMail } from "@utils/mail";
 
 @Resolver(() => User)

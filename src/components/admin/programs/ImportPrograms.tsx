@@ -3,24 +3,39 @@ import csv from "csvtojson";
 import { conformsTo, toInteger, toString } from "lodash";
 import { FC, useEffect, useState } from "react";
 import Dropzone from "react-dropzone";
-import { Button, Form, Grid, Icon, Message, Modal, TextArea } from "semantic-ui-react";
+import {
+  Button,
+  Form,
+  Grid,
+  Icon,
+  Message,
+  Modal,
+  TextArea,
+} from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 import isEmail from "validator/lib/isEmail";
 import isJSON from "validator/lib/isJSON";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
-    addUsersProgramsAdminMutation, allProgramsAdminQuery, allUsersAdminQuery
+  addUsersProgramsAdminMutation,
+  allProgramsAdminQuery,
+  allUsersAdminQuery,
 } from "@graphql/adminQueries";
 
 export const ImportPrograms: FC = () => {
-  const [data, setData] = useRememberState("AdminImportProgramsData", "email,program\n");
+  const [data, setData] = useRememberState(
+    "AdminImportProgramsData",
+    "email,program\n"
+  );
   const { data: allPrograms } = useQuery(allProgramsAdminQuery);
   const [open, setOpen] = useRememberState("AdminImportProgramsOpen", false);
 
   const [isEnabled, setIsEnabled] = useState(false);
 
-  const [parsedData, setParsedData] = useState<{ email?: string; program?: number }[]>([]);
+  const [parsedData, setParsedData] = useState<
+    { email?: string; program?: number }[]
+  >([]);
 
   useEffect(() => {
     (async () => {
@@ -50,7 +65,8 @@ export const ImportPrograms: FC = () => {
                 { email, program },
                 {
                   email: (v: string) => isEmail(v),
-                  program: (v: string) => allProgramsMapped.includes(toInteger(v)),
+                  program: (v: string) =>
+                    allProgramsMapped.includes(toInteger(v)),
                 }
               );
             }
@@ -85,20 +101,21 @@ export const ImportPrograms: FC = () => {
       trigger={
         <Button primary icon labelPosition="left">
           <Icon name="calendar plus outline" />
-          Importar Programas
+          Import Programs
         </Button>
       }
       onClose={() => setOpen(false)}
       onOpen={() => setOpen(true)}
     >
-      <Modal.Header>Importar Programas</Modal.Header>
+      <Modal.Header>Import Programs</Modal.Header>
       <Modal.Content>
         <Grid centered>
           <Grid.Row>
             <Message>
               <Message.Content>
-                El contenido es validado automaticamente, verificando que los email estén
-                correctamente formateados y los programas existen en la lista de programas actuales
+                The content is validated automatically, verifying if all the
+                emails are correctly formatted and the programs already exist in
+                the current program list
               </Message.Content>
             </Message>
           </Grid.Row>
@@ -123,9 +140,15 @@ export const ImportPrograms: FC = () => {
                       "dropzone--isActive": isDragActive,
                     })}
                   >
-                    <Button icon labelPosition="left" circular size="huge" color="brown">
+                    <Button
+                      icon
+                      labelPosition="left"
+                      circular
+                      size="huge"
+                      color="brown"
+                    >
                       <Icon name="upload" />
-                      Subir archivo
+                      Upload file
                     </Button>
                     <input {...getInputProps()} />
                   </div>
@@ -158,7 +181,7 @@ export const ImportPrograms: FC = () => {
                 loading={loading}
               >
                 <Icon name="plus circle" />
-                Importar
+                Import
               </Form.Button>
 
               <TextArea

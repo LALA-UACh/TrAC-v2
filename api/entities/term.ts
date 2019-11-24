@@ -34,15 +34,15 @@ export class Term {
 
   // student_term => t_gpa
   @Field()
-  PSP: number;
+  semestral_grade: number;
 
   // student_term => c_gpa
   @Field()
-  PGA: number;
+  cumulated_grade: number;
 
   // ?? // TODO Term ProgramPGA database definition
   @Field()
-  ProgramPGA: number;
+  program_grade: number;
 
   // student_course => *
   @Field(() => [TakenCourse])

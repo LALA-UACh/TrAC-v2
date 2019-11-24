@@ -175,9 +175,9 @@ export const searchStudentQuery: DocumentNode<
           year: number;
           term: TermType;
           situation: string;
-          PSP: number;
-          PGA: number;
-          ProgramPGA: number;
+          semestral_grade: number;
+          cumulated_grade: number;
+          program_grade: number;
           takenCourses: Array<{
             id: number;
             code: string;
@@ -218,9 +218,9 @@ export const searchStudentQuery: DocumentNode<
         year
         term
         situation
-        PSP
-        PGA
-        ProgramPGA
+        semestral_grade
+        cumulated_grade
+        program_grade
         takenCourses {
           id
           code

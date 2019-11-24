@@ -2,7 +2,14 @@ import toInteger from "lodash/toInteger";
 import { cloneElement, FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {
-    Button, Checkbox, Form as FormSemantic, Grid, Icon, Input, Message, Modal
+  Button,
+  Checkbox,
+  Form as FormSemantic,
+  Grid,
+  Icon,
+  Input,
+  Message,
+  Modal,
 } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 import { isEmail, isInt } from "validator";
@@ -12,7 +19,10 @@ import { Box, Flex } from "@chakra-ui/core";
 import { Confirm } from "@components/Confirm";
 import { UserType } from "@constants";
 import {
-    adminDeleteUserMutation, adminLockMailUserMutation, adminUpsertUsersMutation, allUsersAdminQuery
+  adminDeleteUserMutation,
+  adminLockMailUserMutation,
+  adminUpsertUsersMutation,
+  allUsersAdminQuery,
 } from "@graphql/adminQueries";
 
 export const UpdateUser: FC<{
@@ -27,27 +37,34 @@ export const UpdateUser: FC<{
   };
   children: JSX.Element;
 }> = ({ children, user }) => {
-  const [open, setOpen] = useRememberState(`AdminUpdateUser.${user.email}`, false);
+  const [open, setOpen] = useRememberState(
+    `AdminUpdateUser.${user.email}`,
+    false
+  );
 
   useEffect(() => {
-    setOpen(JSON.parse(localStorage.getItem(`AdminUpdateUser.${user.email}`) || "false"));
+    setOpen(
+      JSON.parse(
+        localStorage.getItem(`AdminUpdateUser.${user.email}`) || "false"
+      )
+    );
   }, [user.email]);
 
-  const [updateUser, { error: errorUpdate, loading: loadingUpdateUser }] = useMutation(
-    adminUpsertUsersMutation,
-    {
-      update: (cache, { data }) => {
-        if (data?.upsertUsers) {
-          cache.writeQuery({
-            query: allUsersAdminQuery,
-            data: {
-              users: data.upsertUsers,
-            },
-          });
-        }
-      },
-    }
-  );
+  const [
+    updateUser,
+    { error: errorUpdate, loading: loadingUpdateUser },
+  ] = useMutation(adminUpsertUsersMutation, {
+    update: (cache, { data }) => {
+      if (data?.upsertUsers) {
+        cache.writeQuery({
+          query: allUsersAdminQuery,
+          data: {
+            users: data.upsertUsers,
+          },
+        });
+      }
+    },
+  });
 
   if (errorUpdate) {
     throw errorUpdate;
@@ -55,7 +72,11 @@ export const UpdateUser: FC<{
 
   const [
     lockMailUser,
-    { loading: loadingLockMailUser, error: errorLockMailUser, data: dataLockMailUser },
+    {
+      loading: loadingLockMailUser,
+      error: errorLockMailUser,
+      data: dataLockMailUser,
+    },
   ] = useMutation(adminLockMailUserMutation, {
     variables: {
       email: user.email,
@@ -74,21 +95,24 @@ export const UpdateUser: FC<{
 
   const [openMailMessage, setOpenMailMessage] = useState(false);
 
-  const [deleteUser, { loading: loadingDeleteUser }] = useMutation(adminDeleteUserMutation, {
-    variables: {
-      email: user.email,
-    },
-    update: (cache, { data }) => {
-      if (data?.deleteUser) {
-        cache.writeQuery({
-          query: allUsersAdminQuery,
-          data: {
-            users: data.deleteUser,
-          },
-        });
-      }
-    },
-  });
+  const [deleteUser, { loading: loadingDeleteUser }] = useMutation(
+    adminDeleteUserMutation,
+    {
+      variables: {
+        email: user.email,
+      },
+      update: (cache, { data }) => {
+        if (data?.deleteUser) {
+          cache.writeQuery({
+            query: allUsersAdminQuery,
+            data: {
+              users: data.deleteUser,
+            },
+          });
+        }
+      },
+    }
+  );
   return (
     <Modal
       trigger={cloneElement(children, {
@@ -153,8 +177,8 @@ export const UpdateUser: FC<{
           return (
             <Modal.Content>
               <Confirm
-                header="¿Está seguro que desea resetear los campos del formulario a los obtenidos desde la base de datos?"
-                content="Cualquier cambio en los campos de información va a ser perdido"
+                header="Are you sure you want to reset all the form fields?"
+                content="Any changes in those fields will be lost"
               >
                 <Button
                   circular
@@ -185,7 +209,11 @@ export const UpdateUser: FC<{
                           <label>Email</label>
                           <FormSemantic.Input
                             {...input}
-                            error={error ? { content: "Debe ser un correo válido!" } : false}
+                            error={
+                              error
+                                ? { content: "It should a valid email!" }
+                                : false
+                            }
                           />
                         </FormSemantic.Field>
                       );
@@ -203,7 +231,10 @@ export const UpdateUser: FC<{
                           {...input}
                           error={
                             error
-                              ? { content: "Debe ser un nombre de al menos 2 caracteres!" }
+                              ? {
+                                  content:
+                                    "It should be at least a 2 characters name!",
+                                }
                               : false
                           }
                         />
@@ -219,10 +250,14 @@ export const UpdateUser: FC<{
                   >
                     {({ input, meta: { error } }) => (
                       <FormSemantic.Field>
-                        <label>Intentos</label>
+                        <label>Tries</label>
                         <FormSemantic.Input
                           {...input}
-                          error={error ? { content: "Debe ser un valor entero!" } : false}
+                          error={
+                            error
+                              ? { content: "It should be an integer value!" }
+                              : false
+                          }
                         />
                       </FormSemantic.Field>
                     )}
@@ -252,7 +287,7 @@ export const UpdateUser: FC<{
                       >
                         {({ input }) => (
                           <FormSemantic.Field>
-                            <label>Estudiante</label>
+                            <label>Student</label>
                             <Input {...input} />
                           </FormSemantic.Field>
                         )}
@@ -263,7 +298,7 @@ export const UpdateUser: FC<{
                   <Field name="rut_id" initialValue={user.rut_id}>
                     {({ input }) => (
                       <FormSemantic.Field>
-                        <label>ID (rut student)</label>
+                        <label>ID (student identification number)</label>
                         <Input {...input} />
                       </FormSemantic.Field>
                     )}
@@ -275,7 +310,7 @@ export const UpdateUser: FC<{
                         <Checkbox
                           {...input}
                           toggle
-                          label="Mostrar Dropout"
+                          label="Show dropout prediction"
                           onChange={() => {
                             input.onChange(!input.checked);
                           }}
@@ -291,7 +326,7 @@ export const UpdateUser: FC<{
                         <Checkbox
                           {...input}
                           toggle
-                          label="Bloqueado"
+                          label="Locked"
                           onChange={() => {
                             input.onChange(!input.checked);
                           }}
@@ -307,21 +342,24 @@ export const UpdateUser: FC<{
                     labelPosition="left"
                     primary
                     disabled={
-                      pristine || hasValidationErrors || loadingUpdateUser || loadingDeleteUser
+                      pristine ||
+                      hasValidationErrors ||
+                      loadingUpdateUser ||
+                      loadingDeleteUser
                     }
                     loading={loadingUpdateUser}
                   >
                     <Icon name="save outline" />
-                    Guardar
+                    Save
                   </Button>
 
                   <Confirm
-                    header={`¿Está seguro que desea ${
+                    header={`Are you sure you want to ${
                       user.locked
-                        ? "enviar un correo de activación"
-                        : "bloquear y enviar un correo de activación"
-                    } a este usuario?`}
-                    content="Va a ser enviado un correo electrónico al usuario en conjunto con un código de activación nuevo"
+                        ? "send an activation email"
+                        : "lock and send an activation email"
+                    } to this user?`}
+                    content="It will be given a new unlock key"
                   >
                     <Button
                       type="button"
@@ -341,14 +379,14 @@ export const UpdateUser: FC<{
                     >
                       <Icon name={user.locked ? "mail" : "lock"} />
                       {user.locked
-                        ? "Enviar correo de activación"
-                        : "Bloquear y enviar correo de activación"}
+                        ? "Send an activation email"
+                        : "Lock and send an activation email"}
                     </Button>
                   </Confirm>
 
                   <Confirm
-                    header="¿Está seguro que desea eliminar este usuario?"
-                    content="El usuario dejará de estar disponible en el sistema"
+                    header="Are you sure you want to remove this user?"
+                    content="The user is not going to be available in this system"
                   >
                     <Button
                       type="button"
@@ -371,7 +409,7 @@ export const UpdateUser: FC<{
                       loading={loadingDeleteUser || loadingUpdateUser}
                     >
                       <Icon name="remove user" />
-                      Eliminar
+                      Remove
                     </Button>
                   </Confirm>
                 </FormSemantic>
@@ -385,12 +423,21 @@ export const UpdateUser: FC<{
                       size="small"
                       style={{ whiteSpace: "pre-line" }}
                     >
-                      <Icon name="close" onClick={() => setOpenMailMessage(false)} />
+                      <Icon
+                        name="close"
+                        onClick={() => setOpenMailMessage(false)}
+                      />
                       <Message.Content>
-                        {errorLockMailUser && <Message.Header>Error!</Message.Header>}
+                        {errorLockMailUser && (
+                          <Message.Header>Error!</Message.Header>
+                        )}
                         {errorLockMailUser && errorLockMailUser.message}
                         {dataLockMailUser &&
-                          JSON.stringify(dataLockMailUser.lockMailUser.mailResult, null, 2)}
+                          JSON.stringify(
+                            dataLockMailUser.lockMailUser.mailResult,
+                            null,
+                            2
+                          )}
                       </Message.Content>
                     </Message>
                   </Grid.Row>
