@@ -3,16 +3,19 @@ import { FC, memo, useContext, useEffect, useState } from "react";
 
 import { Flex, Stack, Text } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
-import {
-  DROPOUT_BACKGROUND_COLOR,
-  DROPOUT_PREDICTION,
-  DROPOUT_PREDICTION_ACCURACY,
-  DROPOUT_PREDICTION_DESCRIPTION,
-  DROPOUT_TEXT_COLOR,
-} from "@constants";
+
+import { ConfigContext } from "./Config";
 
 export const Dropout: FC<{ probability: number; accuracy: number }> = memo(
   ({ probability, accuracy }) => {
+    const {
+      DROPOUT_BACKGROUND_COLOR,
+      DROPOUT_PREDICTION,
+      DROPOUT_PREDICTION_ACCURACY,
+      DROPOUT_PREDICTION_DESCRIPTION,
+      DROPOUT_TEXT_COLOR,
+    } = useContext(ConfigContext);
+
     const [show, setShow] = useState(false);
 
     const Tracking = useContext(TrackingContext);

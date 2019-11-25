@@ -22,12 +22,9 @@ import {
   Input,
 } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
-import {
-  LOGOUT_BUTTON_LABEL,
-  SEARCH_BAR_BACKGROUND_COLOR,
-  SEARCH_BUTTON_LABEL,
-} from "@constants";
 import { myProgramsQuery } from "@graphql/queries";
+
+import { ConfigContext } from "./Config";
 
 export const SearchBar: FC<{
   isSearchLoading: boolean;
@@ -38,6 +35,12 @@ export const SearchBar: FC<{
   searchResult?: string;
   error?: string;
 }> = ({ isSearchLoading, onSearch, searchResult, error }) => {
+  const {
+    LOGOUT_BUTTON_LABEL,
+    SEARCH_BAR_BACKGROUND_COLOR,
+    SEARCH_BUTTON_LABEL,
+  } = useContext(ConfigContext);
+
   const Tracking = useContext(TrackingContext);
   const { data: myProgramsData, loading: myProgramsLoading } = useQuery(
     myProgramsQuery,

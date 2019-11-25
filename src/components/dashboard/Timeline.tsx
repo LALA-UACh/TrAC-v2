@@ -11,31 +11,17 @@ import {
 } from "react";
 import pixelWidth from "string-pixel-width";
 
-import {
-  CUMULATED_GRADE_COLOR,
-  CUMULATED_GRADE_LABEL,
-  GRADES_SCALES,
-  maxGrade,
-  minGrade,
-  passGrade,
-  PROGRAM_GRADE_COLOR,
-  PROGRAM_GRADE_LABEL,
-  SEMESTRAL_GRADE_COLOR,
-  SEMESTRAL_GRADE_LABEL,
-  TIMELINE_AXIS_COLOR,
-  TIMELINE_AXIS_TEXT_COLOR,
-  TIMELINE_EXPLICIT_CIRCLE_COLOR,
-  TIMELINE_PASS_LINE_COLOR,
-  TIMELINE_TOOLTIP_TEXT_COLOR,
-} from "@constants";
 import { AxisLeft } from "@vx/axis";
 
+import { ConfigContext } from "./Config";
 import { CoursesFlowContext } from "./CoursesFlow";
 
 const TimeLineTooltip: FC<{
   children: ReactElement;
   grade: number;
 }> = ({ children, grade }) => {
+  const { TIMELINE_TOOLTIP_TEXT_COLOR } = useContext(ConfigContext);
+
   const [show, setShow] = useState(false);
   const rectWidth = useMemo(
     () => pixelWidth(grade.toString(10), { size: 15.5 }) + 1,
@@ -94,13 +80,9 @@ const TimeLineTooltip: FC<{
   );
 };
 
-const GradeScale = scaleLinear()
-  .range([40, 170])
-  .domain([maxGrade, minGrade]);
+export const GradeScale = scaleLinear();
 
-const YAxisScale = scaleLinear()
-  .range([0, 130])
-  .domain([maxGrade, minGrade]);
+export const YAxisScale = scaleLinear();
 
 export const TimeLine: FC<{
   CUMULATED_GRADE: number[];
@@ -109,6 +91,21 @@ export const TimeLine: FC<{
   semestersTaken: { year: number; term: string }[];
 }> = memo(
   ({ CUMULATED_GRADE, SEMESTRAL_GRADE, PROGRAM_GRADE, semestersTaken }) => {
+    const config = useContext(ConfigContext);
+    const {
+      CUMULATED_GRADE_COLOR,
+      CUMULATED_GRADE_LABEL,
+      GRADES_SCALES,
+      PASS_GRADE,
+      PROGRAM_GRADE_COLOR,
+      PROGRAM_GRADE_LABEL,
+      SEMESTRAL_GRADE_COLOR,
+      SEMESTRAL_GRADE_LABEL,
+      TIMELINE_AXIS_COLOR,
+      TIMELINE_AXIS_TEXT_COLOR,
+      TIMELINE_EXPLICIT_CIRCLE_COLOR,
+      TIMELINE_PASS_LINE_COLOR,
+    } = config;
     const width = useMemo(
       () => Math.max((CUMULATED_GRADE.length - 1) * 120 + 60, 650),
       [CUMULATED_GRADE]
@@ -161,6 +158,7 @@ export const TimeLine: FC<{
         PROGRAM_GRADE,
         semestersTaken,
         checkExplicitSemester,
+        config,
       ]
     );
 
@@ -199,7 +197,7 @@ export const TimeLine: FC<{
             </g>
           );
         }),
-      [SEMESTRAL_GRADE, CUMULATED_GRADE, PROGRAM_GRADE]
+      [SEMESTRAL_GRADE, CUMULATED_GRADE, PROGRAM_GRADE, config]
     );
 
     const LabelAxisComponent = useMemo(
@@ -234,9 +232,9 @@ export const TimeLine: FC<{
           />
           <line
             x1={39}
-            y1={GradeScale(passGrade)}
+            y1={GradeScale(PASS_GRADE)}
             x2={340}
-            y2={GradeScale(passGrade)}
+            y2={GradeScale(PASS_GRADE)}
             stroke={TIMELINE_PASS_LINE_COLOR}
             strokeDasharray="2"
           />
@@ -256,7 +254,7 @@ export const TimeLine: FC<{
           </text>
         </>
       ),
-      [CUMULATED_GRADE]
+      [CUMULATED_GRADE, config]
     );
     const height = 270;
     const scale = 0.7;

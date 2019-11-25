@@ -1,4 +1,4 @@
-import { dbAuth, dbLALA, dbTracking } from "@db";
+import { dbAuth, dbConfig, dbLALA, dbTracking } from "@db";
 
 // TODO: Specify nullable fields
 
@@ -151,3 +151,12 @@ export interface ITrack {
 export const TrackingTable = () => dbTracking<ITrack>("tracking");
 
 // -------------------------------------------------------------------------------------
+
+interface IConfiguration {
+  name: string;
+  value: string;
+}
+
+export const CONFIGURATION_TABLE = "configuration";
+export const ConfigurationTable = () =>
+  dbConfig<IConfiguration>(CONFIGURATION_TABLE);

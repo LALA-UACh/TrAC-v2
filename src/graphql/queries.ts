@@ -1,6 +1,6 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
-import { StateCourse, TermType, UserType } from "@constants";
+import { baseConfig, StateCourse, TermType, UserType } from "@constants";
 import { Program } from "@entities/program";
 import { Student } from "@entities/student";
 import { User } from "@entities/user";
@@ -260,5 +260,13 @@ export const trackMutation: DocumentNode<
 > = gql`
   mutation($data: String!, $datetime_client: DateTime!) {
     track(data: $data, datetime_client: $datetime_client)
+  }
+`;
+
+export const configQuery: DocumentNode<{
+  config: typeof baseConfig;
+}> = gql`
+  query {
+    config
   }
 `;

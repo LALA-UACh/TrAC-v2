@@ -38,3 +38,16 @@ export const dbTracking = knex({
   },
   // debug: true,
 });
+
+export const dbConfig = knex({
+  client: "pg",
+  connection: {
+    host: "localhost",
+    user: "postgres",
+    database: "config",
+    password: dbPassword,
+  },
+  // debug: true,
+});
+
+import("./data");

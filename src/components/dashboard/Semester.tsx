@@ -1,9 +1,9 @@
-import { FC, memo } from "react";
+import { FC, memo, useContext } from "react";
 
 import { Stack, Text } from "@chakra-ui/core";
-import { SEMESTER_HEADER_TEXT_COLOR } from "@constants";
 import { ICourse } from "@interfaces";
 
+import { ConfigContext } from "./Config";
 import { CourseBox } from "./CourseBox";
 
 const toRoman = (num: number): string => {
@@ -33,6 +33,7 @@ const toRoman = (num: number): string => {
 
 export const Semester: FC<{ semester: ICourse[]; n: number }> = memo(
   ({ semester, n }) => {
+    const { SEMESTER_HEADER_TEXT_COLOR } = useContext(ConfigContext);
     return (
       <Stack>
         <Text

@@ -2,18 +2,20 @@ import { FC, memo, useContext, useMemo } from "react";
 
 import { Box } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
-import {
-  TAKEN_SEMESTER_BOX_ACTIVE,
-  TAKEN_SEMESTER_BOX_BACKGROUND_COLOR,
-  TAKEN_SEMESTER_BOX_INACTIVE,
-  TAKEN_SEMESTER_BOX_TEXT_COLOR,
-  termTypeToNumber,
-} from "@constants";
+import { termTypeToNumber } from "@constants";
 
+import { ConfigContext } from "./Config";
 import { CoursesFlowContext } from "./CoursesFlow";
 
 export const TakenSemesterBox: FC<{ year: number; term: string }> = memo(
   ({ year, term }) => {
+    const config = useContext(ConfigContext);
+    const {
+      TAKEN_SEMESTER_BOX_ACTIVE,
+      TAKEN_SEMESTER_BOX_BACKGROUND_COLOR,
+      TAKEN_SEMESTER_BOX_INACTIVE,
+      TAKEN_SEMESTER_BOX_TEXT_COLOR,
+    } = config;
     const Tracking = useContext(TrackingContext);
     const {
       toggleExplicitSemester,
@@ -31,7 +33,7 @@ export const TakenSemesterBox: FC<{ year: number; term: string }> = memo(
         return TAKEN_SEMESTER_BOX_ACTIVE;
       }
       return TAKEN_SEMESTER_BOX_INACTIVE;
-    }, [term, year, checkExplicitSemester, semestersTaken]);
+    }, [term, year, checkExplicitSemester, semestersTaken, config]);
 
     return (
       <Box

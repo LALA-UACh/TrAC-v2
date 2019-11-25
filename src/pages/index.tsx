@@ -5,6 +5,7 @@ import ScrollContainer from "react-indiana-drag-scroll";
 import { useLogger } from "react-use";
 
 import { Box, Stack } from "@chakra-ui/core";
+import { Config } from "@components/dashboard/Config";
 import { CoursesFlow } from "@components/dashboard/CoursesFlow";
 import { Dropout } from "@components/dashboard/Dropout";
 import { SearchBar } from "@components/dashboard/SearchBar";
@@ -160,65 +161,67 @@ const Dashboard: FC = () => {
   }, [searchStudentData]);
 
   return (
-    <TrackingContext.Provider value={trackingData}>
-      <SearchBar
-        error={`${searchProgramError?.graphQLErrors
-          .map(({ message }) => message)
-          .join("\n") ?? ""}\n\n${searchStudentError?.graphQLErrors
-          .map(({ message }) => message)
-          .join("\n") ?? ""}`.trim()}
-        searchResult="| Plan: 2015 | estudiante: 19233043-2"
-        isSearchLoading={searchProgramLoading || searchStudentLoading}
-        onSearch={async ({ student_id, program_id }) => {
-          const [programSearch, studentSearch] = await Promise.all([
-            searchProgram({ variables: { program_id } }),
-            searchStudent({ variables: { student_id, program_id } }),
-          ]);
+    <Config>
+      <TrackingContext.Provider value={trackingData}>
+        <SearchBar
+          error={`${searchProgramError?.graphQLErrors
+            .map(({ message }) => message)
+            .join("\n") ?? ""}\n\n${searchStudentError?.graphQLErrors
+            .map(({ message }) => message)
+            .join("\n") ?? ""}`.trim()}
+          searchResult="| Plan: 2015 | estudiante: 19233043-2"
+          isSearchLoading={searchProgramLoading || searchStudentLoading}
+          onSearch={async ({ student_id, program_id }) => {
+            const [programSearch, studentSearch] = await Promise.all([
+              searchProgram({ variables: { program_id } }),
+              searchStudent({ variables: { student_id, program_id } }),
+            ]);
 
-          if (programSearch.data?.program && studentSearch.data?.student) {
-            return true;
-          }
-          return false;
-        }}
-      />
-      <CoursesFlow>
-        <ScrollContainer activationDistance={5} hideScrollbars={false}>
-          <Stack isInline flexWrap="wrap-reverse">
-            <Box>
-              <TimeLine
-                CUMULATED_GRADE={data.PGA}
-                SEMESTRAL_GRADE={data.PSP}
-                PROGRAM_GRADE={data.ProgramPGA}
-                semestersTaken={semestersTaken}
+            if (programSearch.data?.program && studentSearch.data?.student) {
+              return true;
+            }
+            return false;
+          }}
+        />
+        <CoursesFlow>
+          <ScrollContainer activationDistance={5} hideScrollbars={false}>
+            <Stack isInline flexWrap="wrap-reverse">
+              <Box>
+                <TimeLine
+                  CUMULATED_GRADE={data.PGA}
+                  SEMESTRAL_GRADE={data.PSP}
+                  PROGRAM_GRADE={data.ProgramPGA}
+                  semestersTaken={semestersTaken}
+                />
+              </Box>
+              <Dropout
+                probability={data.studentAcademic.student_dropout.prob_dropout}
+                accuracy={data.studentAcademic.student_dropout.model_accuracy}
               />
-            </Box>
-            <Dropout
-              probability={data.studentAcademic.student_dropout.prob_dropout}
-              accuracy={data.studentAcademic.student_dropout.model_accuracy}
-            />
-          </Stack>
+            </Stack>
 
-          <Stack isInline pl="50px">
-            {semestersTaken.map(({ term, year }, key) => {
-              return <TakenSemesterBox key={key} term={term} year={year} />;
-            })}
-          </Stack>
-        </ScrollContainer>
+            <Stack isInline pl="50px">
+              {semestersTaken.map(({ term, year }, key) => {
+                return <TakenSemesterBox key={key} term={term} year={year} />;
+              })}
+            </Stack>
+          </ScrollContainer>
 
-        <ScrollContainer
-          hideScrollbars={false}
-          vertical={false}
-          activationDistance={5}
-        >
-          <Stack isInline spacing={8}>
-            {semesters.map(({ semester }, key) => {
-              return <Semester key={key} semester={semester} n={key + 1} />;
-            })}
-          </Stack>
-        </ScrollContainer>
-        <Tracking />
-      </CoursesFlow>
-    </TrackingContext.Provider>
+          <ScrollContainer
+            hideScrollbars={false}
+            vertical={false}
+            activationDistance={5}
+          >
+            <Stack isInline spacing={8}>
+              {semesters.map(({ semester }, key) => {
+                return <Semester key={key} semester={semester} n={key + 1} />;
+              })}
+            </Stack>
+          </ScrollContainer>
+          <Tracking />
+        </CoursesFlow>
+      </TrackingContext.Provider>
+    </Config>
   );
 };
 

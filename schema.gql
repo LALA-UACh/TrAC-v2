@@ -90,6 +90,7 @@ type Program {
 
 type Query {
   currentUser: User
+  config: JSONObject!
   program(id: Int!): Program
   programs: [Program!]!
   myPrograms: [Program!]!

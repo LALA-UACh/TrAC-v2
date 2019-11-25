@@ -6,50 +6,19 @@ import { useUpdateEffect } from "react-use";
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 import { TrackingContext } from "@components/Tracking";
 import {
-  ACTIVE_COURSE_BOX_COLOR,
-  COURSE_BOX_BACKGROUND_COLOR,
-  COURSE_BOX_TEXT_COLOR,
   CURRENT_DISTRIBUTION_LABEL,
-  EXPLICIT_SEMESTER_COURSE_BOX_COLOR,
-  FLOW_CIRCLE_COLOR,
-  FLOW_CIRCLE_LABEL,
-  FLOW_COURSE_BOX_COLOR,
-  HISTORIC_GRADES,
-  INACTIVE_COURSE_BOX_COLOR,
-  MAX_FAIL_SCALE_COLOR,
-  MAX_PASS_SCALE_COLOR,
-  maxGrade,
-  MIN_FAIL_SCALE_COLOR,
-  MIN_PASS_SCALE_COLOR,
-  minGrade,
-  passGrade,
-  REQ_CIRCLE_COLOR,
-  REQ_CIRCLE_LABEL,
-  REQUISITE_COURSE_BOX_COLOR,
-  STATE_CANCELED_LABEL_MINI,
-  STATE_COURSE_CANCELED_COLOR,
-  STATE_COURSE_CIRCLE_STROKE,
-  STATE_COURSE_CURRENT_COLOR,
-  STATE_COURSE_PENDING_COLOR,
-  STATE_CURRENT_LABEL_MINI,
-  STATE_FAILED_LABEL_MINI,
-  STATE_PASSED_LABEL_MINI,
-  STATE_PENDING_LABEL_MINI,
   StateCourse,
   termTypeToNumber,
 } from "@constants";
 import { ICourse, ITakenCourse } from "@interfaces";
 
+import { ConfigContext } from "./Config";
 import { CoursesFlowContext } from "./CoursesFlow";
 import { Histogram } from "./Histogram";
 
-const passColorScale = scaleLinear<string, number>()
-  .range([MIN_PASS_SCALE_COLOR, MAX_PASS_SCALE_COLOR])
-  .domain([passGrade, maxGrade]);
+export const passColorScale = scaleLinear<string, number>();
 
-const failColorScale = scaleLinear<string, number>()
-  .range([MIN_FAIL_SCALE_COLOR, MAX_FAIL_SCALE_COLOR])
-  .domain([minGrade, passGrade]);
+export const failColorScale = scaleLinear<string, number>();
 
 export const CourseBox: FC<ICourse> = ({
   name,
@@ -60,6 +29,33 @@ export const CourseBox: FC<ICourse> = ({
   historicDistribution,
   taken,
 }) => {
+  const config = useContext(ConfigContext);
+  const {
+    MIN_GRADE,
+    MAX_GRADE,
+    REQ_CIRCLE_COLOR,
+    REQ_CIRCLE_LABEL,
+    REQUISITE_COURSE_BOX_COLOR,
+    STATE_CANCELED_LABEL_MINI,
+    STATE_COURSE_CANCELED_COLOR,
+    STATE_COURSE_CIRCLE_STROKE,
+    STATE_COURSE_CURRENT_COLOR,
+    STATE_COURSE_PENDING_COLOR,
+    STATE_CURRENT_LABEL_MINI,
+    STATE_FAILED_LABEL_MINI,
+    STATE_PASSED_LABEL_MINI,
+    STATE_PENDING_LABEL_MINI,
+    EXPLICIT_SEMESTER_COURSE_BOX_COLOR,
+    FLOW_CIRCLE_COLOR,
+    FLOW_CIRCLE_LABEL,
+    FLOW_COURSE_BOX_COLOR,
+    HISTORIC_GRADES,
+    INACTIVE_COURSE_BOX_COLOR,
+    ACTIVE_COURSE_BOX_COLOR,
+    COURSE_BOX_BACKGROUND_COLOR,
+    COURSE_BOX_TEXT_COLOR,
+  } = config;
+
   const Tracking = useContext(TrackingContext);
   const { semestersTaken } = useMemo(() => {
     const semestersTaken = taken.map(({ term, year }) => {
@@ -128,9 +124,9 @@ export const CourseBox: FC<ICourse> = ({
   const stateColor = useMemo(() => {
     switch (state) {
       case StateCourse.Passed:
-        return (passColorScale(grade || maxGrade) as unknown) as string;
+        return (passColorScale(grade || MAX_GRADE) as unknown) as string;
       case StateCourse.Failed:
-        return (failColorScale(grade || minGrade) as unknown) as string;
+        return (failColorScale(grade || MIN_GRADE) as unknown) as string;
       case StateCourse.Current:
         return STATE_COURSE_CURRENT_COLOR;
       case StateCourse.Canceled:
@@ -140,7 +136,7 @@ export const CourseBox: FC<ICourse> = ({
       default:
         return "transparent";
     }
-  }, [state, grade]);
+  }, [state, grade, config]);
 
   const opacity = useMemo(() => {
     if (active) {
@@ -190,6 +186,7 @@ export const CourseBox: FC<ICourse> = ({
     semestersTaken,
     contextFlow,
     contextRequisites,
+    config,
   ]);
 
   const NameComponent = useMemo(
@@ -290,7 +287,7 @@ export const CourseBox: FC<ICourse> = ({
           </Box>
         </motion.div>
       ),
-    [contextFlow, contextRequisites, code]
+    [contextFlow, contextRequisites, code, config]
   );
 
   const HistogramNow = useMemo(
@@ -321,7 +318,7 @@ export const CourseBox: FC<ICourse> = ({
           grade={grade}
         />
       ),
-    [historicDistribution, grade]
+    [historicDistribution, grade, config]
   );
 
   const HistogramsComponent = useMemo(
@@ -379,7 +376,7 @@ export const CourseBox: FC<ICourse> = ({
         </Text>
       )
     );
-  }, [grade, state]);
+  }, [grade, state, config]);
 
   const HistoricalCirclesComponent = useMemo(
     () =>
@@ -427,7 +424,7 @@ export const CourseBox: FC<ICourse> = ({
           })}
         </Stack>
       ),
-    [taken]
+    [taken, config]
   );
 
   return (

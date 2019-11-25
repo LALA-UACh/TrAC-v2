@@ -1,17 +1,12 @@
 import { scaleLinear } from "d3-scale";
 import { motion } from "framer-motion";
 import toString from "lodash/toString";
-import { FC, memo, useCallback, useMemo } from "react";
+import { FC, memo, useCallback, useContext, useMemo } from "react";
 
-import {
-  HISTOGRAM_BAR_ACTIVE,
-  HISTOGRAM_BAR_INACTIVE,
-  maxGrade,
-  minGrade,
-  rangeGrades,
-} from "@constants";
 import { IDistribution } from "@interfaces";
 import { AxisBottom, AxisLeft } from "@vx/axis";
+
+import { ConfigContext } from "./Config";
 
 const SingleBar: FC<{
   grey?: boolean;
@@ -19,6 +14,9 @@ const SingleBar: FC<{
   y?: number;
   height?: number;
 }> = memo(({ grey, y: propY, height, x }) => {
+  const { HISTOGRAM_BAR_ACTIVE, HISTOGRAM_BAR_INACTIVE } = useContext(
+    ConfigContext
+  );
   const fill = grey ? HISTOGRAM_BAR_ACTIVE : HISTOGRAM_BAR_INACTIVE;
   const y = (propY ?? 0) - (height ?? 0);
   return (
@@ -38,27 +36,9 @@ const averageTwo = (a: number | undefined, b: number | undefined) => {
   return ((a ?? b ?? 0) + (b ?? a ?? 0)) / 2;
 };
 
-const scaleColorX = scaleLinear()
-  .range([0, 250])
-  .domain([minGrade, maxGrade]);
+export const scaleColorX = scaleLinear();
 
-const scaleAxisX = scaleLinear()
-  .range([minGrade, 250])
-  .domain([minGrade, maxGrade]);
-
-const AxisColor = rangeGrades.map(({ min, max, color }, key) => {
-  const nextMin: number | undefined = rangeGrades[key + 1]?.max;
-  const previousMax: number | undefined = rangeGrades[key - 1]?.max;
-
-  let x = scaleColorX(averageTwo(previousMax, min));
-  let width =
-    scaleColorX(averageTwo(nextMin, max)) -
-    scaleColorX(averageTwo(previousMax, min));
-
-  return (
-    <rect key={key} x={5 + x} y={80} width={width} height={7} fill={color} />
-  );
-});
+export const scaleAxisX = scaleLinear();
 
 const AxisNumbers = (() => {
   return (
@@ -81,6 +61,31 @@ const AxisNumbers = (() => {
 })();
 
 const XAxis: FC = () => {
+  const { RANGE_GRADES } = useContext(ConfigContext);
+  const AxisColor = useMemo(
+    () =>
+      RANGE_GRADES.map(({ min, max, color }, key) => {
+        const nextMin: number | undefined = RANGE_GRADES[key + 1]?.max;
+        const previousMax: number | undefined = RANGE_GRADES[key - 1]?.max;
+
+        let x = scaleColorX(averageTwo(previousMax, min));
+        let width =
+          scaleColorX(averageTwo(nextMin, max)) -
+          scaleColorX(averageTwo(previousMax, min));
+
+        return (
+          <rect
+            key={key}
+            x={5 + x}
+            y={80}
+            width={width}
+            height={7}
+            fill={color}
+          />
+        );
+      }),
+    [RANGE_GRADES]
+  );
   return (
     <>
       {AxisColor}
