@@ -30,41 +30,7 @@ export const CourseBox: FC<ICourse> = ({
   taken,
 }) => {
   const config = useContext(ConfigContext);
-  const {
-    MIN_GRADE,
-    MAX_GRADE,
-    REQ_CIRCLE_COLOR,
-    REQ_CIRCLE_LABEL,
-    REQUISITE_COURSE_BOX_COLOR,
-    STATE_CANCELED_LABEL_MINI,
-    STATE_COURSE_CANCELED_COLOR,
-    STATE_COURSE_CIRCLE_STROKE,
-    STATE_COURSE_CURRENT_COLOR,
-    STATE_COURSE_PENDING_COLOR,
-    STATE_CURRENT_LABEL_MINI,
-    STATE_FAILED_LABEL_MINI,
-    STATE_PASSED_LABEL_MINI,
-    STATE_PENDING_LABEL_MINI,
-    EXPLICIT_SEMESTER_COURSE_BOX_COLOR,
-    FLOW_CIRCLE_COLOR,
-    FLOW_CIRCLE_LABEL,
-    FLOW_COURSE_BOX_COLOR,
-    HISTORIC_GRADES,
-    INACTIVE_COURSE_BOX_COLOR,
-    ACTIVE_COURSE_BOX_COLOR,
-    COURSE_BOX_BACKGROUND_COLOR,
-    COURSE_BOX_TEXT_COLOR,
-  } = config;
-
   const Tracking = useContext(TrackingContext);
-  const { semestersTaken } = useMemo(() => {
-    const semestersTaken = taken.map(({ term, year }) => {
-      return { term, year };
-    });
-
-    return { semestersTaken };
-  }, [taken]);
-
   const {
     add,
     remove,
@@ -74,6 +40,14 @@ export const CourseBox: FC<ICourse> = ({
     checkExplicitSemester,
     explicitSemester,
   } = useContext(CoursesFlowContext);
+
+  const { semestersTaken } = useMemo(() => {
+    const semestersTaken = taken.map(({ term, year }) => {
+      return { term, year };
+    });
+
+    return { semestersTaken };
+  }, [taken]);
 
   const {
     state,
@@ -110,7 +84,7 @@ export const CourseBox: FC<ICourse> = ({
     }
   }, [open]);
 
-  const height = useMemo(() => {
+  const height = (() => {
     if (open) {
       if (taken[0]?.currentDistribution && historicDistribution) {
         return 350;
@@ -119,26 +93,26 @@ export const CourseBox: FC<ICourse> = ({
       }
     }
     return 120;
-  }, [open, taken, historicDistribution]);
+  })();
 
-  const stateColor = useMemo(() => {
+  const stateColor = (() => {
     switch (state) {
       case StateCourse.Passed:
-        return (passColorScale(grade || MAX_GRADE) as unknown) as string;
+        return (passColorScale(grade || config.MAX_GRADE) as unknown) as string;
       case StateCourse.Failed:
-        return (failColorScale(grade || MIN_GRADE) as unknown) as string;
+        return (failColorScale(grade || config.MIN_GRADE) as unknown) as string;
       case StateCourse.Current:
-        return STATE_COURSE_CURRENT_COLOR;
+        return config.STATE_COURSE_CURRENT_COLOR;
       case StateCourse.Canceled:
-        return STATE_COURSE_CANCELED_COLOR;
+        return config.STATE_COURSE_CANCELED_COLOR;
       case StateCourse.Pending:
-        return STATE_COURSE_PENDING_COLOR;
+        return config.STATE_COURSE_PENDING_COLOR;
       default:
         return "transparent";
     }
-  }, [state, grade, config]);
+  })();
 
-  const opacity = useMemo(() => {
+  const opacity = (() => {
     if (active) {
       if (active === code || contextFlow?.[code] || contextRequisites?.[code]) {
         return 1;
@@ -155,39 +129,23 @@ export const CourseBox: FC<ICourse> = ({
       return 1;
     }
     return 0.5;
-  }, [
-    active,
-    code,
-    contextFlow,
-    contextRequisites,
-    explicitSemester,
-    semestersTaken,
-    checkExplicitSemester,
-  ]);
-  const borderColor = useMemo(() => {
+  })();
+
+  const borderColor = (() => {
     if (active === code) {
-      return ACTIVE_COURSE_BOX_COLOR;
+      return config.ACTIVE_COURSE_BOX_COLOR;
     }
     if (contextFlow?.[code]) {
-      return FLOW_COURSE_BOX_COLOR;
+      return config.FLOW_COURSE_BOX_COLOR;
     }
     if (contextRequisites?.[code]) {
-      return REQUISITE_COURSE_BOX_COLOR;
+      return config.REQUISITE_COURSE_BOX_COLOR;
     }
     if (checkExplicitSemester(semestersTaken)) {
-      return EXPLICIT_SEMESTER_COURSE_BOX_COLOR;
+      return config.EXPLICIT_SEMESTER_COURSE_BOX_COLOR;
     }
-    return INACTIVE_COURSE_BOX_COLOR;
-  }, [
-    active,
-    code,
-    explicitSemester,
-    checkExplicitSemester,
-    semestersTaken,
-    contextFlow,
-    contextRequisites,
-    config,
-  ]);
+    return config.INACTIVE_COURSE_BOX_COLOR;
+  })();
 
   const NameComponent = useMemo(
     () => (
@@ -269,7 +227,9 @@ export const CourseBox: FC<ICourse> = ({
                 cx={16}
                 cy={16}
                 stroke={
-                  contextFlow?.[code] ? FLOW_CIRCLE_COLOR : REQ_CIRCLE_COLOR
+                  contextFlow?.[code]
+                    ? config.FLOW_CIRCLE_COLOR
+                    : config.REQ_CIRCLE_COLOR
                 }
                 fill="transparent"
               />
@@ -278,10 +238,14 @@ export const CourseBox: FC<ICourse> = ({
                 y={21}
                 fontWeight="bold"
                 fill={
-                  contextFlow?.[code] ? FLOW_CIRCLE_COLOR : REQ_CIRCLE_COLOR
+                  contextFlow?.[code]
+                    ? config.FLOW_CIRCLE_COLOR
+                    : config.REQ_CIRCLE_COLOR
                 }
               >
-                {contextFlow?.[code] ? FLOW_CIRCLE_LABEL : REQ_CIRCLE_LABEL}
+                {contextFlow?.[code]
+                  ? config.FLOW_CIRCLE_LABEL
+                  : config.REQ_CIRCLE_LABEL}
               </text>
             </svg>
           </Box>
@@ -313,7 +277,7 @@ export const CourseBox: FC<ICourse> = ({
       historicDistribution && (
         <Histogram
           key="historic"
-          label={HISTORIC_GRADES}
+          label={config.HISTORIC_GRADES}
           distribution={historicDistribution}
           grade={grade}
         />
@@ -359,15 +323,15 @@ export const CourseBox: FC<ICourse> = ({
               }
               switch (state) {
                 case StateCourse.Passed:
-                  return STATE_PASSED_LABEL_MINI;
+                  return config.STATE_PASSED_LABEL_MINI;
                 case StateCourse.Failed:
-                  return STATE_FAILED_LABEL_MINI;
+                  return config.STATE_FAILED_LABEL_MINI;
                 case StateCourse.Canceled:
-                  return STATE_CANCELED_LABEL_MINI;
+                  return config.STATE_CANCELED_LABEL_MINI;
                 case StateCourse.Pending:
-                  return STATE_PENDING_LABEL_MINI;
+                  return config.STATE_PENDING_LABEL_MINI;
                 case StateCourse.Current:
-                  return STATE_CURRENT_LABEL_MINI;
+                  return config.STATE_CURRENT_LABEL_MINI;
                 default:
                   return "BUG";
               }
@@ -389,13 +353,13 @@ export const CourseBox: FC<ICourse> = ({
                 color = (failColorScale(grade || 0) as unknown) as string;
                 break;
               case StateCourse.Current:
-                color = STATE_COURSE_CURRENT_COLOR;
+                color = config.STATE_COURSE_CURRENT_COLOR;
                 break;
               case StateCourse.Canceled:
-                color = STATE_COURSE_CANCELED_COLOR;
+                color = config.STATE_COURSE_CANCELED_COLOR;
                 break;
               case StateCourse.Pending:
-                color = STATE_COURSE_PENDING_COLOR;
+                color = config.STATE_COURSE_PENDING_COLOR;
                 break;
               default:
                 color = "black";
@@ -415,7 +379,7 @@ export const CourseBox: FC<ICourse> = ({
                     cx={8}
                     cy={8}
                     r="6"
-                    stroke={STATE_COURSE_CIRCLE_STROKE}
+                    stroke={config.STATE_COURSE_CIRCLE_STROKE}
                     fill={color}
                   />
                 </svg>
@@ -430,8 +394,8 @@ export const CourseBox: FC<ICourse> = ({
   return (
     <Flex
       m={1}
-      color={COURSE_BOX_TEXT_COLOR}
-      bg={COURSE_BOX_BACKGROUND_COLOR}
+      color={config.COURSE_BOX_TEXT_COLOR}
+      bg={config.COURSE_BOX_BACKGROUND_COLOR}
       width={open ? 350 : 180}
       height={height}
       borderRadius={5}

@@ -98,7 +98,7 @@ export const Histogram: FC<{
   distribution: IDistribution[];
   label?: string;
   grade?: number;
-}> = memo(({ distribution, label, grade }) => {
+}> = ({ distribution, label, grade }) => {
   const barsScale = useCallback(
     scaleLinear()
       .domain([0, Math.max(...distribution.map(({ value }) => value))])
@@ -186,4 +186,4 @@ export const Histogram: FC<{
       </svg>
     </svg>
   );
-});
+};

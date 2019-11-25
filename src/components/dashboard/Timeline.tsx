@@ -92,25 +92,9 @@ export const TimeLine: FC<{
 }> = memo(
   ({ CUMULATED_GRADE, SEMESTRAL_GRADE, PROGRAM_GRADE, semestersTaken }) => {
     const config = useContext(ConfigContext);
-    const {
-      CUMULATED_GRADE_COLOR,
-      CUMULATED_GRADE_LABEL,
-      GRADES_SCALES,
-      PASS_GRADE,
-      PROGRAM_GRADE_COLOR,
-      PROGRAM_GRADE_LABEL,
-      SEMESTRAL_GRADE_COLOR,
-      SEMESTRAL_GRADE_LABEL,
-      TIMELINE_AXIS_COLOR,
-      TIMELINE_AXIS_TEXT_COLOR,
-      TIMELINE_EXPLICIT_CIRCLE_COLOR,
-      TIMELINE_PASS_LINE_COLOR,
-    } = config;
-    const width = useMemo(
-      () => Math.max((CUMULATED_GRADE.length - 1) * 120 + 60, 650),
-      [CUMULATED_GRADE]
-    );
     const { checkExplicitSemester } = useContext(CoursesFlowContext);
+
+    const width = Math.max((CUMULATED_GRADE.length - 1) * 120 + 60, 650);
 
     const CirclesComponent = useMemo(
       () =>
@@ -122,7 +106,7 @@ export const TimeLine: FC<{
                   cy={GradeScale(CUMULATED_GRADE)}
                   cx={key * 70 + 70}
                   r={5}
-                  fill={CUMULATED_GRADE_COLOR}
+                  fill={config.CUMULATED_GRADE_COLOR}
                 />
               </TimeLineTooltip>
               <TimeLineTooltip grade={PROGRAM_GRADE[key]}>
@@ -130,7 +114,7 @@ export const TimeLine: FC<{
                   cy={GradeScale(PROGRAM_GRADE[key])}
                   cx={key * 70 + 70}
                   r={5}
-                  fill={PROGRAM_GRADE_COLOR}
+                  fill={config.PROGRAM_GRADE_COLOR}
                 />
               </TimeLineTooltip>
               <TimeLineTooltip grade={SEMESTRAL_GRADE[key]}>
@@ -143,8 +127,8 @@ export const TimeLine: FC<{
                       term: semestersTaken[key].term,
                       year: semestersTaken[key].year,
                     })
-                      ? TIMELINE_EXPLICIT_CIRCLE_COLOR
-                      : SEMESTRAL_GRADE_COLOR
+                      ? config.TIMELINE_EXPLICIT_CIRCLE_COLOR
+                      : config.SEMESTRAL_GRADE_COLOR
                   }
                   style={{ transition: "0.4s all ease-in-out" }}
                 />
@@ -169,7 +153,7 @@ export const TimeLine: FC<{
             <g key={key}>
               {SEMESTRAL_GRADE[key + 1] !== undefined && (
                 <line
-                  stroke={SEMESTRAL_GRADE_COLOR}
+                  stroke={config.SEMESTRAL_GRADE_COLOR}
                   x1={key * 70 + 70}
                   y1={GradeScale(SEMESTRAL_GRADE[key])}
                   x2={(key + 1) * 70 + 70}
@@ -178,7 +162,7 @@ export const TimeLine: FC<{
               )}
               {CUMULATED_GRADE[key + 1] !== undefined && (
                 <line
-                  stroke={CUMULATED_GRADE_COLOR}
+                  stroke={config.CUMULATED_GRADE_COLOR}
                   x1={key * 70 + 70}
                   y1={GradeScale(CUMULATED_GRADE[key])}
                   x2={(key + 1) * 70 + 70}
@@ -187,7 +171,7 @@ export const TimeLine: FC<{
               )}
               {PROGRAM_GRADE[key + 1] !== undefined && (
                 <line
-                  stroke={PROGRAM_GRADE_COLOR}
+                  stroke={config.PROGRAM_GRADE_COLOR}
                   x1={key * 70 + 70}
                   y1={GradeScale(PROGRAM_GRADE[key])}
                   x2={(key + 1) * 70 + 70}
@@ -204,7 +188,7 @@ export const TimeLine: FC<{
       () => (
         <>
           <text y={20} x={10} fontSize="1em" fontWeight="bold">
-            {GRADES_SCALES}
+            {config.GRADES_SCALES}
           </text>
           <AxisLeft
             scale={YAxisScale}
@@ -213,14 +197,14 @@ export const TimeLine: FC<{
             hideAxisLine={false}
             tickLength={4}
             numTicks={5}
-            stroke={TIMELINE_AXIS_COLOR}
-            tickStroke={TIMELINE_AXIS_COLOR}
+            stroke={config.TIMELINE_AXIS_COLOR}
+            tickStroke={config.TIMELINE_AXIS_COLOR}
             tickLabelProps={() => ({
               dx: "-0.25em",
               dy: "0.25em",
               fontSize: 10,
               textAnchor: "end",
-              fill: TIMELINE_AXIS_TEXT_COLOR,
+              fill: config.TIMELINE_AXIS_TEXT_COLOR,
             })}
           />
           <line
@@ -228,29 +212,29 @@ export const TimeLine: FC<{
             y1={170}
             x2={CUMULATED_GRADE.length * 100 + 160}
             y2={40 + 130}
-            stroke={TIMELINE_AXIS_COLOR}
+            stroke={config.TIMELINE_AXIS_COLOR}
           />
           <line
             x1={39}
-            y1={GradeScale(PASS_GRADE)}
+            y1={GradeScale(config.PASS_GRADE)}
             x2={340}
-            y2={GradeScale(PASS_GRADE)}
-            stroke={TIMELINE_PASS_LINE_COLOR}
+            y2={GradeScale(config.PASS_GRADE)}
+            stroke={config.TIMELINE_PASS_LINE_COLOR}
             strokeDasharray="2"
           />
 
-          <circle cx={150} cy={12} r={5} fill={SEMESTRAL_GRADE_COLOR} />
+          <circle cx={150} cy={12} r={5} fill={config.SEMESTRAL_GRADE_COLOR} />
 
           <text x={160} y={20}>
-            {SEMESTRAL_GRADE_LABEL}
+            {config.SEMESTRAL_GRADE_LABEL}
           </text>
-          <circle cx={250} cy={12} r={5} fill={CUMULATED_GRADE_COLOR} />
+          <circle cx={250} cy={12} r={5} fill={config.CUMULATED_GRADE_COLOR} />
           <text x={260} y={20}>
-            {CUMULATED_GRADE_LABEL}
+            {config.CUMULATED_GRADE_LABEL}
           </text>
-          <circle cx={350} cy={12} r={5} fill={PROGRAM_GRADE_COLOR} />
+          <circle cx={350} cy={12} r={5} fill={config.PROGRAM_GRADE_COLOR} />
           <text x={360} y={20}>
-            {PROGRAM_GRADE_LABEL}
+            {config.PROGRAM_GRADE_LABEL}
           </text>
         </>
       ),

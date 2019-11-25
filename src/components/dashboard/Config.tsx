@@ -25,19 +25,16 @@ export const Config: FC = ({ children }) => {
   failColorScale
     .range([configState.MIN_FAIL_SCALE_COLOR, configState.MAX_FAIL_SCALE_COLOR])
     .domain([configState.MIN_GRADE, configState.PASS_GRADE]);
-
   scaleColorX
     .range([0, 250])
     .domain([configState.MIN_GRADE, configState.MAX_GRADE]);
   scaleAxisX
     .range([configState.MIN_GRADE, 250])
     .domain([configState.MIN_GRADE, configState.MAX_GRADE]);
-
   GradeScale.range([40, 170]).domain([
     configState.MAX_GRADE,
     configState.MIN_GRADE,
   ]);
-
   YAxisScale.range([0, 130]).domain([
     configState.MAX_GRADE,
     configState.MIN_GRADE,
