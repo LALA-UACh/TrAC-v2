@@ -44,6 +44,8 @@ app.use(cookieParser());
     path: "/api/graphql",
   });
 
+  app.use("/", (req, res) => res.redirect("/api/graphql"));
+
   app.listen({ port: 4000 }, () =>
     console.log(
       `🚀 Server ready at http://localhost:4000${apolloServer.graphqlPath}`

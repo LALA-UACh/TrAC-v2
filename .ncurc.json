@@ -1,0 +1,4 @@
+{
+  "upgrade": true,
+  "reject": ["@types/validator", "@types/react", "@types/react-dom", "ts-node"]
+}
