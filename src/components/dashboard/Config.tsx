@@ -1,4 +1,5 @@
-import { createContext, FC, useState } from "react";
+import { createContext, FC } from "react";
+import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
 import { baseConfig } from "@constants";
@@ -11,7 +12,10 @@ import { GradeScale, YAxisScale } from "./Timeline";
 export const ConfigContext = createContext(baseConfig);
 
 export const Config: FC = ({ children }) => {
-  const [configState, setConfigState] = useState(baseConfig);
+  const [configState, setConfigState] = useRememberState(
+    "baseConfig",
+    baseConfig
+  );
 
   useQuery(configQuery, {
     onCompleted: ({ config }) => {
