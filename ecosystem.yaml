@@ -25,8 +25,6 @@ apps:
       - dotenv/config
     watch:
       - next-hook.js
-    exec_mode: fork
-    instances: 1
     out_file: logs/out_client-dev.log
     error_file: logs/error_client-dev.log
     combine_logs: true

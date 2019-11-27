@@ -13,10 +13,8 @@ const server = express();
   if (!dev) {
     if (!existsSync(join(__dirname, ".next"))) {
       console.log("Waiting on next build to finish");
-      if (true) {
-      } else {
-      }
-      server.use((_req, res) => res.status(102));
+
+      server.use((_req, res) => res.send("Loading..."));
       server.listen(port, err => {
         if (err) throw err;
 

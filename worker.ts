@@ -97,6 +97,8 @@ ClientWorker();
 
 if (process.env.NODE_ENV === "production") {
   setInterval(async () => {
-    Shell.exec("git pull", { silent: true });
+    Shell.exec("git fetch && git reset --mixed origin/master", {
+      silent: true,
+    });
   }, ms("1 minute"));
 }
