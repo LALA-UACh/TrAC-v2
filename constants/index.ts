@@ -2,10 +2,10 @@ export const WRONG_INFO = "WRONG_INFO";
 export const USED_OLD_PASSWORD = "USED_OLD_PASSWORD";
 export const LOCKED_USER = "LOCKED_USER";
 export const GRAPHQL_URL =
+  //@ts-ignore
   typeof window === "undefined"
     ? `${process?.env?.DOMAIN ?? "http://localhost:3000"}/api/graphql`
     : "/api/graphql";
-
 export const CURRENT_DISTRIBUTION_LABEL = ({
   term,
   year,

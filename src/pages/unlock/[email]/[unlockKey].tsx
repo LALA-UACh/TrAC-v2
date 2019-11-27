@@ -16,8 +16,9 @@ import isEmail from "validator/lib/isEmail";
 import matches from "validator/lib/matches";
 
 import { useMutation } from "@apollo/react-hooks";
-import { USED_OLD_PASSWORD, WRONG_INFO } from "@constants";
-import { currentUserQuery, unlockMutation } from "@graphql/queries";
+
+import { USED_OLD_PASSWORD, WRONG_INFO } from "../../../../constants";
+import { currentUserQuery, unlockMutation } from "../../../graphql/queries";
 
 const validatePassword = (password = "", confirm_password = "") => {
   const conditions = {

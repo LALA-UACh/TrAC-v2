@@ -1,5 +1,5 @@
-import { StateCourse } from "@constants";
-import { buildContext } from "@utils/buildContext";
+import { buildContext } from "../api/utils/buildContext";
+import { StateCourse } from "../constants";
 
 export type IContext = ReturnType<typeof buildContext>;
 export type ITakenSemester = {

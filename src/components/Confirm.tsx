@@ -14,7 +14,7 @@ export const Confirm: FC<{
   confirmButton,
   cancelButton,
   header,
-  size = "small"
+  size = "small",
 }) => {
   const [open, setOpen] = useState(false);
   return (
@@ -35,7 +35,7 @@ export const Confirm: FC<{
       {cloneElement(children, {
         onClick: () => {
           setOpen(true);
-        }
+        },
       })}
     </>
   );

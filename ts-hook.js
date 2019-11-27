@@ -1,6 +1,17 @@
-const transpileOnly = true || process.env.NODE_ENV === "production";
-const project = "./tsconfig.api.json";
+const transpileOnly = true;
+
 require("ts-node").register({
-  project,
   transpileOnly,
+  typeCheck: false,
+  compilerOptions: {
+    target: "es5",
+    module: "commonjs",
+    allowJs: true,
+    removeComments: true,
+    noEmit: true,
+    isolatedModules: false,
+    skipLibCheck: true,
+    strict: false,
+    esModuleInterop: true,
+  },
 });

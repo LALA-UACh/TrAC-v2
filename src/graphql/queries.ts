@@ -1,10 +1,8 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
-import { baseConfig, StateCourse, TermType, UserType } from "@constants";
-import { Program } from "@entities/program";
-import { Student } from "@entities/student";
-import { User } from "@entities/user";
-import { IfImplements } from "@typings/utils";
+import { baseConfig, StateCourse, TermType, UserType } from "../../constants";
+import { IfImplements } from "../../typings/utils";
+import { Program, Student, User } from "./medium";
 
 export const loginMutation: DocumentNode<
   {

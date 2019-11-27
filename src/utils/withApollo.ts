@@ -3,7 +3,7 @@ import { ApolloClient } from "apollo-client";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import nextWithApollo from "next-with-apollo";
 
-import { GRAPHQL_URL } from "@constants";
+import { GRAPHQL_URL } from "../../constants";
 
 declare module "next" {
   export interface NextPageContext {

@@ -3,11 +3,12 @@ import { Grid, Message } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
-import { AdminMenu } from "@components/admin/Menu";
-import { Programs } from "@components/admin/programs";
-import { Users } from "@components/admin/users";
-import { RequireAuth } from "@components/RequireAuth";
-import { allUsersAdminQuery } from "@graphql/adminQueries";
+
+import { AdminMenu } from "../components/admin/Menu";
+import { Programs } from "../components/admin/programs";
+import { Users } from "../components/admin/users";
+import { RequireAuth } from "../components/RequireAuth";
+import { allUsersAdminQuery } from "../graphql/adminQueries";
 
 const Admin: FC = () => {
   const [active, setActive] = useRememberState("admin_menu_tab", "users");

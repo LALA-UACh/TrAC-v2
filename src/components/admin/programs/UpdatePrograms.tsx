@@ -3,12 +3,13 @@ import { cloneElement, FC, useEffect, useState } from "react";
 import { Button, Dropdown, Grid, Icon, Label, Modal } from "semantic-ui-react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Confirm } from "@components/Confirm";
+
+import { Confirm } from "../../../components/Confirm";
 import {
   allProgramsAdminQuery,
   allUsersAdminQuery,
   updateUserProgramsAdminMutation,
-} from "@graphql/adminQueries";
+} from "../../../graphql/adminQueries";
 
 export const UpdatePrograms: FC<{
   program: { email: string; programs: number[] };

@@ -2,8 +2,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FC, memo, useContext, useEffect, useState } from "react";
 
 import { Flex, Stack, Text } from "@chakra-ui/core";
-import { TrackingContext } from "@components/Tracking";
 
+import { TrackingContext } from "../Tracking";
 import { ConfigContext } from "./Config";
 
 export const Dropout: FC<{ probability: number; accuracy: number }> = memo(

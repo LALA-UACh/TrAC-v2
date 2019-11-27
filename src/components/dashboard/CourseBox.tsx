@@ -4,14 +4,14 @@ import { FC, useContext, useMemo, useState } from "react";
 import { useUpdateEffect } from "react-use";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
-import { TrackingContext } from "@components/Tracking";
+
 import {
   CURRENT_DISTRIBUTION_LABEL,
   StateCourse,
   termTypeToNumber,
-} from "@constants";
-import { ICourse, ITakenCourse } from "@interfaces";
-
+} from "../../../constants";
+import { ICourse, ITakenCourse } from "../../../interfaces";
+import { TrackingContext } from "../../components/Tracking";
 import { ConfigContext } from "./Config";
 import { CoursesFlowContext } from "./CoursesFlow";
 import { Histogram } from "./Histogram";

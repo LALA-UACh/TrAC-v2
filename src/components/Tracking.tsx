@@ -7,7 +7,8 @@ import {
 } from "react";
 
 import { useMutation } from "@apollo/react-hooks";
-import { trackMutation } from "@graphql/queries";
+
+import { trackMutation } from "../graphql/queries";
 
 export type TrackingTemplateData = {
   program?: number;

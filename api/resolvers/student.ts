@@ -9,20 +9,20 @@ import {
 } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
-import { defaultStateCourse, defaultTermType } from "@constants";
+import { defaultStateCourse, defaultTermType } from "../../constants";
 import {
   CourseTable,
   StudentCourseTable,
   StudentDropoutTable,
   StudentProgramTable,
   StudentTermTable,
-} from "@db/tables";
-import { Dropout } from "@entities/dropout";
-import { Program } from "@entities/program";
-import { Student } from "@entities/student";
-import { TakenCourse } from "@entities/takenCourse";
-import { Term } from "@entities/term";
-import { assertIsDefined } from "@utils";
+} from "../db/tables";
+import { Dropout } from "../entities/dropout";
+import { Program } from "../entities/program";
+import { Student } from "../entities/student";
+import { TakenCourse } from "../entities/takenCourse";
+import { Term } from "../entities/term";
+import { assertIsDefined } from "../utils";
 
 type PartialTakenCourse = Pick<TakenCourse, "id" | "code">;
 type PartialTerm = Pick<Term, "id">;

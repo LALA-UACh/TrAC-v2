@@ -2,7 +2,8 @@ import Router from "next/router";
 import { useEffect } from "react";
 
 import { useMutation } from "@apollo/react-hooks";
-import { currentUserQuery, logoutMutation } from "@graphql/queries";
+
+import { currentUserQuery, logoutMutation } from "../graphql/queries";
 
 export default () => {
   const [logout] = useMutation(logoutMutation, {

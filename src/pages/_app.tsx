@@ -6,7 +6,8 @@ import NProgress from "nprogress";
 
 import { ApolloProvider } from "@apollo/react-hooks";
 import { theme, ThemeProvider } from "@chakra-ui/core";
-import { withApollo } from "@utils/withApollo";
+
+import { withApollo } from "../utils/withApollo";
 
 Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());

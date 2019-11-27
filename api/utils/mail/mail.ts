@@ -9,7 +9,7 @@ const DOMAIN =
 
 export const UnlockMail = ({
   email,
-  unlockKey
+  unlockKey,
 }: {
   email: string;
   unlockKey: string;

@@ -1,9 +1,9 @@
 import { FC, memo, useContext, useMemo } from "react";
 
 import { Box } from "@chakra-ui/core";
-import { TrackingContext } from "@components/Tracking";
-import { termTypeToNumber } from "@constants";
 
+import { termTypeToNumber } from "../../../constants";
+import { TrackingContext } from "../Tracking";
 import { ConfigContext } from "./Config";
 import { CoursesFlowContext } from "./CoursesFlow";
 

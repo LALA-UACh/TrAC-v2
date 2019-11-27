@@ -2,7 +2,8 @@ import Router from "next/router";
 import { FC, useEffect } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
-import { currentUserQuery } from "@graphql/queries";
+
+import { currentUserQuery } from "../graphql/queries";
 
 export const RequireAuth: FC<{ admin?: boolean }> = ({ children, admin }) => {
   const { loading, error, data } = useQuery(currentUserQuery, {

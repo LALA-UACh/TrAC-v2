@@ -1,6 +1,6 @@
-import { baseConfig } from "@constants";
-import { dbConfig } from "@db";
-import { CONFIGURATION_TABLE, ConfigurationTable } from "@db/tables";
+import { dbConfig } from "../";
+import { baseConfig } from "../../../constants";
+import { CONFIGURATION_TABLE, ConfigurationTable } from "../../db/tables";
 
 dbConfig.schema.hasTable(CONFIGURATION_TABLE).then(async exists => {
   if (!exists) {

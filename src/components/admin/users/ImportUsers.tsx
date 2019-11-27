@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import csv from "csvtojson";
-import { toString } from "lodash";
-import toInteger from "lodash/toInteger";
+import { toInteger, toString } from "lodash";
 import { FC, useEffect, useState } from "react";
 import Dropzone from "react-dropzone";
 import {
@@ -18,10 +17,11 @@ import { isJSON } from "validator";
 import isEmail from "validator/lib/isEmail";
 
 import { useMutation } from "@apollo/react-hooks";
+
 import {
   adminUpsertUsersMutation,
   allUsersAdminQuery,
-} from "@graphql/adminQueries";
+} from "../../../graphql/adminQueries";
 
 export const ImportUsers: FC = () => {
   const [data, setData] = useRememberState("AdminImportUsersData", "email\n");

@@ -16,14 +16,15 @@ import { isEmail, isInt } from "validator";
 
 import { useMutation } from "@apollo/react-hooks";
 import { Box, Flex } from "@chakra-ui/core";
-import { Confirm } from "@components/Confirm";
-import { UserType } from "@constants";
+
+import { UserType } from "../../../../constants";
 import {
   adminDeleteUserMutation,
   adminLockMailUserMutation,
   adminUpsertUsersMutation,
   allUsersAdminQuery,
-} from "@graphql/adminQueries";
+} from "../../../graphql/adminQueries";
+import { Confirm } from "../../Confirm";
 
 export const UpdateUser: FC<{
   user: {

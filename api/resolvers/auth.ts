@@ -10,14 +10,14 @@ import {
   USED_OLD_PASSWORD,
   UserType,
   WRONG_INFO,
-} from "@constants";
-import { ONE_DAY, SECRET, THIRTY_MINUTES } from "@consts";
-import { UserTable } from "@db/tables";
-import { AuthResult, LoginInput, UnlockInput } from "@entities/auth";
-import { User } from "@entities/user";
-import { IContext } from "@interfaces";
-import { IfImplements } from "@typings/utils";
-import { sendMail, UnlockMail } from "@utils/mail";
+} from "../../constants";
+import { IContext } from "../../interfaces";
+import { IfImplements } from "../../interfaces/utils";
+import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../consts";
+import { UserTable } from "../db/tables";
+import { AuthResult, LoginInput, UnlockInput } from "../entities/auth";
+import { User } from "../entities/user";
+import { sendMail, UnlockMail } from "../utils/mail";
 
 @Resolver()
 export class AuthResolver {

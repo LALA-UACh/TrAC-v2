@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import toString from "lodash/toString";
 import { FC, memo, useCallback, useContext, useMemo } from "react";
 
-import { IDistribution } from "@interfaces";
 import { AxisBottom, AxisLeft } from "@vx/axis";
 
+import { IDistribution } from "../../../interfaces";
 import { ConfigContext } from "./Config";
 
 const SingleBar: FC<{

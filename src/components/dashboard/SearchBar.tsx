@@ -21,9 +21,9 @@ import {
   Flex,
   Input,
 } from "@chakra-ui/core";
-import { TrackingContext } from "@components/Tracking";
-import { myProgramsQuery } from "@graphql/queries";
 
+import { myProgramsQuery } from "../../graphql/queries";
+import { TrackingContext } from "../Tracking";
 import { ConfigContext } from "./Config";
 
 export const SearchBar: FC<{

@@ -1,4 +1,4 @@
-import { dbAuth, dbConfig, dbLALA, dbTracking } from "@db";
+import { dbAuth, dbConfig, dbLALA, dbTracking } from "./";
 
 // TODO: Specify nullable fields
 

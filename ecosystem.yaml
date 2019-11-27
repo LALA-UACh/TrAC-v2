@@ -1,15 +1,10 @@
 apps:
   - name: api
-    script: api/index.ts
-    interpreter: node
+    script: dist/api/index.js
     interpreter_args:
       - -r
-      - ./ts-hook.js
-      - -r
-      - tsconfig-paths/register
-      - -r
       - dotenv/config
-    exec_mode: fork
+    exec_mode: cluster
     instances: 1
     restart_delay: 10000
     wait_ready: true
@@ -17,61 +12,62 @@ apps:
       NODE_ENV: development
     env_production:
       NODE_ENV: production
-    log_file: logs/api.log
-    watch:
-      - ts-hook.js
+    out_file: logs/out_api.log
+    error_file: logs/error_api.log
+    combine_logs: true
     time: true
-    max_restarts: 2
-    merge_logs: true
+    max_restarts: 10
   - name: next-dev
-    script: next-hook.ts
+    script: next-hook.js
     interpreter: node
     interpreter_args:
       - -r
-      - ./ts-hook.js
+      - dotenv/config
     watch:
-      - next-hook.ts
-      - ts-hook.js
+      - next-hook.js
     exec_mode: fork
     instances: 1
-    log_file: logs/client.log
+    out_file: logs/out_client-dev.log
+    error_file: logs/error_client-dev.log
+    combine_logs: true
     time: true
     autorestart: false
     wait_ready: true
     env:
       NODE_ENV: development
-    merge_logs: true
   - name: next-prod
-    script: next-hook.ts
+    script: next-hook.js
     interpreter: node
     interpreter_args:
       - -r
-      - ./ts-hook.js
+      - dotenv/config
     watch:
-      - next-hook.ts
-      - ts-hook.js
+      - next-hook.js
     exec_mode: cluster
-    instances: 2
-    log_file: logs/client.log
+    instances: 1
+    out_file: logs/out_client-prod.log
+    error_file: logs/error_client-prod.log
+    combine_logs: true
     time: true
     autorestart: false
     wait_ready: true
     env:
       NODE_ENV: production
-    merge_logs: true
   - name: worker
     script: worker.ts
     interpreter: node
     interpreter_args:
       - -r
       - ./ts-hook.js
-    log_file: logs/worker.log
+    out_file: logs/out_worker.log
+    error_file: logs/error_worker.log
+    combine_logs: true
     time: true
     watch:
       - worker.ts
       - ts-hook.js
+      - ecosystem.yaml
     env:
       NODE_ENV: development
     env_production:
       NODE_ENV: production
-    merge_logs: true

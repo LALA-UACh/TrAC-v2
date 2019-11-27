@@ -1,7 +1,6 @@
 import { Field, Int, ObjectType, registerEnumType } from "type-graphql";
 
-import { StateCourse } from "@constants";
-
+import { StateCourse } from "../../constants";
 import { Course } from "./course";
 import { DistributionValue } from "./distribution";
 

@@ -5,15 +5,15 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import { EmailAddressResolver } from "graphql-scalars";
 import { GraphQLJSON, GraphQLJSONObject } from "graphql-type-json";
-import { resolve } from "path";
 import { buildSchema } from "type-graphql";
 
-import { authChecker } from "@utils/authChecker";
-import { buildContext } from "@utils/buildContext";
+import * as resolvers from "./resolvers";
+import { authChecker } from "./utils/authChecker";
+import { buildContext } from "./utils/buildContext";
 
 const schema = buildSchema({
   resolvers: [
-    resolve(__dirname, "./resolvers/*.ts"),
+    ...Object.values(resolvers),
     GraphQLJSON.toString(),
     GraphQLJSONObject.toString(),
     EmailAddressResolver.toString(),
@@ -25,7 +25,8 @@ const schema = buildSchema({
 
 const app = express();
 
-app.use(cookieParser());
+const cookieParserRouter = cookieParser();
+app.use(cookieParserRouter);
 
 (async () => {
   const apolloServer = new ApolloServer({

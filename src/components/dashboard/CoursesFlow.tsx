@@ -7,8 +7,8 @@ import {
   useState,
 } from "react";
 
-import { TrackingContext } from "@components/Tracking";
-import { ITakenSemester } from "@interfaces";
+import { ITakenSemester } from "../../../interfaces";
+import { TrackingContext } from "../../components/Tracking";
 
 export const CoursesFlowContext = createContext<{
   active?: string;

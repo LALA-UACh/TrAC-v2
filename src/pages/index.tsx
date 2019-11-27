@@ -5,25 +5,26 @@ import ScrollContainer from "react-indiana-drag-scroll";
 import { useLogger } from "react-use";
 
 import { Box, Stack } from "@chakra-ui/core";
-import { Config } from "@components/dashboard/Config";
-import { CoursesFlow } from "@components/dashboard/CoursesFlow";
-import { Dropout } from "@components/dashboard/Dropout";
-import { SearchBar } from "@components/dashboard/SearchBar";
-import { Semester } from "@components/dashboard/Semester";
-import { TakenSemesterBox } from "@components/dashboard/TakenSemesterBox";
-import { TimeLine } from "@components/dashboard/Timeline";
-import { RequireAuth } from "@components/RequireAuth";
-import { Tracking, TrackingContext, TrackingRef } from "@components/Tracking";
-import { defaultStateCourse, defaultTermType } from "@constants";
-import data from "@constants/data.json";
-import { searchProgramQuery, searchStudentQuery } from "@graphql/queries";
+
+import { defaultStateCourse, defaultTermType } from "../../constants";
+import data from "../../constants/data.json";
 import {
   ICourse,
   IDistribution,
   ITakenCourse,
   ITakenSemester,
-} from "@interfaces";
-import { usePromiseLazyQuery } from "@utils/usePromiseLazyQuery";
+} from "../../interfaces";
+import { Config } from "../components/dashboard/Config";
+import { CoursesFlow } from "../components/dashboard/CoursesFlow";
+import { Dropout } from "../components/dashboard/Dropout";
+import { SearchBar } from "../components/dashboard/SearchBar";
+import { Semester } from "../components/dashboard/Semester";
+import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
+import { TimeLine } from "../components/dashboard/Timeline";
+import { RequireAuth } from "../components/RequireAuth";
+import { Tracking, TrackingContext, TrackingRef } from "../components/Tracking";
+import { searchProgramQuery, searchStudentQuery } from "../graphql/queries";
+import { usePromiseLazyQuery } from "../utils/usePromiseLazyQuery";
 
 console.log("data", data);
 

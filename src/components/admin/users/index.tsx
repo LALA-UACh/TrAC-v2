@@ -4,10 +4,10 @@ import { Button, Grid, Icon, Message, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation } from "@apollo/react-hooks";
-import { Confirm } from "@components/Confirm";
-import { UserType } from "@constants";
-import { adminMailLockedUsersMutation } from "@graphql/adminQueries";
 
+import { UserType } from "../../../../constants";
+import { adminMailLockedUsersMutation } from "../../../graphql/adminQueries";
+import { Confirm } from "../../Confirm";
 import { ImportUsers } from "./ImportUsers";
 import { UpdateUser } from "./UpdateUser";
 

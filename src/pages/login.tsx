@@ -19,8 +19,9 @@ import { isEmail, isLength } from "validator";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Image } from "@chakra-ui/core";
-import { LOCKED_USER, WRONG_INFO } from "@constants";
-import { currentUserQuery, loginMutation } from "@graphql/queries";
+
+import { LOCKED_USER, WRONG_INFO } from "../../constants";
+import { currentUserQuery, loginMutation } from "../graphql/queries";
 
 const Login: FC = () => {
   const [session, setSession] = useState(() =>

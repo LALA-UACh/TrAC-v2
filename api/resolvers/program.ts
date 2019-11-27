@@ -11,18 +11,18 @@ import {
 } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
-import { ADMIN } from "@consts";
+import { IContext } from "../../interfaces";
+import { IfImplements } from "../../interfaces/utils";
+import { ADMIN } from "../consts";
 import {
   CourseTable,
   ProgramStructureTable,
   ProgramTable,
   UserProgramsTable,
-} from "@db/tables";
-import { Course } from "@entities/course";
-import { Program } from "@entities/program";
-import { IContext } from "@interfaces";
-import { IfImplements } from "@typings/utils";
-import { assertIsDefined } from "@utils";
+} from "../db/tables";
+import { Course } from "../entities/course";
+import { Program } from "../entities/program";
+import { assertIsDefined } from "../utils";
 
 const creditsFormat = ({
   credits,
@@ -140,7 +140,7 @@ export class ProgramResolver {
 
     assertIsDefined(
       descData,
-      `Description could not be found for program ${name}`
+      `Description could not be found for program ${id}`
     );
 
     return descData.desc;
@@ -164,7 +164,7 @@ export class ProgramResolver {
       .where({ id })
       .first();
 
-    assertIsDefined(stateData, `State could not be found for program ${name}`);
+    assertIsDefined(stateData, `State could not be found for program ${id}`);
 
     return stateData.state;
   }
@@ -260,10 +260,6 @@ export class CourseResolver {
       code,
       "The id and code needs to be available for the course fields resolvers"
     );
-
-    if (name) {
-      return name;
-    }
 
     const nameData = await CourseTable()
       .select("name")

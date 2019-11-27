@@ -17,11 +17,12 @@ import isEmail from "validator/lib/isEmail";
 import isJSON from "validator/lib/isJSON";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
+
 import {
   addUsersProgramsAdminMutation,
   allProgramsAdminQuery,
   allUsersAdminQuery,
-} from "@graphql/adminQueries";
+} from "../../../graphql/adminQueries";
 
 export const ImportPrograms: FC = () => {
   const [data, setData] = useRememberState(

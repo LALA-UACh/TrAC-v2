@@ -1,8 +1,8 @@
 import { FC, memo, useContext } from "react";
 
 import { Stack, Text } from "@chakra-ui/core";
-import { ICourse } from "@interfaces";
 
+import { ICourse } from "../../../interfaces";
 import { ConfigContext } from "./Config";
 import { CourseBox } from "./CourseBox";
 

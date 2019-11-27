@@ -1,9 +1,8 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
-import { UserType } from "@constants";
-import { Program } from "@entities/program";
-import { User } from "@entities/user";
-import { IfImplements } from "@typings/utils";
+import { UserType } from "../../constants";
+import { IfImplements } from "../../typings/utils";
+import { Program, User } from "./medium";
 
 type IAllUsersAdmin = IfImplements<
   {

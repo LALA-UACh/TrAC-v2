@@ -3,8 +3,8 @@ import { toNumber } from "lodash";
 import { Query, Resolver } from "type-graphql";
 import { isJSON, isNumeric } from "validator";
 
-import { baseConfig } from "@constants";
-import { ConfigurationTable } from "@db/tables";
+import { baseConfig } from "../../constants";
+import { ConfigurationTable } from "../db/tables";
 
 @Resolver()
 export class ConfigurationResolver {
