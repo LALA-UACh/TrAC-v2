@@ -37,7 +37,6 @@ const APIWorker = async () => {
       }
     }
   };
-  buildAndStart();
   APIWP.on("change", async changed => {
     console.log({ changed });
     buildAndStart();
@@ -84,7 +83,6 @@ const ClientWorker = async () => {
       Date.now()
     );
 
-    build();
     ClientWP.on("change", async changed => {
       console.log({ changed });
       build();
@@ -100,5 +98,5 @@ ClientWorker();
 if (process.env.NODE_ENV === "production") {
   setInterval(async () => {
     Shell.exec("git pull", { silent: true });
-  }, ms("5 minutes"));
+  }, ms("1 minute"));
 }
