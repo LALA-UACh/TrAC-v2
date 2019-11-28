@@ -1,6 +1,6 @@
 apps:
   - name: api-dev
-    script: dist/api/index.js
+    script: api/dist/api/index.js
     interpreter_args:
       - -r
       - dotenv/config
@@ -16,9 +16,9 @@ apps:
     time: true
     max_restarts: 10
     watch:
-      - dist
+      - api/dist
   - name: api-prod
-    script: dist/api/index.js
+    script: api/dist/api/index.js
     interpreter_args:
       - -r
       - dotenv/config
@@ -40,7 +40,7 @@ apps:
       - -r
       - dotenv/config
     watch:
-      - next-hook.js
+      - ./next-hook.js
     out_file: logs/out_client-dev.log
     error_file: logs/error_client-dev.log
     combine_logs: true
@@ -56,7 +56,7 @@ apps:
       - -r
       - dotenv/config
     watch:
-      - next-hook.js
+      - ./next-hook.js
     exec_mode: cluster
     instances: 1
     out_file: logs/out_client-prod.log
@@ -78,9 +78,9 @@ apps:
     combine_logs: true
     time: true
     watch:
-      - worker.ts
-      - ts-hook.js
-      - ecosystem.yaml
+      - ./worker.ts
+      - ./ts-hook.js
+      - ./ecosystem.yaml
     env:
       NODE_ENV: development
     env_production:

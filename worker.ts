@@ -1,73 +1,62 @@
-import fs from "fs";
+import chokidar from "chokidar";
 import { throttle } from "lodash";
 import ms from "ms";
 import Shell from "shelljs";
-import { isInt } from "validator";
-import Watchpack from "watchpack";
 
 const production = process.env.NODE_ENV === "production";
 console.log(
   `Worker started in ${production ? "production" : "development"} mode!`
 );
 
-let dateWatch = Date.now();
-try {
-  if (fs.existsSync("last_build.txt")) {
-    const lastWatchTxt = fs.readFileSync("last_build.txt", {
-      encoding: "utf8",
-    });
-    if (isInt(lastWatchTxt)) {
-      dateWatch = parseInt(lastWatchTxt, 10);
-    }
-  } else {
-    fs.writeFileSync("last_build.txt", dateWatch.toString(), {
-      encoding: "utf8",
-    });
-  }
-} catch (err) {
-  console.error(err);
-}
-
-const installDependencies = throttle((changed: string) => {
-  try {
-    fs.writeFileSync("last_build.txt", Date.now().toString(), {
-      encoding: "utf8",
-    });
+const installDependencies = throttle(
+  (changed: string) => {
     if (changed.includes("package.json")) {
-      Shell.exec("yarn --frozen-lockfile --production=false", { silent: true });
+      Shell.exec("yarn --frozen-lockfile --production=false");
+      return true;
     }
-  } catch (err) {
-    console.error(err);
+    return false;
+  },
+  ms("1 minute"),
+  {
+    leading: true,
+    trailing: false,
   }
-}, ms("1 minute"));
+);
 
 const APIWorker = async () => {
   if (production) {
-    const APIWP = new Watchpack({
-      ignored: ["node_modules", ".git", ".next", "logs", "api/dist"],
+    const APIWatcher = chokidar.watch(["package.json", "api"], {
+      ignored: "api/dist",
+      ignoreInitial: true,
     });
 
-    APIWP.watch(["package.json"], ["api", "constants"], dateWatch);
+    const onChange = throttle(
+      () => {
+        const build = Shell.exec("yarn build-api", { silent: false });
+        if (build.code === 0) {
+          const APIReload = Shell.exec(
+            `pm2 reload ecosystem.yaml --only api-prod`,
+            { silent: true }
+          );
 
-    const onChange = throttle(() => {
-      const build = Shell.exec("yarn build-api", { silent: false });
-      if (build.code === 0) {
-        const APIReload = Shell.exec(
-          `pm2 reload ecosystem.yaml --only api-prod`,
-          { silent: true }
-        );
-
-        if (APIReload.code === 0) {
-          console.log("API Reloaded!");
+          if (APIReload.code === 0) {
+            console.log("API Reloaded!");
+          }
         }
+      },
+      ms("10 seconds"),
+      {
+        leading: false,
+        trailing: true,
       }
-    }, ms("1 minute"));
+    );
 
-    APIWP.on("change", async changed => {
-      console.log({ changed });
-
-      installDependencies(changed);
-      onChange();
+    APIWatcher.on("change", async changed => {
+      console.log("APIWatcher", { changed });
+      const installedDependencies = installDependencies(changed);
+      if (!installedDependencies) {
+        onChange();
+      }
     });
   } else {
     Shell.exec(`yarn build-api -w`, { async: true });
@@ -85,38 +74,45 @@ const ClientWorker = async () => {
   };
 
   if (production) {
-    const ClientWP = new Watchpack({
-      ignored: ["node_modules", ".git", ".next", "logs"],
-    });
-
-    ClientWP.watch(
+    const ClientWatcher = chokidar.watch(
       [
-        "src/*",
-        "constants/*",
-        "public/*",
-        "typings/*",
         "package.json",
+        "src",
+        "constants",
+        "public",
+        "typings",
         "tsconfig.json",
       ],
-      ["src", "typings", "public", "constants"],
-      dateWatch
-    );
-    const onChange = throttle(() => {
-      const yarnBuild = Shell.exec("yarn build", {
-        silent: false,
-      });
-
-      if (yarnBuild.code === 0) {
-        if (reloadNext().code === 0) {
-          console.log("Client Reloaded!");
-        }
+      {
+        ignoreInitial: true,
       }
-    }, ms("1 minute"));
+    );
 
-    ClientWP.on("change", async changed => {
-      console.log({ changed });
-      installDependencies(changed);
-      onChange();
+    const onChange = throttle(
+      () => {
+        const yarnBuild = Shell.exec("yarn build", {
+          silent: false,
+        });
+
+        if (yarnBuild.code === 0) {
+          if (reloadNext().code === 0) {
+            console.log("Client Reloaded!");
+          }
+        }
+      },
+      ms("10 seconds"),
+      {
+        leading: false,
+        trailing: true,
+      }
+    );
+
+    ClientWatcher.on("change", async changed => {
+      console.log("ClientWatcher", { changed });
+      const installedDependencies = installDependencies(changed);
+      if (!installedDependencies) {
+        onChange();
+      }
     });
   }
 };
@@ -128,6 +124,7 @@ if (process.env.NODE_ENV === "production") {
   setInterval(async () => {
     Shell.exec("git fetch && git reset --hard origin/master", {
       silent: true,
+      async: true,
     });
   }, ms("1 minute"));
 }

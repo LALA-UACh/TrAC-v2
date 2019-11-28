@@ -1516,13 +1516,6 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/graceful-fs@*":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@types/graceful-fs/-/graceful-fs-4.1.3.tgz#039af35fe26bec35003e8d86d2ee9c586354348f"
-  integrity sha512-AiHRaEB50LQg0pZmm659vNBb9f4SJ0qrAnteuzhSeAUcJKxoYgEnprg/83kppCnc2zvtCKbdZry1a5pVY3lOTQ==
-  dependencies:
-    "@types/node" "*"
-
 "@types/graphql-type-json@^0.3.2":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@types/graphql-type-json/-/graphql-type-json-0.3.2.tgz#1a7105e6546fc1630a5db4834bfbc0eb554986e4"
@@ -1782,15 +1775,6 @@
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@types/wait-on/-/wait-on-3.2.0.tgz#87bfa57af081cb57399d741a963d532946fcdc92"
   integrity sha512-IBpiv5pRb0MFa7KoC1sqOKPGrZtQlCkXuU03VdlqoAqJXYJnkF0u0ERkzEW9AOA4Uv+HMHNSRJRSDB8JeraxKg==
-
-"@types/watchpack@^1.1.5":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@types/watchpack/-/watchpack-1.1.5.tgz#e5622eb2a49e2239d94d8882275fbc7893147e97"
-  integrity sha512-9clzOLesGBv5/60QQ3UvpOPsRSNu4ybw4jUBq1aofGdA2NtS5dL2D/m6WAXycxdg+rcGOHTN2rgpTMAdJ4jMWg==
-  dependencies:
-    "@types/graceful-fs" "*"
-    "@types/node" "*"
-    chokidar "^2.1.2"
 
 "@types/ws@^6.0.0":
   version "6.0.4"
@@ -3120,7 +3104,7 @@ check-types@^8.0.3:
   resolved "https://registry.yarnpkg.com/check-types/-/check-types-8.0.3.tgz#3356cca19c889544f2d7a95ed49ce508a0ecf552"
   integrity sha512-YpeKZngUmG65rLudJ4taU7VLkOCTMhNl/u4ctNC56LQS/zJTyNH0Lrtwm1tfTsbLlwvlfsA2d1c8vCf/Kh2KwQ==
 
-chokidar@^2.0.2, chokidar@^2.0.4, chokidar@^2.1.2:
+chokidar@^2.0.2, chokidar@^2.0.4:
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.8.tgz#804b3a7b6a99358c3c5c61e71d8728f041cff917"
   integrity sha512-ZmZUazfOzf0Nve7duiCKD23PFSCs4JPoYyccjUFF3aQkQadqBhfzhjkwBH2mNOG9cTBwhamM37EIsIkZw3nRgg==
@@ -3139,7 +3123,7 @@ chokidar@^2.0.2, chokidar@^2.0.4, chokidar@^2.1.2:
   optionalDependencies:
     fsevents "^1.2.7"
 
-chokidar@^3.2.0:
+chokidar@^3.2.0, chokidar@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.3.0.tgz#12c0714668c55800f659e262d4962a97faf554a6"
   integrity sha512-dGmKLDdT3Gdl7fBUe8XK+gAtGmzy5Fn0XkkWQuYxGIgWVPPse2CxFA5mtrlD0TOHaHjEUqkWNyP1XdHoJES/4A==
