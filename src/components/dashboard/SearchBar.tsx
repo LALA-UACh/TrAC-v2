@@ -2,7 +2,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import {
   ChangeEvent,
+  Dispatch,
   FC,
+  SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -23,9 +25,24 @@ import {
   Input,
 } from "@chakra-ui/core";
 
-import { myProgramsQuery } from "../../graphql/queries";
+import { currentUserQuery, myProgramsQuery } from "../../graphql/queries";
 import { TrackingContext } from "../Tracking";
 import { ConfigContext } from "./Config";
+
+const MockingMode: FC<{
+  mock: boolean;
+  setMock: Dispatch<SetStateAction<boolean>>;
+}> = ({ mock, setMock }) => {
+  return (
+    <Button
+      basic
+      onClick={() => setMock(mode => !mode)}
+      color={mock ? "blue" : "red"}
+    >
+      {mock ? "Mocking ON" : "Mocking OFF"}
+    </Button>
+  );
+};
 
 export const SearchBar: FC<{
   isSearchLoading: boolean;
@@ -35,7 +52,13 @@ export const SearchBar: FC<{
   }) => Promise<boolean>;
   searchResult?: string;
   error?: string;
-}> = ({ isSearchLoading, onSearch, searchResult, error }) => {
+  mock: boolean;
+  setMock: Dispatch<SetStateAction<boolean>>;
+}> = ({ isSearchLoading, onSearch, searchResult, error, mock, setMock }) => {
+  const { data: currentUserData } = useQuery(currentUserQuery, {
+    fetchPolicy: "cache-only",
+  });
+
   const {
     LOGOUT_BUTTON_LABEL,
     SEARCH_BAR_BACKGROUND_COLOR,
@@ -202,7 +225,11 @@ export const SearchBar: FC<{
           </Flex>
         </form>
       </Flex>
+
       <Box>
+        {currentUserData?.currentUser?.admin && (
+          <MockingMode mock={mock} setMock={setMock} />
+        )}
         <Link href="/logout">
           <Button
             negative

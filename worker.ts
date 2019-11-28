@@ -1,4 +1,5 @@
 import fs from "fs";
+import { throttle } from "lodash";
 import ms from "ms";
 import Shell from "shelljs";
 import { isInt } from "validator";
@@ -27,7 +28,7 @@ try {
   console.error(err);
 }
 
-const installDependencies = (changed: string) => {
+const installDependencies = throttle((changed: string) => {
   try {
     fs.writeFileSync("last_build.txt", Date.now().toString(), {
       encoding: "utf8",
@@ -38,23 +39,17 @@ const installDependencies = (changed: string) => {
   } catch (err) {
     console.error(err);
   }
-};
+}, ms("1 minute"));
 
 const APIWorker = async () => {
   if (production) {
     const APIWP = new Watchpack({
-      ignored: ["node_modules", ".git", ".next", "logs"],
+      ignored: ["node_modules", ".git", ".next", "logs", "api/dist"],
     });
 
-    APIWP.watch(
-      ["api/*", "constants/*", "package.json", "tsconfig.api.json"],
-      ["api", "constants"],
-      dateWatch
-    );
+    APIWP.watch(["package.json"], ["api", "constants"], dateWatch);
 
-    APIWP.on("change", async changed => {
-      console.log({ changed });
-      installDependencies(changed);
+    const onChange = throttle(() => {
       const build = Shell.exec("yarn build-api", { silent: false });
       if (build.code === 0) {
         const APIReload = Shell.exec(
@@ -66,6 +61,13 @@ const APIWorker = async () => {
           console.log("API Reloaded!");
         }
       }
+    }, ms("1 minute"));
+
+    APIWP.on("change", async changed => {
+      console.log({ changed });
+
+      installDependencies(changed);
+      onChange();
     });
   } else {
     Shell.exec(`yarn build-api -w`, { async: true });
@@ -99,10 +101,7 @@ const ClientWorker = async () => {
       ["src", "typings", "public", "constants"],
       dateWatch
     );
-
-    ClientWP.on("change", async changed => {
-      console.log({ changed });
-      installDependencies(changed);
+    const onChange = throttle(() => {
       const yarnBuild = Shell.exec("yarn build", {
         silent: false,
       });
@@ -112,6 +111,12 @@ const ClientWorker = async () => {
           console.log("Client Reloaded!");
         }
       }
+    }, ms("1 minute"));
+
+    ClientWP.on("change", async changed => {
+      console.log({ changed });
+      installDependencies(changed);
+      onChange();
     });
   }
 };

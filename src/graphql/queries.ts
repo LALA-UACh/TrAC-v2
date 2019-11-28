@@ -7,7 +7,13 @@ import { Program, Student, User } from "./medium";
 export const loginMutation: DocumentNode<
   {
     login: {
-      user?: { email: string; name: string; admin: boolean; type: UserType };
+      user?: {
+        email: string;
+        name: string;
+        admin: boolean;
+        type: UserType;
+        show_dropout: boolean;
+      };
       error?: string;
     };
   },
@@ -23,6 +29,7 @@ export const loginMutation: DocumentNode<
         name
         admin
         type
+        show_dropout
       }
       error
     }
@@ -35,6 +42,8 @@ export const currentUserQuery: DocumentNode<{
       email: string;
       name: string;
       admin: boolean;
+      type: UserType;
+      show_dropout: boolean;
     },
     User
   >;
@@ -44,6 +53,8 @@ export const currentUserQuery: DocumentNode<{
       email
       name
       admin
+      type
+      show_dropout
     }
   }
 `;
@@ -52,7 +63,13 @@ export const unlockMutation: DocumentNode<
   {
     unlock: {
       user?: IfImplements<
-        { email: string; name: string; admin: boolean },
+        {
+          email: string;
+          name: string;
+          admin: boolean;
+          type: UserType;
+          show_dropout: boolean;
+        },
         User
       >;
       error?: string;
@@ -70,6 +87,8 @@ export const unlockMutation: DocumentNode<
         email
         name
         admin
+        type
+        show_dropout
       }
       error
     }
@@ -191,6 +210,11 @@ export const searchStudentQuery: DocumentNode<
             }>;
           }>;
         }>;
+        dropout?: {
+          prob_dropout: number;
+          model_accuracy: number;
+          active: boolean;
+        };
       },
       Student
     >;
@@ -233,6 +257,11 @@ export const searchStudentQuery: DocumentNode<
             value
           }
         }
+      }
+      dropout {
+        prob_dropout
+        model_accuracy
+        active
       }
     }
   }

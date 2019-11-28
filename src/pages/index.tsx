@@ -1,19 +1,16 @@
-import { some } from "lodash";
-import reverse from "lodash/fp/reverse";
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useMemo, useRef } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useLogger } from "react-use";
+import { useRememberState } from "use-remember-state";
 
+import { useQuery } from "@apollo/react-hooks";
 import { Box, Stack } from "@chakra-ui/core";
 
-import { defaultStateCourse, defaultTermType } from "../../constants";
-import data from "../../constants/data";
-import {
-  ICourse,
-  IDistribution,
-  ITakenCourse,
-  ITakenSemester,
-} from "../../interfaces";
+import mockDropout from "../../constants/mockData/dropout";
+import mockSemesters from "../../constants/mockData/semesters";
+import mockSemestersTaken from "../../constants/mockData/semestersTaken";
+import mockTimeline from "../../constants/mockData/timeline";
+import { ITakenCourse } from "../../interfaces";
 import { Config } from "../components/dashboard/Config";
 import { CoursesFlow } from "../components/dashboard/CoursesFlow";
 import { Dropout } from "../components/dashboard/Dropout";
@@ -23,22 +20,19 @@ import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
 import { RequireAuth } from "../components/RequireAuth";
 import { Tracking, TrackingContext, TrackingRef } from "../components/Tracking";
-import { searchProgramQuery, searchStudentQuery } from "../graphql/queries";
+import {
+  currentUserQuery,
+  searchProgramQuery,
+  searchStudentQuery,
+} from "../graphql/queries";
 import { usePromiseLazyQuery } from "../utils/usePromiseLazyQuery";
 
-console.log("data", data);
-
 const Dashboard: FC = () => {
+  const { data: currentUserData } = useQuery(currentUserQuery, {
+    fetchPolicy: "cache-only",
+  });
+  const [mock, setMock] = useRememberState("mockMode", false);
   const trackingData = useRef<TrackingRef>({ track: async () => {} });
-  let semestersTaken: ITakenSemester[] = data.studentAcademic.terms.map(
-    ({ year, semester }) => ({
-      year,
-      term: defaultTermType(semester),
-    })
-  );
-  let semesters: {
-    semester: ICourse[];
-  }[] = [];
   const [
     searchProgram,
     {
@@ -57,93 +51,6 @@ const Dashboard: FC = () => {
       error: searchStudentError,
     },
   ] = usePromiseLazyQuery(searchStudentQuery);
-  data.programStructure.terms.map(
-    ({
-      courses,
-    }: {
-      courses: {
-        code: string;
-        name: string;
-        credits: number;
-        historicGroup: {
-          distribution: Array<{ label: string; value: number }>;
-        } | null;
-        flujoMaterias: string[];
-        requisites: string[];
-      }[];
-    }) => {
-      semesters.push({
-        semester: courses.map(
-          ({
-            code,
-            name,
-            credits,
-            historicGroup,
-            flujoMaterias,
-            requisites,
-          }) => {
-            let historicDistribution:
-              | IDistribution[]
-              | undefined = historicGroup?.distribution.map(
-              ({ value, label }) => ({
-                value,
-                min: parseFloat(label.split("-")[0]),
-                max: parseFloat(label.split("-")[1]),
-              })
-            );
-
-            const taken: ITakenCourse[] = [];
-
-            reverse(data.studentAcademic.terms).forEach(
-              ({ coursesTaken, semester, year }) => {
-                for (const {
-                  code: codeToFind,
-                  classGroup: { distribution },
-                  registration,
-                  grade,
-                  state,
-                } of coursesTaken) {
-                  let currentDistribution = distribution.map(
-                    ({ value, label }) => ({
-                      value,
-                      min: parseFloat(label.split("-")[0]),
-                      max: parseFloat(label.split("-")[1]),
-                    })
-                  );
-
-                  if (codeToFind === code) {
-                    taken.push({
-                      term: defaultTermType(semester),
-                      year,
-                      registration,
-                      grade,
-                      state: defaultStateCourse(state),
-                      currentDistribution,
-                      parallelGroup: 0,
-                    });
-                  }
-                }
-              }
-            );
-            return {
-              name,
-              code,
-              credits: [{ label: "SCT", value: credits }],
-              flow: flujoMaterias,
-              requisites,
-              historicDistribution: some(
-                historicDistribution,
-                ({ value }) => value
-              )
-                ? historicDistribution
-                : [],
-              taken,
-            };
-          }
-        ),
-      });
-    }
-  );
 
   useLogger("index", {
     searchProgramData,
@@ -151,7 +58,14 @@ const Dashboard: FC = () => {
   });
 
   useEffect(() => {
+    if (!currentUserData?.currentUser?.admin && mock === true) {
+      setMock(false);
+    }
+  }, [currentUserData, mock, setMock]);
+
+  useEffect(() => {
     if (searchStudentData) {
+      setMock(false);
       trackingData.current.program = searchStudentData.student.program.id;
       trackingData.current.curriculum = searchStudentData.student.curriculum;
       trackingData.current.showingProgress = true;
@@ -160,6 +74,160 @@ const Dashboard: FC = () => {
       trackingData.current.showingProgress = false;
     }
   }, [searchStudentData]);
+
+  const {
+    TimeLineComponent,
+    TakenSemestersComponent,
+    SemestersComponent,
+    DropoutComponent,
+  } = useMemo(() => {
+    let TimeLineComponent: JSX.Element | null = null;
+    let DropoutComponent: JSX.Element | null = null;
+    let TakenSemestersComponent: JSX.Element | null = null;
+    let SemestersComponent: JSX.Element | null = null;
+
+    if (searchStudentData) {
+      const {
+        cumulated_grade,
+        semestral_grade,
+        program_grade,
+        semestersTaken,
+      } = searchStudentData.student.terms.reduce<{
+        cumulated_grade: number[];
+        semestral_grade: number[];
+        program_grade: number[];
+        semestersTaken: { year: number; term: string }[];
+      }>(
+        (acum, value) => {
+          acum.semestersTaken.push({
+            year: value.year,
+            term: value.term,
+          });
+          acum.cumulated_grade.push(value.cumulated_grade);
+          acum.semestral_grade.push(value.semestral_grade);
+          acum.program_grade.push(value.program_grade);
+          // TODO: Program_grade should be from curriculum, not from student
+          return acum;
+        },
+        {
+          cumulated_grade: [],
+          semestral_grade: [],
+          program_grade: [],
+          semestersTaken: [],
+        }
+      );
+      TimeLineComponent = (
+        <TimeLine
+          CUMULATED_GRADE={cumulated_grade}
+          SEMESTRAL_GRADE={semestral_grade}
+          PROGRAM_GRADE={program_grade}
+          semestersTaken={semestersTaken}
+        />
+      );
+      TakenSemestersComponent = (
+        <>
+          {searchStudentData.student.terms.map(({ term, year }, key) => {
+            return <TakenSemesterBox key={key} term={term} year={year} />;
+          })}
+        </>
+      );
+      if (
+        searchStudentData.student.dropout?.active &&
+        currentUserData?.currentUser?.show_dropout
+      ) {
+        DropoutComponent = (
+          <Dropout
+            probability={searchStudentData.student.dropout.prob_dropout}
+            accuracy={searchStudentData.student.dropout.model_accuracy}
+          />
+        );
+      }
+    }
+    if (searchProgramData) {
+      const curriculums = searchProgramData.program.curriculums.map(
+        ({ semesters: curriculumSemesters, id: curriculumId }) => {
+          const semesters = curriculumSemesters.map(va => {
+            const semester = va.courses.map(
+              ({
+                code,
+                name,
+                credits,
+                flow,
+                requisites,
+                historicalDistribution,
+              }) => {
+                return {
+                  code,
+                  name,
+                  credits,
+                  flow: flow.map(({ code }) => {
+                    return code;
+                  }),
+                  requisites: requisites.map(({ code }) => {
+                    return code;
+                  }),
+                  historicalDistribution,
+                  taken: (() => {
+                    const taken: ITakenCourse[] = [];
+                    if (searchStudentData) {
+                      for (const {
+                        term,
+                        year,
+                        takenCourses,
+                      } of searchStudentData.student.terms) {
+                        for (const {
+                          code: courseCode,
+                          registration,
+                          state,
+                          grade,
+                          currentDistribution,
+                          parallelGroup,
+                        } of takenCourses) {
+                          if (courseCode === code) {
+                            taken.push({
+                              term,
+                              year,
+                              registration,
+                              state,
+                              grade,
+                              currentDistribution,
+                              parallelGroup,
+                            });
+                          }
+                        }
+                      }
+                    }
+
+                    return taken;
+                  })(),
+                };
+              }
+            );
+            return { semester };
+          });
+          return { id: curriculumId, semesters };
+        }
+      );
+      //TODO: Choose curriculum by id
+      const data = curriculums[0];
+      if (data) {
+        SemestersComponent = (
+          <>
+            {data.semesters.map(({ semester }, key) => {
+              return <Semester key={key} semester={semester} n={key + 1} />;
+            })}
+          </>
+        );
+      }
+    }
+
+    return {
+      TimeLineComponent,
+      DropoutComponent,
+      TakenSemestersComponent,
+      SemestersComponent,
+    };
+  }, [searchStudentData, searchProgramData]);
 
   return (
     <Config>
@@ -183,28 +251,42 @@ const Dashboard: FC = () => {
             }
             return false;
           }}
+          mock={mock}
+          setMock={setMock}
         />
         <CoursesFlow>
           <ScrollContainer activationDistance={5} hideScrollbars={false}>
             <Stack isInline flexWrap="wrap-reverse">
               <Box>
-                <TimeLine
-                  CUMULATED_GRADE={data.PGA}
-                  SEMESTRAL_GRADE={data.PSP}
-                  PROGRAM_GRADE={data.ProgramPGA}
-                  semestersTaken={semestersTaken}
-                />
+                {mock ? (
+                  <TimeLine
+                    CUMULATED_GRADE={mockTimeline.PGA}
+                    SEMESTRAL_GRADE={mockTimeline.PSP}
+                    PROGRAM_GRADE={mockTimeline.ProgramPGA}
+                    semestersTaken={mockSemestersTaken}
+                  />
+                ) : (
+                  TimeLineComponent
+                )}
               </Box>
-              <Dropout
-                probability={data.studentAcademic.student_dropout.prob_dropout}
-                accuracy={data.studentAcademic.student_dropout.model_accuracy}
-              />
+              {mock ? (
+                <Dropout
+                  probability={mockDropout.prob_dropout}
+                  accuracy={mockDropout.model_accuracy}
+                />
+              ) : (
+                DropoutComponent
+              )}
             </Stack>
 
             <Stack isInline pl="50px">
-              {semestersTaken.map(({ term, year }, key) => {
-                return <TakenSemesterBox key={key} term={term} year={year} />;
-              })}
+              {mock
+                ? mockSemestersTaken.map(({ term, year }, key) => {
+                    return (
+                      <TakenSemesterBox key={key} term={term} year={year} />
+                    );
+                  })
+                : TakenSemestersComponent}
             </Stack>
           </ScrollContainer>
 
@@ -214,9 +296,13 @@ const Dashboard: FC = () => {
             activationDistance={5}
           >
             <Stack isInline spacing={8}>
-              {semesters.map(({ semester }, key) => {
-                return <Semester key={key} semester={semester} n={key + 1} />;
-              })}
+              {mock
+                ? mockSemesters.map(({ semester }, key) => {
+                    return (
+                      <Semester key={key} semester={semester} n={key + 1} />
+                    );
+                  })
+                : SemestersComponent}
             </Stack>
           </ScrollContainer>
           <Tracking />

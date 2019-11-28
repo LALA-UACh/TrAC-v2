@@ -65,6 +65,6 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
-  "include": ["api/*.ts", "interfaces/*.ts", "constants/*"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules/**", "client", "typings/@vx"]
 }
