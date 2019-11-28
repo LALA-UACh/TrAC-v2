@@ -9,9 +9,9 @@
     "build": "next build",
     "build-api": "tsc -P tsconfig.api.json",
     "clean": "rm -rf logs/*",
-    "dev": "pm2 start ecosystem.yaml --only \"api,next-dev,worker\"",
+    "dev": "pm2 start ecosystem.yaml --only \"api-dev,next-dev,worker\"",
     "postinstall": "prettier --write -c \"**/*.ts\" -c \"**/*.tsx\" && yarn build-api && yarn build",
-    "start": "pm2 start ecosystem.yaml --env production --only \"api,next-prod,worker\"",
+    "start": "pm2 start ecosystem.yaml --env production --only \"api-prod,next-prod,worker\"",
     "stop": "pm2 delete ecosystem.yaml"
   },
   "dependencies": {

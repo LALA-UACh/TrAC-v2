@@ -1,5 +1,5 @@
 apps:
-  - name: api
+  - name: api-dev
     script: dist/api/index.js
     interpreter_args:
       - -r
@@ -10,10 +10,26 @@ apps:
     wait_ready: true
     env:
       NODE_ENV: development
-    env_production:
+    out_file: logs/out_api-dev.log
+    error_file: logs/error_api-dev.log
+    combine_logs: true
+    time: true
+    max_restarts: 10
+    watch:
+      - dist
+  - name: api-prod
+    script: dist/api/index.js
+    interpreter_args:
+      - -r
+      - dotenv/config
+    exec_mode: cluster
+    instances: 1
+    restart_delay: 10000
+    wait_ready: true
+    env:
       NODE_ENV: production
-    out_file: logs/out_api.log
-    error_file: logs/error_api.log
+    out_file: logs/out_api-prod.log
+    error_file: logs/error_api-prod.log
     combine_logs: true
     time: true
     max_restarts: 10

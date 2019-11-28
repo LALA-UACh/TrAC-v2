@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import {
   ChangeEvent,
@@ -105,6 +106,7 @@ export const SearchBar: FC<{
             value={program}
             isLoading={isSearchLoading}
             isDisabled={isSearchLoading}
+            placeholder="..."
             onChange={selected => {
               setProgram(
                 selected as $ElementType<typeof programsOptions, number>
@@ -144,7 +146,7 @@ export const SearchBar: FC<{
               primary
               loading={isSearchLoading}
               type="submit"
-              disabled={!student_id}
+              disabled={!student_id || isSearchLoading}
               onClick={async ev => {
                 ev.preventDefault();
                 if (program) {
@@ -174,18 +176,29 @@ export const SearchBar: FC<{
               <Icon name="search" />
               {SEARCH_BUTTON_LABEL}
             </Button>
-            {!isSearchLoading && error && (
-              <Alert
-                status="error"
-                borderRadius={4}
-                whiteSpace="pre-wrap"
-                mt={5}
-                mb={5}
-              >
-                <AlertIcon />
-                <AlertTitle mr={2}>{error}</AlertTitle>
-              </Alert>
-            )}
+            <AnimatePresence>
+              {!isSearchLoading && error && (
+                <motion.div
+                  initial={{ scale: 0.7, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.5, opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Alert
+                    key="error"
+                    status="error"
+                    borderRadius={4}
+                    whiteSpace="pre-wrap"
+                    mt={5}
+                    mb={5}
+                    maxWidth="40vw"
+                  >
+                    <AlertIcon />
+                    <AlertTitle mr={2}>{error}</AlertTitle>
+                  </Alert>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Flex>
         </form>
       </Flex>

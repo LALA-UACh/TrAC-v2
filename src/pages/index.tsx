@@ -7,7 +7,7 @@ import { useLogger } from "react-use";
 import { Box, Stack } from "@chakra-ui/core";
 
 import { defaultStateCourse, defaultTermType } from "../../constants";
-import data from "../../constants/data.json";
+import data from "../../constants/data";
 import {
   ICourse,
   IDistribution,

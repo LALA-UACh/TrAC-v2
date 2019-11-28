@@ -11,36 +11,35 @@ console.log(
 );
 
 const APIWorker = async () => {
-  const APIWP = new Watchpack({
-    ignored: ["node_modules", ".git", ".next", "logs"],
-  });
+  if (production) {
+    const APIWP = new Watchpack({
+      ignored: ["node_modules", ".git", ".next", "logs"],
+    });
 
-  APIWP.watch(
-    ["api/*", "constants/*", "package.json", "tsconfig.api.json"],
-    ["api", "constants"],
-    Date.now()
-  );
+    APIWP.watch(
+      ["api/*", "constants/*", "package.json", "tsconfig.api.json"],
+      ["api", "constants"],
+      Date.now()
+    );
 
-  const buildAndStart = () => {
-    installDependencies();
-    const build = Shell.exec("yarn build-api", { silent: false });
-    if (build.code === 0) {
-      const APIReload = Shell.exec(
-        `pm2 reload ecosystem.yaml ${
-          production ? "--env production" : ""
-        } --only api`,
-        { silent: true }
-      );
+    APIWP.on("change", async changed => {
+      console.log({ changed });
+      installDependencies();
+      const build = Shell.exec("yarn build-api", { silent: false });
+      if (build.code === 0) {
+        const APIReload = Shell.exec(
+          `pm2 reload ecosystem.yaml --only api-prod`,
+          { silent: true }
+        );
 
-      if (APIReload.code === 0) {
-        console.log("API Reloaded!");
+        if (APIReload.code === 0) {
+          console.log("API Reloaded!");
+        }
       }
-    }
-  };
-  APIWP.on("change", async changed => {
-    console.log({ changed });
-    buildAndStart();
-  });
+    });
+  } else {
+    Shell.exec(`yarn build-api -w`, { async: true });
+  }
 };
 
 const ClientWorker = async () => {
@@ -53,18 +52,6 @@ const ClientWorker = async () => {
     );
   };
 
-  const build = () => {
-    installDependencies();
-    const yarnBuild = Shell.exec("yarn build", {
-      silent: false,
-    });
-
-    if (yarnBuild.code === 0) {
-      if (reloadNext().code === 0) {
-        console.log("Client Reloaded!");
-      }
-    }
-  };
   if (production) {
     const ClientWP = new Watchpack({
       ignored: ["node_modules", ".git", ".next", "logs"],
@@ -85,10 +72,17 @@ const ClientWorker = async () => {
 
     ClientWP.on("change", async changed => {
       console.log({ changed });
-      build();
+      installDependencies();
+      const yarnBuild = Shell.exec("yarn build", {
+        silent: false,
+      });
+
+      if (yarnBuild.code === 0) {
+        if (reloadNext().code === 0) {
+          console.log("Client Reloaded!");
+        }
+      }
     });
-  } else {
-    reloadNext();
   }
 };
 
@@ -97,7 +91,7 @@ ClientWorker();
 
 if (process.env.NODE_ENV === "production") {
   setInterval(async () => {
-    Shell.exec("git fetch && git reset --mixed origin/master", {
+    Shell.exec("git fetch && git reset --hard origin/master", {
       silent: true,
     });
   }, ms("1 minute"));

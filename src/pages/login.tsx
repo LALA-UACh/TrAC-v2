@@ -117,7 +117,10 @@ const Login: FC = () => {
               <Segment size="big" basic>
                 <Field name="email" type="email" initialValue="">
                   {({ input, meta: { touched, error } }) => (
-                    <FormSemantic.Field error={error && touched}>
+                    <FormSemantic.Field
+                      error={error && touched}
+                      disabled={loading}
+                    >
                       <label>Correo Electrónico</label>
                       <Input {...input} placeholder="email@uach.cl" />
                       <label>{touched && error}</label>
@@ -127,7 +130,10 @@ const Login: FC = () => {
 
                 <Field name="password" initialValue="" type="password">
                   {({ input, meta: { touched, error } }) => (
-                    <FormSemantic.Field error={error && touched}>
+                    <FormSemantic.Field
+                      error={error && touched}
+                      disabled={loading}
+                    >
                       <label>Contraseña</label>
                       <Input {...input} placeholder="contraseña" />
                       {<label>{touched && error}</label>}
@@ -143,6 +149,7 @@ const Login: FC = () => {
                     setSession(!session);
                   }}
                   checked={session}
+                  disabled={loading}
                 />
               </Segment>
               <Segment basic>
@@ -151,9 +158,10 @@ const Login: FC = () => {
                   type="submit"
                   size="big"
                   color="blue"
-                  disabled={pristine || invalid}
+                  disabled={pristine || invalid || loading}
                   icon
                   labelPosition="left"
+                  loading={loading}
                 >
                   <Icon name="sign-in" />
                   Ingresar
