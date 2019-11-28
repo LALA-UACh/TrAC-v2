@@ -60,3 +60,5 @@ jspm_packages/
 .next
 
 dist
+
+last_build.txt

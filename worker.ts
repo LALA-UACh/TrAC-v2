@@ -1,14 +1,44 @@
+import fs from "fs";
 import ms from "ms";
 import Shell from "shelljs";
+import { isInt } from "validator";
 import Watchpack from "watchpack";
 
-const installDependencies = () => {
-  Shell.exec("yarn --frozen-lockfile --production=false", { silent: true });
-};
 const production = process.env.NODE_ENV === "production";
 console.log(
   `Worker started in ${production ? "production" : "development"} mode!`
 );
+
+let dateWatch = Date.now();
+try {
+  if (fs.existsSync("last_build.txt")) {
+    const lastWatchTxt = fs.readFileSync("last_build.txt", {
+      encoding: "utf8",
+    });
+    if (isInt(lastWatchTxt)) {
+      dateWatch = parseInt(lastWatchTxt, 10);
+    }
+  } else {
+    fs.writeFileSync("last_build.txt", dateWatch.toString(), {
+      encoding: "utf8",
+    });
+  }
+} catch (err) {
+  console.error(err);
+}
+
+const installDependencies = (changed: string) => {
+  try {
+    fs.writeFileSync("last_build.txt", Date.now().toString(), {
+      encoding: "utf8",
+    });
+    if (changed.includes("package.json")) {
+      Shell.exec("yarn --frozen-lockfile --production=false", { silent: true });
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 const APIWorker = async () => {
   if (production) {
@@ -19,12 +49,12 @@ const APIWorker = async () => {
     APIWP.watch(
       ["api/*", "constants/*", "package.json", "tsconfig.api.json"],
       ["api", "constants"],
-      Date.now()
+      dateWatch
     );
 
     APIWP.on("change", async changed => {
       console.log({ changed });
-      installDependencies();
+      installDependencies(changed);
       const build = Shell.exec("yarn build-api", { silent: false });
       if (build.code === 0) {
         const APIReload = Shell.exec(
@@ -67,12 +97,12 @@ const ClientWorker = async () => {
         "tsconfig.json",
       ],
       ["src", "typings", "public", "constants"],
-      Date.now()
+      dateWatch
     );
 
     ClientWP.on("change", async changed => {
       console.log({ changed });
-      installDependencies();
+      installDependencies(changed);
       const yarnBuild = Shell.exec("yarn build", {
         silent: false,
       });
