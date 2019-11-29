@@ -31,7 +31,10 @@ const Dashboard: FC = () => {
   const { data: currentUserData } = useQuery(currentUserQuery, {
     fetchPolicy: "cache-only",
   });
-  const [mock, setMock] = useRememberState("mockMode", false);
+  const [mock, setMock] = useRememberState(
+    "mockMode",
+    !!currentUserData?.currentUser?.admin
+  );
   const trackingData = useRef<TrackingRef>({ track: async () => {} });
   const [
     searchProgram,

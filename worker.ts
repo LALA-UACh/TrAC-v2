@@ -3,6 +3,8 @@ import { throttle } from "lodash";
 import ms from "ms";
 import Shell from "shelljs";
 
+const gitRemoteUrl = "git://github.com/LALA-UACh/TrAC-v2";
+
 const production = process.env.NODE_ENV === "production";
 console.log(
   `Worker started in ${production ? "production" : "development"} mode!`
@@ -59,7 +61,7 @@ const APIWorker = async () => {
       }
     });
   } else {
-    Shell.exec(`yarn build-api -w`, { async: true });
+    Shell.exec(`yarn build-api -w --sourceMap`, { async: true });
   }
 };
 
@@ -121,10 +123,20 @@ APIWorker();
 ClientWorker();
 
 if (process.env.NODE_ENV === "production") {
+  let gitRemote = Shell.exec(`git ls-remote ${gitRemoteUrl}`, {
+    silent: true,
+  }).stdout;
+
   setInterval(async () => {
-    Shell.exec("git fetch && git reset --hard origin/master", {
+    const gitRemoteStatus = Shell.exec(`git ls-remote ${gitRemoteUrl}`, {
       silent: true,
-      async: true,
-    });
-  }, ms("1 minute"));
+    }).stdout;
+    if (gitRemoteStatus !== gitRemote) {
+      // If there is a change in the remote repository, fetch it and reset the local repository to it's head
+      gitRemote = gitRemoteStatus;
+      Shell.exec("git fetch && git reset --hard origin/master", {
+        async: true,
+      });
+    }
+  }, ms("30 seconds"));
 }
