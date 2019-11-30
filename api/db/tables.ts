@@ -1,4 +1,4 @@
-import { dbAuth, dbConfig, dbLALA, dbTracking } from "./";
+import { dbAuth, dbConfig, dbData, dbTracking } from "./";
 
 // TODO: Specify nullable fields
 
@@ -9,7 +9,7 @@ export interface IProgram {
   state: string;
 }
 
-export const ProgramTable = () => dbLALA<IProgram>("program");
+export const ProgramTable = () => dbData<IProgram>("program");
 
 // -------------------------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ export interface ICourse {
   description: string;
 }
 
-export const CourseTable = () => dbLALA<ICourse>("course");
+export const CourseTable = () => dbData<ICourse>("course");
 
 // -------------------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ export interface IProgramStructure {
 }
 
 export const ProgramStructureTable = () =>
-  dbLALA<IProgramStructure>("program_structure");
+  dbData<IProgramStructure>("program_structure");
 
 // -------------------------------------------------------------------------------------
 
@@ -52,7 +52,7 @@ export interface IStudentProgram {
 }
 
 export const StudentProgramTable = () =>
-  dbLALA<IStudentProgram>("student_program");
+  dbData<IStudentProgram>("student_program");
 
 // -------------------------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ export interface IStudentTerm {
   notes: never;
 }
 
-export const StudentTermTable = () => dbLALA<IStudentTerm>("student_term");
+export const StudentTermTable = () => dbData<IStudentTerm>("student_term");
 
 // -------------------------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ export interface IStudentCourse {
 }
 
 export const StudentCourseTable = () =>
-  dbLALA<IStudentCourse>("student_course");
+  dbData<IStudentCourse>("student_course");
 
 // -------------------------------------------------------------------------------------
 
@@ -98,10 +98,11 @@ export interface IStudentDropout {
 }
 
 export const StudentDropoutTable = () =>
-  dbLALA<IStudentDropout>("student_dropout");
+  dbData<IStudentDropout>("student_dropout");
 
 // -------------------------------------------------------------------------------------
 
+export const USERS_TABLE = "users";
 export interface IUser {
   email: string;
   password: string;
@@ -118,7 +119,7 @@ export interface IUser {
   show_dropout: boolean;
 }
 
-export const UserTable = () => dbAuth<IUser>("users");
+export const UserTable = () => dbAuth<IUser>(USERS_TABLE);
 
 // -------------------------------------------------------------------------------------
 
@@ -127,10 +128,10 @@ export interface IUserPrograms {
   program: string;
 }
 
-export const UserProgramsTableName = "user-programs";
+export const USER_PROGRAMS_TABLE = "user-programs";
 
 export const UserProgramsTable = () =>
-  dbAuth<IUserPrograms>(UserProgramsTableName);
+  dbAuth<IUserPrograms>(USER_PROGRAMS_TABLE);
 
 // -------------------------------------------------------------------------------------
 
@@ -148,7 +149,9 @@ export interface ITrack {
   data: string;
 }
 
-export const TrackingTable = () => dbTracking<ITrack>("tracking");
+export const TRACKING_TABLE = "tracking";
+
+export const TrackingTable = () => dbTracking<ITrack>(TRACKING_TABLE);
 
 // -------------------------------------------------------------------------------------
 

@@ -36,18 +36,21 @@ const Login: FC = () => {
     }
   }, [session]);
 
-  const [login, { data, loading }] = useMutation(loginMutation, {
-    update: (cache, { data }) => {
-      if (data?.login.user) {
-        cache.writeQuery({
-          query: currentUserQuery,
-          data: {
-            currentUser: data.login.user,
-          },
-        });
-      }
-    },
-  });
+  const [login, { data, loading, error: errorMutation }] = useMutation(
+    loginMutation,
+    {
+      update: (cache, { data }) => {
+        if (data?.login.user) {
+          cache.writeQuery({
+            query: currentUserQuery,
+            data: {
+              currentUser: data.login.user,
+            },
+          });
+        }
+      },
+    }
+  );
 
   return (
     <Grid centered padded>
@@ -61,17 +64,20 @@ const Login: FC = () => {
         />
       </Grid.Row>
 
-      {!loading && data?.login?.error && (
+      {!loading && (data?.login?.error || errorMutation) && (
         <Grid.Row>
           <Message negative>
             <Message.Header>Error!</Message.Header>
             {(() => {
-              switch (data.login.error) {
+              switch (data?.login?.error) {
                 case WRONG_INFO:
                   return "Información ingresada erronea. Verificar datos o su cuenta puede ser bloqueda por seguridad.";
                 case LOCKED_USER:
                   return "Usuario bloqueado. Por favor revisar correo para recuperar su cuenta.";
                 default:
+                  if (errorMutation) {
+                    return errorMutation.message;
+                  }
                   return data.login.error;
               }
             })()}

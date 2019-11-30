@@ -16,7 +16,7 @@
     "start": "pm2 start ecosystem.yaml --env production --only \"api-prod,next-prod,worker\"",
     "stop": "pm2 delete ecosystem.yaml",
     "watch-api-build": "tsc -P api -w",
-    "watch-api-run": "nodemon --delay 2 -r dotenv/config --inspect=27050 api/dist/api/index.js",
+    "watch-api-run": "nodemon -r dotenv/config --inspect=27050 api/dist/api/index.js",
     "watch-client": "next"
   },
   "dependencies": {

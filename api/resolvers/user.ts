@@ -20,8 +20,8 @@ import {
   IUser,
   IUserPrograms,
   ProgramTable,
+  USER_PROGRAMS_TABLE,
   UserProgramsTable,
-  UserProgramsTableName,
   UserTable,
 } from "../db/tables";
 import {
@@ -56,14 +56,14 @@ export class UserResolver {
   ): Promise<User[]> {
     const trx = await dbAuth.transaction();
     try {
-      await trx<IUserPrograms>(UserProgramsTableName)
+      await trx<IUserPrograms>(USER_PROGRAMS_TABLE)
         .delete()
         .whereIn("program", oldPrograms)
         .andWhere({
           email,
         });
 
-      await trx<IUserPrograms>(UserProgramsTableName).insert(
+      await trx<IUserPrograms>(USER_PROGRAMS_TABLE).insert(
         programs.map(program => ({
           email,
           program: program.toString(),

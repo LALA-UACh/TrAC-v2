@@ -6,23 +6,28 @@ pg.types.setTypeParser(1700, parseFloat);
 
 const dbPassword = process.env.POSTGRES_PASSWORD;
 
+const authDbName = "auth-lala";
+const dataDbName = "lalauach";
+const trackingDbName = "tracking";
+const configDbName = "config";
+
 export const dbAuth = knex({
   client: "pg",
   connection: {
     host: "localhost",
     user: "postgres",
-    database: "auth-lala",
+    database: authDbName,
     password: dbPassword,
   },
   // debug: true
 });
 
-export const dbLALA = knex({
+export const dbData = knex({
   client: "pg",
   connection: {
     host: "localhost",
     user: "postgres",
-    database: "lalauach",
+    database: dataDbName,
     password: dbPassword,
   },
   // debug: true,
@@ -33,7 +38,7 @@ export const dbTracking = knex({
   connection: {
     host: "localhost",
     user: "postgres",
-    database: "tracking",
+    database: trackingDbName,
     password: dbPassword,
   },
   // debug: true,
@@ -44,7 +49,7 @@ export const dbConfig = knex({
   connection: {
     host: "localhost",
     user: "postgres",
-    database: "config",
+    database: configDbName,
     password: dbPassword,
   },
   // debug: true,

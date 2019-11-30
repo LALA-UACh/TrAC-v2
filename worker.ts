@@ -92,7 +92,7 @@ const ClientWorker = async () => {
 
     const onChange = throttle(
       () => {
-        const yarnBuild = Shell.exec("yarn build", {
+        const yarnBuild = Shell.exec("yarn build-client", {
           silent: false,
         });
 
