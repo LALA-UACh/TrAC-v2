@@ -1,66 +1,28 @@
 apps:
-  - name: api-dev
+  - name: api
     script: api/dist/api/index.js
     interpreter_args:
       - -r
       - dotenv/config
     exec_mode: cluster
     instances: 1
-    restart_delay: 10000
-    wait_ready: true
-    env:
-      NODE_ENV: development
-    out_file: logs/out_api-dev.log
-    error_file: logs/error_api-dev.log
-    combine_logs: true
-    time: true
-    max_restarts: 10
-    watch:
-      - api/dist
-  - name: api-prod
-    script: api/dist/api/index.js
-    interpreter_args:
-      - -r
-      - dotenv/config
-    exec_mode: cluster
-    instances: 1
-    restart_delay: 10000
     wait_ready: true
     env:
       NODE_ENV: production
-    out_file: logs/out_api-prod.log
-    error_file: logs/error_api-prod.log
+    out_file: logs/out_api.log
+    error_file: logs/error_api.log
     combine_logs: true
     time: true
-    max_restarts: 10
-  - name: next-dev
+  - name: client
     script: next-hook.js
     interpreter: node
     interpreter_args:
       - -r
       - dotenv/config
-    watch:
-      - ./next-hook.js
-    out_file: logs/out_client-dev.log
-    error_file: logs/error_client-dev.log
-    combine_logs: true
-    time: true
-    autorestart: false
-    wait_ready: true
-    env:
-      NODE_ENV: development
-  - name: next-prod
-    script: next-hook.js
-    interpreter: node
-    interpreter_args:
-      - -r
-      - dotenv/config
-    watch:
-      - ./next-hook.js
     exec_mode: cluster
     instances: 1
-    out_file: logs/out_client-prod.log
-    error_file: logs/error_client-prod.log
+    out_file: logs/out_client.log
+    error_file: logs/error_client.log
     combine_logs: true
     time: true
     autorestart: false
@@ -77,11 +39,3 @@ apps:
     error_file: logs/error_worker.log
     combine_logs: true
     time: true
-    watch:
-      - ./worker.ts
-      - ./ts-hook.js
-      - ./ecosystem.yaml
-    env:
-      NODE_ENV: development
-    env_production:
-      NODE_ENV: production
