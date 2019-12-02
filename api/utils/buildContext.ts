@@ -26,7 +26,7 @@ export const buildContext = ({ req, res }: { req: Request; res: Response }) => {
         type: user.type,
       });
     }
-  } catch {}
+  } catch (err) {}
 
   return {
     req,
