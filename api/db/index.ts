@@ -1,4 +1,5 @@
-import knex from "knex";
+import knex, { Config } from "knex";
+import { merge } from "lodash";
 import pg from "pg";
 
 pg.types.setTypeParser(20, "text", parseInt);
@@ -11,52 +12,55 @@ const dataDbName = "lalauach";
 const trackingDbName = "tracking";
 const configDbName = "config";
 
+const baseConfig: Config =
+  process.env.NODE_ENV !== "test"
+    ? {
+        client: "pg",
+        connection: {
+          host: "localhost",
+          user: "postgres",
+          password: dbPassword,
+        },
+      }
+    : {
+        client: "pg",
+      };
+
 export const dbAuth = knex({
-  client: "pg",
-  connection: {
-    host: "localhost",
-    user: "postgres",
-    database: authDbName,
-    password: dbPassword,
-  },
+  ...merge<Config, Config>(baseConfig, {
+    connection: {
+      database: authDbName,
+    },
+  }),
+
   // debug: true
 });
 
 export const dbData = knex({
-  client: "pg",
-  connection: {
-    host: "localhost",
-    user: "postgres",
-    database: dataDbName,
-    password: dbPassword,
-  },
+  ...merge<Config, Config>(baseConfig, {
+    connection: {
+      database: dataDbName,
+    },
+  }),
+
   // debug: true,
 });
 
 export const dbTracking = knex({
-  client: "pg",
-  connection: {
-    host: "localhost",
-    user: "postgres",
-    database: trackingDbName,
-    password: dbPassword,
-  },
+  ...merge<Config, Config>(baseConfig, {
+    connection: {
+      database: trackingDbName,
+    },
+  }),
   // debug: true,
 });
 
 export const dbConfig = knex({
-  client: "pg",
-  ...(process.env.NODE_ENV !== "test"
-    ? {
-        connection: {
-          host: "localhost",
-          user: "postgres",
-          database: configDbName,
-          password: dbPassword,
-        },
-      }
-    : {}),
-
+  ...merge<Config, Config>(baseConfig, {
+    connection: {
+      database: configDbName,
+    },
+  }),
   // debug: true,
 });
 

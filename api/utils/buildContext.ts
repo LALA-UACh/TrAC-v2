@@ -9,8 +9,11 @@ export const buildContext = ({ req, res }: { req: Request; res: Response }) => {
   let user: { email: string; admin: boolean; type: UserType } | undefined;
   let token: string | undefined;
   try {
-    if (req.cookies.authorization) {
-      user = verify(req.cookies.authorization, SECRET) as {
+    if (req.cookies.authorization || req.headers.authorization) {
+      user = verify(
+        req.cookies.authorization || req.headers.authorization,
+        SECRET
+      ) as {
         email: string;
         admin: boolean;
         type: UserType;

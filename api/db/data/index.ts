@@ -11,7 +11,7 @@ import {
   UserTable,
 } from "../../db/tables";
 
-(async () => {
+const dataImport = async () => {
   dbAuth.schema.hasTable(USERS_TABLE).then(async exists => {
     if (!exists) {
       await dbAuth.schema.createTable(USERS_TABLE, table => {
@@ -138,4 +138,8 @@ import {
       });
     }
   });
-})();
+};
+
+if (process.env.NODE_ENV !== "test") {
+  dataImport();
+}
