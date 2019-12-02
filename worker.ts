@@ -3,12 +3,17 @@ import Shell from "shelljs";
 
 const gitRemoteUrl = "git://github.com/LALA-UACh/TrAC-v2";
 
+const branch = "master";
+
 console.log("Worker started!");
 
 const gitRemoteStatus = () => {
-  const { code, stdout } = Shell.exec(`git ls-remote ${gitRemoteUrl}`, {
-    silent: true,
-  });
+  const { code, stdout } = Shell.exec(
+    `git ls-remote --refs --exit-code ${gitRemoteUrl} ${branch}`,
+    {
+      silent: true,
+    }
+  );
 
   return {
     code,
