@@ -46,12 +46,17 @@ export const dbTracking = knex({
 
 export const dbConfig = knex({
   client: "pg",
-  connection: {
-    host: "localhost",
-    user: "postgres",
-    database: configDbName,
-    password: dbPassword,
-  },
+  ...(process.env.NODE_ENV !== "test"
+    ? {
+        connection: {
+          host: "localhost",
+          user: "postgres",
+          database: configDbName,
+          password: dbPassword,
+        },
+      }
+    : {}),
+
   // debug: true,
 });
 

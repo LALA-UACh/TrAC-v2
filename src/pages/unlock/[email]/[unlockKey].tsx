@@ -76,7 +76,7 @@ export default () => {
         cache.writeQuery({
           query: currentUserQuery,
           data: {
-            currentUser: data.unlock.user,
+            currentUser: data.unlock,
           },
         });
         push("/");

@@ -227,7 +227,7 @@ export const SearchBar: FC<{
       </Flex>
 
       <Box>
-        {currentUserData?.currentUser?.admin && (
+        {currentUserData?.currentUser?.user?.admin && (
           <MockingMode mock={mock} setMock={setMock} />
         )}
         <Link href="/logout">

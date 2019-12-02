@@ -6,6 +6,7 @@
 type AuthResult {
   user: User
   error: String
+  token: String
 }
 
 type Course {
@@ -89,7 +90,7 @@ type Program {
 }
 
 type Query {
-  currentUser: User
+  currentUser: AuthResult
   config: JSONObject!
   program(id: Int!): Program
   programs: [Program!]!

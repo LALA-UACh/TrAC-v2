@@ -12,11 +12,9 @@ import {
   WRONG_INFO,
 } from "../../constants";
 import { IContext } from "../../interfaces";
-import { IfImplements } from "../../interfaces/utils";
 import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../consts";
 import { UserTable } from "../db/tables";
 import { AuthResult, LoginInput, UnlockInput } from "../entities/auth";
-import { User } from "../entities/user";
 import { sendMail, UnlockMail } from "../utils/mail";
 
 @Resolver()
@@ -34,26 +32,24 @@ export class AuthResolver {
     admin: boolean;
     type: UserType;
   }) {
-    res.cookie(
-      "authorization",
-      sign({ email, admin, type }, SECRET, {
-        expiresIn: req.cookies?.remember ? "1 day" : "30m",
-      }),
-      {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        expires: addMilliseconds(
-          Date.now(),
-          req.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
-        ),
-      }
-    );
+    const token = sign({ email, admin, type }, SECRET, {
+      expiresIn: req.cookies?.remember ? "1 day" : "30m",
+    });
+
+    res.cookie("authorization", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      expires: addMilliseconds(
+        Date.now(),
+        req.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
+      ),
+    });
+
+    return token;
   }
 
-  @Query(() => User, { nullable: true })
-  async currentUser(
-    @Ctx() { user }: IContext
-  ): Promise<Omit<User, "programs"> | undefined> {
+  @Query(() => AuthResult, { nullable: true })
+  async currentUser(@Ctx() { user, token }: IContext): Promise<AuthResult> {
     if (user) {
       const foundUser = await UserTable()
         .where({
@@ -63,13 +59,17 @@ export class AuthResolver {
         .first();
       if (foundUser) {
         return {
-          ...foundUser,
-          type: defaultUserType(foundUser.type),
+          user: {
+            ...foundUser,
+            type: defaultUserType(foundUser.type),
+            programs: [],
+          },
+          token,
         };
       }
     }
 
-    return undefined;
+    return {};
   }
 
   @Mutation(() => AuthResult)
@@ -77,15 +77,7 @@ export class AuthResolver {
     @Ctx() { req, res }: IContext,
     @Args()
     { email, password: passwordInput }: LoginInput
-  ): Promise<
-    IfImplements<
-      {
-        error?: string;
-        user?: Omit<User, "programs">;
-      },
-      AuthResult
-    >
-  > {
+  ): Promise<AuthResult> {
     let user = await UserTable()
       .first()
       .where({
@@ -97,7 +89,13 @@ export class AuthResolver {
         return { error: LOCKED_USER };
       } else if (user.password === passwordInput) {
         const type = defaultUserType(user.type);
-        AuthResolver.authenticate({
+        UserTable()
+          .update({
+            tries: 0,
+          })
+          .where({ email })
+          .catch(err => JSON.stringify(err, null, 2));
+        const token = AuthResolver.authenticate({
           req,
           res,
           email,
@@ -109,7 +107,9 @@ export class AuthResolver {
           user: {
             ...user,
             type,
+            programs: [],
           },
+          token,
         };
       } else {
         if (user.tries && user.tries >= 2) {
@@ -165,15 +165,7 @@ export class AuthResolver {
     @Ctx() { req, res }: IContext,
     @Args()
     { email, password: passwordInput, unlockKey }: UnlockInput
-  ): Promise<
-    IfImplements<
-      {
-        error?: string;
-        user?: Omit<User, "programs">;
-      },
-      AuthResult
-    >
-  > {
+  ): Promise<AuthResult> {
     let user = await UserTable()
       .where({ email, unlockKey })
       .first();
@@ -207,7 +199,7 @@ export class AuthResolver {
               .returning("*")
           )[0];
           if (user) {
-            AuthResolver.authenticate({
+            const token = AuthResolver.authenticate({
               req,
               res,
               email,
@@ -218,7 +210,9 @@ export class AuthResolver {
               user: {
                 ...user,
                 type,
+                programs: [],
               },
+              token,
             };
           }
           return { error: WRONG_INFO };

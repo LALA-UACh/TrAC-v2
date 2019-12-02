@@ -7,7 +7,7 @@ import { AuthResolver } from "../resolvers/auth";
 
 export const buildContext = ({ req, res }: { req: Request; res: Response }) => {
   let user: { email: string; admin: boolean; type: UserType } | undefined;
-
+  let token: string | undefined;
   try {
     if (req.cookies.authorization) {
       user = verify(req.cookies.authorization, SECRET) as {
@@ -15,7 +15,7 @@ export const buildContext = ({ req, res }: { req: Request; res: Response }) => {
         admin: boolean;
         type: UserType;
       };
-      AuthResolver.authenticate({
+      token = AuthResolver.authenticate({
         req,
         res,
         email: user.email,
@@ -29,5 +29,6 @@ export const buildContext = ({ req, res }: { req: Request; res: Response }) => {
     req,
     res,
     user,
+    token,
   };
 };

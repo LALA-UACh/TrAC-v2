@@ -33,7 +33,7 @@ const Dashboard: FC = () => {
   });
   const [mock, setMock] = useRememberState(
     "mockMode",
-    !!currentUserData?.currentUser?.admin
+    !!currentUserData?.currentUser?.user?.admin
   );
   const trackingData = useRef<TrackingRef>({ track: async () => {} });
   const [
@@ -61,7 +61,7 @@ const Dashboard: FC = () => {
   });
 
   useEffect(() => {
-    if (!currentUserData?.currentUser?.admin && mock === true) {
+    if (!currentUserData?.currentUser?.user?.admin && mock === true) {
       setMock(false);
     }
   }, [currentUserData, mock, setMock]);
@@ -136,7 +136,7 @@ const Dashboard: FC = () => {
       );
       if (
         searchStudentData.student.dropout?.active &&
-        currentUserData?.currentUser?.show_dropout
+        currentUserData?.currentUser?.user?.show_dropout
       ) {
         DropoutComponent = (
           <Dropout
@@ -147,70 +147,71 @@ const Dashboard: FC = () => {
       }
     }
     if (searchProgramData) {
-      const curriculums = searchProgramData.program.curriculums.map(
-        ({ semesters: curriculumSemesters, id: curriculumId }) => {
-          const semesters = curriculumSemesters.map(va => {
-            const semester = va.courses.map(
-              ({
-                code,
-                name,
-                credits,
-                flow,
-                requisites,
-                historicalDistribution,
-              }) => {
-                return {
+      const curriculums =
+        searchProgramData?.program?.curriculums.map(
+          ({ semesters: curriculumSemesters, id: curriculumId }) => {
+            const semesters = curriculumSemesters.map(va => {
+              const semester = va.courses.map(
+                ({
                   code,
                   name,
                   credits,
-                  flow: flow.map(({ code }) => {
-                    return code;
-                  }),
-                  requisites: requisites.map(({ code }) => {
-                    return code;
-                  }),
+                  flow,
+                  requisites,
                   historicalDistribution,
-                  taken: (() => {
-                    const taken: ITakenCourse[] = [];
-                    if (searchStudentData) {
-                      for (const {
-                        term,
-                        year,
-                        takenCourses,
-                      } of searchStudentData.student.terms) {
+                }) => {
+                  return {
+                    code,
+                    name,
+                    credits,
+                    flow: flow.map(({ code }) => {
+                      return code;
+                    }),
+                    requisites: requisites.map(({ code }) => {
+                      return code;
+                    }),
+                    historicalDistribution,
+                    taken: (() => {
+                      const taken: ITakenCourse[] = [];
+                      if (searchStudentData) {
                         for (const {
-                          code: courseCode,
-                          registration,
-                          state,
-                          grade,
-                          currentDistribution,
-                          parallelGroup,
-                        } of takenCourses) {
-                          if (courseCode === code) {
-                            taken.push({
-                              term,
-                              year,
-                              registration,
-                              state,
-                              grade,
-                              currentDistribution,
-                              parallelGroup,
-                            });
+                          term,
+                          year,
+                          takenCourses,
+                        } of searchStudentData.student.terms) {
+                          for (const {
+                            code: courseCode,
+                            registration,
+                            state,
+                            grade,
+                            currentDistribution,
+                            parallelGroup,
+                          } of takenCourses) {
+                            if (courseCode === code) {
+                              taken.push({
+                                term,
+                                year,
+                                registration,
+                                state,
+                                grade,
+                                currentDistribution,
+                                parallelGroup,
+                              });
+                            }
                           }
                         }
                       }
-                    }
 
-                    return taken;
-                  })(),
-                };
-              }
-            );
-            return { semester };
-          });
-          return { id: curriculumId, semesters };
-        }
-      );
+                      return taken;
+                    })(),
+                  };
+                }
+              );
+              return { semester };
+            });
+            return { id: curriculumId, semesters };
+          }
+        ) ?? [];
       //TODO: Choose curriculum by id
       const data = curriculums[0];
       if (data) {

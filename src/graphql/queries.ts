@@ -1,8 +1,19 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
+import { AuthResult } from "../../api/entities/auth";
 import { baseConfig, StateCourse, TermType, UserType } from "../../constants";
 import { IfImplements } from "../../typings/utils";
 import { Program, Student, User } from "./medium";
+
+export const UserFragment = gql`
+  fragment UserFragment on User {
+    email
+    name
+    admin
+    type
+    show_dropout
+  }
+`;
 
 export const loginMutation: DocumentNode<
   {
@@ -25,38 +36,36 @@ export const loginMutation: DocumentNode<
   mutation($email: EmailAddress!, $password: String!) {
     login(email: $email, password: $password) {
       user {
-        email
-        name
-        admin
-        type
-        show_dropout
+        ...UserFragment
       }
       error
     }
   }
+  ${UserFragment}
 `;
 
 export const currentUserQuery: DocumentNode<{
   currentUser?: IfImplements<
     {
-      email: string;
-      name: string;
-      admin: boolean;
-      type: UserType;
-      show_dropout: boolean;
+      user?: {
+        email: string;
+        name: string;
+        admin: boolean;
+        type: UserType;
+        show_dropout: boolean;
+      };
     },
-    User
+    AuthResult
   >;
 }> = gql`
   query {
     currentUser {
-      email
-      name
-      admin
-      type
-      show_dropout
+      user {
+        ...UserFragment
+      }
     }
   }
+  ${UserFragment}
 `;
 
 export const unlockMutation: DocumentNode<
@@ -84,15 +93,12 @@ export const unlockMutation: DocumentNode<
   mutation($email: EmailAddress!, $password: String!, $unlockKey: String!) {
     unlock(email: $email, password: $password, unlockKey: $unlockKey) {
       user {
-        email
-        name
-        admin
-        type
-        show_dropout
+        ...UserFragment
       }
       error
     }
   }
+  ${UserFragment}
 `;
 
 export const logoutMutation: DocumentNode<{

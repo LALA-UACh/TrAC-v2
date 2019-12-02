@@ -17,5 +17,5 @@
     "strictPropertyInitialization": false
   },
   "exclude": ["node_modules", "api/*"],
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "**/*.tsx"]
 }

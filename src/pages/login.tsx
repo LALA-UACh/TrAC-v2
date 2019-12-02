@@ -44,7 +44,7 @@ const Login: FC = () => {
           cache.writeQuery({
             query: currentUserQuery,
             data: {
-              currentUser: data.login.user,
+              currentUser: data.login,
             },
           });
         }
@@ -78,7 +78,7 @@ const Login: FC = () => {
                   if (errorMutation) {
                     return errorMutation.message;
                   }
-                  return data.login.error;
+                  return data?.login.error;
               }
             })()}
           </Message>
@@ -182,19 +182,16 @@ const Login: FC = () => {
 };
 
 export default () => {
-  const { data, loading } = useQuery<{ currentUser?: { email: string } }>(
-    currentUserQuery,
-    {
-      ssr: false,
-    }
-  );
+  const { data, loading } = useQuery(currentUserQuery, {
+    ssr: false,
+  });
   useEffect(() => {
-    if (!loading && data && data?.currentUser?.email) {
+    if (!loading && data?.currentUser?.user?.email) {
       Router.push("/");
     }
   }, [loading, data]);
 
-  if (loading || !data || data?.currentUser?.email) {
+  if (loading || data?.currentUser?.user?.email) {
     return null;
   }
   return <Login />;
