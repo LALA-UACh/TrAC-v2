@@ -122,7 +122,7 @@ export class AuthResolver {
               unlockKey,
             });
 
-          sendMail({
+          await sendMail({
             to: email,
             html: UnlockMail({
               email,
@@ -131,20 +131,26 @@ export class AuthResolver {
             subject: "Activación cuenta LALA TrAC",
           })
             .then(result => {
-              console.log(
-                `New locked user! ${email}`,
-                JSON.stringify(result, null, 2)
-              );
+              if (process.env.NODE_ENV !== "test") {
+                console.log(
+                  `New locked user! ${email}`,
+                  JSON.stringify(result, null, 2)
+                );
+              }
             })
             .catch(err => {
-              console.error(
-                `Error trying to send an email to new locked user! ${email}`,
-                JSON.stringify(err, null, 2)
-              );
+              if (process.env.NODE_ENV !== "test") {
+                console.error(
+                  `Error trying to send an email to new locked user! ${email}`,
+                  JSON.stringify(err, null, 2)
+                );
+              }
             });
           return { error: LOCKED_USER };
         } else {
-          await UserTable().increment("tries", 1);
+          await UserTable()
+            .increment("tries", 1)
+            .where({ email });
         }
       }
     }
@@ -173,8 +179,8 @@ export class AuthResolver {
     if (!user) {
       return { error: WRONG_INFO };
     } else {
-      switch (user.password) {
-        case passwordInput:
+      switch (passwordInput) {
+        case user.password:
         case user.oldPassword1:
         case user.oldPassword2:
         case user.oldPassword3: {
