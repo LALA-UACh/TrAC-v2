@@ -8,7 +8,6 @@ import {
   defaultUserType,
   LOCKED_USER,
   USED_OLD_PASSWORD,
-  UserType,
   WRONG_INFO,
 } from "../../constants";
 import { IContext } from "../../interfaces";
@@ -23,16 +22,12 @@ export class AuthResolver {
     req,
     res,
     email,
-    admin,
-    type,
   }: {
     req: Request;
     res: Response;
     email: string;
-    admin: boolean;
-    type: UserType;
   }) {
-    const token = sign({ email, admin, type }, SECRET, {
+    const token = sign({ email }, SECRET, {
       expiresIn: req.cookies?.remember ? "1 day" : "30m",
     });
 
@@ -99,8 +94,6 @@ export class AuthResolver {
           req,
           res,
           email,
-          admin: user.admin,
-          type,
         });
 
         return {
@@ -209,8 +202,6 @@ export class AuthResolver {
               req,
               res,
               email,
-              admin: user.admin,
-              type,
             });
             return {
               user: {

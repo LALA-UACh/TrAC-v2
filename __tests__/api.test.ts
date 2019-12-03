@@ -162,7 +162,6 @@ afterAll(() => {
 });
 
 describe("authentication", () => {
-  test("current user empty", async () => {});
   test("successful login and currentUser", async () => {
     let { query, mutate } = apolloTestClient();
 
