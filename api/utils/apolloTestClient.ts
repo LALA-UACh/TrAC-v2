@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import { createTestClient } from "apollo-server-integration-testing";
+import { createTestClient } from "@pablosz/apollo-server-integration-testing";
 
 import { apolloServer } from "../";
 

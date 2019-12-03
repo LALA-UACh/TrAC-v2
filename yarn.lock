@@ -1294,6 +1294,17 @@
     "@opencensus/core" "^0.0.8"
     uuid "^3.2.1"
 
+"@pablosz/apollo-server-integration-testing@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@pablosz/apollo-server-integration-testing/-/apollo-server-integration-testing-2.3.1.tgz#64b54196816bbcb5dbcbc79b1390faa43ef1ac25"
+  integrity sha512-6oM36F1xxCUoMY8Lcscs7QlD4O3hiGJfSqEqEFls4/q2UKEcEo4JSWiInV9rVckEfPJHGnFEaJOMAJ7riYIIFA==
+  dependencies:
+    apollo-server-core "^2.8.1"
+    apollo-server-express "^2.8.1"
+    express "^4.17.1"
+    node-mocks-http "^1.7.6"
+    typescript "^3.5.3"
+
 "@pm2/agent-node@^1.1.10":
   version "1.1.10"
   resolved "https://registry.yarnpkg.com/@pm2/agent-node/-/agent-node-1.1.10.tgz#29fafc9d1b75288dec87b6af1216ddfab8ea9b06"
