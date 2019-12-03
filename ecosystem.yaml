@@ -14,7 +14,8 @@ apps:
     combine_logs: true
     time: true
   - name: client
-    script: next-hook.js
+    script: node_modules/next/dist/bin/next
+    args: start
     interpreter: node
     interpreter_args:
       - -r
@@ -26,7 +27,6 @@ apps:
     combine_logs: true
     time: true
     autorestart: false
-    wait_ready: true
     env:
       NODE_ENV: production
   - name: worker
