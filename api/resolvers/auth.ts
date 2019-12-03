@@ -89,7 +89,9 @@ export class AuthResolver {
             tries: 0,
           })
           .where({ email })
-          .catch(err => JSON.stringify(err, null, 2));
+          .catch(err => {
+            console.error(JSON.stringify(err, null, 2));
+          });
         const token = AuthResolver.authenticate({
           req,
           res,

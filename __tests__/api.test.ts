@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
 import sha1 from "crypto-js/sha1";
-import { set, update } from "lodash";
+import { update } from "lodash";
 import { getTracker, mock, Tracker } from "mock-knex";
 
 import { dbAuth, dbConfig, dbData, dbTracking } from "../api/db";
@@ -90,15 +90,20 @@ beforeAll(() => {
         const userIndex = usersTable.findIndex(({ email }) => {
           return email === bindings[1];
         });
-        set(usersTable, [userIndex, "tries"], bindings[0]);
+        update(usersTable, userIndex, user => {
+          user.tries = bindings[0];
+
+          return user;
+        });
         return response([]);
       }
       case `update "users" set "tries" = "tries" + $1 where "email" = $2`: {
         const userIndex = usersTable.findIndex(({ email }) => {
           return email === bindings[1];
         });
-        update(usersTable, [userIndex, "tries"], (tries: number) => {
-          return tries + (bindings[0] as number);
+        update(usersTable, userIndex, user => {
+          user.tries = user.tries + (bindings[0] as number);
+          return user;
         });
         return response([]);
       }
@@ -116,12 +121,13 @@ beforeAll(() => {
         return response([]);
       }
       case `select * from "users" where "email" = $1 and "unlockKey" = $2 limit $3`: {
-        const foundUsers = usersTable
-          .filter(({ email, unlockKey }) => {
-            return email === bindings[0] && unlockKey === bindings[1];
-          })
-          .slice(0, (bindings[2] as number) + 1);
-        return response(foundUsers);
+        return response(
+          usersTable
+            .filter(({ email, unlockKey }) => {
+              return email === bindings[0] && unlockKey === bindings[1];
+            })
+            .slice(0, (bindings[2] as number) + 1)
+        );
       }
       case `update "users" set "password" = $1, "oldPassword1" = $2, "oldPassword2" = $3, "oldPassword3" = $4, "locked" = $5, "tries" = $6, "unlockKey" = $7 where "email" = $8 returning *`: {
         const userIndex = usersTable.findIndex(({ email }) => {
@@ -138,10 +144,11 @@ beforeAll(() => {
           return user;
         });
 
-        const returningUsers = usersTable.filter(({ email }) => {
-          return email === bindings[7];
-        });
-        return response(returningUsers);
+        return response(
+          usersTable.filter(({ email }) => {
+            return email === bindings[7];
+          })
+        );
       }
       default: {
         console.log("Unresolved Query Details", {
@@ -185,48 +192,35 @@ describe("authentication", () => {
       },
     });
 
-    const loginFail = await mutate(
-      gql`
-        mutation($email: EmailAddress!, $password: String!) {
-          login(email: $email, password: $password) {
-            user {
-              email
-            }
-            token
-            error
+    const loginGql = gql`
+      mutation($email: EmailAddress!, $password: String!) {
+        login(email: $email, password: $password) {
+          user {
+            email
           }
+          token
+          error
         }
-      `,
-      {
-        variables: {
-          email: testingUserOk.email,
-          password: testingUserOk.oldPassword1,
-        },
       }
-    );
+    `;
+
+    const loginFail = await mutate(loginGql, {
+      variables: {
+        email: testingUserOk.email,
+        password: testingUserOk.oldPassword1,
+      },
+    });
     expect(loginFail.data.login.token).toBeNull();
     expect(loginFail.data.login.user).toBeNull();
     expect(loginFail.data.login.error).toBe(WRONG_INFO);
+    expect(testingUserOk.tries).toBe(1);
 
-    const loginSuccess = await mutate(
-      gql`
-        mutation($email: EmailAddress!, $password: String!) {
-          login(email: $email, password: $password) {
-            user {
-              email
-            }
-            token
-            error
-          }
-        }
-      `,
-      {
-        variables: {
-          email: testingUserOk.email,
-          password: testingUserOk.password,
-        },
-      }
-    );
+    const loginSuccess = await mutate(loginGql, {
+      variables: {
+        email: testingUserOk.email,
+        password: testingUserOk.password,
+      },
+    });
     expect(loginSuccess.data.login.token).toBeTruthy();
     expect(loginSuccess.data.login.error).toBeNull();
 
@@ -247,6 +241,8 @@ describe("authentication", () => {
         }
       }
     `);
+
+    expect(testingUserOk.tries).toBe(0);
 
     expect(currentUser.user.email).toBe(testingUserOk.email);
   });
