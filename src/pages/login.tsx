@@ -2,7 +2,7 @@ import sha1 from "crypto-js/sha1";
 import { ValidationErrors } from "final-form";
 import Cookies from "js-cookie";
 import Router from "next/router";
-import { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { useUpdateEffect } from "react-use";
 import {
