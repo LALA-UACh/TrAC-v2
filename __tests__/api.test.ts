@@ -169,28 +169,68 @@ afterAll(() => {
 });
 
 describe("authentication", () => {
+  const currentUserGql: DocumentNode<{
+    currentUser: {
+      user?: { email: string };
+      token?: string;
+      error?: string;
+    };
+  }> = gql`
+    query {
+      currentUser {
+        user {
+          email
+        }
+        token
+        error
+      }
+    }
+  `;
+
+  const unlockGql: DocumentNode<
+    {
+      unlock: {
+        user?: { email: string };
+        error?: string;
+        token?: string;
+      };
+    },
+    {
+      email: string;
+      unlockKey: string;
+      password: string;
+    }
+  > = gql`
+    mutation($email: EmailAddress!, $unlockKey: String!, $password: String!) {
+      unlock(email: $email, unlockKey: $unlockKey, password: $password) {
+        user {
+          email
+        }
+        error
+        token
+      }
+    }
+  `;
+
+  const loginGql: DocumentNode<
+    { login: { user?: { email: string }; token?: string; error?: string } },
+    { email: string; password: string }
+  > = gql`
+    mutation($email: EmailAddress!, $password: String!) {
+      login(email: $email, password: $password) {
+        user {
+          email
+        }
+        token
+        error
+      }
+    }
+  `;
+
   test("successful login and currentUser", async () => {
     let { query, mutate, setOptions } = apolloTestClient();
 
-    const currentUserEmpty = await query<{
-      data: {
-        currentUser: {
-          user: null;
-          token: null;
-          error: null;
-        };
-      };
-    }>(gql`
-      query {
-        currentUser {
-          user {
-            email
-          }
-          token
-          error
-        }
-      }
-    `);
+    const currentUserEmpty = await query(currentUserGql);
 
     expect(currentUserEmpty.data).toEqual({
       currentUser: {
@@ -200,30 +240,7 @@ describe("authentication", () => {
       },
     });
 
-    const loginGql: DocumentNode<
-      { login: { user?: { email: string }; token?: string; error?: string } },
-      { email: string; password: string }
-    > = gql`
-      mutation($email: EmailAddress!, $password: String!) {
-        login(email: $email, password: $password) {
-          user {
-            email
-          }
-          token
-          error
-        }
-      }
-    `;
-
-    const loginFail = await mutate<{
-      data: {
-        login: {
-          token: null;
-          user: null;
-          error: string;
-        };
-      };
-    }>(loginGql, {
+    const loginFail = await mutate(loginGql, {
       variables: {
         email: testingUserOk.email,
         password: testingUserOk.oldPassword1,
@@ -234,17 +251,7 @@ describe("authentication", () => {
     expect(loginFail.data.login.error).toBe(WRONG_INFO);
     expect(testingUserOk.tries).toBe(1);
 
-    const loginSuccess = await mutate<{
-      data: {
-        login: {
-          token: string;
-          user: {
-            email: string;
-          };
-          error: null;
-        };
-      };
-    }>(loginGql, {
+    const loginSuccess = await mutate(loginGql, {
       variables: {
         email: testingUserOk.email,
         password: testingUserOk.password,
@@ -266,60 +273,19 @@ describe("authentication", () => {
 
     const {
       data: { currentUser },
-    } = await query<{
-      data: {
-        currentUser: {
-          user: {
-            email: string;
-          };
-        };
-      };
-    }>(gql`
-      query {
-        currentUser {
-          user {
-            email
-          }
-        }
-      }
-    `);
+    } = await query(currentUserGql);
 
     expect(testingUserOk.tries).toBe(0);
 
-    expect(currentUser.user.email).toBe(testingUserOk.email);
+    expect(currentUser.user?.email).toBe(testingUserOk.email);
   });
 
   test("lock and unlock user", async () => {
-    const loginGql: DocumentNode<
-      {
-        data: {
-          login: {
-            token: string;
-            error: string;
-          };
-        };
-      },
-      { email: string; password: string }
-    > = gql`
-      mutation($email: EmailAddress!, $password: String!) {
-        login(email: $email, password: $password) {
-          token
-          error
-        }
-      }
-    `;
     const { mutate, query, setOptions } = apolloTestClient();
 
     const wrongPassword = sha1("wrong").toString();
 
-    const loginTry1 = await mutate<{
-      data: {
-        login: {
-          token: null;
-          error: string;
-        };
-      };
-    }>(loginGql, {
+    const loginTry1 = await mutate(loginGql, {
       variables: {
         email: testingUserLock.email,
         password: wrongPassword,
@@ -329,14 +295,7 @@ describe("authentication", () => {
     expect(loginTry1.data.login.error).toBe(WRONG_INFO);
     expect(loginTry1.data.login.token).toBeNull();
 
-    const loginTry2 = await mutate<{
-      data: {
-        login: {
-          token: null;
-          error: string;
-        };
-      };
-    }>(loginGql, {
+    const loginTry2 = await mutate(loginGql, {
       variables: {
         email: testingUserLock.email,
         password: wrongPassword,
@@ -346,14 +305,7 @@ describe("authentication", () => {
     expect(loginTry2.data.login.error).toBe(WRONG_INFO);
     expect(loginTry2.data.login.token).toBeNull();
 
-    const loginTry3 = await mutate<{
-      data: {
-        login: {
-          token: null;
-          error: string;
-        };
-      };
-    }>(loginGql, {
+    const loginTry3 = await mutate(loginGql, {
       variables: {
         email: testingUserLock.email,
         password: wrongPassword,
@@ -364,39 +316,7 @@ describe("authentication", () => {
 
     expect(testingUserLock.unlockKey).toBeTruthy();
 
-    const unlockGql: DocumentNode<
-      {
-        unlock: {
-          user?: { email: string };
-          error?: string;
-          token?: string;
-        };
-      },
-      {
-        email: string;
-        unlockKey: string;
-        password: string;
-      }
-    > = gql`
-      mutation($email: EmailAddress!, $unlockKey: String!, $password: String!) {
-        unlock(email: $email, unlockKey: $unlockKey, password: $password) {
-          user {
-            email
-          }
-          error
-          token
-        }
-      }
-    `;
-    const unlockTryCurrentPassword = await mutate<{
-      data: {
-        unlock: {
-          user: null;
-          token: null;
-          error: string;
-        };
-      };
-    }>(unlockGql, {
+    const unlockTryCurrentPassword = await mutate(unlockGql, {
       variables: {
         email: testingUserLock.email,
         unlockKey: testingUserLock.unlockKey,
@@ -408,15 +328,7 @@ describe("authentication", () => {
     expect(unlockTryCurrentPassword.data.unlock.token).toBeNull();
     expect(unlockTryCurrentPassword.data.unlock.error).toBe(USED_OLD_PASSWORD);
 
-    const unlockTryOldPassword1 = await mutate<{
-      data: {
-        unlock: {
-          user: null;
-          token: null;
-          error: string;
-        };
-      };
-    }>(unlockGql, {
+    const unlockTryOldPassword1 = await mutate(unlockGql, {
       variables: {
         email: testingUserLock.email,
         unlockKey: testingUserLock.unlockKey,
@@ -428,15 +340,7 @@ describe("authentication", () => {
     expect(unlockTryOldPassword1.data.unlock.token).toBeNull();
     expect(unlockTryOldPassword1.data.unlock.error).toBe(USED_OLD_PASSWORD);
 
-    const unlockTryOldPassword2 = await mutate<{
-      data: {
-        unlock: {
-          user: null;
-          token: null;
-          error: string;
-        };
-      };
-    }>(unlockGql, {
+    const unlockTryOldPassword2 = await mutate(unlockGql, {
       variables: {
         email: testingUserLock.email,
         unlockKey: testingUserLock.unlockKey,
@@ -448,15 +352,7 @@ describe("authentication", () => {
     expect(unlockTryOldPassword2.data.unlock.token).toBeNull();
     expect(unlockTryOldPassword2.data.unlock.error).toBe(USED_OLD_PASSWORD);
 
-    const unlockTryOldPassword3 = await mutate<{
-      data: {
-        unlock: {
-          user: null;
-          token: null;
-          error: string;
-        };
-      };
-    }>(unlockGql, {
+    const unlockTryOldPassword3 = await mutate(unlockGql, {
       variables: {
         email: testingUserLock.email,
         unlockKey: testingUserLock.unlockKey,
@@ -468,15 +364,7 @@ describe("authentication", () => {
     expect(unlockTryOldPassword3.data.unlock.token).toBeNull();
     expect(unlockTryOldPassword3.data.unlock.error).toBe(USED_OLD_PASSWORD);
 
-    const unlockTryWrong = await mutate<{
-      data: {
-        unlock: {
-          user: null;
-          token: null;
-          error: string;
-        };
-      };
-    }>(unlockGql, {
+    const unlockTryWrong = await mutate(unlockGql, {
       variables: {
         email: testingUserOk.email,
         unlockKey: testingUserLock.unlockKey,
@@ -492,17 +380,7 @@ describe("authentication", () => {
 
     const oldTestingUserLock = { ...testingUserLock };
 
-    const unlockTrySuccess = await mutate<{
-      data: {
-        unlock: {
-          user: {
-            email: string;
-          };
-          token: string;
-          error: null;
-        };
-      };
-    }>(unlockGql, {
+    const unlockTrySuccess = await mutate(unlockGql, {
       variables: {
         email: testingUserLock.email,
         unlockKey: testingUserLock.unlockKey,
@@ -510,7 +388,9 @@ describe("authentication", () => {
       },
     });
 
-    expect(unlockTrySuccess.data.unlock.user.email).toBe(testingUserLock.email);
+    expect(unlockTrySuccess.data.unlock.user?.email).toBe(
+      testingUserLock.email
+    );
     expect(unlockTrySuccess.data.unlock.error).toBeNull();
     expect(unlockTrySuccess.data.unlock.token).toBeTruthy();
 
@@ -528,29 +408,11 @@ describe("authentication", () => {
       },
     });
 
-    const currentUser = await query<{
-      data: {
-        currentUser: {
-          user: {
-            email: string;
-          };
-          token: string;
-          error: null;
-        };
-      };
-    }>(gql`
-      query {
-        currentUser {
-          user {
-            email
-          }
-          token
-          error
-        }
-      }
-    `);
+    const currentUser = await query(currentUserGql);
 
-    expect(currentUser.data.currentUser.user.email).toBe(testingUserLock.email);
+    expect(currentUser.data.currentUser.user?.email).toBe(
+      testingUserLock.email
+    );
     expect(currentUser.data.currentUser.token).toBeTruthy();
     expect(currentUser.data.currentUser.error).toBeNull();
   });

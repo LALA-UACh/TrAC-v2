@@ -1303,16 +1303,15 @@
     "@opencensus/core" "^0.0.8"
     uuid "^3.2.1"
 
-"@pablosz/apollo-server-integration-testing@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@pablosz/apollo-server-integration-testing/-/apollo-server-integration-testing-2.3.1.tgz#64b54196816bbcb5dbcbc79b1390faa43ef1ac25"
-  integrity sha512-6oM36F1xxCUoMY8Lcscs7QlD4O3hiGJfSqEqEFls4/q2UKEcEo4JSWiInV9rVckEfPJHGnFEaJOMAJ7riYIIFA==
+"@pablosz/apollo-server-integration-testing@^2.3.5":
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/@pablosz/apollo-server-integration-testing/-/apollo-server-integration-testing-2.3.5.tgz#39a3d81f530a2e6dc7f6d24fcc2a8436addfba98"
+  integrity sha512-2YMPjmbz7CqVwt5Mde3RalPofl2SWgbH/nYV1MPluit3Tqi4B354VyoX+HQfKW/iwEnaQKXR/4EuViVB+dV8WQ==
   dependencies:
-    apollo-server-core "^2.8.1"
-    apollo-server-express "^2.8.1"
+    apollo-server-core "^2.9.13"
+    apollo-server-express "^2.9.13"
     express "^4.17.1"
-    node-mocks-http "^1.7.6"
-    typescript "^3.5.3"
+    node-mocks-http "^1.8.0"
 
 "@pm2/agent-node@^1.1.10":
   version "1.1.10"
@@ -2648,6 +2647,19 @@ apollo-engine-reporting@^1.4.10:
     async-retry "^1.2.1"
     graphql-extensions "^0.10.7"
 
+apollo-engine-reporting@^1.4.11:
+  version "1.4.11"
+  resolved "https://registry.yarnpkg.com/apollo-engine-reporting/-/apollo-engine-reporting-1.4.11.tgz#ea4501925c201e62729a11ce36284a89f1eaa4f5"
+  integrity sha512-7ZkbOGvPfWppN8+1KHzyHPrJTMOmrMUy38unao2c9TTToOAnEvx2MtUTo6mr3aw/g8UQYUf0x2Cq+K2YSlUTPw==
+  dependencies:
+    apollo-engine-reporting-protobuf "^0.4.4"
+    apollo-graphql "^0.3.4"
+    apollo-server-caching "^0.5.0"
+    apollo-server-env "^2.4.3"
+    apollo-server-types "^0.2.8"
+    async-retry "^1.2.1"
+    graphql-extensions "^0.10.7"
+
 apollo-env@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/apollo-env/-/apollo-env-0.6.0.tgz#124c2ab6bac0a9c6761aa7c1f036964fd282b3ac"
@@ -2736,6 +2748,33 @@ apollo-server-core@^2.8.1, apollo-server-core@^2.9.12:
     subscriptions-transport-ws "^0.9.11"
     ws "^6.0.0"
 
+apollo-server-core@^2.9.13:
+  version "2.9.13"
+  resolved "https://registry.yarnpkg.com/apollo-server-core/-/apollo-server-core-2.9.13.tgz#29fee69be56d30605b0a06cd755fd39e0409915f"
+  integrity sha512-iXTGNCtouB0Xe37ySovuZO69NBYOByJlZfUc87gj0pdcz0WbdfUp7qUtNzy3onp63Zo60TFkHWhGNcBJYFluzw==
+  dependencies:
+    "@apollographql/apollo-tools" "^0.4.0"
+    "@apollographql/graphql-playground-html" "1.6.24"
+    "@types/graphql-upload" "^8.0.0"
+    "@types/ws" "^6.0.0"
+    apollo-cache-control "^0.8.8"
+    apollo-datasource "^0.6.3"
+    apollo-engine-reporting "^1.4.11"
+    apollo-server-caching "^0.5.0"
+    apollo-server-env "^2.4.3"
+    apollo-server-errors "^2.3.4"
+    apollo-server-plugin-base "^0.6.8"
+    apollo-server-types "^0.2.8"
+    apollo-tracing "^0.8.8"
+    fast-json-stable-stringify "^2.0.0"
+    graphql-extensions "^0.10.7"
+    graphql-tag "^2.9.2"
+    graphql-tools "^4.0.0"
+    graphql-upload "^8.0.2"
+    sha.js "^2.4.11"
+    subscriptions-transport-ws "^0.9.11"
+    ws "^6.0.0"
+
 apollo-server-env@^2.4.3:
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/apollo-server-env/-/apollo-server-env-2.4.3.tgz#9bceedaae07eafb96becdfd478f8d92617d825d2"
@@ -2749,7 +2788,7 @@ apollo-server-errors@^2.3.4:
   resolved "https://registry.yarnpkg.com/apollo-server-errors/-/apollo-server-errors-2.3.4.tgz#b70ef01322f616cbcd876f3e0168a1a86b82db34"
   integrity sha512-Y0PKQvkrb2Kd18d1NPlHdSqmlr8TgqJ7JQcNIfhNDgdb45CnqZlxL1abuIRhr8tiw8OhVOcFxz2KyglBi8TKdA==
 
-apollo-server-express@^2.8.1, apollo-server-express@^2.9.12:
+apollo-server-express@^2.8.1:
   version "2.9.12"
   resolved "https://registry.yarnpkg.com/apollo-server-express/-/apollo-server-express-2.9.12.tgz#e779ea2c107fcc63b0c9b888a4cbf0f65af6d505"
   integrity sha512-4Ev8MY7m23mSzwO/BvLTy97a/68IP/wZoCRBn2R81OoZt9/GxlvvYZGvozJCXYsQt1qAbIT4Sn05LmqawsI98w==
@@ -2761,6 +2800,28 @@ apollo-server-express@^2.8.1, apollo-server-express@^2.9.12:
     "@types/express" "4.17.1"
     accepts "^1.3.5"
     apollo-server-core "^2.9.12"
+    apollo-server-types "^0.2.8"
+    body-parser "^1.18.3"
+    cors "^2.8.4"
+    express "^4.17.1"
+    graphql-subscriptions "^1.0.0"
+    graphql-tools "^4.0.0"
+    parseurl "^1.3.2"
+    subscriptions-transport-ws "^0.9.16"
+    type-is "^1.6.16"
+
+apollo-server-express@^2.9.13:
+  version "2.9.13"
+  resolved "https://registry.yarnpkg.com/apollo-server-express/-/apollo-server-express-2.9.13.tgz#abb00bcf85d86a6e0e9105ce3b7fae9a7748156b"
+  integrity sha512-M306e07dpZ8YpZx4VBYa0FWlt+wopj4Bwn0Iy1iJ6VjaRyGx2HCUJvLpHZ+D0TIXtQ2nX3DTYeOouVaDDwJeqQ==
+  dependencies:
+    "@apollographql/graphql-playground-html" "1.6.24"
+    "@types/accepts" "^1.3.5"
+    "@types/body-parser" "1.17.1"
+    "@types/cors" "^2.8.4"
+    "@types/express" "4.17.1"
+    accepts "^1.3.5"
+    apollo-server-core "^2.9.13"
     apollo-server-types "^0.2.8"
     body-parser "^1.18.3"
     cors "^2.8.4"
@@ -5927,10 +5988,10 @@ graphql-subscriptions@^1.0.0, graphql-subscriptions@^1.1.0:
   dependencies:
     iterall "^1.2.1"
 
-graphql-tag-ts@^0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/graphql-tag-ts/-/graphql-tag-ts-0.1.9.tgz#ba28cf603dc5bee7420f51cfa336aec0262c643c"
-  integrity sha512-Od23n0GOJAcRR0Qzt7sDXapz2vJytRxLj5hbdrY2LoZAag/74FxCfATf6fO7V7OVQzHxFwSnMfLFskTey/Y13w==
+graphql-tag-ts@^0.1.12:
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/graphql-tag-ts/-/graphql-tag-ts-0.1.12.tgz#5f97c934b25e71c2135855ca7f2b84b0f573bf98"
+  integrity sha512-U2MMXjz4alC6zEK4Fbn9KY0t3a8M0ydxQJLBJwXPZ0pMkzHCeQaMLq6OREu2Wdw+5P3bEQVlXfp2bIBB3WdhXA==
   dependencies:
     graphql-tag "^2.10.1"
 
@@ -8250,7 +8311,7 @@ node-libs-browser@^2.2.1:
     util "^0.11.0"
     vm-browserify "^1.0.1"
 
-node-mocks-http@^1.7.6:
+node-mocks-http@^1.7.6, node-mocks-http@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/node-mocks-http/-/node-mocks-http-1.8.0.tgz#201a882bd1f8473de6a14bf41850d373404fde32"
   integrity sha512-A6YB8+sTiHZPTPf1KfwZ3sAQYSSNJTWd762IOptAmM2d6XUQ9Q1wMh+uJ7a7n2Vy6NKmODfZArqX6Rbmlg+8Fw==
@@ -10073,10 +10134,10 @@ react-transition-group@^2.2.1:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-use@^13.10.1:
-  version "13.10.1"
-  resolved "https://registry.yarnpkg.com/react-use/-/react-use-13.10.1.tgz#07e0432f02a22755f8883c52b94bb7410e3c9f51"
-  integrity sha512-ZCH86HfPVFZcHZVKQYToGLECLGVts//KiBCGdaZpK9bwbXoWw/yEls/uL4mGSLDlyoOKLSWnzNlBTKLtGiHAQw==
+react-use@^13.10.2:
+  version "13.10.2"
+  resolved "https://registry.yarnpkg.com/react-use/-/react-use-13.10.2.tgz#4250d258ca9068662943299c01794a136408c8e9"
+  integrity sha512-z3VFSiPHW6arViGVnajO7YKY5OD+Z9LWcImoJdYHkau23cLSoTctxM3XENLpGxjhJlHaYiQZ6pPgq7pwGTqSZA==
   dependencies:
     copy-to-clipboard "^3.2.0"
     nano-css "^5.2.1"
