@@ -309,7 +309,7 @@ export class UserResolver {
         .select("program")
         .where({ email })
     ).map(({ program }) => {
-      return { id: parseInt(program) };
+      return { id: program };
     });
   }
 }

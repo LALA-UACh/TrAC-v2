@@ -4,7 +4,6 @@ import {
   Authorized,
   Ctx,
   FieldResolver,
-  Int,
   Query,
   Resolver,
   Root,
@@ -15,35 +14,16 @@ import { IContext } from "../../interfaces";
 import { IfImplements } from "../../interfaces/utils";
 import { ADMIN } from "../consts";
 import {
-  CourseTable,
   ProgramStructureTable,
   ProgramTable,
   UserProgramsTable,
 } from "../db/tables";
-import { Course } from "../entities/course";
 import { Program } from "../entities/program";
 import { assertIsDefined } from "../utils";
+import { PartialCourse } from "./course";
 
-const creditsFormat = ({
-  credits,
-  creditsSCT,
-}: {
-  credits?: number;
-  creditsSCT?: number;
-}) => {
-  return [
-    {
-      label: "Credits",
-      value: credits ?? 0,
-    },
-    {
-      label: "SCT",
-      value: creditsSCT ?? 0,
-    },
-  ];
-};
+export type PartialProgram = Pick<Program, "id">;
 
-type PartialCourse = Pick<Course, "id" | "code">;
 @Resolver(() => Program)
 export class ProgramResolver {
   @Authorized()
@@ -51,9 +31,9 @@ export class ProgramResolver {
     nullable: true,
   })
   async program(
-    @Arg("id", () => Int) id: number,
+    @Arg("id") id: string,
     @Ctx() { user }: IContext
-  ): Promise<Pick<Program, "id" | "name" | "desc" | "state"> | undefined> {
+  ): Promise<Pick<Program, "id" | "name" | "desc" | "active"> | undefined> {
     assertIsDefined(user, `Authorization in context is broken`);
 
     if (
@@ -69,7 +49,7 @@ export class ProgramResolver {
     }
 
     return await ProgramTable()
-      .select("id", "name", "desc", "state")
+      .select("id", "name", "desc", "active")
       .where({ id })
       .first();
   }
@@ -92,7 +72,7 @@ export class ProgramResolver {
           email: user.email,
         })
     ).map(({ program }) => ({
-      id: parseInt(program, 10),
+      id: program,
     }));
   }
 
@@ -147,35 +127,61 @@ export class ProgramResolver {
   }
 
   @FieldResolver()
-  async state(
+  async active(
     @Root()
-    { state, id }: Partial<Program>
-  ): Promise<$PropertyType<Program, "state">> {
-    if (state) {
-      return state;
+    { active, id }: Partial<Program>
+  ): Promise<$PropertyType<Program, "active">> {
+    if (active) {
+      return active;
     }
     assertIsDefined(
       id,
       "The id needs to be available for the program fields resolvers"
     );
 
-    const stateData = await ProgramTable()
-      .select("state")
+    const activeData = await ProgramTable()
+      .select("active")
       .where({ id })
       .first();
 
-    assertIsDefined(stateData, `State could not be found for program ${id}`);
+    assertIsDefined(activeData, `State could not be found for program ${id}`);
 
-    return stateData.state;
+    return activeData.active;
+  }
+
+  @FieldResolver()
+  async lastGPA(
+    @Root()
+    { lastGPA, id }: Partial<Program>
+  ): Promise<$PropertyType<Program, "lastGPA">> {
+    if (lastGPA) {
+      return lastGPA;
+    }
+    assertIsDefined(
+      id,
+      "The id needs to be available for the program fields resolvers"
+    );
+
+    const last_gpa_data = await ProgramTable()
+      .select("last_gpa")
+      .where({ id })
+      .first();
+
+    assertIsDefined(
+      last_gpa_data,
+      `State could not be found for program ${id}`
+    );
+
+    return last_gpa_data.last_gpa;
   }
 
   @FieldResolver()
   async curriculums(
-    @Root() { id }: Pick<Program, "id">
+    @Root() { id: program_id }: Pick<Program, "id">
   ): Promise<
     IfImplements<
       {
-        id: number;
+        id: string;
         semesters: {
           id: number;
           courses: PartialCourse[];
@@ -185,32 +191,32 @@ export class ProgramResolver {
     >
   > {
     assertIsDefined(
-      id,
+      program_id,
       "The id needs to be available for the program fields resolvers"
     );
 
     const data = await ProgramStructureTable()
-      .select("id", "curriculum", "semester", "code")
-      .where({ program_id: id });
+      .select("id", "curriculum", "semester", "course_id")
+      .where({ program_id });
 
     const curriculums = data.reduce<
       Record<
-        number /*Curriculum id*/,
+        string /*Curriculum id (program_structure => curriculum)*/,
         {
-          id: number /*Curriculum id*/;
+          id: string /*Curriculum id (program_structure => curriculum)*/;
           semesters: Record<
-            number /*Semester id (1-12)*/,
+            number /*Semester id (program_structure => semester) (1-12)*/,
             {
-              id: number /*Semester id*/;
+              id: number /*Semester id (program_structure => semester)*/;
               courses: {
-                id: number /* Course id (program_structure => id) */;
-                code: string;
+                id: number /* Course-semester-curriculum id (program_structure => id) */;
+                code: string /* Course id (program_structure => course_id) */;
               }[];
             }
           >;
         }
       >
-    >((acum, { curriculum, semester, code, id }) => {
+    >((acum, { curriculum, semester, course_id, id }) => {
       defaultsDeep(acum, {
         [curriculum]: {
           id: curriculum,
@@ -225,7 +231,7 @@ export class ProgramResolver {
 
       acum[curriculum].semesters[semester].courses.push({
         id,
-        code,
+        code: course_id,
       });
       return acum;
     }, {});
@@ -241,128 +247,5 @@ export class ProgramResolver {
         }),
       };
     });
-  }
-}
-
-/**
- * These resolvers assumes that they will always have access to:
- * "id" which comes from program_structure => id
- * "code" which comes from program_structure => code
- */
-@Resolver(() => Course)
-export class CourseResolver {
-  @FieldResolver()
-  async name(
-    @Root()
-    { code }: PartialCourse
-  ): Promise<$PropertyType<Course, "name">> {
-    assertIsDefined(
-      code,
-      "The id and code needs to be available for the course fields resolvers"
-    );
-
-    const nameData = await CourseTable()
-      .select("name")
-      .where({ code })
-      .first();
-
-    assertIsDefined(nameData, `Name not found for course ${code}`);
-
-    return nameData.name;
-  }
-
-  @FieldResolver()
-  async credits(
-    @Root() { id, code }: PartialCourse
-  ): Promise<$PropertyType<Course, "credits">> {
-    assertIsDefined(
-      id,
-      "The id and code needs to be available for the course fields resolvers"
-    );
-
-    const courseData = await ProgramStructureTable()
-      .select("credits", "creditsSCT")
-      .where({ id })
-      .first();
-
-    assertIsDefined(courseData, `Credits could not be found for ${code}`);
-
-    return creditsFormat({
-      credits: courseData?.credits,
-      creditsSCT: courseData?.creditsSCT,
-    });
-  }
-
-  @FieldResolver()
-  async mention(
-    @Root() { id, code }: PartialCourse
-  ): Promise<$PropertyType<Course, "mention">> {
-    assertIsDefined(
-      id,
-      "The id and code needs to be available for the course fields resolvers"
-    );
-
-    const courseData = await ProgramStructureTable()
-      .select("mention")
-      .where({ id })
-      .first();
-
-    assertIsDefined(courseData, `Mention could not be found for ${code}`);
-
-    return courseData.mention;
-  }
-
-  @FieldResolver()
-  async flow(@Root() { id, code }: PartialCourse): Promise<PartialCourse[]> {
-    assertIsDefined(
-      id,
-      "The id and code needs to be available for the course fields resolvers"
-    );
-
-    const flowData = await ProgramStructureTable()
-      .select("id", "code", "requisites")
-      .whereIn(
-        "curriculum",
-        ProgramStructureTable()
-          .select("curriculum")
-          .where({ id })
-      );
-    return flowData.filter(({ requisites }) => {
-      return requisites.includes(code);
-    });
-  }
-
-  @FieldResolver()
-  async requisites(
-    @Root() { id, code }: PartialCourse
-  ): Promise<PartialCourse[]> {
-    assertIsDefined(
-      id,
-      "The id and code needs to be available for the course fields resolvers"
-    );
-
-    const requisitesRaw = await ProgramStructureTable()
-      .select("requisites")
-      .where({ id })
-      .first();
-
-    assertIsDefined(requisitesRaw, `Requisites could not be found for ${code}`);
-
-    return await ProgramStructureTable()
-      .select("id", "code")
-      .whereIn("code", requisitesRaw.requisites?.split(",") ?? []);
-  }
-
-  @FieldResolver()
-  async historicalDistribution(
-    @Root() { id, code }: PartialCourse
-  ): Promise<$PropertyType<Course, "historicalDistribution">[]> {
-    assertIsDefined(
-      code,
-      "The id and code needs to be available for the course fields resolvers"
-    );
-
-    // TODO Courses historical distribution resolver
-    return [];
   }
 }

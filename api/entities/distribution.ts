@@ -2,15 +2,15 @@ import { Field, Int, ObjectType } from "type-graphql";
 
 @ObjectType()
 export class DistributionValue {
-  // ?? // TODO Distribution database definition
-  @Field(() => Int)
-  min: number;
+  // course_stats => histogram_labels
+  @Field()
+  label: string;
 
-  // ?? // TODO Distribution database definition
-  @Field(() => Int)
-  max: number;
-
-  // ? // TODO Distribution database definition
+  // course_stats => histogram
   @Field(() => Int)
   value: number;
+
+  // LOGIC, CHOOSE ACCORDINGLY => course_stats => color_bands
+  @Field()
+  color: string;
 }

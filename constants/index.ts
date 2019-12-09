@@ -156,16 +156,19 @@ export const defaultStateCourse = (type?: string): StateCourse => {
   }
 };
 
-export const defaultTermType = (type?: string): TermType => {
+export const defaultTermType = (type?: string | number): TermType => {
   switch (type) {
     case TermType.First:
     case "1":
+    case 1:
       return TermType.First;
     case TermType.Second:
     case "2":
+    case 2:
       return TermType.Second;
     case TermType.Anual:
     case "3":
+    case 3:
       return TermType.Anual;
     default:
       return TermType.Anual;

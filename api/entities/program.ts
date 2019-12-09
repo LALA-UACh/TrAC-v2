@@ -8,24 +8,25 @@ export class Semester {
   @Field(() => Int)
   id: number;
 
-  // program_structure => code
+  // program_structure => course_id
   @Field(() => [Course])
   courses: Course[];
 }
 @ObjectType()
 export class Curriculum {
   // program_structure => curriculum
-  @Field(() => Int)
-  id: number;
+  @Field()
+  id: string;
 
+  // program_structure => semester
   @Field(() => [Semester])
   semesters: Semester[];
 }
 @ObjectType()
 export class Program {
   // program => id
-  @Field(() => Int)
-  id: number;
+  @Field()
+  id: string;
 
   // program => name
   @Field()
@@ -35,9 +36,13 @@ export class Program {
   @Field()
   desc: string;
 
-  // program => state
+  // program => active
   @Field()
-  state: string;
+  active: boolean;
+
+  // program => last_gpa
+  @Field()
+  lastGPA: number;
 
   // program_structure => curriculum
   @Field(() => [Curriculum])

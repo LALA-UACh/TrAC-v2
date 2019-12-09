@@ -15,7 +15,8 @@ export class TakenCourse implements Pick<Course, "code" | "name"> {
   @Field(() => Int)
   id: number;
 
-  // student_course => course_taken
+  // TODO: Course equivalent logic
+  // student_course => course_taken | student_course => course_equiv | student_course => elect_equiv
   @Field()
   code: string;
 
@@ -35,10 +36,11 @@ export class TakenCourse implements Pick<Course, "code" | "name"> {
   @Field(() => StateCourse)
   state: StateCourse;
 
+  // student_course => p_group
   @Field(() => Int)
   parallelGroup: number;
 
-  // ?? // TODO currentDistribution taken course database definition
+  // course_stats => histogram , histogram_labels, color_bands
   @Field(() => [DistributionValue])
   currentDistribution: DistributionValue[];
 }

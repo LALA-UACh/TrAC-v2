@@ -23,7 +23,7 @@ export class Term {
   @Field(() => Int)
   year: number;
 
-  // student_term => semester
+  // student_term => term
   @Field(() => TermType)
   term: TermType;
 
@@ -39,7 +39,7 @@ export class Term {
   @Field()
   cumulated_grade: number;
 
-  // ?? // TODO Term ProgramPGA database definition
+  // program_last_gpa // TODO Term ProgramPGA field resolver
   @Field()
   program_grade: number;
 

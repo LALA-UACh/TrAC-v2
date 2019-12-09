@@ -45,3 +45,6 @@
   right: 8px;
   top: 80px;
 }
+body {
+  overflow-y: scroll !important;
+}

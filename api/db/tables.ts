@@ -2,39 +2,77 @@ import { dbAuth, dbConfig, dbData, dbTracking } from "./";
 
 // TODO: Specify nullable fields
 
-export interface IProgram {
+export interface ICourse {
+  id: string;
+  name: string;
+  description: string;
+  tags: string;
+  grading: string;
+  grade_min: number;
+  grade_max: number;
+  grade_pass_min: number;
+}
+
+export const CourseTable = () => dbData<ICourse>("course");
+
+// -------------------------------------------------------------------------------------
+export interface ICourseStats {
+  course_taken: string;
+  year: number;
+  term: number;
+  p_group: number;
+  n_total: number;
+  n_finished: number;
+  n_pass: number;
+  n_fail: number;
+  n_drop: number;
+  histogram: string;
+  avg_grade: number;
+  n_grades: number;
   id: number;
+  histogram_labels: string;
+  color_bands: string;
+}
+
+export const CourseStatsTable = () => dbData<ICourseStats>("course_stats");
+
+// -------------------------------------------------------------------------------------
+
+export interface IParameter {
+  passing_grade: number;
+  loading_date: Date;
+}
+
+export const ParameterTable = () => dbData<IParameter>("parameter");
+
+// -------------------------------------------------------------------------------------
+
+export interface IProgram {
+  id: string;
   name: string;
   desc: string;
-  state: string;
+  tags: string;
+  active: boolean;
+  last_gpa: number;
 }
 
 export const ProgramTable = () => dbData<IProgram>("program");
 
 // -------------------------------------------------------------------------------------
 
-export interface ICourse {
-  code: string;
-  name: string;
-  description: string;
-}
-
-export const CourseTable = () => dbData<ICourse>("course");
-
-// -------------------------------------------------------------------------------------
-
 export interface IProgramStructure {
   id: number;
-  program_id: number;
-  curriculum: number;
+  program_id: string;
+  curriculum: string;
   semester: number;
-  code: string;
+  course_id: string;
   credits: number;
-  creditsSCT: number;
   requisites: string;
   mention: string;
   course_cat: string;
   mode: string;
+  credits_sct: number;
+  tags: string;
 }
 
 export const ProgramStructureTable = () =>
@@ -42,39 +80,20 @@ export const ProgramStructureTable = () =>
 
 // -------------------------------------------------------------------------------------
 
-export interface IStudentProgram {
-  id: number;
-  student_id: string;
-  program_id: number;
-  curriculum: number;
-  start_year: number;
-  mention: string;
+export interface IStudent {
+  id: string;
+  name: string;
+  state: string;
 }
 
-export const StudentProgramTable = () =>
-  dbData<IStudentProgram>("student_program");
-
-// -------------------------------------------------------------------------------------
-
-export interface IStudentTerm {
-  id: number;
-  student_id: string;
-  year: number;
-  term: string;
-  situation: string;
-  t_gpa: number;
-  c_gpa: number;
-  notes: never;
-}
-
-export const StudentTermTable = () => dbData<IStudentTerm>("student_term");
+export const StudentTable = () => dbData<IStudent>("student");
 
 // -------------------------------------------------------------------------------------
 
 export interface IStudentCourse {
   id: number;
   year: number;
-  term: string;
+  term: number;
   student_id: string;
   course_taken: string;
   course_equiv: string;
@@ -82,23 +101,44 @@ export interface IStudentCourse {
   registration: string;
   state: string;
   grade: number;
-  pgroup: number;
+  p_group: number;
+  comments: string;
+  instructors: string;
 }
 
 export const StudentCourseTable = () =>
   dbData<IStudentCourse>("student_course");
 
 // -------------------------------------------------------------------------------------
-
 export interface IStudentDropout {
   student_id: string;
   prob_dropout: number;
-  model_accuracy: number;
+  weight_per_semester: string;
   active: boolean;
+  model_accuracy: number;
 }
 
 export const StudentDropoutTable = () =>
   dbData<IStudentDropout>("student_dropout");
+
+// -------------------------------------------------------------------------------------
+
+export interface IStudentTerm {
+  id: number;
+  student_id: string;
+  year: number;
+  term: number;
+  situation: string;
+  t_gpa: number;
+  c_gpa: number;
+  comments: string;
+  program_id: string;
+  curriculum: string;
+  start_year: number;
+  mention: string;
+}
+
+export const StudentTermTable = () => dbData<IStudentTerm>("student_term");
 
 // -------------------------------------------------------------------------------------
 

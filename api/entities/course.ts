@@ -13,10 +13,10 @@ class Credit {
 @ObjectType()
 export class Course {
   // program_structure => id
-  @Field()
+  @Field({ description: "Course-Semester-Curriculum-Program ID " })
   id: number;
 
-  // course => code, program_structure => code
+  // course => id, program_structure => course_id
   @Field()
   code: string;
 
@@ -40,7 +40,7 @@ export class Course {
   @Field(() => [Course])
   requisites: Course[];
 
-  // ?? // TODO Distribution database definition
+  // course_stats => histogram , histogram_labels, color_bands
   @Field(() => [DistributionValue])
   historicalDistribution: DistributionValue[];
 }

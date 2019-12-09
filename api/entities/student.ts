@@ -6,23 +6,31 @@ import { Term } from "./term";
 
 @ObjectType()
 export class Student {
-  // student_program => student_id
+  // student_program => student_id | student => id
   @Field(() => ID)
   id: string;
 
-  // student_program => program_id
+  // student => name
   @Field()
-  program: Program;
+  name: string;
 
-  // student_program => curriculum
-  @Field(() => Int)
-  curriculum: number;
+  // student => state
+  @Field()
+  state: string;
 
-  // student_program => start_year
+  // student_term => distinct(program_id)
+  @Field(() => [Program])
+  programs: Program[];
+
+  // student_term => distinct(curriculum)
+  @Field(() => [String])
+  curriculums: string[];
+
+  // LOGIC LOWEST => student_term => start_year
   @Field(() => Int)
   start_year: number;
 
-  // student_program => mention
+  // LOGIC LATEST student_program => mention
   @Field()
   mention: string;
 

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
+import { generate } from "randomstring";
 import {
   ChangeEvent,
   Dispatch,
@@ -25,9 +26,11 @@ import {
   Input,
 } from "@chakra-ui/core";
 
+import dropout from "../../../constants/mockData/dropout";
 import { currentUserQuery, myProgramsQuery } from "../../graphql/queries";
 import { TrackingContext } from "../Tracking";
 import { ConfigContext } from "./Config";
+import { DropoutList } from "./DropoutList";
 
 const MockingMode: FC<{
   mock: boolean;
@@ -230,6 +233,17 @@ export const SearchBar: FC<{
         {currentUserData?.currentUser?.user?.admin && (
           <MockingMode mock={mock} setMock={setMock} />
         )}
+        <DropoutList
+          data={
+            mock
+              ? Array(20).map(() => ({
+                  student_id: generate(),
+                  probability: dropout.prob_dropout,
+                  accuracy: dropout.model_accuracy,
+                }))
+              : []
+          }
+        />
         <Link href="/logout">
           <Button
             negative

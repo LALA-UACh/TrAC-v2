@@ -10,6 +10,7 @@ type AuthResult {
 }
 
 type Course {
+  """Course-Semester-Curriculum-Program ID """
   id: Float!
   code: String!
   name: String!
@@ -26,7 +27,7 @@ type Credit {
 }
 
 type Curriculum {
-  id: Int!
+  id: String!
   semesters: [Semester!]!
 }
 
@@ -36,9 +37,9 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type DistributionValue {
-  min: Int!
-  max: Int!
+  label: String!
   value: Int!
+  color: String!
 }
 
 type Dropout {
@@ -82,20 +83,21 @@ type Mutation {
 }
 
 type Program {
-  id: Int!
+  id: String!
   name: String!
   desc: String!
-  state: String!
+  active: Boolean!
+  lastGPA: Float!
   curriculums: [Curriculum!]!
 }
 
 type Query {
   currentUser: AuthResult
   config: JSONObject!
-  program(id: Int!): Program
+  program(id: String!): Program
   programs: [Program!]!
   myPrograms: [Program!]!
-  student(program_id: Int, student_id: String!): Student
+  student(program_id: String, student_id: String!): Student
   users: [User!]!
 }
 
@@ -115,8 +117,10 @@ enum StateCourse {
 
 type Student {
   id: ID!
-  program: Program!
-  curriculum: Int!
+  name: String!
+  state: String!
+  programs: [Program!]!
+  curriculums: [String!]!
   start_year: Int!
   mention: String!
   terms: [Term!]!
