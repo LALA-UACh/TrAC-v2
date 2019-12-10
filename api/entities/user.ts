@@ -60,7 +60,7 @@ export class UserProgram {
   @Field(() => EmailAddress)
   email: string;
 
-  @Field(() => Int)
+  @Field(() => String)
   program: number;
 }
 
@@ -102,11 +102,11 @@ export class UpdateUserPrograms {
   @Field(() => EmailAddress)
   email: string;
 
-  @Field(() => [Int])
-  oldPrograms: number[];
+  @Field(() => [String])
+  oldPrograms: string[];
 
-  @Field(() => [Int])
-  programs: number[];
+  @Field(() => [String])
+  programs: string[];
 }
 
 @ObjectType()
