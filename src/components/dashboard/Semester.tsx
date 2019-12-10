@@ -6,7 +6,10 @@ import { ICourse } from "../../../interfaces";
 import { ConfigContext } from "./Config";
 import { CourseBox } from "./CourseBox";
 
-const toRoman = (num: number): string => {
+const toRoman = (num: number, first = false): string => {
+  if (first && num === 0) {
+    return "-";
+  }
   if (num < 1) {
     return "";
   }
@@ -31,8 +34,8 @@ const toRoman = (num: number): string => {
   return "";
 };
 
-export const Semester: FC<{ semester: ICourse[]; n: number }> = memo(
-  ({ semester, n }) => {
+export const Semester: FC<{ courses: ICourse[]; n: number }> = memo(
+  ({ courses: semester, n }) => {
     const { SEMESTER_HEADER_TEXT_COLOR } = useContext(ConfigContext);
     return (
       <Stack>
@@ -41,7 +44,7 @@ export const Semester: FC<{ semester: ICourse[]; n: number }> = memo(
           textAlign="center"
           fontSize="1.5em"
         >
-          <b>{toRoman(n)}</b>
+          <b>{toRoman(n, true)}</b>
         </Text>
         {semester.map((course, key) => (
           <CourseBox key={key} {...course} />

@@ -14,14 +14,8 @@ export class ConfigurationResolver {
 
     return data.reduce<Record<string, any> & typeof baseConfig>(
       (acum, { name, value }) => {
-        if (name === "PASS_GRADE") {
-          if (isNumeric(value)) {
-            acum[name] = toNumber(value);
-          }
-        } else if (name === "RANGE_GRADES") {
-          if (isJSON(value) && Array.isArray(JSON.parse(value))) {
-            acum[name] = JSON.parse(value);
-          }
+        if (isNumeric(value)) {
+          acum[name] = toNumber(value);
         } else {
           acum[name] = value;
         }

@@ -15,6 +15,7 @@ import {
 } from "react";
 import Select from "react-select";
 import { Button, Icon } from "semantic-ui-react";
+import pixelWidth from "string-pixel-width";
 import { useRememberState } from "use-remember-state";
 import { $ElementType } from "utility-types";
 
@@ -107,7 +108,11 @@ export const SearchBar: FC<{
     }
   );
 
-  const [student_id, setStudentId] = useRememberState("student_input", "");
+  const [student_id, setStudentId] = useRememberState<string>(
+    "student_input",
+    ""
+  );
+
   const [studentOptions, setStudentOptions] = useRememberState<string[]>(
     "student_input_options",
     []
@@ -164,7 +169,7 @@ export const SearchBar: FC<{
             value={program}
             isLoading={isSearchLoading}
             isDisabled={isSearchLoading}
-            placeholder="..."
+            placeholder="Programa no especificado"
             onChange={selected => {
               setProgram(
                 selected as $ElementType<typeof programsOptions, number>
@@ -209,7 +214,9 @@ export const SearchBar: FC<{
         ) : searchResult?.curriculums.length === 1 ? (
           <Tag mr={2}>{`Plan: ${searchResult?.curriculums[0]}`}</Tag>
         ) : null}
-        {searchResult?.student && <Tag mr={2}>{searchResult.student}</Tag>}
+        {searchResult?.student && (
+          <Tag mr={2}>{`Estudiante ${searchResult.student}`}</Tag>
+        )}
 
         <form>
           <Flex wrap="wrap" alignItems="center">
@@ -218,7 +225,10 @@ export const SearchBar: FC<{
                 borderColor="gray.400"
                 fontFamily="Lato"
                 variant="outline"
-                width={300}
+                width={Math.min(
+                  Math.max(pixelWidth(student_id ?? "", { size: 21 }), 180),
+                  350
+                )}
                 list="student_options"
                 placeholder="ID del estudiante"
                 value={student_id}
@@ -242,7 +252,7 @@ export const SearchBar: FC<{
 
               {student_id !== "" && (
                 <InputRightElement
-                  pr={1}
+                  mr={1}
                   cursor="pointer"
                   onClick={() => {
                     setStudentId("");
@@ -269,6 +279,7 @@ export const SearchBar: FC<{
                 if (ok) {
                   addStudentOption(student_id);
                   setStudentId("");
+
                   Tracking.current.track({
                     action: "click",
                     effect: "load-student",
@@ -323,8 +334,8 @@ export const SearchBar: FC<{
             mock
               ? range(40).map(() => ({
                   student_id: generate(),
-                  probability: dropout.prob_dropout,
-                  accuracy: dropout.model_accuracy,
+                  probability: Math.round(Math.random() * 100),
+                  accuracy: Math.random(),
                 }))
               : []
           }

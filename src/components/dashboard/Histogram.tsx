@@ -61,13 +61,14 @@ const AxisNumbers = (() => {
   );
 })();
 
-const XAxis: FC = () => {
-  const { RANGE_GRADES } = useContext(ConfigContext);
+const XAxis: FC<{
+  bandColors: { min: number; max: number; color: string }[];
+}> = ({ bandColors }) => {
   const AxisColor = useMemo(
     () =>
-      RANGE_GRADES.map(({ min, max, color }, key) => {
-        const nextMin: number | undefined = RANGE_GRADES[key + 1]?.max;
-        const previousMax: number | undefined = RANGE_GRADES[key - 1]?.max;
+      bandColors.map(({ min, max, color }, key) => {
+        const nextMin: number | undefined = bandColors[key + 1]?.max;
+        const previousMax: number | undefined = bandColors[key - 1]?.max;
 
         let x = scaleColorX(averageTwo(previousMax, min));
         let width =
@@ -85,7 +86,7 @@ const XAxis: FC = () => {
           />
         );
       }),
-    [RANGE_GRADES]
+    [bandColors]
   );
   return (
     <>
@@ -99,7 +100,8 @@ export const Histogram: FC<{
   distribution: IDistribution[];
   label?: string;
   grade?: number;
-}> = ({ distribution, label, grade }) => {
+  bandColors: { min: number; max: number; color: string }[];
+}> = ({ distribution, label, grade, bandColors }) => {
   const barsScale = useCallback(
     scaleLinear()
       .domain([0, Math.max(...distribution.map(({ value }) => value))])
@@ -116,7 +118,7 @@ export const Histogram: FC<{
   const greyN = useMemo(() => {
     if (grade !== undefined) {
       return distribution.findIndex(({ label }, key: number) => {
-        const [min, max] = label.split(",").map(toInteger); // TODO: Adapt to pass/fail histogram type
+        const [min, max] = label.split("-").map(toInteger); // TODO: Adapt to pass/fail histogram type
         if (grade >= min && grade <= max) {
           if (grade === max && distribution[key + 1]) {
             return false;
@@ -133,7 +135,7 @@ export const Histogram: FC<{
   return (
     <svg width={300} height={130}>
       <svg x={35} y={23}>
-        <XAxis />
+        <XAxis bandColors={bandColors} />
         {distribution.map(({ value }, key) => (
           <SingleBar
             x={5 + 40 * key + 2 * key}

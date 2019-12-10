@@ -1,6 +1,7 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
 import { FC, useContext, useMemo, useState } from "react";
+import ReactTooltip from "react-tooltip";
 import { useUpdateEffect } from "react-use";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
@@ -28,6 +29,7 @@ export const CourseBox: FC<ICourse> = ({
   requisites,
   historicDistribution,
   taken,
+  bandColors,
 }) => {
   const config = useContext(ConfigContext);
   const Tracking = useContext(TrackingContext);
@@ -269,6 +271,7 @@ export const CourseBox: FC<ICourse> = ({
           })}
           distribution={currentDistribution}
           grade={grade}
+          bandColors={bandColors}
         />
       ),
     [currentDistribution, term, year, grade]
@@ -282,6 +285,7 @@ export const CourseBox: FC<ICourse> = ({
           label={config.HISTORIC_GRADES}
           distribution={historicDistribution}
           grade={grade}
+          bandColors={bandColors}
         />
       )
     );
@@ -350,23 +354,34 @@ export const CourseBox: FC<ICourse> = ({
         <Stack spacing={0.7}>
           {taken.slice(1).map(({ state, grade }, key) => {
             let color: string;
-            console.log({ state });
+            let tooltipType:
+              | "dark"
+              | "success"
+              | "warning"
+              | "error"
+              | "info"
+              | "light";
             switch (state) {
               case StateCourse.Failed:
+                tooltipType = "error";
                 color = (failColorScale(grade || 0) as unknown) as string;
                 break;
               case StateCourse.Current:
+                tooltipType = "info";
                 color = config.STATE_COURSE_CURRENT_COLOR;
                 break;
               case StateCourse.Canceled:
+                tooltipType = "light";
                 color = config.STATE_COURSE_CANCELED_COLOR;
                 break;
               case StateCourse.Pending:
+                tooltipType = "dark";
                 color = config.STATE_COURSE_PENDING_COLOR;
                 break;
               default:
-                color = "black";
+                return null;
             }
+            const tooltipKey = `code_historic_state_${code}_${key}`;
             return (
               <Box
                 key={key}
@@ -377,7 +392,12 @@ export const CourseBox: FC<ICourse> = ({
                 height={"16px"}
                 width={"16px"}
               >
-                <svg width={16} height={16}>
+                <svg
+                  width={16}
+                  height={16}
+                  data-tip={grade}
+                  data-for={tooltipKey}
+                >
                   <circle
                     cx={8}
                     cy={8}
@@ -386,12 +406,15 @@ export const CourseBox: FC<ICourse> = ({
                     fill={color}
                   />
                 </svg>
+                {state !== StateCourse.Canceled && (
+                  <ReactTooltip id={tooltipKey} type={tooltipType} />
+                )}
               </Box>
             );
           })}
         </Stack>
       ),
-    [taken, config]
+    [taken, config, code]
   );
 
   return (

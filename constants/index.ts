@@ -35,31 +35,8 @@ export enum TermType {
   Anual = "Anual",
 }
 
-const RANGE_GRADES = [
-  {
-    min: 1,
-    max: 3.4,
-    color: "#d6604d",
-  },
-  {
-    min: 3.5,
-    max: 3.9,
-    color: "#f48873",
-  },
-  {
-    min: 4,
-    max: 4.4,
-    color: "#a7dc78",
-  },
-  {
-    min: 4.5,
-    max: 7,
-    color: "#66b43e",
-  },
-];
-
-const MIN_GRADE = Math.min(...RANGE_GRADES.map(({ min }) => min));
-const MAX_GRADE = Math.max(...RANGE_GRADES.map(({ max }) => max));
+const MIN_GRADE = 7;
+const MAX_GRADE = 1;
 
 export const baseConfig = {
   HISTORIC_GRADES: "Calificaciones históricas",
@@ -116,7 +93,6 @@ export const baseConfig = {
   TIMELINE_AXIS_TEXT_COLOR: "black",
   TIMELINE_PASS_LINE_COLOR: "black",
   PASS_GRADE: 4,
-  RANGE_GRADES,
   MIN_GRADE,
   MAX_GRADE,
 };

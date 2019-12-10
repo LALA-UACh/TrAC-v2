@@ -162,64 +162,67 @@ const Dashboard: FC = () => {
           })
           .map(({ semesters: curriculumSemesters, id: curriculumId }) => {
             const semesters = curriculumSemesters.map(va => {
-              const semester = va.courses.map(
-                ({
-                  code,
-                  name,
-                  credits,
-                  flow,
-                  requisites,
-                  historicalDistribution,
-                  bandColors,
-                }) => {
-                  return {
+              const semester = {
+                n: va.id,
+                courses: va.courses.map(
+                  ({
                     code,
                     name,
                     credits,
-                    flow: flow.map(({ code }) => {
-                      return code;
-                    }),
-                    requisites: requisites.map(({ code }) => {
-                      return code;
-                    }),
-                    historicDistribution: historicalDistribution,
+                    flow,
+                    requisites,
+                    historicalDistribution,
                     bandColors,
-                    taken: (() => {
-                      const taken: ITakenCourse[] = [];
-                      if (searchStudentData?.student) {
-                        for (const {
-                          term,
-                          year,
-                          takenCourses,
-                        } of searchStudentData.student.terms) {
+                  }) => {
+                    return {
+                      code,
+                      name,
+                      credits,
+                      flow: flow.map(({ code }) => {
+                        return code;
+                      }),
+                      requisites: requisites.map(({ code }) => {
+                        return code;
+                      }),
+                      historicDistribution: historicalDistribution,
+                      bandColors,
+                      taken: (() => {
+                        const taken: ITakenCourse[] = [];
+                        if (searchStudentData?.student) {
                           for (const {
-                            code: courseCode,
-                            registration,
-                            state,
-                            grade,
-                            currentDistribution,
-                            parallelGroup,
-                          } of takenCourses) {
-                            if (courseCode === code) {
-                              taken.push({
-                                term,
-                                year,
-                                registration,
-                                state,
-                                grade,
-                                currentDistribution,
-                                parallelGroup,
-                              });
+                            term,
+                            year,
+                            takenCourses,
+                          } of searchStudentData.student.terms) {
+                            for (const {
+                              code: courseCode,
+                              registration,
+                              state,
+                              grade,
+                              currentDistribution,
+                              parallelGroup,
+                            } of takenCourses) {
+                              if (courseCode === code) {
+                                taken.push({
+                                  term,
+                                  year,
+                                  registration,
+                                  state,
+                                  grade,
+                                  currentDistribution,
+                                  parallelGroup,
+                                });
+                              }
                             }
                           }
                         }
-                      }
 
-                      return taken;
-                    })(),
-                  };
-                }
-              );
+                        return taken;
+                      })(),
+                    };
+                  }
+                ),
+              };
               return { semester };
             });
             return { id: curriculumId, semesters };
@@ -230,8 +233,8 @@ const Dashboard: FC = () => {
       if (data) {
         SemestersComponent = (
           <>
-            {data.semesters.map(({ semester }, key) => {
-              return <Semester key={key} semester={semester} n={key + 1} />;
+            {data.semesters.map(({ semester: { courses, n } }, key) => {
+              return <Semester key={key} courses={courses} n={n} />;
             })}
           </>
         );
@@ -273,7 +276,9 @@ const Dashboard: FC = () => {
                     student_id: student_id || undefined,
                   },
                 }),
-                searchStudent({ variables: { student_id, program_id } }),
+                searchStudent({
+                  variables: { student_id, program_id },
+                }),
               ]);
 
               if (programSearch.data?.program && studentSearch.data?.student) {
@@ -335,7 +340,7 @@ const Dashboard: FC = () => {
               {mock
                 ? mockSemesters.map(({ semester }, key) => {
                     return (
-                      <Semester key={key} semester={semester} n={key + 1} />
+                      <Semester key={key} courses={semester} n={key + 1} />
                     );
                   })
                 : SemestersComponent}
