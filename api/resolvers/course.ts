@@ -1,4 +1,4 @@
-import { toInteger, toNumber } from "lodash";
+import { toInteger, toNumber, trim } from "lodash";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
@@ -6,8 +6,10 @@ import {
   CourseStatsTable,
   CourseTable,
   ProgramStructureTable,
+  StudentCourseTable,
 } from "../db/tables";
 import { Course } from "../entities/course";
+import { BandColor } from "../entities/distribution";
 import { assertIsDefined } from "../utils";
 
 const creditsFormat = ({
@@ -68,7 +70,7 @@ export class CourseResolver {
     );
 
     const courseData = await ProgramStructureTable()
-      .select("credits", "creditsSCT")
+      .select("credits", "credits_sct")
       .where({ id })
       .first();
 
@@ -76,7 +78,7 @@ export class CourseResolver {
 
     return creditsFormat({
       credits: courseData?.credits,
-      creditsSCT: courseData?.creditsSCT,
+      creditsSCT: courseData?.credits_sct,
     });
   }
 
@@ -141,7 +143,10 @@ export class CourseResolver {
     return (
       await ProgramStructureTable()
         .select("id", "course_id")
-        .whereIn("course_id", requisitesRaw.requisites?.split(",") ?? [])
+        .whereIn(
+          "course_id",
+          requisitesRaw.requisites?.split(",").map(trim) ?? []
+        )
     ).map(({ id, course_id }) => ({
       id,
       code: course_id,
@@ -158,42 +163,63 @@ export class CourseResolver {
     );
 
     const histogramData = await CourseStatsTable()
-      .select("histogram", "histogram_labels", "color_bands")
+      .select("histogram", "histogram_labels")
       .where({
         course_taken: code,
       });
 
     const reducedHistogramData = histogramData.reduce<
-      Record<number, { label: string; value: number; color: string }>
-    >((acum, { histogram, histogram_labels, color_bands }, key) => {
+      Record<number, { label: string; value: number }>
+    >((acum, { histogram, histogram_labels }, key) => {
       const histogramValues = histogram.split(",").map(toInteger);
       const histogramLabels = key === 0 ? histogram_labels.split(",") : [];
-      const histogramColors =
-        key === 0
-          ? color_bands.split(";").map(value => {
-              const [min, max, color] = value.split(",");
-              return {
-                min: toNumber(min),
-                max: toNumber(max),
-                color,
-              };
-            })
-          : [];
+
       for (let i = 0; i < histogramValues.length; i++) {
         acum[i] = {
           label: acum[i]?.label ?? histogramLabels[i],
           value: (acum[i]?.value ?? 0) + (histogramValues[i] ?? 0),
-          color:
-            acum[i]?.color ??
-            histogramColors.find(({ min, max }) => {
-              return histogramValues[i] >= min && histogramValues[i] <= max;
-            })?.color ??
-            "#000000",
         };
       }
       return acum;
     }, {});
 
     return Object.values(reducedHistogramData);
+  }
+
+  @FieldResolver()
+  async bandColors(
+    @Root() { id, code }: PartialCourse
+  ): Promise<$PropertyType<Course, "bandColors">> {
+    const preData = await StudentCourseTable()
+      .select("year", "term")
+      .where({ id })
+      .first();
+
+    assertIsDefined(
+      preData,
+      `preData bandColors could not be found for ${id} ${code}`
+    );
+
+    const bandColorsData = await CourseStatsTable()
+      .select("color_bands")
+      .where({
+        course_taken: code,
+      })
+      .first();
+
+    if (bandColorsData === undefined) {
+      return [];
+    }
+
+    const bandColors = bandColorsData.color_bands.split(";").map(value => {
+      const [min, max, color] = value.split(",");
+      return {
+        min: toNumber(min),
+        max: toNumber(max),
+        color,
+      };
+    });
+
+    return bandColors;
   }
 }

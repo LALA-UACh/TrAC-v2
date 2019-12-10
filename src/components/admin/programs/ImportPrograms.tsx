@@ -66,8 +66,7 @@ export const ImportPrograms: FC = () => {
                 { email, program },
                 {
                   email: (v: string) => isEmail(v),
-                  program: (v: string) =>
-                    allProgramsMapped.includes(toInteger(v)),
+                  program: (v: string) => allProgramsMapped.includes(v),
                 }
               );
             }

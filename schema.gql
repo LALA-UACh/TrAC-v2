@@ -9,6 +9,12 @@ type AuthResult {
   token: String
 }
 
+type BandColor {
+  min: Float!
+  max: Float!
+  color: String!
+}
+
 type Course {
   """Course-Semester-Curriculum-Program ID """
   id: Float!
@@ -19,6 +25,7 @@ type Course {
   flow: [Course!]!
   requisites: [Course!]!
   historicalDistribution: [DistributionValue!]!
+  bandColors: [BandColor!]!
 }
 
 type Credit {
@@ -39,7 +46,6 @@ scalar DateTime
 type DistributionValue {
   label: String!
   value: Int!
-  color: String!
 }
 
 type Dropout {
@@ -73,6 +79,8 @@ type Mutation {
   login(email: EmailAddress!, password: String!): AuthResult!
   logout: Boolean!
   unlock(email: EmailAddress!, password: String!, unlockKey: String!): AuthResult!
+  program(id: String!): Program
+  student(program_id: String, student_id: String!): Student
   track(datetime_client: DateTime!, data: String!): Boolean!
   updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
   addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
@@ -94,10 +102,8 @@ type Program {
 type Query {
   currentUser: AuthResult
   config: JSONObject!
-  program(id: String!): Program
   programs: [Program!]!
   myPrograms: [Program!]!
-  student(program_id: String, student_id: String!): Student
   users: [User!]!
 }
 

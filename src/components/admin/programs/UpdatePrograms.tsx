@@ -12,7 +12,7 @@ import {
 } from "../../../graphql/adminQueries";
 
 export const UpdatePrograms: FC<{
-  program: { email: string; programs: number[] };
+  program: { email: string; programs: string[] };
   children: JSX.Element;
 }> = ({ children, program }) => {
   const [open, setOpen] = useState(false);
@@ -108,7 +108,7 @@ export const UpdatePrograms: FC<{
                 })) ?? []
               }
               onChange={(_, { value }) =>
-                setSelectedPrograms(value as number[])
+                setSelectedPrograms(value as string[])
               }
               value={selectedPrograms}
             />

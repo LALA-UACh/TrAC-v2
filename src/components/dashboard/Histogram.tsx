@@ -1,5 +1,6 @@
 import { scaleLinear } from "d3-scale";
 import { motion } from "framer-motion";
+import toInteger from "lodash/toInteger";
 import toString from "lodash/toString";
 import { FC, memo, useCallback, useContext, useMemo } from "react";
 
@@ -114,10 +115,8 @@ export const Histogram: FC<{
 
   const greyN = useMemo(() => {
     if (grade !== undefined) {
-      const findGrade = (
-        { min, max }: { min: number; max: number },
-        key: number
-      ) => {
+      return distribution.findIndex(({ label }, key: number) => {
+        const [min, max] = label.split(",").map(toInteger); // TODO: Adapt to pass/fail histogram type
         if (grade >= min && grade <= max) {
           if (grade === max && distribution[key + 1]) {
             return false;
@@ -125,30 +124,7 @@ export const Histogram: FC<{
           return true;
         }
         return false;
-      };
-      const n = distribution.findIndex(findGrade);
-
-      if (n === -1) {
-        return distribution
-          .map((v, key) => {
-            let max = v.max;
-            let min = v.min;
-            const nextMin = distribution[key + 1]?.min;
-            const previousMax = distribution[key - 1]?.max;
-            if (nextMin) {
-              max = (max + nextMin) / 2;
-            }
-            if (previousMax) {
-              min = (min + previousMax) / 2;
-            }
-            return {
-              min,
-              max,
-            };
-          })
-          .findIndex(findGrade);
-      }
-      return n;
+      });
     }
 
     return -1;

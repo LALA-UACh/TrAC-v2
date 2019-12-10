@@ -14,8 +14,7 @@ export type IRangeGrade = {
   color: string;
 };
 export type IDistribution = {
-  min: number;
-  max: number;
+  label: string;
   value: number;
 };
 
@@ -35,7 +34,8 @@ export type ICourse = {
   credits: { label: string; value: number }[];
   flow: string[];
   requisites: string[];
-  historicDistribution?: IDistribution[];
+  historicDistribution: IDistribution[];
+  bandColors: { min: number; max: number; color: string }[];
 
   taken: ITakenCourse[];
 };

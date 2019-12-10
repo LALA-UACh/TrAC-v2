@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from "type-graphql";
 
-import { DistributionValue } from "./distribution";
+import { BandColor, DistributionValue } from "./distribution";
 
 @ObjectType()
 class Credit {
@@ -40,7 +40,11 @@ export class Course {
   @Field(() => [Course])
   requisites: Course[];
 
-  // course_stats => histogram , histogram_labels, color_bands
+  // course_stats => histogram , histogram_labels
   @Field(() => [DistributionValue])
   historicalDistribution: DistributionValue[];
+
+  // LOGIC, CHOOSE ACCORDINGLY => course_stats => color_bands
+  @Field(() => [BandColor])
+  bandColors: BandColor[];
 }

@@ -157,7 +157,13 @@ export class TermResolver {
         year: studentTermData.year,
         term: studentTermData.term,
         student_id: studentTermData.student_id,
-      });
+      })
+      .orderBy([
+        { column: "course_taken", order: "desc" },
+        { column: "year", order: "desc" },
+        { column: "term", order: "desc" },
+      ]);
+
     return takenCoursesData.map(({ id, course_taken }) => {
       // TODO: Course equivalent logic
       return { id, code: course_taken };

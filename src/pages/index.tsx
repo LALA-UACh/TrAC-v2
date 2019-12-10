@@ -3,7 +3,7 @@ import ScrollContainer from "react-indiana-drag-scroll";
 import { useLogger } from "react-use";
 import { useRememberState } from "use-remember-state";
 
-import { useQuery } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Box, Stack } from "@chakra-ui/core";
 
 import mockDropout from "../../constants/mockData/dropout";
@@ -44,7 +44,7 @@ const Dashboard: FC = () => {
       called: searchProgramCalled,
       error: searchProgramError,
     },
-  ] = usePromiseLazyQuery(searchProgramQuery);
+  ] = useMutation(searchProgramQuery);
   const [
     searchStudent,
     {
@@ -53,7 +53,7 @@ const Dashboard: FC = () => {
       called: searchStudentCalled,
       error: searchStudentError,
     },
-  ] = usePromiseLazyQuery(searchStudentQuery);
+  ] = useMutation(searchStudentQuery);
 
   useLogger("index", {
     searchProgramData,
@@ -67,10 +67,11 @@ const Dashboard: FC = () => {
   }, [currentUserData, mock, setMock]);
 
   useEffect(() => {
-    if (searchStudentData) {
+    if (searchStudentData?.student) {
       setMock(false);
-      trackingData.current.program = searchStudentData.student.program.id;
-      trackingData.current.curriculum = searchStudentData.student.curriculum;
+      trackingData.current.program = searchStudentData.student.programs[0].id;
+      trackingData.current.curriculum =
+        searchStudentData.student.curriculums[0];
       trackingData.current.showingProgress = true;
       trackingData.current.student = searchStudentData.student.id;
     } else {
@@ -89,7 +90,7 @@ const Dashboard: FC = () => {
     let TakenSemestersComponent: JSX.Element | null = null;
     let SemestersComponent: JSX.Element | null = null;
 
-    if (searchStudentData) {
+    if (searchStudentData?.student) {
       const {
         cumulated_grade,
         semestral_grade,
@@ -121,17 +122,20 @@ const Dashboard: FC = () => {
       );
       TimeLineComponent = (
         <TimeLine
-          CUMULATED_GRADE={cumulated_grade}
-          SEMESTRAL_GRADE={semestral_grade}
-          PROGRAM_GRADE={program_grade}
-          semestersTaken={semestersTaken}
+          CUMULATED_GRADE={cumulated_grade.slice().reverse()}
+          SEMESTRAL_GRADE={semestral_grade.slice().reverse()}
+          PROGRAM_GRADE={program_grade.slice().reverse()}
+          semestersTaken={semestersTaken.slice().reverse()}
         />
       );
       TakenSemestersComponent = (
         <>
-          {searchStudentData.student.terms.map(({ term, year }, key) => {
-            return <TakenSemesterBox key={key} term={term} year={year} />;
-          })}
+          {searchStudentData.student.terms
+            .slice()
+            .reverse()
+            .map(({ term, year }, key) => {
+              return <TakenSemesterBox key={key} term={term} year={year} />;
+            })}
         </>
       );
       if (
@@ -148,8 +152,14 @@ const Dashboard: FC = () => {
     }
     if (searchProgramData) {
       const curriculums =
-        searchProgramData?.program?.curriculums.map(
-          ({ semesters: curriculumSemesters, id: curriculumId }) => {
+        searchProgramData?.program?.curriculums
+          .filter(({ id }) => {
+            if (searchStudentData?.student) {
+              return searchStudentData.student.curriculums.includes(id);
+            }
+            return true;
+          })
+          .map(({ semesters: curriculumSemesters, id: curriculumId }) => {
             const semesters = curriculumSemesters.map(va => {
               const semester = va.courses.map(
                 ({
@@ -159,6 +169,7 @@ const Dashboard: FC = () => {
                   flow,
                   requisites,
                   historicalDistribution,
+                  bandColors,
                 }) => {
                   return {
                     code,
@@ -170,10 +181,11 @@ const Dashboard: FC = () => {
                     requisites: requisites.map(({ code }) => {
                       return code;
                     }),
-                    historicalDistribution,
+                    historicDistribution: historicalDistribution,
+                    bandColors,
                     taken: (() => {
                       const taken: ITakenCourse[] = [];
-                      if (searchStudentData) {
+                      if (searchStudentData?.student) {
                         for (const {
                           term,
                           year,
@@ -187,7 +199,9 @@ const Dashboard: FC = () => {
                             currentDistribution,
                             parallelGroup,
                           } of takenCourses) {
+                            console.log({ courseCode, code });
                             if (courseCode === code) {
+                              console.log("YES");
                               taken.push({
                                 term,
                                 year,
@@ -210,10 +224,19 @@ const Dashboard: FC = () => {
               return { semester };
             });
             return { id: curriculumId, semesters };
-          }
-        ) ?? [];
+          }) ?? [];
       //TODO: Choose curriculum by id
-      const data = curriculums[0];
+      const data = curriculums.find(({ id: curriculumId }) => {
+        if (searchStudentData?.student) {
+          console.log({
+            curriculumId,
+            searchStudentData123: searchStudentData?.student?.curriculums[0],
+          });
+          return searchStudentData?.student?.curriculums[0] === curriculumId;
+        }
+        return true;
+      });
+      console.log({ data });
       if (data) {
         SemestersComponent = (
           <>

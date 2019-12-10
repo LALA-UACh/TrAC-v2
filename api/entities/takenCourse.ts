@@ -40,7 +40,7 @@ export class TakenCourse implements Pick<Course, "code" | "name"> {
   @Field(() => Int)
   parallelGroup: number;
 
-  // course_stats => histogram , histogram_labels, color_bands
+  // course_stats => histogram , histogram_labels
   @Field(() => [DistributionValue])
   currentDistribution: DistributionValue[];
 }

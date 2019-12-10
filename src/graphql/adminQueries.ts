@@ -13,7 +13,7 @@ type IAllUsersAdmin = IfImplements<
     rut_id?: string;
     show_dropout: boolean;
     locked: boolean;
-    programs: { id: number }[];
+    programs: { id: string }[];
   },
   User
 >[];
@@ -45,7 +45,7 @@ export const allUsersAdminQuery: DocumentNode<{
 `;
 
 export const allProgramsAdminQuery: DocumentNode<{
-  programs: IfImplements<{ id: number }, Program>[];
+  programs: IfImplements<{ id: string }, Program>[];
 }> = gql`
   query {
     programs {
@@ -61,7 +61,7 @@ export const addUsersProgramsAdminMutation: DocumentNode<
   {
     user_programs: {
       email: string;
-      program: number;
+      program: string;
     }[];
   }
 > = gql`
@@ -80,8 +80,8 @@ export const updateUserProgramsAdminMutation: DocumentNode<
   {
     update_user: {
       email: string;
-      programs: number[];
-      oldPrograms: number[];
+      programs: string[];
+      oldPrograms: string[];
     };
   }
 > = gql`

@@ -14,7 +14,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "sourceMap": true
   },
   "exclude": ["node_modules", "api/*"],
   "include": ["**/*.ts", "**/*.tsx"]

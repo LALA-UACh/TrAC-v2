@@ -7,14 +7,14 @@ import { ImportPrograms } from "./ImportPrograms";
 import { UpdatePrograms } from "./UpdatePrograms";
 
 export const Programs: FC<{
-  programs: { email: string; programs: number[] }[];
+  programs: { email: string; programs: string[] }[];
 }> = ({ programs }) => {
   const [column, setColumn] = useRememberState("TracAdminProgramsColumn", "");
   const [direction, setDirection] = useRememberState<
     "ascending" | "descending"
   >("TracAdminProgramsDirection", "ascending");
   const [sortedPrograms, setSortedPrograms] = useRememberState<
-    { email: string; programs: number[] }[]
+    { email: string; programs: string[] }[]
   >("TracAdminSortedPrograms", []);
 
   useEffect(() => {

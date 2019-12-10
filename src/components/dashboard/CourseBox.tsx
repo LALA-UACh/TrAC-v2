@@ -272,8 +272,9 @@ export const CourseBox: FC<ICourse> = ({
     [currentDistribution, term, year, grade]
   );
 
-  const HistogramHistoric = useMemo(
-    () =>
+  const HistogramHistoric = useMemo(() => {
+    console.log({ historicDistribution });
+    return (
       historicDistribution && (
         <Histogram
           key="historic"
@@ -281,9 +282,9 @@ export const CourseBox: FC<ICourse> = ({
           distribution={historicDistribution}
           grade={grade}
         />
-      ),
-    [historicDistribution, grade, config]
-  );
+      )
+    );
+  }, [historicDistribution, grade, config]);
 
   const HistogramsComponent = useMemo(
     () =>
@@ -348,6 +349,7 @@ export const CourseBox: FC<ICourse> = ({
         <Stack spacing={0.7}>
           {taken.slice(1).map(({ state, grade }, key) => {
             let color: string;
+            console.log({ state });
             switch (state) {
               case StateCourse.Failed:
                 color = (failColorScale(grade || 0) as unknown) as string;

@@ -113,12 +113,12 @@ export const searchProgramQuery: DocumentNode<
   {
     program: IfImplements<
       {
-        id: number;
+        id: string;
         name: string;
         desc: string;
-        state: string;
+        active: boolean;
         curriculums: {
-          id: number;
+          id: string;
           semesters: {
             id: number;
             courses: {
@@ -131,10 +131,10 @@ export const searchProgramQuery: DocumentNode<
                 code: string;
               }[];
               historicalDistribution: {
-                min: number;
-                max: number;
+                label: string;
                 value: number;
               }[];
+              bandColors: { min: number; max: number; color: string }[];
             }[];
           }[];
         }[];
@@ -142,14 +142,14 @@ export const searchProgramQuery: DocumentNode<
       Program
     > | null;
   },
-  { program_id: number }
+  { program_id: string }
 > = gql`
-  query($program_id: Int!) {
+  mutation($program_id: String!) {
     program(id: $program_id) {
       id
       name
       desc
-      state
+      active
       curriculums {
         id
         semesters {
@@ -169,9 +169,13 @@ export const searchProgramQuery: DocumentNode<
               code
             }
             historicalDistribution {
+              label
+              value
+            }
+            bandColors {
               min
               max
-              value
+              color
             }
           }
         }
@@ -182,14 +186,14 @@ export const searchProgramQuery: DocumentNode<
 
 export const searchStudentQuery: DocumentNode<
   {
-    student: IfImplements<
+    student?: IfImplements<
       {
         id: string;
-        program: {
-          id: number;
+        programs: {
+          id: string;
           name: string;
-        };
-        curriculum: number;
+        }[];
+        curriculums: string[];
         start_year: number;
         mention: string;
         terms: Array<{
@@ -210,8 +214,7 @@ export const searchStudentQuery: DocumentNode<
             state: StateCourse;
             parallelGroup: number;
             currentDistribution: Array<{
-              min: number;
-              max: number;
+              label: string;
               value: number;
             }>;
           }>;
@@ -227,17 +230,17 @@ export const searchStudentQuery: DocumentNode<
   },
   {
     student_id: string;
-    program_id?: number;
+    program_id?: string;
   }
 > = gql`
-  query($student_id: String!, $program_id: Int) {
+  mutation($student_id: String!, $program_id: String) {
     student(student_id: $student_id, program_id: $program_id) {
       id
-      program {
+      programs {
         id
         name
       }
-      curriculum
+      curriculums
       start_year
       mention
       terms {
@@ -258,8 +261,7 @@ export const searchStudentQuery: DocumentNode<
           state
           parallelGroup
           currentDistribution {
-            min
-            max
+            label
             value
           }
         }
@@ -274,7 +276,7 @@ export const searchStudentQuery: DocumentNode<
 `;
 
 export const myProgramsQuery: DocumentNode<{
-  myPrograms: IfImplements<{ id: number; name: string }, Program>[];
+  myPrograms: IfImplements<{ id: string; name: string }, Program>[];
 }> = gql`
   query {
     myPrograms {

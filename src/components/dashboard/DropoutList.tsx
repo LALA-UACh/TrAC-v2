@@ -20,9 +20,8 @@ import {
 export const DropoutList: FC<{
   data: { student_id: string; probability: number; accuracy: number }[];
 }> = ({ data }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure(true);
+  const { isOpen, onOpen, onClose } = useDisclosure(false);
   const btnRef = useRef<HTMLElement>(null);
-  console.log({ data });
   return (
     <>
       <Button m={2} ref={btnRef} variantColor="blue" onClick={onOpen}>
@@ -38,12 +37,12 @@ export const DropoutList: FC<{
         <DrawerContent>
           <DrawerHeader>Dropout List</DrawerHeader>
 
-          <DrawerBody>
+          <DrawerBody overflowY="scroll">
             <Stack>
               {data.map((value, key) => {
                 return (
                   <Box key={key}>
-                    <Text>{truncate(value.student_id, { length: 30 })}</Text>
+                    <Text>{truncate(value.student_id, { length: 25 })}</Text>
                     <Text>{value.probability}%</Text>
                     <Text>{value.accuracy}</Text>
                     {key + 1 !== data.length && <Divider />}

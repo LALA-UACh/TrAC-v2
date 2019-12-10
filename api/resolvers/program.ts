@@ -4,6 +4,7 @@ import {
   Authorized,
   Ctx,
   FieldResolver,
+  Mutation,
   Query,
   Resolver,
   Root,
@@ -27,7 +28,7 @@ export type PartialProgram = Pick<Program, "id">;
 @Resolver(() => Program)
 export class ProgramResolver {
   @Authorized()
-  @Query(() => Program, {
+  @Mutation(() => Program, {
     nullable: true,
   })
   async program(

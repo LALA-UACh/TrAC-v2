@@ -27,8 +27,12 @@ export class TakenCourseResolver {
     );
     const nameData = await CourseTable()
       .select("name")
-      .where({ code })
+      .where({ id: code })
       .first();
+
+    if (nameData === undefined) {
+      return "UNDEFINED";
+    }
     assertIsDefined(
       nameData,
       `Name could not be found for ${code} taken course`
@@ -125,7 +129,7 @@ export class TakenCourseResolver {
       `code needs to be available for Taken Course field resolvers`
     );
 
-    const dataTakenCourse = await StudentTermTable()
+    const dataTakenCourse = await StudentCourseTable()
       .select("year", "term")
       .where({ id })
       .first();
@@ -144,6 +148,10 @@ export class TakenCourseResolver {
       })
       .first();
 
+    if (histogramData === undefined) {
+      return [];
+    }
+
     assertIsDefined(
       histogramData,
       `Stats Data of the taken course ${id} ${code} could not be found!`
@@ -151,23 +159,11 @@ export class TakenCourseResolver {
 
     const histogramValues = histogramData.histogram.split(",").map(toInteger);
     const histogramLabels = histogramData.histogram_labels.split(",");
-    const histogramColors = histogramData.color_bands.split(";").map(value => {
-      const [min, max, color] = value.split(",");
-      return {
-        min: toNumber(min),
-        max: toNumber(max),
-        color,
-      };
-    });
 
     return histogramValues.map((value, key) => {
       return {
         label: histogramLabels[key] ?? `${key}`,
         value,
-        color:
-          histogramColors.find(({ min, max }) => {
-            return histogramValues[key] >= min && histogramValues[key] <= max;
-          })?.color ?? "#000000",
       };
     });
   }

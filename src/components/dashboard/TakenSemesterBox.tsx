@@ -42,6 +42,7 @@ export const TakenSemesterBox: FC<{ year: number; term: string }> = memo(
         cursor="pointer"
         className="unselectable"
         transition="0.4s all ease-in-out"
+        whiteSpace="nowrap"
         onClick={() => {
           const open = toggleExplicitSemester(year, term);
           Tracking.current.track({

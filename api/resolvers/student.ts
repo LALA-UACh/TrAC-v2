@@ -3,10 +3,12 @@ import {
   Authorized,
   Ctx,
   FieldResolver,
+  Mutation,
   Query,
   Resolver,
   Root,
 } from "type-graphql";
+import { $PropertyType } from "utility-types";
 
 import { IContext } from "../../interfaces";
 import {
@@ -27,7 +29,7 @@ export type PartialStudent = Pick<Student, "id" | "name" | "state"> & {
 @Resolver(() => Student)
 export class StudentResolver {
   @Authorized()
-  @Query(() => Student, {
+  @Mutation(() => Student, {
     nullable: true,
   })
   async student(
@@ -109,6 +111,49 @@ export class StudentResolver {
   }
 
   @FieldResolver()
+  async curriculums(
+    @Root() { id }: PartialStudent
+  ): Promise<$PropertyType<Student, "curriculums">> {
+    return (
+      await StudentTermTable()
+        .distinct("curriculum")
+        .where({
+          student_id: id,
+        })
+    ).map(({ curriculum }) => curriculum);
+  }
+
+  @FieldResolver()
+  async start_year(
+    @Root() { id }: PartialStudent
+  ): Promise<$PropertyType<Student, "start_year">> {
+    return (
+      (
+        await StudentTermTable()
+          .select("start_year")
+          .orderBy("start_year", "desc")
+          .where({ student_id: id })
+          .first()
+      )?.start_year ?? 0
+    );
+  }
+
+  @FieldResolver()
+  async mention(
+    @Root() { id }: PartialStudent
+  ): Promise<$PropertyType<Student, "mention">> {
+    return (
+      (
+        await StudentTermTable()
+          .select("mention")
+          .orderBy("year", "desc")
+          .where({ student_id: id })
+          .first()
+      )?.mention ?? ""
+    );
+  }
+
+  @FieldResolver()
   async terms(@Root() { id }: PartialStudent): Promise<PartialTerm[]> {
     assertIsDefined(
       id,
@@ -117,7 +162,11 @@ export class StudentResolver {
 
     return await StudentTermTable()
       .select("id")
-      .where({ student_id: id });
+      .where({ student_id: id })
+      .orderBy([
+        { column: "year", order: "desc" },
+        { column: "term", order: "desc" },
+      ]);
   }
 
   @FieldResolver()

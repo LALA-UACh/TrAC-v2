@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { range } from "lodash";
 import Link from "next/link";
 import { generate } from "randomstring";
 import {
@@ -51,7 +52,7 @@ export const SearchBar: FC<{
   isSearchLoading: boolean;
   onSearch: (input: {
     student_id: string;
-    program_id: number;
+    program_id: string;
   }) => Promise<boolean>;
   searchResult?: string;
   error?: string;
@@ -176,6 +177,7 @@ export const SearchBar: FC<{
               onClick={async ev => {
                 ev.preventDefault();
                 if (program) {
+                  console.log({ program });
                   const ok = await onSearch({
                     student_id,
                     program_id: program.value,
@@ -236,7 +238,7 @@ export const SearchBar: FC<{
         <DropoutList
           data={
             mock
-              ? Array(20).map(() => ({
+              ? range(40).map(() => ({
                   student_id: generate(),
                   probability: dropout.prob_dropout,
                   accuracy: dropout.model_accuracy,
