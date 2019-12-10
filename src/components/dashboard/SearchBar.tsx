@@ -76,8 +76,9 @@ export const SearchBar: FC<{
 }) => {
   useEffect(() => {
     if (
-      curriculum === undefined &&
-      (searchResult?.curriculums.length ?? 0) > 0
+      (curriculum === undefined &&
+        (searchResult?.curriculums.length ?? 0) > 0) ||
+      !searchResult?.curriculums.includes(curriculum ?? "")
     ) {
       setCurriculum(
         searchResult?.curriculums
