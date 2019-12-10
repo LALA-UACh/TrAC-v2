@@ -52,7 +52,7 @@ export const SearchBar: FC<{
   isSearchLoading: boolean;
   onSearch: (input: {
     student_id: string;
-    program_id: string;
+    program_id?: string;
   }) => Promise<boolean>;
   searchResult?: string;
   error?: string;
@@ -129,6 +129,7 @@ export const SearchBar: FC<{
       <Flex alignItems="center" wrap="wrap">
         <Box width={350} mr={4}>
           <Select
+            isClearable
             options={programsOptions}
             value={program}
             isLoading={isSearchLoading}
@@ -173,30 +174,27 @@ export const SearchBar: FC<{
               primary
               loading={isSearchLoading}
               type="submit"
-              disabled={!student_id || isSearchLoading}
+              disabled={isSearchLoading || (!program?.value && !student_id)}
               onClick={async ev => {
                 ev.preventDefault();
-                if (program) {
-                  console.log({ program });
-                  const ok = await onSearch({
-                    student_id,
-                    program_id: program.value,
+                const ok = await onSearch({
+                  student_id,
+                  program_id: program?.value,
+                });
+                if (ok) {
+                  addStudentOption(student_id);
+                  setStudentId("");
+                  Tracking.current.track({
+                    action: "click",
+                    effect: "load-student",
+                    target: "searchButton",
                   });
-                  if (ok) {
-                    addStudentOption(student_id);
-                    setStudentId("");
-                    Tracking.current.track({
-                      action: "click",
-                      effect: "load-student",
-                      target: "searchButton",
-                    });
-                  } else {
-                    Tracking.current.track({
-                      action: "click",
-                      effect: "wrong-student",
-                      target: "searchButton",
-                    });
-                  }
+                } else {
+                  Tracking.current.track({
+                    action: "click",
+                    effect: "wrong-student",
+                    target: "searchButton",
+                  });
                 }
               }}
               size="medium"

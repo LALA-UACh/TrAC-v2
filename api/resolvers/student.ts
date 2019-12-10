@@ -29,9 +29,7 @@ export type PartialStudent = Pick<Student, "id" | "name" | "state"> & {
 @Resolver(() => Student)
 export class StudentResolver {
   @Authorized()
-  @Mutation(() => Student, {
-    nullable: true,
-  })
+  @Mutation(() => Student, { nullable: true })
   async student(
     @Ctx() { user }: IContext,
     @Arg("student_id")
@@ -40,37 +38,39 @@ export class StudentResolver {
       nullable: true,
     })
     program_id?: string
-  ): Promise<PartialStudent | undefined> {
+  ): Promise<PartialStudent | null> {
     assertIsDefined(user, `Error on authorization context`);
 
-    if (!user.admin) {
-      const AuthenticatedUserPrograms = await UserProgramsTable()
-        .select("program")
-        .where(
-          program_id
-            ? {
-                email: user.email,
-                program: program_id,
-              }
-            : {
-                email: user.email,
-              }
-        );
-
-      const IsAuthorized = await StudentTermTable()
-        .select("student_id")
-        .where("student_id", id)
-        .whereIn(
-          "program_id",
-          AuthenticatedUserPrograms.map(({ program }) => program)
-        )
-        .first();
-
-      assertIsDefined(
-        IsAuthorized,
-        `You are not authorized to check the specified student or program!`
-      );
+    if (id === "") {
+      return null;
     }
+
+    const AuthenticatedUserPrograms = await UserProgramsTable()
+      .select("program")
+      .where(
+        program_id
+          ? {
+              email: user.email,
+              program: program_id,
+            }
+          : {
+              email: user.email,
+            }
+      );
+
+    const IsAuthorized = await StudentTermTable()
+      .select("student_id")
+      .where("student_id", id)
+      .whereIn(
+        "program_id",
+        AuthenticatedUserPrograms.map(({ program }) => program)
+      )
+      .first();
+
+    assertIsDefined(
+      IsAuthorized,
+      `No tiene autorización para visualizar el estudiante especificado o el estudiante no pudo ser encontrado!`
+    );
 
     const studentData = await StudentTable()
       .select("name", "state")
@@ -79,16 +79,14 @@ export class StudentResolver {
       })
       .first();
 
-    if (studentData) {
-      return {
-        id,
-        name: studentData.name,
-        state: studentData.state,
-        programs: program_id !== undefined ? [{ id: program_id }] : undefined,
-      };
-    }
+    assertIsDefined(studentData, `Estudiante no encontrado!`);
 
-    return undefined;
+    return {
+      id,
+      name: studentData.name,
+      state: studentData.state,
+      programs: program_id !== undefined ? [{ id: program_id }] : undefined,
+    };
   }
 
   @FieldResolver()

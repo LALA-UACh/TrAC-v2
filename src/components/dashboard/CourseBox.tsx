@@ -188,7 +188,7 @@ export const CourseBox: FC<ICourse> = ({
     () =>
       !open && (
         <motion.div
-          key="sct"
+          key="credits"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -196,9 +196,11 @@ export const CourseBox: FC<ICourse> = ({
         >
           {credits.map(({ label, value }, key) => {
             return (
-              <Text fontSize="9px" key={key}>
-                <b>{`${label}: ${value}`}</b>
-              </Text>
+              value !== -1 && (
+                <Text fontSize="9px" key={key}>
+                  <b>{`${label}: ${value}`}</b>
+                </Text>
+              )
             );
           })}
         </motion.div>

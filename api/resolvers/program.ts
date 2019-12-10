@@ -29,57 +29,100 @@ export type PartialProgram = Pick<Program, "id">;
 @Resolver(() => Program)
 export class ProgramResolver {
   @Authorized()
-  @Mutation(() => Program, {
-    nullable: true,
-  })
+  @Mutation(() => Program)
   async program(
-    @Arg("id") id: string,
     @Ctx() { user }: IContext,
+    @Arg("id", { nullable: true }) id?: string,
     @Arg("student_id", { nullable: true }) student_id?: string
   ): Promise<
-    | (Pick<Program, "id" | "name" | "desc" | "active"> & {
-        curriculums?: Pick<ArrayPropertyType<Program, "curriculums">, "id">[];
-      })
-    | undefined
+    Pick<Program, "id" | "name" | "desc" | "active"> & {
+      curriculums?: Pick<ArrayPropertyType<Program, "curriculums">, "id">[];
+    }
   > {
     assertIsDefined(user, `Authorization in context is broken`);
 
-    if (
-      (await UserProgramsTable()
-        .select("program")
-        .where({
-          program: id,
-          email: user.email,
-        })
-        .first()) === undefined
-    ) {
-      throw new Error("You are not allowed to request this program!");
-    }
+    assertIsDefined(
+      id || student_id,
+      `Debe especificar al menos programa o estudiante!`
+    );
 
-    if (student_id) {
-      const [programData, curriculums] = await Promise.all([
-        ProgramTable()
-          .select("id", "name", "desc", "active")
-          .where({
-            id,
-          })
-          .whereIn(
-            "id",
-            StudentTermTable()
-              .distinct("program_id")
-              .where({
-                student_id,
-              })
-          )
-          .first(),
+    if (student_id && !id) {
+      const [studentData, userProgramsToMap] = await Promise.all([
         StudentTermTable()
-          .distinct("curriculum")
+          .distinct("program_id", "start_year", "curriculum")
           .where({
             student_id,
+          })
+          .orderBy("start_year", "desc"),
+        UserProgramsTable()
+          .select("program")
+          .where({
+            email: user.email,
           }),
       ]);
 
-      if (programData) {
+      const userPrograms = userProgramsToMap.map(({ program }) => program);
+
+      const studentProgramData = studentData.find(({ program_id }) => {
+        return userPrograms.includes(program_id);
+      });
+
+      assertIsDefined(
+        studentProgramData,
+        `No tiene autorización para visualizar el estudiante especificado o el estudiante no pudo ser encontrado!`
+      );
+
+      const programData = await ProgramTable()
+        .select("id", "name", "desc", "active")
+        .where({ id: studentProgramData.program_id })
+        .first();
+
+      assertIsDefined(programData, `Estudiante no pudo ser encontrado!`);
+
+      return {
+        ...programData,
+        curriculums: [{ id: studentProgramData.curriculum }],
+      };
+    } else {
+      assertIsDefined(
+        await UserProgramsTable()
+          .select("program")
+          .where({
+            program: id,
+            email: user.email,
+          })
+          .first(),
+        `No tiene autorización para visualizar el programa seleccionado!`
+      );
+      if (student_id) {
+        const [programData, curriculums] = await Promise.all([
+          ProgramTable()
+            .select("id", "name", "desc", "active")
+            .where({
+              id,
+            })
+            .whereIn(
+              "id",
+              StudentTermTable()
+                .distinct("program_id")
+                .where({
+                  student_id,
+                })
+            )
+            .first(),
+          StudentTermTable()
+            .distinct("curriculum", "start_year")
+            .where({
+              student_id,
+            })
+            .orderBy("start_year", "desc"),
+        ]);
+
+        assertIsDefined(
+          programData,
+          `Estudiante no encontrado o no pertenece al programa solicitado!`
+        );
+
         return {
           ...programData,
           curriculums:
@@ -87,14 +130,17 @@ export class ProgramResolver {
               id: curriculum,
             })) ?? [],
         };
-      }
-      return undefined;
-    }
+      } else {
+        const programData = await ProgramTable()
+          .select("id", "name", "desc", "active")
+          .where({ id })
+          .first();
 
-    return await ProgramTable()
-      .select("id", "name", "desc", "active")
-      .where({ id })
-      .first();
+        assertIsDefined(programData, `Programa no encontrado!`);
+
+        return programData;
+      }
+    }
   }
 
   @Authorized([ADMIN])

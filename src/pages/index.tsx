@@ -1,3 +1,4 @@
+import { uniq } from "lodash";
 import { FC, useEffect, useMemo, useRef } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useLogger } from "react-use";
@@ -25,7 +26,6 @@ import {
   searchProgramQuery,
   searchStudentQuery,
 } from "../graphql/queries";
-import { usePromiseLazyQuery } from "../utils/usePromiseLazyQuery";
 
 const Dashboard: FC = () => {
   const { data: currentUserData } = useQuery(currentUserQuery, {
@@ -252,24 +252,33 @@ const Dashboard: FC = () => {
     <Config>
       <TrackingContext.Provider value={trackingData}>
         <SearchBar
-          error={`${searchProgramError?.graphQLErrors
-            .map(({ message }) => message)
-            .join("\n") ?? ""}\n\n${searchStudentError?.graphQLErrors
-            .map(({ message }) => message)
-            .join("\n") ?? ""}`.trim()}
+          error={`${uniq(
+            [
+              ...(searchProgramError?.graphQLErrors ?? []),
+              ...(searchStudentError?.graphQLErrors ?? []),
+            ].map(({ message }) => message)
+          ).join("\n") ?? ""}`.trim()}
           searchResult="| Plan: 2015 | estudiante: 19233043-2"
           isSearchLoading={searchProgramLoading || searchStudentLoading}
           onSearch={async ({ student_id, program_id }) => {
-            const [programSearch, studentSearch] = await Promise.all([
-              searchProgram({
-                variables: { program_id, student_id: student_id || undefined },
-              }),
-              searchStudent({ variables: { student_id, program_id } }),
-            ]);
+            try {
+              const [programSearch, studentSearch] = await Promise.all([
+                searchProgram({
+                  variables: {
+                    program_id,
+                    student_id: student_id || undefined,
+                  },
+                }),
+                searchStudent({ variables: { student_id, program_id } }),
+              ]);
 
-            if (programSearch.data?.program && studentSearch.data?.student) {
-              return true;
+              if (programSearch.data?.program && studentSearch.data?.student) {
+                return true;
+              }
+            } catch (err) {
+              console.error(err);
             }
+
             return false;
           }}
           mock={mock}
