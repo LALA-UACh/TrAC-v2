@@ -230,15 +230,19 @@ export const SearchBar: FC<{
                 mr={4}
                 isDisabled={isSearchLoading}
               />
-              <datalist id="student_options">
-                {studentOptions.map((value, key) => (
-                  <option key={key} value={value} />
-                ))}
-              </datalist>
+              {studentOptions.findIndex(value => {
+                return student_id === value;
+              }) === -1 && (
+                <datalist id="student_options">
+                  {studentOptions.map((value, key) => (
+                    <option key={key} value={value} />
+                  ))}
+                </datalist>
+              )}
+
               {student_id !== "" && (
                 <InputRightElement
-                  ml={2}
-                  pr={2}
+                  pr={1}
                   cursor="pointer"
                   onClick={() => {
                     setStudentId("");
