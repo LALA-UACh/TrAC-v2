@@ -32,6 +32,7 @@ export const DropoutList: FC<{
         placement="left"
         onClose={onClose}
         finalFocusRef={btnRef}
+        size="lg"
       >
         <DrawerOverlay />
         <DrawerContent>

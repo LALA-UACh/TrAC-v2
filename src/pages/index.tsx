@@ -1,5 +1,5 @@
 import { uniq } from "lodash";
-import { FC, useEffect, useMemo, useRef } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useLogger } from "react-use";
 import { useRememberState } from "use-remember-state";
@@ -28,6 +28,7 @@ import {
 } from "../graphql/queries";
 
 const Dashboard: FC = () => {
+  const [curriculum, setCurriculum] = useState<string | undefined>(undefined);
   const { data: currentUserData } = useQuery(currentUserQuery, {
     fetchPolicy: "cache-only",
   });
@@ -224,10 +225,7 @@ const Dashboard: FC = () => {
             return { id: curriculumId, semesters };
           }) ?? [];
       const data = curriculums.find(({ id: curriculumId }) => {
-        if (searchStudentData?.student) {
-          return searchStudentData?.student?.curriculums[0] === curriculumId;
-        }
-        return true;
+        return curriculum ? curriculumId === curriculum : true;
       });
       if (data) {
         SemestersComponent = (
@@ -246,7 +244,7 @@ const Dashboard: FC = () => {
       TakenSemestersComponent,
       SemestersComponent,
     };
-  }, [searchStudentData, searchProgramData]);
+  }, [searchStudentData, searchProgramData, curriculum]);
 
   return (
     <Config>
@@ -258,7 +256,13 @@ const Dashboard: FC = () => {
               ...(searchStudentError?.graphQLErrors ?? []),
             ].map(({ message }) => message)
           ).join("\n") ?? ""}`.trim()}
-          searchResult="| Plan: 2015 | estudiante: 19233043-2"
+          searchResult={{
+            curriculums:
+              searchProgramData?.program?.curriculums?.map(({ id }) => {
+                return id;
+              }) ?? [],
+            student: searchStudentData?.student?.id,
+          }}
           isSearchLoading={searchProgramLoading || searchStudentLoading}
           onSearch={async ({ student_id, program_id }) => {
             try {
@@ -283,6 +287,8 @@ const Dashboard: FC = () => {
           }}
           mock={mock}
           setMock={setMock}
+          curriculum={curriculum}
+          setCurriculum={setCurriculum}
         />
         <CoursesFlow>
           <ScrollContainer activationDistance={5} hideScrollbars={false}>

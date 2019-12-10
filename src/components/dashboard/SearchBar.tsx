@@ -11,6 +11,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useState,
 } from "react";
 import Select from "react-select";
 import { Button, Icon } from "semantic-ui-react";
@@ -25,6 +26,9 @@ import {
   Box,
   Flex,
   Input,
+  InputGroup,
+  InputRightElement,
+  Tag,
 } from "@chakra-ui/core";
 
 import dropout from "../../../constants/mockData/dropout";
@@ -54,11 +58,36 @@ export const SearchBar: FC<{
     student_id: string;
     program_id?: string;
   }) => Promise<boolean>;
-  searchResult?: string;
+  searchResult?: { curriculums: string[]; student?: string };
   error?: string;
   mock: boolean;
   setMock: Dispatch<SetStateAction<boolean>>;
-}> = ({ isSearchLoading, onSearch, searchResult, error, mock, setMock }) => {
+  curriculum: string | undefined;
+  setCurriculum: Dispatch<SetStateAction<string | undefined>>;
+}> = ({
+  isSearchLoading,
+  onSearch,
+  searchResult,
+  error,
+  mock,
+  setMock,
+  curriculum,
+  setCurriculum,
+}) => {
+  useEffect(() => {
+    if (
+      curriculum === undefined &&
+      (searchResult?.curriculums.length ?? 0) > 0
+    ) {
+      setCurriculum(
+        searchResult?.curriculums
+          .sort()
+          .slice()
+          .reverse()[0]
+      );
+    }
+  }, [curriculum, setCurriculum, searchResult?.curriculums]);
+
   const { data: currentUserData } = useQuery(currentUserQuery, {
     fetchPolicy: "cache-only",
   });
@@ -142,32 +171,83 @@ export const SearchBar: FC<{
             }}
           />
         </Box>
-        <Box mr={5} color="white">
-          {searchResult}
-        </Box>
+        {(searchResult?.curriculums.length ?? 0) > 1 ? (
+          <Flex mr={5}>
+            <Tag variantColor="blue" variant="outline">
+              Plan
+            </Tag>
+            <Box width={90} ml={2}>
+              <Select
+                options={
+                  searchResult?.curriculums
+                    .sort()
+                    .slice()
+                    .reverse()
+                    .map(curriculum => {
+                      return {
+                        label: curriculum,
+                        value: curriculum,
+                      };
+                    }) ?? []
+                }
+                value={
+                  curriculum
+                    ? { value: curriculum, label: curriculum }
+                    : undefined
+                }
+                onChange={selected => {
+                  setCurriculum(
+                    (selected as { label: string; value: string }).value
+                  );
+                }}
+                placeholder="..."
+                noOptionsMessage={() => "Sin planes"}
+              />
+            </Box>
+          </Flex>
+        ) : searchResult?.curriculums.length === 1 ? (
+          <Tag mr={2}>{`Plan: ${searchResult?.curriculums[0]}`}</Tag>
+        ) : null}
+        {searchResult?.student && <Tag mr={2}>{searchResult.student}</Tag>}
+
         <form>
           <Flex wrap="wrap" alignItems="center">
-            <Input
-              borderColor="gray.400"
-              fontFamily="Lato"
-              variant="outline"
-              width={200}
-              list="student_options"
-              placeholder="ID del estudiante"
-              value={student_id}
-              onChange={({
-                target: { value },
-              }: ChangeEvent<HTMLInputElement>) => {
-                setStudentId(value);
-              }}
-              mr={4}
-              isDisabled={isSearchLoading}
-            />
-            <datalist id="student_options">
-              {studentOptions.map((value, key) => (
-                <option key={key} value={value} />
-              ))}
-            </datalist>
+            <InputGroup size="lg">
+              <Input
+                borderColor="gray.400"
+                fontFamily="Lato"
+                variant="outline"
+                width={300}
+                list="student_options"
+                placeholder="ID del estudiante"
+                value={student_id}
+                onChange={({
+                  target: { value },
+                }: ChangeEvent<HTMLInputElement>) => {
+                  setStudentId(value);
+                }}
+                mr={4}
+                isDisabled={isSearchLoading}
+              />
+              <datalist id="student_options">
+                {studentOptions.map((value, key) => (
+                  <option key={key} value={value} />
+                ))}
+              </datalist>
+              {student_id !== "" && (
+                <InputRightElement
+                  ml={2}
+                  pr={2}
+                  cursor="pointer"
+                  onClick={() => {
+                    setStudentId("");
+                  }}
+                >
+                  <Icon color="grey" name="close" />
+                </InputRightElement>
+              )}
+            </InputGroup>
+
             <Button
               icon
               labelPosition="left"

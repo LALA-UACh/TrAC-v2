@@ -275,7 +275,6 @@ export const CourseBox: FC<ICourse> = ({
   );
 
   const HistogramHistoric = useMemo(() => {
-    console.log({ historicDistribution });
     return (
       historicDistribution && (
         <Histogram
