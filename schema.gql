@@ -4,28 +4,29 @@
 # -----------------------------------------------
 
 type AuthResult {
-  user: User
   error: String
   token: String
+  user: User
 }
 
 type BandColor {
-  min: Float!
-  max: Float!
   color: String!
+  max: Float!
+  min: Float!
 }
 
 type Course {
+  bandColors: [BandColor!]!
+  code: String!
+  credits: [Credit!]!
+  flow: [Course!]!
+  historicalDistribution: [DistributionValue!]!
+
   """Course-Semester-Curriculum-Program ID """
   id: Float!
-  code: String!
-  name: String!
-  credits: [Credit!]!
   mention: String!
-  flow: [Course!]!
+  name: String!
   requisites: [Course!]!
-  historicalDistribution: [DistributionValue!]!
-  bandColors: [BandColor!]!
 }
 
 type Credit {
@@ -49,9 +50,9 @@ type DistributionValue {
 }
 
 type Dropout {
-  prob_dropout: Float!
-  model_accuracy: Float!
   active: Boolean!
+  model_accuracy: Float!
+  prob_dropout: Float!
 }
 
 """
@@ -76,100 +77,100 @@ type MultipleLockedUserResult {
 }
 
 type Mutation {
+  addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
+  deleteUser(email: EmailAddress!): [User!]!
+  lockMailUser(email: EmailAddress!): LockedUserResult!
   login(email: EmailAddress!, password: String!): AuthResult!
   logout: Boolean!
-  unlock(email: EmailAddress!, password: String!, unlockKey: String!): AuthResult!
-  program(id: String!): Program
-  student(program_id: String, student_id: String!): Student
-  track(datetime_client: DateTime!, data: String!): Boolean!
-  updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
-  addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
-  upsertUsers(users: [UpsertedUser!]!): [User!]!
-  lockMailUser(email: EmailAddress!): LockedUserResult!
   mailAllLockedUsers: [JSONObject!]!
-  deleteUser(email: EmailAddress!): [User!]!
+  program(id: String!, student_id: String): Program
+  student(program_id: String, student_id: String!): Student
+  track(data: String!, datetime_client: DateTime!): Boolean!
+  unlock(email: EmailAddress!, password: String!, unlockKey: String!): AuthResult!
+  updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
+  upsertUsers(users: [UpsertedUser!]!): [User!]!
 }
 
 type Program {
-  id: String!
-  name: String!
-  desc: String!
   active: Boolean!
-  lastGPA: Float!
   curriculums: [Curriculum!]!
+  desc: String!
+  id: String!
+  lastGPA: Float!
+  name: String!
 }
 
 type Query {
-  currentUser: AuthResult
   config: JSONObject!
-  programs: [Program!]!
+  currentUser: AuthResult
   myPrograms: [Program!]!
+  programs: [Program!]!
   users: [User!]!
 }
 
 type Semester {
-  id: Int!
   courses: [Course!]!
+  id: Int!
 }
 
 """Possible states of a taken course"""
 enum StateCourse {
-  Passed
-  Failed
-  Current
   Canceled
+  Current
+  Failed
+  Passed
   Pending
 }
 
 type Student {
-  id: ID!
-  name: String!
-  state: String!
-  programs: [Program!]!
   curriculums: [String!]!
-  start_year: Int!
-  mention: String!
-  terms: [Term!]!
   dropout: Dropout
+  id: ID!
+  mention: String!
+  name: String!
+  programs: [Program!]!
+  start_year: Int!
+  state: String!
+  terms: [Term!]!
 }
 
 type TakenCourse {
-  id: Int!
   code: String!
-  name: String!
-  registration: String!
-  grade: Float!
-  state: StateCourse!
-  parallelGroup: Int!
   currentDistribution: [DistributionValue!]!
+  grade: Float!
+  id: Int!
+  name: String!
+  parallelGroup: Int!
+  registration: String!
+  state: StateCourse!
 }
 
 type Term {
-  id: Int!
-  student_id: String!
-  year: Int!
-  term: TermType!
-  situation: String!
-  semestral_grade: Float!
   cumulated_grade: Float!
+  id: Int!
   program_grade: Float!
+  semestral_grade: Float!
+  situation: String!
+  student_id: String!
   takenCourses: [TakenCourse!]!
+  term: TermType!
+  year: Int!
 }
 
 """Possible states of a term, first semester, second semester or anual"""
 enum TermType {
+  Anual
   First
   Second
-  Anual
 }
 
 type Track {
-  id: Float!
   app_id: String!
-  user_id: String!
+  data: String!
   datetime: DateTime!
   datetime_client: DateTime!
-  data: String!
+  id: Float!
+  user_id: String!
 }
 
 input UpdateUserPrograms {
@@ -179,27 +180,27 @@ input UpdateUserPrograms {
 }
 
 input UpsertedUser {
-  oldEmail: EmailAddress
   email: EmailAddress!
+  locked: Boolean = true
   name: String = "default_name"
-  type: UserType = Student
-  tries: Float = 0
+  oldEmail: EmailAddress
   rut_id: String = ""
   show_dropout: Boolean = false
-  locked: Boolean = true
+  tries: Float = 0
+  type: UserType = Student
 }
 
 type User {
-  email: EmailAddress!
-  name: String!
   admin: Boolean!
-  type: UserType!
+  email: EmailAddress!
+  locked: Boolean!
+  name: String!
+  programs: [Program!]!
   rut_id: String!
   show_dropout: Boolean!
-  locked: Boolean!
   tries: Float!
+  type: UserType!
   unlockKey: String!
-  programs: [Program!]!
 }
 
 input UserProgram {

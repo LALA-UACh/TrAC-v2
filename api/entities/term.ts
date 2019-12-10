@@ -9,7 +9,7 @@ registerEnumType(TermType, {
     "Possible states of a term, first semester, second semester or anual",
 });
 
-@ObjectType()
+@ObjectType({ simpleResolvers: true })
 export class Term {
   // student_term => id
   @Field(() => Int)

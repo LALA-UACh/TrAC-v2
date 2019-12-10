@@ -4,7 +4,7 @@ import { Dropout } from "./dropout";
 import { Program } from "./program";
 import { Term } from "./term";
 
-@ObjectType()
+@ObjectType({ simpleResolvers: true })
 export class Student {
   // student_program => student_id | student => id
   @Field(() => ID)

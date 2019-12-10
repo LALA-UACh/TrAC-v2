@@ -31,7 +31,7 @@ export class TakenCourseResolver {
       .first();
 
     if (nameData === undefined) {
-      return "UNDEFINED";
+      return code;
     }
     assertIsDefined(
       nameData,

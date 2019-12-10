@@ -17,7 +17,7 @@ const schema = buildSchemaSync({
     GraphQLJSON.toString(),
     GraphQLJSONObject.toString(),
     EmailAddressResolver.toString(),
-  ],
+  ] as any,
   authChecker,
   emitSchemaFile: true,
   validate: true,

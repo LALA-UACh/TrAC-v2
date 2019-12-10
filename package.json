@@ -80,7 +80,7 @@
     "string-pixel-width": "^1.10.0",
     "styled-components": "^4.4.1",
     "styled-jsx": "^3.2.4",
-    "type-graphql": "^0.17.5",
+    "type-graphql": "^0.18.0-beta.7",
     "use-remember-state": "^1.1.2",
     "utility-types": "^3.10.0",
     "validator": "^12.1.0"

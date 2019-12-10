@@ -12,11 +12,12 @@ import {
 import { $PropertyType } from "utility-types";
 
 import { IContext } from "../../interfaces";
-import { IfImplements } from "../../interfaces/utils";
+import { ArrayPropertyType, IfImplements } from "../../interfaces/utils";
 import { ADMIN } from "../consts";
 import {
   ProgramStructureTable,
   ProgramTable,
+  StudentTermTable,
   UserProgramsTable,
 } from "../db/tables";
 import { Program } from "../entities/program";
@@ -33,8 +34,14 @@ export class ProgramResolver {
   })
   async program(
     @Arg("id") id: string,
-    @Ctx() { user }: IContext
-  ): Promise<Pick<Program, "id" | "name" | "desc" | "active"> | undefined> {
+    @Ctx() { user }: IContext,
+    @Arg("student_id", { nullable: true }) student_id?: string
+  ): Promise<
+    | (Pick<Program, "id" | "name" | "desc" | "active"> & {
+        curriculums?: Pick<ArrayPropertyType<Program, "curriculums">, "id">[];
+      })
+    | undefined
+  > {
     assertIsDefined(user, `Authorization in context is broken`);
 
     if (
@@ -47,6 +54,41 @@ export class ProgramResolver {
         .first()) === undefined
     ) {
       throw new Error("You are not allowed to request this program!");
+    }
+
+    if (student_id) {
+      const [programData, curriculums] = await Promise.all([
+        ProgramTable()
+          .select("id", "name", "desc", "active")
+          .where({
+            id,
+          })
+          .whereIn(
+            "id",
+            StudentTermTable()
+              .distinct("program_id")
+              .where({
+                student_id,
+              })
+          )
+          .first(),
+        StudentTermTable()
+          .distinct("curriculum")
+          .where({
+            student_id,
+          }),
+      ]);
+
+      if (programData) {
+        return {
+          ...programData,
+          curriculums:
+            curriculums?.map(({ curriculum }) => ({
+              id: curriculum,
+            })) ?? [],
+        };
+      }
+      return undefined;
     }
 
     return await ProgramTable()
@@ -178,7 +220,11 @@ export class ProgramResolver {
 
   @FieldResolver()
   async curriculums(
-    @Root() { id: program_id }: Pick<Program, "id">
+    @Root()
+    {
+      id: program_id,
+      curriculums: curriculumsIds,
+    }: Pick<Program, "id" | "curriculums">
   ): Promise<
     IfImplements<
       {
@@ -196,9 +242,17 @@ export class ProgramResolver {
       "The id needs to be available for the program fields resolvers"
     );
 
-    const data = await ProgramStructureTable()
-      .select("id", "curriculum", "semester", "course_id")
-      .where({ program_id });
+    const data = curriculumsIds
+      ? await ProgramStructureTable()
+          .select("id", "curriculum", "semester", "course_id")
+          .where({ program_id })
+          .whereIn(
+            "curriculum",
+            curriculumsIds.map(({ id }) => id)
+          )
+      : await ProgramStructureTable()
+          .select("id", "curriculum", "semester", "course_id")
+          .where({ program_id });
 
     const curriculums = data.reduce<
       Record<

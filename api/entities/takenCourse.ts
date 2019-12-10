@@ -9,7 +9,7 @@ registerEnumType(StateCourse, {
   description: "Possible states of a taken course",
 });
 
-@ObjectType()
+@ObjectType({ simpleResolvers: true })
 export class TakenCourse implements Pick<Course, "code" | "name"> {
   // student_course => id
   @Field(() => Int)

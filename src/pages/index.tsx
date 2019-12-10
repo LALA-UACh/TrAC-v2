@@ -199,9 +199,7 @@ const Dashboard: FC = () => {
                             currentDistribution,
                             parallelGroup,
                           } of takenCourses) {
-                            console.log({ courseCode, code });
                             if (courseCode === code) {
-                              console.log("YES");
                               taken.push({
                                 term,
                                 year,
@@ -225,18 +223,12 @@ const Dashboard: FC = () => {
             });
             return { id: curriculumId, semesters };
           }) ?? [];
-      //TODO: Choose curriculum by id
       const data = curriculums.find(({ id: curriculumId }) => {
         if (searchStudentData?.student) {
-          console.log({
-            curriculumId,
-            searchStudentData123: searchStudentData?.student?.curriculums[0],
-          });
           return searchStudentData?.student?.curriculums[0] === curriculumId;
         }
         return true;
       });
-      console.log({ data });
       if (data) {
         SemestersComponent = (
           <>
@@ -269,7 +261,9 @@ const Dashboard: FC = () => {
           isSearchLoading={searchProgramLoading || searchStudentLoading}
           onSearch={async ({ student_id, program_id }) => {
             const [programSearch, studentSearch] = await Promise.all([
-              searchProgram({ variables: { program_id } }),
+              searchProgram({
+                variables: { program_id, student_id: student_id || undefined },
+              }),
               searchStudent({ variables: { student_id, program_id } }),
             ]);
 
