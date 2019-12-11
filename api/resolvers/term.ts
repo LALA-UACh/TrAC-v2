@@ -1,3 +1,4 @@
+import { uniqBy } from "lodash";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
@@ -162,11 +163,17 @@ export class TermResolver {
         { column: "course_taken", order: "desc" },
         { column: "year", order: "desc" },
         { column: "term", order: "desc" },
+        {
+          column: "state",
+          order: "asc",
+        },
       ]);
 
-    return takenCoursesData.map(({ id, course_taken }) => {
-      // TODO: Course equivalent logic
-      return { id, code: course_taken };
-    });
+    return uniqBy(takenCoursesData, ({ course_taken }) => course_taken).map(
+      ({ id, course_taken }) => {
+        // TODO: Course equivalent logic
+        return { id, code: course_taken };
+      }
+    );
   }
 }

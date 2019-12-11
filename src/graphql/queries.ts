@@ -233,7 +233,7 @@ export const searchStudentQuery: DocumentNode<
     program_id?: string;
   }
 > = gql`
-  mutation($student_id: String!, $program_id: String) {
+  mutation($student_id: String!, $program_id: String!) {
     student(student_id: $student_id, program_id: $program_id) {
       id
       programs {

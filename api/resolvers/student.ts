@@ -4,7 +4,6 @@ import {
   Ctx,
   FieldResolver,
   Mutation,
-  Query,
   Resolver,
   Root,
 } from "type-graphql";
@@ -34,10 +33,8 @@ export class StudentResolver {
     @Ctx() { user }: IContext,
     @Arg("student_id")
     id: string,
-    @Arg("program_id", {
-      nullable: true,
-    })
-    program_id?: string
+    @Arg("program_id")
+    program_id: string
   ): Promise<PartialStudent | null> {
     assertIsDefined(user, `Error on authorization context`);
 
@@ -85,7 +82,7 @@ export class StudentResolver {
       id,
       name: studentData.name,
       state: studentData.state,
-      programs: program_id !== undefined ? [{ id: program_id }] : undefined,
+      programs: [{ id: program_id }],
     };
   }
 
@@ -152,15 +149,31 @@ export class StudentResolver {
   }
 
   @FieldResolver()
-  async terms(@Root() { id }: PartialStudent): Promise<PartialTerm[]> {
+  async terms(
+    @Root() { id, programs }: PartialStudent
+  ): Promise<PartialTerm[]> {
     assertIsDefined(
       id,
       `student id needs to be available for Student field resolvers`
     );
 
+    if (!programs) {
+      programs = (
+        await StudentTermTable()
+          .distinct("program_id")
+          .where({ student_id: id })
+      ).map(({ program_id }) => {
+        return { id: program_id };
+      });
+    }
+
     return await StudentTermTable()
       .select("id")
       .where({ student_id: id })
+      .whereIn(
+        "program_id",
+        programs.map(({ id }) => id)
+      )
       .orderBy([
         { column: "year", order: "desc" },
         { column: "term", order: "desc" },

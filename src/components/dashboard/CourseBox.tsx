@@ -465,7 +465,7 @@ export const CourseBox: FC<ICourse> = ({
         borderRadius="0px 3px 3px 0px"
         zIndex={0}
         transition="0.4s all ease-in-out"
-        border="1px solid"
+        borderLeft="1px solid"
         borderColor={borderColor}
       >
         {GradeComponent}
