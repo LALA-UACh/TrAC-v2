@@ -3,14 +3,14 @@ import { useEffect } from "react";
 
 import { useMutation } from "@apollo/react-hooks";
 
-import { currentUserQuery, logoutMutation } from "../graphql/queries";
+import { CURRENT_USER, LOGOUT } from "../graphql/queries";
 
 export default () => {
-  const [logout] = useMutation(logoutMutation, {
+  const [logout] = useMutation(LOGOUT, {
     ignoreResults: true,
     update: cache => {
       cache.writeQuery({
-        query: currentUserQuery,
+        query: CURRENT_USER,
         data: { currentUser: null },
       });
     },

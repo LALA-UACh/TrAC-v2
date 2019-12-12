@@ -39,6 +39,9 @@ export class User implements Partial<IUser> {
   @Field()
   show_dropout: boolean;
 
+  @Field()
+  show_user_list: boolean;
+
   @Authorized([ADMIN])
   @Field()
   locked: boolean;

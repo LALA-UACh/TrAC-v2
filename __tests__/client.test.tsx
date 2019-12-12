@@ -6,7 +6,7 @@ import waitForExpect from "wait-for-expect";
 import { MockedProvider } from "@apollo/react-testing";
 import { act, render } from "@testing-library/react";
 
-import { currentUserQuery } from "../src/graphql/queries";
+import { CURRENT_USER } from "../src/graphql/queries";
 import LoginPage from "../src/pages/login";
 
 describe("login", () => {
@@ -17,7 +17,7 @@ describe("login", () => {
           mocks={[
             {
               request: {
-                query: currentUserQuery,
+                query: CURRENT_USER,
               },
               result: {
                 data: {

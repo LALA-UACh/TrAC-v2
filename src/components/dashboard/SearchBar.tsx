@@ -11,7 +11,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
 } from "react";
 import Select from "react-select";
 import { Button, Icon } from "semantic-ui-react";
@@ -32,11 +31,10 @@ import {
   Tag,
 } from "@chakra-ui/core";
 
-import dropout from "../../../constants/mockData/dropout";
-import { currentUserQuery, myProgramsQuery } from "../../graphql/queries";
+import { CURRENT_USER, MY_PROGRAMS } from "../../graphql/queries";
 import { TrackingContext } from "../Tracking";
 import { ConfigContext } from "./Config";
-import { DropoutList } from "./DropoutList";
+import { StudentList } from "./StudentList";
 
 const MockingMode: FC<{
   mock: boolean;
@@ -90,7 +88,7 @@ export const SearchBar: FC<{
     }
   }, [curriculum, setCurriculum, searchResult?.curriculums]);
 
-  const { data: currentUserData } = useQuery(currentUserQuery, {
+  const { data: currentUserData } = useQuery(CURRENT_USER, {
     fetchPolicy: "cache-only",
   });
 
@@ -102,7 +100,7 @@ export const SearchBar: FC<{
 
   const Tracking = useContext(TrackingContext);
   const { data: myProgramsData, loading: myProgramsLoading } = useQuery(
-    myProgramsQuery,
+    MY_PROGRAMS,
     {
       ssr: false,
     }
@@ -330,13 +328,14 @@ export const SearchBar: FC<{
         {currentUserData?.currentUser?.user?.admin && (
           <MockingMode mock={mock} setMock={setMock} />
         )}
-        <DropoutList
+        <StudentList
           data={
             mock
               ? range(40).map(() => ({
                   student_id: generate(),
-                  probability: Math.round(Math.random() * 100),
-                  accuracy: Math.random(),
+                  dropout_probability: Math.round(Math.random() * 100),
+                  start_year: 2005 + Math.round(Math.random() * 14),
+                  progress: Math.round(Math.random() * 100),
                 }))
               : []
           }

@@ -12,10 +12,11 @@ export const UserFragment = gql`
     admin
     type
     show_dropout
+    show_user_list
   }
 `;
 
-export const loginMutation: DocumentNode<
+export const LOGIN: DocumentNode<
   {
     login: {
       user?: {
@@ -24,6 +25,7 @@ export const loginMutation: DocumentNode<
         admin: boolean;
         type: UserType;
         show_dropout: boolean;
+        show_user_list: boolean;
       };
       error?: string;
     };
@@ -44,7 +46,7 @@ export const loginMutation: DocumentNode<
   ${UserFragment}
 `;
 
-export const currentUserQuery: DocumentNode<{
+export const CURRENT_USER: DocumentNode<{
   currentUser?: IfImplements<
     {
       user?: {
@@ -53,6 +55,7 @@ export const currentUserQuery: DocumentNode<{
         admin: boolean;
         type: UserType;
         show_dropout: boolean;
+        show_user_list: boolean;
       };
     },
     AuthResult
@@ -68,7 +71,7 @@ export const currentUserQuery: DocumentNode<{
   ${UserFragment}
 `;
 
-export const unlockMutation: DocumentNode<
+export const UNLOCK: DocumentNode<
   {
     unlock: {
       user?: IfImplements<
@@ -78,6 +81,7 @@ export const unlockMutation: DocumentNode<
           admin: boolean;
           type: UserType;
           show_dropout: boolean;
+          show_user_list: boolean;
         },
         User
       >;
@@ -101,7 +105,7 @@ export const unlockMutation: DocumentNode<
   ${UserFragment}
 `;
 
-export const logoutMutation: DocumentNode<{
+export const LOGOUT: DocumentNode<{
   logout: boolean;
 }> = gql`
   mutation {
@@ -109,7 +113,7 @@ export const logoutMutation: DocumentNode<{
   }
 `;
 
-export const searchProgramQuery: DocumentNode<
+export const SEARCH_PROGRAM: DocumentNode<
   {
     program: IfImplements<
       {
@@ -184,7 +188,7 @@ export const searchProgramQuery: DocumentNode<
   }
 `;
 
-export const searchStudentQuery: DocumentNode<
+export const SEARCH_STUDENT: DocumentNode<
   {
     student?: IfImplements<
       {
@@ -275,7 +279,7 @@ export const searchStudentQuery: DocumentNode<
   }
 `;
 
-export const myProgramsQuery: DocumentNode<{
+export const MY_PROGRAMS: DocumentNode<{
   myPrograms: IfImplements<{ id: string; name: string }, Program>[];
 }> = gql`
   query {

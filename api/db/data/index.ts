@@ -64,6 +64,10 @@ const dataImport = async () => {
           .boolean("show_dropout")
           .notNullable()
           .defaultTo(false);
+        table
+          .boolean("show_user_list")
+          .notNullable()
+          .defaultTo(false);
       });
 
       await UserTable().insert({
@@ -74,6 +78,7 @@ const dataImport = async () => {
         admin: true,
         type: UserType.Director,
         show_dropout: true,
+        show_user_list: true,
       });
     }
   });

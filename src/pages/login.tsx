@@ -21,7 +21,7 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Image } from "@chakra-ui/core";
 
 import { LOCKED_USER, WRONG_INFO } from "../../constants";
-import { currentUserQuery, loginMutation } from "../graphql/queries";
+import { CURRENT_USER, LOGIN } from "../graphql/queries";
 
 const Login: FC = () => {
   const [session, setSession] = useState(() =>
@@ -36,21 +36,18 @@ const Login: FC = () => {
     }
   }, [session]);
 
-  const [login, { data, loading, error: errorMutation }] = useMutation(
-    loginMutation,
-    {
-      update: (cache, { data }) => {
-        if (data?.login.user) {
-          cache.writeQuery({
-            query: currentUserQuery,
-            data: {
-              currentUser: data.login,
-            },
-          });
-        }
-      },
-    }
-  );
+  const [login, { data, loading, error: errorMutation }] = useMutation(LOGIN, {
+    update: (cache, { data }) => {
+      if (data?.login.user) {
+        cache.writeQuery({
+          query: CURRENT_USER,
+          data: {
+            currentUser: data.login,
+          },
+        });
+      }
+    },
+  });
 
   return (
     <Grid centered padded>
@@ -182,7 +179,7 @@ const Login: FC = () => {
 };
 
 export default () => {
-  const { data, loading } = useQuery(currentUserQuery, {
+  const { data, loading } = useQuery(CURRENT_USER, {
     ssr: false,
   });
   useEffect(() => {

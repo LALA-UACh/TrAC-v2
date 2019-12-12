@@ -22,14 +22,14 @@ import { TimeLine } from "../components/dashboard/Timeline";
 import { RequireAuth } from "../components/RequireAuth";
 import { Tracking, TrackingContext, TrackingRef } from "../components/Tracking";
 import {
-  currentUserQuery,
-  searchProgramQuery,
-  searchStudentQuery,
+  CURRENT_USER,
+  SEARCH_PROGRAM,
+  SEARCH_STUDENT,
 } from "../graphql/queries";
 
 const Dashboard: FC = () => {
   const [curriculum, setCurriculum] = useState<string | undefined>(undefined);
-  const { data: currentUserData } = useQuery(currentUserQuery, {
+  const { data: currentUserData } = useQuery(CURRENT_USER, {
     fetchPolicy: "cache-only",
   });
   const [mock, setMock] = useRememberState(
@@ -45,7 +45,7 @@ const Dashboard: FC = () => {
       called: searchProgramCalled,
       error: searchProgramError,
     },
-  ] = useMutation(searchProgramQuery);
+  ] = useMutation(SEARCH_PROGRAM);
   const [
     searchStudent,
     {
@@ -54,7 +54,7 @@ const Dashboard: FC = () => {
       called: searchStudentCalled,
       error: searchStudentError,
     },
-  ] = useMutation(searchStudentQuery);
+  ] = useMutation(SEARCH_STUDENT);
 
   useLogger("index", {
     searchProgramData,

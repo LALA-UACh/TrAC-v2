@@ -18,7 +18,7 @@ import matches from "validator/lib/matches";
 import { useMutation } from "@apollo/react-hooks";
 
 import { USED_OLD_PASSWORD, WRONG_INFO } from "../../../../constants";
-import { currentUserQuery, unlockMutation } from "../../../graphql/queries";
+import { CURRENT_USER, UNLOCK } from "../../../graphql/queries";
 
 const validatePassword = (password = "", confirm_password = "") => {
   const conditions = {
@@ -70,11 +70,11 @@ export default () => {
   const [
     unlock,
     { error: errorUnlock, loading: loadingUnlock, data: dataUnlock },
-  ] = useMutation(unlockMutation, {
+  ] = useMutation(UNLOCK, {
     update: (cache, { data }) => {
       if (data?.unlock.user) {
         cache.writeQuery({
-          query: currentUserQuery,
+          query: CURRENT_USER,
           data: {
             currentUser: data.unlock,
           },

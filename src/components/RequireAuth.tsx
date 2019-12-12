@@ -3,10 +3,10 @@ import { FC, useEffect } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
 
-import { currentUserQuery } from "../graphql/queries";
+import { CURRENT_USER } from "../graphql/queries";
 
 export const RequireAuth: FC<{ admin?: boolean }> = ({ children, admin }) => {
-  const { loading, error, data } = useQuery(currentUserQuery, {
+  const { loading, error, data } = useQuery(CURRENT_USER, {
     ssr: false,
   });
 
