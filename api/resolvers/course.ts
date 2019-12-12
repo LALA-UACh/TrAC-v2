@@ -187,18 +187,8 @@ export class CourseResolver {
 
   @FieldResolver()
   async bandColors(
-    @Root() { id, code }: PartialCourse
+    @Root() { code }: PartialCourse
   ): Promise<$PropertyType<Course, "bandColors">> {
-    const preData = await StudentCourseTable()
-      .select("year", "term")
-      .where({ id })
-      .first();
-
-    assertIsDefined(
-      preData,
-      `preData bandColors could not be found for ${id} ${code}`
-    );
-
     const bandColorsData = await CourseStatsTable()
       .select("color_bands")
       .where({
