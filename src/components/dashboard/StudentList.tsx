@@ -84,7 +84,7 @@ export const StudentList: FC<{
     }
   }, [setSortedStudentList, studentListData, columnSort, directionSort]);
 
-  if (currentUserData?.currentUser?.user?.show_user_list) {
+  if (currentUserData?.currentUser?.user?.show_student_list) {
     return (
       <>
         <Button m={2} ref={btnRef} variantColor="blue" onClick={onOpen}>

@@ -174,7 +174,7 @@ export interface IUser {
   type: string;
   rut_id: string;
   show_dropout: boolean;
-  show_user_list: boolean;
+  show_student_list: boolean;
 }
 
 export const UserTable = () => dbAuth<IUser>(USERS_TABLE);

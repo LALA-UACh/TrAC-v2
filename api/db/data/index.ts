@@ -65,7 +65,7 @@ const dataImport = async () => {
           .notNullable()
           .defaultTo(false);
         table
-          .boolean("show_user_list")
+          .boolean("show_student_list")
           .notNullable()
           .defaultTo(false);
       });
@@ -78,7 +78,7 @@ const dataImport = async () => {
         admin: true,
         type: UserType.Director,
         show_dropout: true,
-        show_user_list: true,
+        show_student_list: true,
       });
     }
   });

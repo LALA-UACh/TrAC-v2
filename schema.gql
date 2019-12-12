@@ -198,7 +198,7 @@ type User {
   programs: [Program!]!
   rut_id: String!
   show_dropout: Boolean!
-  show_user_list: Boolean!
+  show_student_list: Boolean!
   tries: Float!
   type: UserType!
   unlockKey: String!

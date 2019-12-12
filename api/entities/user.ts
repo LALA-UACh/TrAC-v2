@@ -40,7 +40,7 @@ export class User implements Partial<IUser> {
   show_dropout: boolean;
 
   @Field()
-  show_user_list: boolean;
+  show_student_list: boolean;
 
   @Authorized([ADMIN])
   @Field()

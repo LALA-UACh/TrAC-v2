@@ -12,7 +12,7 @@ export const UserFragment = gql`
     admin
     type
     show_dropout
-    show_user_list
+    show_student_list
   }
 `;
 
@@ -25,7 +25,7 @@ export const LOGIN: DocumentNode<
         admin: boolean;
         type: UserType;
         show_dropout: boolean;
-        show_user_list: boolean;
+        show_student_list: boolean;
       };
       error?: string;
     };
@@ -55,7 +55,7 @@ export const CURRENT_USER: DocumentNode<{
         admin: boolean;
         type: UserType;
         show_dropout: boolean;
-        show_user_list: boolean;
+        show_student_list: boolean;
       };
     },
     AuthResult
@@ -81,7 +81,7 @@ export const UNLOCK: DocumentNode<
           admin: boolean;
           type: UserType;
           show_dropout: boolean;
-          show_user_list: boolean;
+          show_student_list: boolean;
         },
         User
       >;
