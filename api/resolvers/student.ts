@@ -137,7 +137,7 @@ export class StudentResolver {
       (
         await StudentProgramTable()
           .select("mention")
-          .orderBy("year", "desc")
+          .orderBy("start_year", "desc")
           .where({ student_id: id })
           .first()
       )?.mention ?? ""
