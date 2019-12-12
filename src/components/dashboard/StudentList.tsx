@@ -106,7 +106,7 @@ export const StudentList: FC<{
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell
-                      width={6}
+                      width={5}
                       sorted={
                         columnSort === "student" ? directionSort : undefined
                       }
@@ -119,7 +119,7 @@ export const StudentList: FC<{
                       sorted={columnSort === "year" ? directionSort : undefined}
                       onClick={handleSort("year")}
                     >
-                      Año
+                      Ingreso
                     </Table.HeaderCell>
                     <Table.HeaderCell
                       width={5}
@@ -136,7 +136,7 @@ export const StudentList: FC<{
                           columnSort === "dropout" ? directionSort : undefined
                         }
                         onClick={handleSort("dropout")}
-                        width={2}
+                        width={3}
                       >
                         Riesgo
                       </Table.HeaderCell>
@@ -161,7 +161,7 @@ export const StudentList: FC<{
                         <Table.Row key={student_id} verticalAlign="middle">
                           <Table.Cell>
                             <ReactTooltip id={`student_list_${key}`} />
-                            <Text>{truncate(student_id, { length: 23 })}</Text>
+                            <Text>{truncate(student_id, { length: 18 })}</Text>
                           </Table.Cell>
                           <Table.Cell>
                             <Text>{start_year}</Text>

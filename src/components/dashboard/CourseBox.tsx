@@ -1,5 +1,6 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
+import { truncate } from "lodash";
 import { FC, useContext, useMemo, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { useUpdateEffect } from "react-use";
@@ -156,7 +157,7 @@ export const CourseBox: FC<ICourse> = ({
           <b>{code}</b>
         </Text>
         <Text fontSize={9} maxWidth="150px">
-          {name}
+          {truncate(name, { length: 35 })}
         </Text>
       </Stack>
     ),
