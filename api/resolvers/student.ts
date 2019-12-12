@@ -12,6 +12,7 @@ import { $PropertyType } from "utility-types";
 import { IContext } from "../../interfaces";
 import {
   StudentDropoutTable,
+  StudentProgramTable,
   StudentTable,
   StudentTermTable,
   UserProgramsTable,
@@ -32,32 +33,27 @@ export class StudentResolver {
   async student(
     @Ctx() { user }: IContext,
     @Arg("student_id")
-    id: string,
+    student_id: string,
     @Arg("program_id")
     program_id: string
   ): Promise<PartialStudent | null> {
     assertIsDefined(user, `Error on authorization context`);
 
-    if (id === "") {
+    if (student_id === "") {
       return null;
     }
 
     const AuthenticatedUserPrograms = await UserProgramsTable()
       .select("program")
-      .where(
-        program_id
-          ? {
-              email: user.email,
-              program: program_id,
-            }
-          : {
-              email: user.email,
-            }
-      );
+      .where({
+        email: user.email,
+        program: program_id,
+      });
+    //TODO: Optimize in a single query
 
-    const IsAuthorized = await StudentTermTable()
+    const IsAuthorized = await StudentProgramTable()
       .select("student_id")
-      .where("student_id", id)
+      .where({ student_id })
       .whereIn(
         "program_id",
         AuthenticatedUserPrograms.map(({ program }) => program)
@@ -72,14 +68,14 @@ export class StudentResolver {
     const studentData = await StudentTable()
       .select("name", "state")
       .where({
-        id,
+        id: student_id,
       })
       .first();
 
     assertIsDefined(studentData, `Estudiante no encontrado!`);
 
     return {
-      id,
+      id: student_id,
       name: studentData.name,
       state: studentData.state,
       programs: [{ id: program_id }],
@@ -95,7 +91,7 @@ export class StudentResolver {
     }
 
     return (
-      await StudentTermTable()
+      await StudentProgramTable()
         .distinct("program_id")
         .where({ student_id: id })
     ).map(({ program_id }) => {
@@ -124,7 +120,7 @@ export class StudentResolver {
   ): Promise<$PropertyType<Student, "start_year">> {
     return (
       (
-        await StudentTermTable()
+        await StudentProgramTable()
           .select("start_year")
           .orderBy("start_year", "desc")
           .where({ student_id: id })
@@ -139,7 +135,7 @@ export class StudentResolver {
   ): Promise<$PropertyType<Student, "mention">> {
     return (
       (
-        await StudentTermTable()
+        await StudentProgramTable()
           .select("mention")
           .orderBy("year", "desc")
           .where({ student_id: id })

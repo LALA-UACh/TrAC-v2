@@ -1,4 +1,4 @@
-import { toInteger, toNumber } from "lodash";
+import { toInteger } from "lodash";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
@@ -7,7 +7,6 @@ import {
   CourseStatsTable,
   CourseTable,
   StudentCourseTable,
-  StudentTermTable,
 } from "../db/tables";
 import { TakenCourse } from "../entities/takenCourse";
 import { assertIsDefined } from "../utils";

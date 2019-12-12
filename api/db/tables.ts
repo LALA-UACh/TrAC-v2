@@ -104,6 +104,7 @@ export interface IStudentCourse {
   p_group: number;
   comments: string;
   instructors: string;
+  duplicates: number;
 }
 
 export const StudentCourseTable = () =>
@@ -120,6 +121,22 @@ export interface IStudentDropout {
 
 export const StudentDropoutTable = () =>
   dbData<IStudentDropout>("student_dropout");
+
+// -------------------------------------------------------------------------------------
+export interface IStudentProgram {
+  student_id: string;
+  program_id: string;
+  curriculum: string;
+  start_year: number;
+  mention: string;
+  last_term: number;
+  n_courses: number;
+  n_passed_courses: number;
+  completion: number;
+}
+
+export const StudentProgramTable = () =>
+  dbData<IStudentProgram>("student_program");
 
 // -------------------------------------------------------------------------------------
 

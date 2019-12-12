@@ -230,7 +230,7 @@ export const searchStudentQuery: DocumentNode<
   },
   {
     student_id: string;
-    program_id?: string;
+    program_id: string;
   }
 > = gql`
   mutation($student_id: String!, $program_id: String!) {

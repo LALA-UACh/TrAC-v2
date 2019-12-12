@@ -9,7 +9,6 @@ import {
   StudentCourseTable,
 } from "../db/tables";
 import { Course } from "../entities/course";
-import { BandColor } from "../entities/distribution";
 import { assertIsDefined } from "../utils";
 
 const creditsFormat = ({

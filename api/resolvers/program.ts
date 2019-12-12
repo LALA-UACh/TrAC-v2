@@ -17,7 +17,7 @@ import { ADMIN } from "../consts";
 import {
   ProgramStructureTable,
   ProgramTable,
-  StudentTermTable,
+  StudentProgramTable,
   UserProgramsTable,
 } from "../db/tables";
 import { Program } from "../entities/program";
@@ -48,7 +48,7 @@ export class ProgramResolver {
 
     if (student_id && !id) {
       const [studentData, userProgramsToMap] = await Promise.all([
-        StudentTermTable()
+        StudentProgramTable()
           .distinct("program_id", "start_year", "curriculum")
           .where({
             student_id,
@@ -103,14 +103,14 @@ export class ProgramResolver {
             })
             .whereIn(
               "id",
-              StudentTermTable()
+              StudentProgramTable()
                 .distinct("program_id")
                 .where({
                   student_id,
                 })
             )
             .first(),
-          StudentTermTable()
+          StudentProgramTable()
             .distinct("curriculum", "start_year")
             .where({
               student_id,
