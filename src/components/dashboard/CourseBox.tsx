@@ -104,18 +104,38 @@ export const CourseBox: FC<ICourse> = ({
 
   const stateColor = (() => {
     switch (state) {
-      case StateCourse.Passed:
-        return (passColorScale(grade || config.MAX_GRADE) as unknown) as string;
-      case StateCourse.Failed:
-        return (failColorScale(grade || config.MIN_GRADE) as unknown) as string;
-      case StateCourse.Current:
+      case StateCourse.Passed: {
+        const gradeToCompare = grade ?? config.MAX_GRADE;
+        return (
+          bandColors.find(({ min, max }) => {
+            return gradeToCompare <= max && gradeToCompare >= min;
+          })?.color ??
+          bandColors[bandColors.length - 1]?.color ??
+          "rgb(0,255,0)"
+        );
+      }
+      case StateCourse.Failed: {
+        const gradeToCompare = grade ?? config.MIN_GRADE;
+        return (
+          bandColors.find(({ min, max }) => {
+            return gradeToCompare <= max && gradeToCompare >= min;
+          })?.color ??
+          bandColors[0]?.color ??
+          "rgb(255,0,0)"
+        );
+      }
+      case StateCourse.Current: {
         return config.STATE_COURSE_CURRENT_COLOR;
-      case StateCourse.Canceled:
+      }
+      case StateCourse.Canceled: {
         return config.STATE_COURSE_CANCELED_COLOR;
-      case StateCourse.Pending:
+      }
+      case StateCourse.Pending: {
         return config.STATE_COURSE_PENDING_COLOR;
-      default:
+      }
+      default: {
         return "transparent";
+      }
     }
   })();
 
