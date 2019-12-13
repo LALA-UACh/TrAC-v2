@@ -86,7 +86,9 @@ export interface IStudent {
   state: string;
 }
 
-export const StudentTable = () => dbData<IStudent>("student");
+export const STUDENT_TABLE_NAME = "student";
+
+export const StudentTable = () => dbData<IStudent>(STUDENT_TABLE_NAME);
 
 // -------------------------------------------------------------------------------------
 
@@ -135,8 +137,10 @@ export interface IStudentProgram {
   completion: number;
 }
 
+export const STUDENT_PROGRAM_TABLE_NAME = "student_program";
+
 export const StudentProgramTable = () =>
-  dbData<IStudentProgram>("student_program");
+  dbData<IStudentProgram>(STUDENT_PROGRAM_TABLE_NAME);
 
 // -------------------------------------------------------------------------------------
 

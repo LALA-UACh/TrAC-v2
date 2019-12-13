@@ -1,9 +1,12 @@
+import { toInteger } from "lodash";
 import {
   Arg,
   Authorized,
   Ctx,
   FieldResolver,
+  Int,
   Mutation,
+  Query,
   Resolver,
   Root,
 } from "type-graphql";
@@ -11,6 +14,9 @@ import { $PropertyType } from "utility-types";
 
 import { IContext } from "../../interfaces";
 import {
+  IStudent,
+  STUDENT_PROGRAM_TABLE_NAME,
+  STUDENT_TABLE_NAME,
   StudentDropoutTable,
   StudentProgramTable,
   StudentTable,
@@ -82,6 +88,31 @@ export class StudentResolver {
     };
   }
 
+  @Authorized()
+  @Query(() => [Student])
+  async students(
+    @Arg("program_id") program_id: string,
+    @Arg("last_n_years", () => Int, { defaultValue: 1 }) last_n_years: number
+  ): Promise<PartialStudent[]> {
+    const studentList = await StudentProgramTable()
+      .select("id", "name", "state", "last_term")
+      .rightJoin<IStudent>(
+        STUDENT_TABLE_NAME,
+        `${STUDENT_PROGRAM_TABLE_NAME}.student_id`,
+        `${STUDENT_TABLE_NAME}.id`
+      )
+      .where({
+        program_id,
+      });
+
+    const sinceNYear = new Date().getFullYear() - last_n_years;
+    const filteredStudentList = studentList.filter(({ last_term }) => {
+      return ((last_term / 10) | 0) >= sinceNYear;
+    });
+
+    return filteredStudentList;
+  }
+
   @FieldResolver()
   async programs(
     @Root() { id, programs }: PartialStudent
@@ -141,6 +172,21 @@ export class StudentResolver {
           .where({ student_id: id })
           .first()
       )?.mention ?? ""
+    );
+  }
+
+  @FieldResolver()
+  async progress(
+    @Root() { id }: PartialStudent
+  ): Promise<$PropertyType<Student, "progress">> {
+    return (
+      (
+        await StudentProgramTable()
+          .select("completion")
+          .where({ student_id: id })
+          .orderBy("start_year", "desc")
+          .first()
+      )?.completion ?? -1
     );
   }
 

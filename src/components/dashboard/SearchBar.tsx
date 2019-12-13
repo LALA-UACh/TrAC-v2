@@ -328,18 +328,21 @@ export const SearchBar: FC<{
         {currentUserData?.currentUser?.user?.admin && (
           <MockingMode mock={mock} setMock={setMock} />
         )}
-        <StudentList
-          data={
-            mock
-              ? range(40).map(() => ({
-                  student_id: generate(),
-                  dropout_probability: Math.round(Math.random() * 100),
-                  start_year: 2005 + Math.round(Math.random() * 14),
-                  progress: Math.round(Math.random() * 100),
-                }))
-              : []
-          }
-        />
+        {currentUserData?.currentUser?.user?.show_student_list && (
+          <StudentList
+            program_id={program?.value}
+            mockData={
+              mock
+                ? range(50).map(() => ({
+                    student_id: generate(),
+                    dropout_probability: Math.round(Math.random() * 100),
+                    start_year: 2005 + Math.round(Math.random() * 14),
+                    progress: Math.round(Math.random() * 100),
+                  }))
+                : undefined
+            }
+          />
+        )}
         <Link href="/logout">
           <Button
             negative

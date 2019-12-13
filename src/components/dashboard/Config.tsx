@@ -4,7 +4,7 @@ import { useRememberState } from "use-remember-state";
 import { useQuery } from "@apollo/react-hooks";
 
 import { baseConfig } from "../../../constants";
-import { configQuery } from "../../graphql/queries";
+import { CONFIG_QUERY } from "../../graphql/queries";
 import { failColorScale, passColorScale } from "./CourseBox";
 import { scaleAxisX, scaleColorX } from "./Histogram";
 import { GradeScale, YAxisScale } from "./Timeline";
@@ -17,7 +17,7 @@ export const Config: FC = ({ children }) => {
     baseConfig
   );
 
-  useQuery(configQuery, {
+  useQuery(CONFIG_QUERY, {
     onCompleted: ({ config }) => {
       setConfigState(config);
     },

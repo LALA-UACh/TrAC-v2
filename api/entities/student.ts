@@ -34,6 +34,10 @@ export class Student {
   @Field()
   mention: string;
 
+  // LOGIC LATEST student_program => completion
+  @Field()
+  progress: number;
+
   // student_term
   @Field(() => [Term])
   terms: Term[];

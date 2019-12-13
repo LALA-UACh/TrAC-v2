@@ -8,7 +8,7 @@ import {
 
 import { useMutation } from "@apollo/react-hooks";
 
-import { trackMutation } from "../graphql/queries";
+import { TRACK } from "../graphql/queries";
 
 export type TrackingTemplateData = {
   program?: string;
@@ -71,7 +71,7 @@ export const Tracking: FC<{
 }> = () => {
   const TrackingData = useContext(TrackingContext);
 
-  const [trackMutate] = useMutation(trackMutation, {
+  const [trackMutate] = useMutation(TRACK, {
     ignoreResults: true,
   });
 

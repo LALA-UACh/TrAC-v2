@@ -290,7 +290,7 @@ export const MY_PROGRAMS: DocumentNode<{
   }
 `;
 
-export const trackMutation: DocumentNode<
+export const TRACK: DocumentNode<
   never,
   {
     datetime_client: Date;
@@ -302,10 +302,37 @@ export const trackMutation: DocumentNode<
   }
 `;
 
-export const configQuery: DocumentNode<{
+export const CONFIG_QUERY: DocumentNode<{
   config: typeof baseConfig;
 }> = gql`
   query {
     config
+  }
+`;
+
+export const STUDENT_LIST: DocumentNode<
+  {
+    students: {
+      id: string;
+      progress: number;
+      start_year: number;
+      dropout?: {
+        prob_dropout: number;
+      };
+    }[];
+  },
+  {
+    program_id: string;
+  }
+> = gql`
+  query($program_id: String!) {
+    students(program_id: $program_id) {
+      id
+      progress
+      start_year
+      dropout {
+        prob_dropout
+      }
+    }
   }
 `;
