@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useUpdateEffect } from "react-use";
 
 import { ITakenSemester } from "../../../interfaces";
 import { TrackingContext } from "../../components/Tracking";
@@ -37,7 +38,11 @@ export const CoursesFlowContext = createContext<{
   semestersTaken: [],
 });
 
-export const CoursesFlow: FC = ({ children }) => {
+export const CoursesFlow: FC<{ program?: string; curriculum?: string }> = ({
+  children,
+  curriculum,
+  program,
+}) => {
   const Tracking = useContext(TrackingContext);
   const [explicitSemester, setExplicitSemester] = useState<
     string | undefined
@@ -88,6 +93,16 @@ export const CoursesFlow: FC = ({ children }) => {
     flow: Record<string, boolean>[];
     requisites: Record<string, boolean>[];
   }>({ active: [], flow: [], requisites: [], semestersTaken: [] });
+
+  useUpdateEffect(() => {
+    setState({
+      active: [],
+      flow: [],
+      requisites: [],
+      semestersTaken: [],
+    });
+    setExplicitSemester(undefined);
+  }, [curriculum, program, setState, setExplicitSemester]);
 
   useEffect(() => {
     Tracking.current.coursesOpen = active.join("|");

@@ -87,6 +87,10 @@ export const CourseBox: FC<ICourse> = ({
     }
   }, [open]);
 
+  useUpdateEffect(() => {
+    setOpen(false);
+  }, [code]);
+
   const height = (() => {
     if (open) {
       if (taken[0]?.currentDistribution && historicDistribution) {

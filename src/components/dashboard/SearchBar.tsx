@@ -63,6 +63,7 @@ export const SearchBar: FC<{
   setMock: Dispatch<SetStateAction<boolean>>;
   curriculum: string | undefined;
   setCurriculum: Dispatch<SetStateAction<string | undefined>>;
+  setProgram: Dispatch<SetStateAction<string | undefined>>;
 }> = ({
   isSearchLoading,
   onSearch,
@@ -72,6 +73,7 @@ export const SearchBar: FC<{
   setMock,
   curriculum,
   setCurriculum,
+  setProgram: setProgramProp,
 }) => {
   useEffect(() => {
     if (
@@ -147,7 +149,7 @@ export const SearchBar: FC<{
     if (program === undefined && programsOptions[0]) {
       setProgram(programsOptions[0]);
     }
-  }, [program, setProgram, programsOptions]);
+  }, [program, setProgram, programsOptions, setProgramProp]);
 
   return (
     <Flex
@@ -268,6 +270,8 @@ export const SearchBar: FC<{
               type="submit"
               disabled={isSearchLoading || !program?.value}
               onClick={async ev => {
+                setProgramProp(program?.value);
+
                 if (program) {
                   ev.preventDefault();
                   const ok = await onSearch({

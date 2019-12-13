@@ -55,10 +55,9 @@ export class StudentResolver {
         email: user.email,
         program: program_id,
       });
-    //TODO: Optimize in a single query
 
     const IsAuthorized = await StudentProgramTable()
-      .select("student_id")
+      .select("program_id")
       .where({ student_id })
       .whereIn(
         "program_id",
@@ -91,9 +90,25 @@ export class StudentResolver {
   @Authorized()
   @Query(() => [Student])
   async students(
+    @Ctx() { user }: IContext,
     @Arg("program_id") program_id: string,
     @Arg("last_n_years", () => Int, { defaultValue: 1 }) last_n_years: number
   ): Promise<PartialStudent[]> {
+    assertIsDefined(user, `Error on authorization context`);
+
+    const IsAuthorized = await UserProgramsTable()
+      .select("program")
+      .where({
+        email: user.email,
+        program: program_id,
+      })
+      .first();
+
+    assertIsDefined(
+      IsAuthorized,
+      `No tiene autorización para visualizar los estudiantes del programa seleccionado!`
+    );
+
     const studentList = await StudentProgramTable()
       .select("id", "name", "state", "last_term")
       .rightJoin<IStudent>(

@@ -28,6 +28,7 @@ import {
 } from "../graphql/queries";
 
 const Dashboard: FC = () => {
+  const [program, setProgram] = useState<string | undefined>(undefined);
   const [curriculum, setCurriculum] = useState<string | undefined>(undefined);
   const { data: currentUserData } = useQuery(CURRENT_USER, {
     fetchPolicy: "cache-only",
@@ -267,6 +268,7 @@ const Dashboard: FC = () => {
             student: searchStudentData?.student?.id,
           }}
           isSearchLoading={searchProgramLoading || searchStudentLoading}
+          setProgram={setProgram}
           onSearch={async ({ student_id, program_id }) => {
             try {
               const [programSearch, studentSearch] = await Promise.all([
@@ -295,7 +297,7 @@ const Dashboard: FC = () => {
           curriculum={curriculum}
           setCurriculum={setCurriculum}
         />
-        <CoursesFlow>
+        <CoursesFlow curriculum={curriculum} program={program}>
           <ScrollContainer activationDistance={5} hideScrollbars={false}>
             <Stack isInline flexWrap="wrap-reverse">
               <Box>
