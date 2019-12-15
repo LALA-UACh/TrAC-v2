@@ -1,7 +1,5 @@
 import { dbAuth, dbConfig, dbData, dbTracking } from "./";
 
-// TODO: Specify nullable fields
-
 export interface ICourse {
   id: string;
   name: string;

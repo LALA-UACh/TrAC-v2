@@ -212,6 +212,7 @@ export const SEARCH_STUDENT: DocumentNode<
           takenCourses: Array<{
             id: number;
             code: string;
+            equiv: string;
             name: string;
             registration: string;
             grade: number;
@@ -221,6 +222,7 @@ export const SEARCH_STUDENT: DocumentNode<
               label: string;
               value: number;
             }>;
+            bandColors: { min: number; max: number; color: string }[];
           }>;
         }>;
         dropout?: {
@@ -259,6 +261,7 @@ export const SEARCH_STUDENT: DocumentNode<
         takenCourses {
           id
           code
+          equiv
           name
           registration
           grade
@@ -267,6 +270,11 @@ export const SEARCH_STUDENT: DocumentNode<
           currentDistribution {
             label
             value
+          }
+          bandColors {
+            min
+            max
+            color
           }
         }
       }

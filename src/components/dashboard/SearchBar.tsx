@@ -98,6 +98,11 @@ export const SearchBar: FC<{
     LOGOUT_BUTTON_LABEL,
     SEARCH_BAR_BACKGROUND_COLOR,
     SEARCH_BUTTON_LABEL,
+    NO_CURRICULUMS_LABEL,
+    PROGRAM_NOT_SPECIFIED_PLACEHOLDER,
+    CURRICULUM_LABEL,
+    STUDENT_LABEL,
+    PLACEHOLDER_SEARCH_STUDENT,
   } = useContext(ConfigContext);
 
   const Tracking = useContext(TrackingContext);
@@ -168,7 +173,7 @@ export const SearchBar: FC<{
             value={program}
             isLoading={isSearchLoading}
             isDisabled={isSearchLoading}
-            placeholder="Programa no especificado"
+            placeholder={PROGRAM_NOT_SPECIFIED_PLACEHOLDER}
             onChange={selected => {
               setProgram(
                 selected as $ElementType<typeof programsOptions, number>
@@ -179,7 +184,7 @@ export const SearchBar: FC<{
         {(searchResult?.curriculums.length ?? 0) > 1 ? (
           <Flex mr={5}>
             <Tag variantColor="blue" variant="outline">
-              Plan
+              {CURRICULUM_LABEL}
             </Tag>
             <Box width={90} ml={2}>
               <Select
@@ -206,15 +211,17 @@ export const SearchBar: FC<{
                   );
                 }}
                 placeholder="..."
-                noOptionsMessage={() => "Sin planes"}
+                noOptionsMessage={() => NO_CURRICULUMS_LABEL}
               />
             </Box>
           </Flex>
         ) : searchResult?.curriculums.length === 1 ? (
-          <Tag mr={2}>{`Plan: ${searchResult?.curriculums[0]}`}</Tag>
+          <Tag
+            mr={2}
+          >{`${CURRICULUM_LABEL}: ${searchResult?.curriculums[0]}`}</Tag>
         ) : null}
         {searchResult?.student && (
-          <Tag mr={2}>{`Estudiante ${searchResult.student}`}</Tag>
+          <Tag mr={2}>{`${STUDENT_LABEL}: ${searchResult.student}`}</Tag>
         )}
 
         <form>
@@ -229,7 +236,7 @@ export const SearchBar: FC<{
                   350
                 )}
                 list="student_options"
-                placeholder="ID del estudiante"
+                placeholder={PLACEHOLDER_SEARCH_STUDENT}
                 value={student_id}
                 onChange={({
                   target: { value },

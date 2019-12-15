@@ -2,10 +2,10 @@ export const WRONG_INFO = "WRONG_INFO";
 export const USED_OLD_PASSWORD = "USED_OLD_PASSWORD";
 export const LOCKED_USER = "LOCKED_USER";
 export const GRAPHQL_URL =
-  //@ts-ignore
   typeof window === "undefined"
     ? `${process?.env?.DOMAIN ?? "http://localhost:3000"}/api/graphql`
     : "/api/graphql";
+
 export const CURRENT_DISTRIBUTION_LABEL = ({
   term,
   year,
@@ -34,9 +34,6 @@ export enum TermType {
   Second = "Second",
   Anual = "Anual",
 }
-
-const MIN_GRADE = 7;
-const MAX_GRADE = 1;
 
 export const baseConfig = {
   HISTORIC_GRADES: "Calificaciones históricas",
@@ -93,8 +90,22 @@ export const baseConfig = {
   TIMELINE_AXIS_TEXT_COLOR: "black",
   TIMELINE_PASS_LINE_COLOR: "black",
   PASS_GRADE: 4,
-  MIN_GRADE,
-  MAX_GRADE,
+  MIN_GRADE: 7,
+  MAX_GRADE: 1,
+  NO_CURRICULUMS_LABEL: "Sin planes",
+  PROGRAM_NOT_SPECIFIED_PLACEHOLDER: "Programa no especificado",
+  CURRICULUM_LABEL: "Plan",
+  STUDENT_LABEL: "Estudiante",
+  PLACEHOLDER_SEARCH_STUDENT: "ID del estudiante",
+  STUDENT_LIST_TITLE: "Lista de estudiantes",
+  ENTRY_YEAR_LABEL: "Ingreso",
+  PROGRESS_LABEL: "Progreso",
+  RISK_LABEL: "Riesgo",
+  RISK_HIGH_THRESHOLD: 80,
+  RISK_HIGH_COLOR: "rgb(255,0,0)",
+  RISK_MEDIUM_THRESHOLD: 50,
+  RISK_MEDIUM_COLOR: "rgb(252,186,3)",
+  RISK_LOW_COLOR: "rgb(128,255,0)",
 };
 
 export const defaultUserType = (type?: string): UserType => {

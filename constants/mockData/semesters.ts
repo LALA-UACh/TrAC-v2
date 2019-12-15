@@ -44,6 +44,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "First",
             year: 2009,
+            equiv: "",
             registration: "CURSADA",
             grade: 2,
             state: StateCourse.Failed,
@@ -60,6 +61,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "Second",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 2.7,
             state: StateCourse.Failed,
@@ -76,6 +78,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "First",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 2.6,
             state: StateCourse.Failed,
@@ -131,6 +134,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "Second",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 3.8,
             state: StateCourse.Failed,
@@ -147,6 +151,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "First",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 3.7,
             state: StateCourse.Failed,
@@ -202,6 +207,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "First",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 0,
             state: StateCourse.Passed,
@@ -257,6 +263,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "Second",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 4.3,
             state: StateCourse.Passed,
@@ -273,6 +280,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "First",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 3.3,
             state: StateCourse.Failed,
@@ -328,6 +336,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "First",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 4.4,
             state: StateCourse.Passed,
@@ -383,6 +392,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "First",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 6,
             state: StateCourse.Passed,
@@ -438,6 +448,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "First",
             year: 2009,
+            equiv: "",
             registration: "CURSADA",
             grade: 1.8,
             state: StateCourse.Failed,
@@ -454,6 +465,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "Second",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 2.2,
             state: StateCourse.Failed,
@@ -470,6 +482,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "First",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 3,
             state: StateCourse.Failed,
@@ -605,6 +618,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "Second",
             year: 2008,
+            equiv: "",
             registration: "CURSADA",
             grade: 4,
             state: StateCourse.Passed,
@@ -660,6 +674,7 @@ const semesters: { semester: ICourse[] }[] = [
           {
             term: "First",
             year: 2009,
+            equiv: "",
             registration: "ANULADA",
             grade: 0,
             state: StateCourse.Canceled,

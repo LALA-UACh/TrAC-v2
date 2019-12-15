@@ -1,4 +1,4 @@
-import { toInteger } from "lodash";
+import { compact, toInteger, toNumber } from "lodash";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
@@ -11,7 +11,7 @@ import {
 import { TakenCourse } from "../entities/takenCourse";
 import { assertIsDefined } from "../utils";
 
-export type PartialTakenCourse = Pick<TakenCourse, "id" | "code">;
+export type PartialTakenCourse = Pick<TakenCourse, "id" | "code" | "equiv">;
 
 @Resolver(() => TakenCourse)
 export class TakenCourseResolver {
@@ -165,5 +165,30 @@ export class TakenCourseResolver {
         value,
       };
     });
+  }
+
+  @FieldResolver()
+  async bandColors(
+    @Root() { code, equiv }: PartialTakenCourse
+  ): Promise<$PropertyType<TakenCourse, "bandColors">> {
+    const bandColorsData = await CourseStatsTable()
+      .select("color_bands")
+      .whereIn("course_taken", compact([code, equiv]))
+      .first();
+
+    if (bandColorsData === undefined) {
+      return [];
+    }
+
+    const bandColors = bandColorsData.color_bands.split(";").map(value => {
+      const [min, max, color] = value.split(",");
+      return {
+        min: toNumber(min),
+        max: toNumber(max),
+        color,
+      };
+    });
+
+    return bandColors;
   }
 }

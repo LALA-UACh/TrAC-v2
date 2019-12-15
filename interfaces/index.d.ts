@@ -21,11 +21,13 @@ export type IDistribution = {
 export type ITakenCourse = {
   term: string;
   year: number;
+  equiv: string;
   registration?: string;
   grade?: number;
   state?: StateCourse;
   currentDistribution?: IDistribution[];
   parallelGroup?: number;
+  bandColors?: { min: number; max: number; color: string }[];
 };
 
 export type ICourse = {
@@ -35,7 +37,6 @@ export type ICourse = {
   flow: string[];
   requisites: string[];
   historicDistribution: IDistribution[];
-  bandColors: { min: number; max: number; color: string }[];
-
   taken: ITakenCourse[];
+  bandColors: { min: number; max: number; color: string }[];
 };

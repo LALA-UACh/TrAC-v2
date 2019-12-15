@@ -39,7 +39,7 @@ export class Term {
   @Field()
   cumulated_grade: number;
 
-  // program_last_gpa // TODO Term ProgramPGA field resolver
+  // program_last_gpa
   @Field()
   program_grade: number;
 

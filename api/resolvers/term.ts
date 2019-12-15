@@ -118,7 +118,7 @@ export class TermResolver {
   ): Promise<$PropertyType<Term, "program_grade">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
 
-    const programPGAData = await ProgramTable() //TODO: Check if works
+    const programPGAData = await ProgramTable()
       .select("last_gpa")
       .where(
         "id",
@@ -153,7 +153,7 @@ export class TermResolver {
     );
     // TODO: Optimize in a single SQL query
     const takenCoursesData = await StudentCourseTable()
-      .select("id", "course_taken")
+      .select("id", "course_taken", "course_equiv", "elect_equiv")
       .where({
         year: studentTermData.year,
         term: studentTermData.term,
@@ -170,9 +170,8 @@ export class TermResolver {
       ]);
 
     return uniqBy(takenCoursesData, ({ course_taken }) => course_taken).map(
-      ({ id, course_taken }) => {
-        // TODO: Course equivalent logic
-        return { id, code: course_taken };
+      ({ id, course_taken, course_equiv, elect_equiv }) => {
+        return { id, code: course_taken, equiv: course_equiv || elect_equiv };
       }
     );
   }

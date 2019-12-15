@@ -103,24 +103,26 @@ export const CourseBox: FC<ICourse> = ({
   })();
 
   const stateColor = (() => {
+    const bandColorsCourse = taken?.[0]?.bandColors ?? bandColors;
+
     switch (state) {
       case StateCourse.Passed: {
         const gradeToCompare = grade ?? config.MAX_GRADE;
         return (
-          bandColors.find(({ min, max }) => {
+          bandColorsCourse.find(({ min, max }) => {
             return gradeToCompare <= max && gradeToCompare >= min;
           })?.color ??
-          bandColors[bandColors.length - 1]?.color ??
+          bandColorsCourse[bandColorsCourse.length - 1]?.color ??
           "rgb(0,255,0)"
         );
       }
       case StateCourse.Failed: {
         const gradeToCompare = grade ?? config.MIN_GRADE;
         return (
-          bandColors.find(({ min, max }) => {
+          bandColorsCourse.find(({ min, max }) => {
             return gradeToCompare <= max && gradeToCompare >= min;
           })?.color ??
-          bandColors[0]?.color ??
+          bandColorsCourse[0]?.color ??
           "rgb(255,0,0)"
         );
       }
@@ -174,19 +176,18 @@ export const CourseBox: FC<ICourse> = ({
     return config.INACTIVE_COURSE_BOX_COLOR;
   })();
 
-  const NameComponent = useMemo(
-    () => (
+  const NameComponent = useMemo(() => {
+    return (
       <Stack spacing={1}>
         <Text>
-          <b>{code}</b>
+          <b>{taken?.find(({ equiv }) => equiv)?.equiv || code}</b>
         </Text>
         <Text fontSize={9} maxWidth="150px">
           {truncate(name, { length: 35 })}
         </Text>
       </Stack>
-    ),
-    [code, name]
-  );
+    );
+  }, [code, name, taken]);
 
   const RegistrationComponent = useMemo(
     () =>
@@ -296,10 +297,10 @@ export const CourseBox: FC<ICourse> = ({
           })}
           distribution={currentDistribution}
           grade={grade}
-          bandColors={bandColors}
+          bandColors={taken?.[0]?.bandColors ?? bandColors}
         />
       ),
-    [currentDistribution, term, year, grade]
+    [currentDistribution, term, year, grade, taken]
   );
 
   const HistogramHistoric = useMemo(() => {

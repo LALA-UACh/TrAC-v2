@@ -2,7 +2,7 @@ import { Field, Int, ObjectType, registerEnumType } from "type-graphql";
 
 import { StateCourse } from "../../constants";
 import { Course } from "./course";
-import { DistributionValue } from "./distribution";
+import { BandColor, DistributionValue } from "./distribution";
 
 registerEnumType(StateCourse, {
   name: "StateCourse",
@@ -15,10 +15,13 @@ export class TakenCourse implements Pick<Course, "code" | "name"> {
   @Field(() => Int)
   id: number;
 
-  // TODO: Course equivalent logic
-  // student_course => course_taken | student_course => course_equiv | student_course => elect_equiv
+  // student_course => course_taken
   @Field()
   code: string;
+
+  // student_course => course_equiv | course_equiv
+  @Field()
+  equiv: string;
 
   // course => name | helper field, probably isn't needed
   @Field()
@@ -43,4 +46,8 @@ export class TakenCourse implements Pick<Course, "code" | "name"> {
   // course_stats => histogram , histogram_labels
   @Field(() => [DistributionValue])
   currentDistribution: DistributionValue[];
+
+  // LOGIC, CHOOSE ACCORDINGLY => course_stats => color_bands
+  @Field(() => [BandColor])
+  bandColors: BandColor[];
 }

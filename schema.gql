@@ -137,8 +137,10 @@ type Student {
 }
 
 type TakenCourse {
+  bandColors: [BandColor!]!
   code: String!
   currentDistribution: [DistributionValue!]!
+  equiv: String!
   grade: Float!
   id: Int!
   name: String!

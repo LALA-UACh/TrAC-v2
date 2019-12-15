@@ -112,7 +112,6 @@ const Dashboard: FC = () => {
           acum.cumulated_grade.push(value.cumulated_grade);
           acum.semestral_grade.push(value.semestral_grade);
           acum.program_grade.push(value.program_grade);
-          // TODO: Program_grade should be from curriculum, not from student
           return acum;
         },
         {
@@ -197,13 +196,15 @@ const Dashboard: FC = () => {
                           } of searchStudentData.student.terms) {
                             for (const {
                               code: courseCode,
+                              equiv,
                               registration,
                               state,
                               grade,
                               currentDistribution,
                               parallelGroup,
+                              bandColors,
                             } of takenCourses) {
-                              if (courseCode === code) {
+                              if (equiv === code || courseCode === code) {
                                 taken.push({
                                   term,
                                   year,
@@ -212,6 +213,8 @@ const Dashboard: FC = () => {
                                   grade,
                                   currentDistribution,
                                   parallelGroup,
+                                  equiv: equiv === code ? courseCode : "",
+                                  bandColors,
                                 });
                               }
                             }

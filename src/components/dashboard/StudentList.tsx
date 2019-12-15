@@ -1,8 +1,8 @@
-import { some, sortBy, truncate, uniq } from "lodash";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { chunk, some, sortBy, toInteger, truncate, uniq } from "lodash";
+import { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { useUpdateEffect } from "react-use";
-import { Progress, Table } from "semantic-ui-react";
+import { Pagination, Progress, Table, TableCell } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
@@ -21,12 +21,15 @@ import {
 } from "@chakra-ui/core";
 
 import { CURRENT_USER, STUDENT_LIST } from "../../graphql/queries";
+import { ConfigContext } from "./Config";
 
 type columnNames =
   | "student_id"
   | "dropout_probability"
   | "start_year"
   | "progress";
+
+const nStudentPerChunk = 50;
 
 export const StudentList: FC<{
   mockData?: Record<columnNames, string | number>[];
@@ -68,6 +71,7 @@ export const StudentList: FC<{
   const { isOpen, onOpen, onClose } = useDisclosure(
     localStorage.getItem("student_list_open") ? true : false
   );
+
   useUpdateEffect(() => {
     if (isOpen) {
       localStorage.setItem("student_list_open", "1");
@@ -75,6 +79,7 @@ export const StudentList: FC<{
       localStorage.removeItem("student_list_open");
     }
   }, [isOpen]);
+
   const btnRef = useRef<HTMLElement>(null);
 
   const [columnSort, setColumnSort] = useRememberState<columnNames[]>(
@@ -86,28 +91,36 @@ export const StudentList: FC<{
     "ascending" | "descending" | undefined
   >("student_list_direction_sort", undefined);
 
-  const [isSorting, setIsSorting] = useState(false);
   const [sortedStudentList, setSortedStudentList] = useState(
     sortBy(studentListData, columnSort)
   );
 
   useEffect(() => {
-    setIsSorting(true);
-    setTimeout(() => {
-      const newSortedStudentList = sortBy(studentListData, columnSort);
-      if (directionSort === "descending") {
-        newSortedStudentList.reverse();
-      }
-      setIsSorting(false);
-      setSortedStudentList(newSortedStudentList);
-    }, 0);
-  }, [
-    studentListData,
-    directionSort,
-    columnSort,
-    setIsSorting,
-    setSortedStudentList,
-  ]);
+    const newSortedStudentList = sortBy(studentListData, columnSort);
+    if (directionSort === "descending") {
+      newSortedStudentList.reverse();
+    }
+    setSortedStudentList(newSortedStudentList);
+  }, [studentListData, directionSort, columnSort, setSortedStudentList]);
+
+  const [pageSelected, setPageSelected] = useRememberState(
+    "student_list_page_selected",
+    1
+  );
+
+  const [studentListChunks, setStudentListChunks] = useState(() =>
+    chunk(sortedStudentList, nStudentPerChunk)
+  );
+
+  useEffect(() => {
+    if (pageSelected > studentListChunks.length) {
+      setPageSelected(1);
+    }
+  }, [studentListChunks, pageSelected, setPageSelected]);
+
+  useEffect(() => {
+    setStudentListChunks(chunk(sortedStudentList, nStudentPerChunk));
+  }, [sortedStudentList, setStudentListChunks]);
 
   const showDropout = useMemo(() => {
     return (
@@ -118,8 +131,20 @@ export const StudentList: FC<{
     );
   }, [currentUserData, studentListData]);
 
+  const {
+    STUDENT_LIST_TITLE,
+    STUDENT_LABEL,
+    ENTRY_YEAR_LABEL,
+    PROGRESS_LABEL,
+    RISK_LABEL,
+    RISK_HIGH_COLOR,
+    RISK_HIGH_THRESHOLD,
+    RISK_MEDIUM_COLOR,
+    RISK_MEDIUM_THRESHOLD,
+    RISK_LOW_COLOR,
+  } = useContext(ConfigContext);
+
   const handleSort = (clickedColumn: columnNames) => () => {
-    setIsSorting(true);
     if (columnSort[0] !== clickedColumn) {
       setColumnSort(columnSortList => uniq([clickedColumn, ...columnSortList]));
       setDirectionSort("ascending");
@@ -130,18 +155,18 @@ export const StudentList: FC<{
     }
   };
 
-  const isLoading = loadingData || isSorting;
   return (
     <>
       <Button
-        isLoading={isLoading}
+        isLoading={loadingData}
         m={2}
         ref={btnRef}
         variantColor="blue"
         onClick={onOpen}
       >
-        Student List
+        {STUDENT_LIST_TITLE}
       </Button>
+
       <Drawer
         isOpen={isOpen}
         placement="right"
@@ -150,15 +175,23 @@ export const StudentList: FC<{
         size="lg"
       >
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent transition={isOpen ? "1s all" : "0s all"}>
           <DrawerHeader height={20} display="flex" alignItems="center">
-            Lista de estudiantes {isLoading && <Spinner ml={3} />}
+            {STUDENT_LIST_TITLE} {loadingData && <Spinner ml={3} />}
           </DrawerHeader>
 
           <DrawerBody overflowY="scroll">
+            <Pagination
+              totalPages={studentListChunks.length}
+              activePage={pageSelected}
+              onPageChange={(_, { activePage }) => {
+                setPageSelected(toInteger(activePage));
+              }}
+            />
             <Table sortable celled fixed>
               <Table.Header>
                 <Table.Row>
+                  <Table.HeaderCell width={2} />
                   <Table.HeaderCell
                     width={5}
                     sorted={
@@ -166,7 +199,7 @@ export const StudentList: FC<{
                     }
                     onClick={handleSort("student_id")}
                   >
-                    Estudiante
+                    {STUDENT_LABEL}
                   </Table.HeaderCell>
                   <Table.HeaderCell
                     width={3}
@@ -175,7 +208,7 @@ export const StudentList: FC<{
                     }
                     onClick={handleSort("start_year")}
                   >
-                    Ingreso
+                    {ENTRY_YEAR_LABEL}
                   </Table.HeaderCell>
                   <Table.HeaderCell
                     width={5}
@@ -184,7 +217,7 @@ export const StudentList: FC<{
                     }
                     onClick={handleSort("progress")}
                   >
-                    Progreso
+                    {PROGRESS_LABEL}
                   </Table.HeaderCell>
                   {showDropout && (
                     <Table.HeaderCell
@@ -196,27 +229,30 @@ export const StudentList: FC<{
                       onClick={handleSort("dropout_probability")}
                       width={3}
                     >
-                      Riesgo
+                      {RISK_LABEL}
                     </Table.HeaderCell>
                   )}
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {sortedStudentList.map(
+                {studentListChunks[pageSelected - 1]?.map(
                   (
                     { student_id, dropout_probability, start_year, progress },
                     key
                   ) => {
                     let color: string;
-                    if (dropout_probability > 80) {
-                      color = "rgb(255,0,0)";
-                    } else if (dropout_probability > 50) {
-                      color = "rgb(252,186,3)";
+                    if (dropout_probability > RISK_HIGH_THRESHOLD) {
+                      color = RISK_HIGH_COLOR;
+                    } else if (dropout_probability > RISK_MEDIUM_THRESHOLD) {
+                      color = RISK_MEDIUM_COLOR;
                     } else {
-                      color = "rgb(128,255,0)";
+                      color = RISK_LOW_COLOR;
                     }
                     return (
                       <Table.Row key={student_id} verticalAlign="middle">
+                        <TableCell textAlign="center">
+                          {1 + key + (pageSelected - 1) * nStudentPerChunk}
+                        </TableCell>
                         <Table.Cell>
                           <ReactTooltip id={`student_list_${key}`} />
                           <Text>
