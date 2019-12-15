@@ -147,9 +147,9 @@ export const SEARCH_PROGRAM: DocumentNode<
       Program
     > | null;
   },
-  { program_id: string; student_id?: string }
+  { program_id?: string; student_id?: string }
 > = gql`
-  mutation($program_id: String!, $student_id: String) {
+  mutation($program_id: String, $student_id: String) {
     program(id: $program_id, student_id: $student_id) {
       id
       name
@@ -236,11 +236,11 @@ export const SEARCH_STUDENT: DocumentNode<
     >;
   },
   {
-    student_id: string;
-    program_id: string;
+    student_id?: string;
+    program_id?: string;
   }
 > = gql`
-  mutation($student_id: String!, $program_id: String!) {
+  mutation($student_id: String, $program_id: String) {
     student(student_id: $student_id, program_id: $program_id) {
       id
       programs {

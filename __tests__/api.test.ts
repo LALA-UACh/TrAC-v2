@@ -39,7 +39,7 @@ const testingUserLock = {
   oldPassword3: sha1("oldPass3").toString(),
   tries: 0,
   unlockKey: "",
-  type: UserType.Student,
+  type: UserType.Director,
   rut_id: "",
   show_dropout: true,
 };

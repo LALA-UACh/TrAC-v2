@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { range } from "lodash";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { generate } from "randomstring";
 import React, {
@@ -34,7 +35,8 @@ import {
 import { CURRENT_USER, MY_PROGRAMS } from "../../graphql/queries";
 import { TrackingContext } from "../Tracking";
 import { ConfigContext } from "./Config";
-import { StudentList } from "./StudentList";
+
+const StudentList = dynamic(() => import("./StudentList"));
 
 const MockingMode: FC<{
   mock: boolean;
@@ -373,3 +375,5 @@ export const SearchBar: FC<{
     </Flex>
   );
 };
+
+export default SearchBar;

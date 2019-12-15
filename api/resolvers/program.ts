@@ -12,9 +12,11 @@ import {
 import { $PropertyType } from "utility-types";
 
 import {
+  defaultUserType,
   PROGRAM_NOT_FOUND,
   PROGRAM_UNAUTHORIZED,
   STUDENT_NOT_FOUND,
+  UserType,
 } from "../../constants";
 import { IContext } from "../../interfaces";
 import { ArrayPropertyType, IfImplements } from "../../interfaces/utils";
@@ -23,6 +25,7 @@ import {
   ProgramStructureTable,
   ProgramTable,
   StudentProgramTable,
+  StudentTable,
   UserProgramsTable,
 } from "../db/tables";
 import { Program } from "../entities/program";
@@ -37,68 +40,91 @@ export class ProgramResolver {
   @Mutation(() => Program)
   async program(
     @Ctx() { user }: IContext,
-    @Arg("id") id: string,
+    @Arg("id", { nullable: true }) id?: string,
     @Arg("student_id", { nullable: true }) student_id?: string
   ): Promise<
-    Pick<Program, "id" | "name" | "desc" | "active"> & {
+    Pick<Program, "id"> & {
       curriculums?: Pick<ArrayPropertyType<Program, "curriculums">, "id">[];
     }
   > {
     assertIsDefined(user, `Authorization in context is broken`);
 
-    assertIsDefined(
-      await UserProgramsTable()
-        .select("program")
+    if (defaultUserType(user.type) === UserType.Student) {
+      const studentProgram = await StudentProgramTable()
+        .distinct("program_id", "curriculum", "start_year")
         .where({
-          program: id,
-          email: user.email,
+          student_id: user.rut_id,
         })
-        .first(),
-      PROGRAM_UNAUTHORIZED
-    );
-
-    if (student_id) {
-      const [programData, curriculums] = await Promise.all([
-        ProgramTable()
-          .select("id", "name", "desc", "active")
-          .where({
-            id,
-          })
-          .whereIn(
-            "id",
-            StudentProgramTable()
-              .distinct("program_id")
-              .where({
-                student_id,
-              })
-          )
-          .first(),
-        StudentProgramTable()
-          .distinct("curriculum", "start_year")
-          .where({
-            student_id,
-          })
-          .orderBy("start_year", "desc"),
-      ]);
-
-      assertIsDefined(programData, STUDENT_NOT_FOUND);
-
+        .orderBy("start_year", "desc");
+      assertIsDefined(studentProgram[0], STUDENT_NOT_FOUND);
+      student_id = user.rut_id;
+      id = studentProgram[0].program_id;
+      const curriculums = studentProgram.map(({ curriculum }) => {
+        return {
+          id: curriculum,
+        };
+      });
       return {
-        ...programData,
-        curriculums:
-          curriculums?.map(({ curriculum }) => ({
-            id: curriculum,
-          })) ?? [],
+        id,
+        curriculums,
       };
     } else {
-      const programData = await ProgramTable()
-        .select("id", "name", "desc", "active")
-        .where({ id })
-        .first();
+      assertIsDefined(id, PROGRAM_NOT_FOUND);
 
-      assertIsDefined(programData, PROGRAM_NOT_FOUND);
+      assertIsDefined(
+        await UserProgramsTable()
+          .select("program")
+          .where({
+            program: id,
+            email: user.email,
+          })
+          .first(),
+        PROGRAM_UNAUTHORIZED
+      );
 
-      return programData;
+      if (student_id) {
+        const [programData, curriculums] = await Promise.all([
+          ProgramTable()
+            .select("id", "name", "desc", "active")
+            .where({
+              id,
+            })
+            .whereIn(
+              "id",
+              StudentProgramTable()
+                .distinct("program_id")
+                .where({
+                  student_id,
+                })
+            )
+            .first(),
+          StudentProgramTable()
+            .distinct("curriculum", "start_year")
+            .where({
+              student_id,
+            })
+            .orderBy("start_year", "desc"),
+        ]);
+
+        assertIsDefined(programData, STUDENT_NOT_FOUND);
+
+        return {
+          ...programData,
+          curriculums:
+            curriculums?.map(({ curriculum }) => ({
+              id: curriculum,
+            })) ?? [],
+        };
+      } else {
+        const programData = await ProgramTable()
+          .select("id", "name", "desc", "active")
+          .where({ id })
+          .first();
+
+        assertIsDefined(programData, PROGRAM_NOT_FOUND);
+
+        return programData;
+      }
     }
   }
 

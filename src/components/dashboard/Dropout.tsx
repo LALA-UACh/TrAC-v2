@@ -90,3 +90,5 @@ export const Dropout: FC<{ probability: number; accuracy: number }> = memo(
     );
   }
 );
+
+export default Dropout;

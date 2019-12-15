@@ -217,7 +217,7 @@ export const TimeLine: FC<{
           <line
             x1={39}
             y1={GradeScale(config.PASS_GRADE)}
-            x2={340}
+            x2={CUMULATED_GRADE.length * 100 + 160}
             y2={GradeScale(config.PASS_GRADE)}
             stroke={config.TIMELINE_PASS_LINE_COLOR}
             strokeDasharray="2"

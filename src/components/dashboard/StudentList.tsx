@@ -311,3 +311,5 @@ export const StudentList: FC<{
     </>
   );
 };
+
+export default StudentList;

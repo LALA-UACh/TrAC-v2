@@ -8,11 +8,12 @@ import {
   defaultUserType,
   LOCKED_USER,
   USED_OLD_PASSWORD,
+  UserType,
   WRONG_INFO,
 } from "../../constants";
 import { IContext } from "../../interfaces";
 import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../consts";
-import { UserTable } from "../db/tables";
+import { StudentTable, UserTable } from "../db/tables";
 import { AuthResult, LoginInput, UnlockInput } from "../entities/auth";
 import { sendMail, UnlockMail } from "../utils/mail";
 
@@ -46,22 +47,29 @@ export class AuthResolver {
   @Query(() => AuthResult, { nullable: true })
   async currentUser(@Ctx() { user, token }: IContext): Promise<AuthResult> {
     if (user) {
-      const foundUser = await UserTable()
-        .where({
-          email: user.email,
-          locked: false,
-        })
-        .first();
-      if (foundUser) {
-        return {
-          user: {
-            ...foundUser,
-            type: defaultUserType(foundUser.type),
-            programs: [],
-          },
-          token,
-        };
+      if (defaultUserType(user.type) === UserType.Student) {
+        if (!user.rut_id) {
+          return {};
+        }
+        const studentData = await StudentTable()
+          .select("id")
+          .where({
+            id: user.rut_id,
+          })
+          .first();
+        if (!studentData) {
+          return {};
+        }
       }
+
+      return {
+        user: {
+          ...user,
+          type: defaultUserType(user.type),
+          programs: [],
+        },
+        token,
+      };
     }
 
     return {};
@@ -80,6 +88,22 @@ export class AuthResolver {
       });
 
     if (user) {
+      if (defaultUserType(user.type) === UserType.Student) {
+        if (!user.rut_id) {
+          return {
+            error: WRONG_INFO,
+          };
+        }
+        const studentData = await StudentTable()
+          .select("id")
+          .where({
+            id: user.rut_id,
+          })
+          .first();
+        if (!studentData) {
+          return { error: WRONG_INFO };
+        }
+      }
       if (user.locked) {
         return { error: LOCKED_USER };
       } else if (user.password === passwordInput) {
@@ -174,6 +198,23 @@ export class AuthResolver {
     if (!user) {
       return { error: WRONG_INFO };
     } else {
+      if (defaultUserType(user.type) === UserType.Student) {
+        if (!user.rut_id) {
+          return {
+            error: WRONG_INFO,
+          };
+        }
+        const studentData = await StudentTable()
+          .select("id")
+          .where({
+            id: user.rut_id,
+          })
+          .first();
+        if (!studentData) {
+          return { error: WRONG_INFO };
+        }
+      }
+
       switch (passwordInput) {
         case user.password:
         case user.oldPassword1:

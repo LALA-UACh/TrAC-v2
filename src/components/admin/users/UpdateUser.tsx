@@ -1,4 +1,4 @@
-import toInteger from "lodash/toInteger";
+import { toInteger } from "lodash";
 import React, { cloneElement, FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {

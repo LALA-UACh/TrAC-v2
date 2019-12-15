@@ -11,7 +11,13 @@ import {
 } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
-import { STUDENT_LIST_UNAUTHORIZED, STUDENT_NOT_FOUND } from "../../constants";
+import {
+  defaultUserType,
+  PROGRAM_NOT_FOUND,
+  STUDENT_LIST_UNAUTHORIZED,
+  STUDENT_NOT_FOUND,
+  UserType,
+} from "../../constants";
 import { IContext } from "../../interfaces";
 import {
   IStudent,
@@ -38,50 +44,75 @@ export class StudentResolver {
   @Mutation(() => Student, { nullable: true })
   async student(
     @Ctx() { user }: IContext,
-    @Arg("student_id")
-    student_id: string,
-    @Arg("program_id")
-    program_id: string
+    @Arg("student_id", { nullable: true })
+    student_id?: string,
+    @Arg("program_id", { nullable: true })
+    program_id?: string
   ): Promise<PartialStudent | null> {
     assertIsDefined(user, `Error on authorization context`);
 
-    if (student_id === "") {
-      return null;
-    }
+    if (defaultUserType(user.type) === UserType.Student) {
+      const studentData = await StudentProgramTable()
+        .select("program_id", "name", "state")
+        .innerJoin<IStudent>(
+          STUDENT_TABLE_NAME,
+          `${STUDENT_TABLE_NAME}.id`,
+          `${STUDENT_PROGRAM_TABLE_NAME}.student_id`
+        )
+        .orderBy("start_year", "desc")
+        .where({ student_id: user.rut_id })
+        .first();
 
-    const AuthenticatedUserPrograms = await UserProgramsTable()
-      .select("program")
-      .where({
-        email: user.email,
-        program: program_id,
-      });
+      assertIsDefined(studentData, STUDENT_NOT_FOUND);
 
-    const IsAuthorized = await StudentProgramTable()
-      .select("program_id")
-      .where({ student_id })
-      .whereIn(
-        "program_id",
-        AuthenticatedUserPrograms.map(({ program }) => program)
-      )
-      .first();
+      return {
+        id: user.rut_id,
+        name: studentData.name,
+        state: studentData.state,
+        programs: [{ id: studentData.program_id }],
+      };
+    } else {
+      assertIsDefined(student_id, STUDENT_NOT_FOUND);
+      assertIsDefined(program_id, PROGRAM_NOT_FOUND);
 
-    assertIsDefined(IsAuthorized, STUDENT_NOT_FOUND);
+      if (student_id === "") {
+        return null;
+      }
 
-    const studentData = await StudentTable()
-      .select("name", "state")
-      .where({
+      const AuthenticatedUserPrograms = await UserProgramsTable()
+        .select("program")
+        .where({
+          email: user.email,
+          program: program_id,
+        });
+
+      const IsAuthorized = await StudentProgramTable()
+        .select("program_id")
+        .where({ student_id })
+        .whereIn(
+          "program_id",
+          AuthenticatedUserPrograms.map(({ program }) => program)
+        )
+        .first();
+
+      assertIsDefined(IsAuthorized, STUDENT_NOT_FOUND);
+
+      const studentData = await StudentTable()
+        .select("name", "state")
+        .where({
+          id: student_id,
+        })
+        .first();
+
+      assertIsDefined(studentData, STUDENT_NOT_FOUND);
+
+      return {
         id: student_id,
-      })
-      .first();
-
-    assertIsDefined(studentData, STUDENT_NOT_FOUND);
-
-    return {
-      id: student_id,
-      name: studentData.name,
-      state: studentData.state,
-      programs: [{ id: program_id }],
-    };
+        name: studentData.name,
+        state: studentData.state,
+        programs: [{ id: program_id }],
+      };
+    }
   }
 
   @Authorized()

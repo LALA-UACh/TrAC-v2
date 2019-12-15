@@ -1,4 +1,5 @@
 import { uniq } from "lodash";
+import dynamic from "next/dynamic";
 import React, {
   FC,
   useContext,
@@ -8,22 +9,21 @@ import React, {
   useState,
 } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
-import { useLogger, useUpdateEffect } from "react-use";
+import { useUpdateEffect } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Box, Stack } from "@chakra-ui/core";
+import { Box, Flex, Spinner, Stack } from "@chakra-ui/core";
 
 import {
   PROGRAM_NOT_FOUND,
   PROGRAM_UNAUTHORIZED,
   STUDENT_NOT_FOUND,
+  UserType,
 } from "../../constants";
 import { ITakenCourse } from "../../interfaces";
 import { ConfigContext } from "../components/dashboard/Config";
 import { CoursesFlow } from "../components/dashboard/CoursesFlow";
-import { Dropout } from "../components/dashboard/Dropout";
-import { SearchBar } from "../components/dashboard/SearchBar";
 import { Semester } from "../components/dashboard/Semester";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
@@ -34,6 +34,9 @@ import {
   SEARCH_PROGRAM,
   SEARCH_STUDENT,
 } from "../graphql/queries";
+
+const SearchBar = dynamic(() => import("../components/dashboard/SearchBar"));
+const Dropout = dynamic(() => import("../components/dashboard/Dropout"));
 
 const Dashboard: FC = () => {
   const [program, setProgram] = useState<string | undefined>(undefined);
@@ -106,6 +109,19 @@ const Dashboard: FC = () => {
       trackingData.current.showingProgress = false;
     }
   }, [searchStudentData]);
+
+  useEffect(() => {
+    if (searchProgramData?.program) {
+      setMock(false);
+    }
+  }, [searchProgramData]);
+
+  useEffect(() => {
+    if (currentUserData?.currentUser?.user?.type === UserType.Student) {
+      searchProgram();
+      searchStudent();
+    }
+  }, [currentUserData, searchProgram, searchStudent]);
 
   const {
     TimeLineComponent,
@@ -287,63 +303,78 @@ const Dashboard: FC = () => {
 
   return (
     <TrackingContext.Provider value={trackingData}>
-      <SearchBar
-        error={uniq(
-          [
-            ...(searchProgramError?.graphQLErrors ?? []),
-            ...(searchStudentError?.graphQLErrors ?? []),
-          ].map(({ message }) => {
-            switch (message) {
-              case STUDENT_NOT_FOUND:
-                return ERROR_STUDENT_NOT_FOUND_MESSAGE;
-              case PROGRAM_UNAUTHORIZED:
-                return ERROR_PROGRAM_UNAUTHORIZED_MESSAGE;
-              case PROGRAM_NOT_FOUND:
-                return ERROR_PROGRAM_NOT_FOUND;
-              default:
-                return message;
-            }
-          })
-        )
-          .join("\n")
-          .trim()}
-        searchResult={{
-          curriculums:
-            searchProgramData?.program?.curriculums?.map(({ id }) => {
-              return id;
-            }) ?? [],
-          student: searchStudentData?.student?.id,
-        }}
-        isSearchLoading={searchProgramLoading || searchStudentLoading}
-        setProgram={setProgram}
-        onSearch={async ({ student_id, program_id }) => {
-          try {
-            const [programSearch, studentSearch] = await Promise.all([
-              searchProgram({
-                variables: {
-                  program_id,
-                  student_id: student_id || undefined,
-                },
-              }),
-              searchStudent({
-                variables: { student_id, program_id },
-              }),
-            ]);
+      {currentUserData?.currentUser?.user?.type === UserType.Director ? (
+        <SearchBar
+          error={uniq(
+            [
+              ...(searchProgramError?.graphQLErrors ?? []),
+              ...(searchStudentError?.graphQLErrors ?? []),
+            ].map(({ message }) => {
+              switch (message) {
+                case STUDENT_NOT_FOUND:
+                  return ERROR_STUDENT_NOT_FOUND_MESSAGE;
+                case PROGRAM_UNAUTHORIZED:
+                  return ERROR_PROGRAM_UNAUTHORIZED_MESSAGE;
+                case PROGRAM_NOT_FOUND:
+                  return ERROR_PROGRAM_NOT_FOUND;
+                default:
+                  return message;
+              }
+            })
+          )
+            .join("\n")
+            .trim()}
+          searchResult={{
+            curriculums:
+              searchProgramData?.program?.curriculums?.map(({ id }) => {
+                return id;
+              }) ?? [],
+            student: searchStudentData?.student?.id,
+          }}
+          isSearchLoading={searchProgramLoading || searchStudentLoading}
+          setProgram={setProgram}
+          onSearch={async ({ student_id, program_id }) => {
+            try {
+              const [programSearch, studentSearch] = await Promise.all([
+                searchProgram({
+                  variables: {
+                    program_id,
+                    student_id: student_id || undefined,
+                  },
+                }),
+                searchStudent({
+                  variables: { student_id, program_id },
+                }),
+              ]);
 
-            if (programSearch.data?.program && studentSearch.data?.student) {
-              return true;
+              if (programSearch.data?.program && studentSearch.data?.student) {
+                return true;
+              }
+            } catch (err) {
+              console.error(err);
             }
-          } catch (err) {
-            console.error(err);
-          }
 
-          return false;
-        }}
-        mock={mock}
-        setMock={setMock}
-        curriculum={curriculum}
-        setCurriculum={setCurriculum}
-      />
+            return false;
+          }}
+          mock={mock}
+          setMock={setMock}
+          curriculum={curriculum}
+          setCurriculum={setCurriculum}
+        />
+      ) : (
+        <>
+          {searchProgramLoading || searchStudentLoading ? (
+            <Flex
+              justifyContent="center"
+              alignItems="center"
+              height="100vh"
+              width="100vw"
+            >
+              <Spinner size="xl" />
+            </Flex>
+          ) : null}
+        </>
+      )}
       <CoursesFlow curriculum={curriculum} program={program}>
         <ScrollContainer activationDistance={5} hideScrollbars={false}>
           <Stack isInline flexWrap="wrap-reverse">

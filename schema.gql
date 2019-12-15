@@ -83,8 +83,8 @@ type Mutation {
   login(email: EmailAddress!, password: String!): AuthResult!
   logout: Boolean!
   mailAllLockedUsers: [JSONObject!]!
-  program(id: String!, student_id: String): Program!
-  student(program_id: String!, student_id: String!): Student
+  program(id: String, student_id: String): Program!
+  student(program_id: String, student_id: String): Student
   track(data: String!, datetime_client: DateTime!): Boolean!
   unlock(email: EmailAddress!, password: String!, unlockKey: String!): AuthResult!
   updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
