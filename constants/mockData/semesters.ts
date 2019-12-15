@@ -1,7 +1,7 @@
 import { StateCourse } from "../";
 import { ICourse } from "../../interfaces";
 
-const semesters: { semester: ICourse[] }[] = [
+export const mockSemesters: { semester: ICourse[] }[] = [
   {
     semester: [
       {
@@ -2894,5 +2894,3 @@ const semesters: { semester: ICourse[] }[] = [
     ],
   },
 ];
-
-export default semesters;

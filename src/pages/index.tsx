@@ -7,10 +7,6 @@ import { useRememberState } from "use-remember-state";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Box, Stack } from "@chakra-ui/core";
 
-import mockDropout from "../../constants/mockData/dropout";
-import mockSemesters from "../../constants/mockData/semesters";
-import mockSemestersTaken from "../../constants/mockData/semestersTaken";
-import mockTimeline from "../../constants/mockData/timeline";
 import { ITakenCourse } from "../../interfaces";
 import { Config } from "../components/dashboard/Config";
 import { CoursesFlow } from "../components/dashboard/CoursesFlow";
@@ -29,30 +25,44 @@ import {
 
 const Dashboard: FC = () => {
   const [program, setProgram] = useState<string | undefined>(undefined);
+
   const [curriculum, setCurriculum] = useState<string | undefined>(undefined);
+
   const { data: currentUserData } = useQuery(CURRENT_USER, {
     fetchPolicy: "cache-only",
   });
+
   const [mock, setMock] = useRememberState(
     "mockMode",
     !!currentUserData?.currentUser?.user?.admin
   );
+
+  const [mockData, setMockData] = useState<
+    typeof import("../../constants/mockData")
+  >();
+  useEffect(() => {
+    if (mock && !mockData) {
+      import("../../constants/mockData").then(data => {
+        setMockData(data);
+      });
+    }
+  }, [mock, mockData]);
+
   const trackingData = useRef<TrackingRef>({ track: async () => {} });
   const [
     searchProgram,
     {
       data: searchProgramData,
       loading: searchProgramLoading,
-      called: searchProgramCalled,
       error: searchProgramError,
     },
   ] = useMutation(SEARCH_PROGRAM);
+
   const [
     searchStudent,
     {
       data: searchStudentData,
       loading: searchStudentLoading,
-      called: searchStudentCalled,
       error: searchStudentError,
     },
   ] = useMutation(SEARCH_STUDENT);
@@ -304,21 +314,21 @@ const Dashboard: FC = () => {
           <ScrollContainer activationDistance={5} hideScrollbars={false}>
             <Stack isInline flexWrap="wrap-reverse">
               <Box>
-                {mock ? (
+                {mock && mockData ? (
                   <TimeLine
-                    CUMULATED_GRADE={mockTimeline.PGA}
-                    SEMESTRAL_GRADE={mockTimeline.PSP}
-                    PROGRAM_GRADE={mockTimeline.ProgramPGA}
-                    semestersTaken={mockSemestersTaken}
+                    CUMULATED_GRADE={mockData.default.mockTimeline.PGA}
+                    SEMESTRAL_GRADE={mockData.default.mockTimeline.PSP}
+                    PROGRAM_GRADE={mockData.default.mockTimeline.ProgramPGA}
+                    semestersTaken={mockData.default.mockSemestersTaken}
                   />
                 ) : (
                   TimeLineComponent
                 )}
               </Box>
-              {mock ? (
+              {mock && mockData ? (
                 <Dropout
-                  probability={mockDropout.prob_dropout}
-                  accuracy={mockDropout.model_accuracy}
+                  probability={mockData.default.mockDropout.prob_dropout}
+                  accuracy={mockData.default.mockDropout.model_accuracy}
                 />
               ) : (
                 DropoutComponent
@@ -326,12 +336,14 @@ const Dashboard: FC = () => {
             </Stack>
 
             <Stack isInline pl="50px">
-              {mock
-                ? mockSemestersTaken.map(({ term, year }, key) => {
-                    return (
-                      <TakenSemesterBox key={key} term={term} year={year} />
-                    );
-                  })
+              {mock && mockData
+                ? mockData.default.mockSemestersTaken.map(
+                    ({ term, year }, key) => {
+                      return (
+                        <TakenSemesterBox key={key} term={term} year={year} />
+                      );
+                    }
+                  )
                 : TakenSemestersComponent}
             </Stack>
           </ScrollContainer>
@@ -342,8 +354,8 @@ const Dashboard: FC = () => {
             activationDistance={5}
           >
             <Stack isInline spacing={8}>
-              {mock
-                ? mockSemesters.map(({ semester }, key) => {
+              {mock && mockData
+                ? mockData.default.mockSemesters.map(({ semester }, key) => {
                     return (
                       <Semester key={key} courses={semester} n={key + 1} />
                     );
