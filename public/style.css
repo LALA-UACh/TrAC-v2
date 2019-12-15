@@ -48,3 +48,9 @@
 body {
   overflow-y: scroll !important;
 }
+.cursorPointer {
+  cursor: pointer;
+}
+.cursorText {
+  cursor: text;
+}

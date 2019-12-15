@@ -1,6 +1,8 @@
 import { chunk, some, sortBy, toInteger, truncate, uniq } from "lodash";
 import React, {
+  Dispatch,
   FC,
+  SetStateAction,
   useContext,
   useEffect,
   useMemo,
@@ -41,7 +43,8 @@ const nStudentPerChunk = 50;
 export const StudentList: FC<{
   mockData?: Record<columnNames, string | number>[];
   program_id?: string;
-}> = ({ mockData, program_id }) => {
+  searchStudent: (student: string) => Promise<void>;
+}> = ({ mockData, program_id, searchStudent }) => {
   const { data: dataStudentList, loading: loadingData } = useQuery(
     STUDENT_LIST,
     {
@@ -149,6 +152,7 @@ export const StudentList: FC<{
     RISK_MEDIUM_COLOR,
     RISK_MEDIUM_THRESHOLD,
     RISK_LOW_COLOR,
+    CHECK_STUDENT_FROM_LIST_LABEL,
   } = useContext(ConfigContext);
 
   const handleSort = (clickedColumn: columnNames) => () => {
@@ -259,11 +263,21 @@ export const StudentList: FC<{
                       <Table.Row key={student_id} verticalAlign="middle">
                         <TableCell textAlign="center">
                           {1 + key + (pageSelected - 1) * nStudentPerChunk}
-                        </TableCell>
-                        <Table.Cell>
                           <ReactTooltip id={`student_list_${key}`} />
-                          <Text>
-                            {truncate(student_id.toString(), { length: 18 })}
+                          <ReactTooltip id={`student_list_check_${key}`} />
+                        </TableCell>
+                        <Table.Cell
+                          className="cursorPointer"
+                          onClick={() => {
+                            searchStudent(student_id.toString());
+                            onClose();
+                          }}
+                        >
+                          <Text
+                            data-tip={`${CHECK_STUDENT_FROM_LIST_LABEL} ${student_id}`}
+                            data-for={`student_list_check_${key}`}
+                          >
+                            {truncate(student_id.toString(), { length: 20 })}
                           </Text>
                         </Table.Cell>
                         <Table.Cell>
@@ -272,8 +286,8 @@ export const StudentList: FC<{
                         <Table.Cell verticalAlign="middle">
                           <Progress
                             style={{ margin: 0 }}
-                            percent={progress}
-                            data-tip={`${progress}%`}
+                            percent={toInteger(progress)}
+                            data-tip={`${toInteger(progress)}%`}
                             data-for={`student_list_${key}`}
                           />
                         </Table.Cell>
@@ -285,7 +299,7 @@ export const StudentList: FC<{
                               }
                             >
                               {dropout_probability !== -1
-                                ? `${dropout_probability}%`
+                                ? `${toInteger(dropout_probability)}%`
                                 : "-"}
                             </Text>
                           </Table.Cell>

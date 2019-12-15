@@ -102,8 +102,9 @@ export const baseConfig = {
   UNLOCK_USER_OLD_PASSWORD_MESSAGE:
     "No puede ingresar una contraseña usada anteriormente.",
   ERROR_STUDENT_NOT_FOUND_MESSAGE:
-    "Estudiante especificado no pudo ser encontrado",
+    "Estudiante especificado no pudo ser encontrado en el programa especificado.",
   ERROR_PROGRAM_UNAUTHORIZED_MESSAGE:
     "No está autorizado para ver el programa especificado",
-  ERROR_PROGRAM_NOT_FOUND: "Programa especificado no pudo ser encontrado",
+  ERROR_PROGRAM_NOT_FOUND: "Programa especificado no pudo ser encontrado.",
+  CHECK_STUDENT_FROM_LIST_LABEL: "Ver estudiante",
 };

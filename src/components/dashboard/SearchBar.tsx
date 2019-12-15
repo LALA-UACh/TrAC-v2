@@ -59,7 +59,11 @@ export const SearchBar: FC<{
     student_id: string;
     program_id: string;
   }) => Promise<boolean>;
-  searchResult?: { curriculums: string[]; student?: string };
+  searchResult?: {
+    curriculums: string[];
+    student?: string;
+    program_id?: string;
+  };
   error?: string;
   mock: boolean;
   setMock: Dispatch<SetStateAction<boolean>>;
@@ -186,7 +190,7 @@ export const SearchBar: FC<{
         {(searchResult?.curriculums.length ?? 0) > 1 ? (
           <Flex mr={5}>
             <Tag variantColor="blue" variant="outline">
-              {CURRICULUM_LABEL}
+              {searchResult?.program_id} | {CURRICULUM_LABEL}
             </Tag>
             <Box width={90} ml={2}>
               <Select
@@ -220,10 +224,13 @@ export const SearchBar: FC<{
         ) : searchResult?.curriculums.length === 1 ? (
           <Tag
             mr={2}
-          >{`${CURRICULUM_LABEL}: ${searchResult?.curriculums[0]}`}</Tag>
+          >{`${searchResult?.program_id} | ${CURRICULUM_LABEL}: ${searchResult?.curriculums[0]}`}</Tag>
         ) : null}
         {searchResult?.student && (
-          <Tag mr={2}>{`${STUDENT_LABEL}: ${searchResult.student}`}</Tag>
+          <Tag
+            cursor="text"
+            mr={2}
+          >{`${STUDENT_LABEL}: ${searchResult.student}`}</Tag>
         )}
 
         <form>
@@ -354,6 +361,19 @@ export const SearchBar: FC<{
                   }))
                 : undefined
             }
+            searchStudent={async (student_id: string) => {
+              if (program) {
+                setStudentId(student_id);
+                const ok = await onSearch({
+                  student_id,
+                  program_id: program?.value,
+                });
+                if (ok) {
+                  addStudentOption(student_id);
+                  setStudentId("");
+                }
+              }
+            }}
           />
         )}
         <Link href="/logout">

@@ -330,6 +330,7 @@ const Dashboard: FC = () => {
                 return id;
               }) ?? [],
             student: searchStudentData?.student?.id,
+            program_id: searchProgramData?.program?.id,
           }}
           isSearchLoading={searchProgramLoading || searchStudentLoading}
           setProgram={setProgram}
