@@ -19,6 +19,7 @@ export const Users: FC<{
     type: UserType;
     rut_id?: string;
     show_dropout: boolean;
+    show_student_list: boolean;
     locked: boolean;
   }[];
 }> = ({ users }) => {
@@ -28,17 +29,10 @@ export const Users: FC<{
     "ascending" as "ascending" | "descending"
   );
 
-  const [sortedUsers, setSortedUsers] = useRememberState<
-    {
-      email: string;
-      name: string;
-      tries: number;
-      type: UserType;
-      rut_id?: string;
-      show_dropout: boolean;
-      locked: boolean;
-    }[]
-  >("TracAdminSortedUsers", []);
+  const [sortedUsers, setSortedUsers] = useRememberState<typeof users>(
+    "TracAdminSortedUsers",
+    []
+  );
 
   useEffect(() => {
     if (users.length > 0)
@@ -193,13 +187,28 @@ export const Users: FC<{
               >
                 show_dropout
               </Table.HeaderCell>
+              <Table.HeaderCell
+                sorted={column === "show_student_list" ? direction : undefined}
+                onClick={handleSort("show_student_list")}
+              >
+                show_student_list
+              </Table.HeaderCell>
             </Table.Row>
           </Table.Header>
 
           <Table.Body>
             {sortedUsers.map(
               (
-                { email, name, locked, tries, type, rut_id, show_dropout },
+                {
+                  email,
+                  name,
+                  locked,
+                  tries,
+                  type,
+                  rut_id,
+                  show_dropout,
+                  show_student_list,
+                },
                 key
               ) => (
                 <UpdateUser
@@ -212,6 +221,7 @@ export const Users: FC<{
                     type,
                     rut_id,
                     show_dropout,
+                    show_student_list,
                   }}
                 >
                   <Table.Row style={{ cursor: "pointer" }}>
@@ -228,6 +238,16 @@ export const Users: FC<{
                         circular
                         name={
                           show_dropout
+                            ? "check circle outline"
+                            : "times circle outline"
+                        }
+                      />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Icon
+                        circular
+                        name={
+                          show_student_list
                             ? "check circle outline"
                             : "times circle outline"
                         }

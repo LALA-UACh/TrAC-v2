@@ -34,6 +34,7 @@ export const UpdateUser: FC<{
     type: UserType;
     rut_id?: string;
     show_dropout: boolean;
+    show_student_list: boolean;
     locked: boolean;
   };
   children: JSX.Element;
@@ -133,6 +134,7 @@ export const UpdateUser: FC<{
           tries: user.tries,
           rut_id: user.rut_id,
           show_dropout: user.show_dropout,
+          show_student_list: user.show_student_list,
           locked: user.locked,
         }}
         onSubmit={async ({
@@ -142,6 +144,7 @@ export const UpdateUser: FC<{
           type,
           rut_id,
           show_dropout,
+          show_student_list,
           locked,
         }: {
           email: string;
@@ -150,6 +153,7 @@ export const UpdateUser: FC<{
           type: UserType;
           rut_id?: string;
           show_dropout: boolean;
+          show_student_list: boolean;
           locked: boolean;
         }) => {
           try {
@@ -164,6 +168,7 @@ export const UpdateUser: FC<{
                     rut_id,
                     type,
                     show_dropout,
+                    show_student_list,
                     locked,
                   },
                 ],
@@ -312,6 +317,21 @@ export const UpdateUser: FC<{
                           {...input}
                           toggle
                           label="Show dropout prediction"
+                          onChange={() => {
+                            input.onChange(!input.checked);
+                          }}
+                          type="checkbox"
+                        />
+                      </FormSemantic.Field>
+                    )}
+                  </Field>
+                  <Field type="checkbox" name="show_student_list">
+                    {({ input }) => (
+                      <FormSemantic.Field>
+                        <Checkbox
+                          {...input}
+                          toggle
+                          label="Show student list"
                           onChange={() => {
                             input.onChange(!input.checked);
                           }}

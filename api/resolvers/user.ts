@@ -143,6 +143,7 @@ export class UserResolver {
           tries,
           rut_id,
           show_dropout,
+          show_student_list,
           locked,
         }) => {
           /**
@@ -158,6 +159,7 @@ export class UserResolver {
                 tries,
                 rut_id,
                 show_dropout,
+                show_student_list,
                 locked,
               })
               .where({
@@ -181,6 +183,7 @@ export class UserResolver {
                   tries,
                   rut_id,
                   show_dropout,
+                  show_student_list,
                   locked,
                 })
                 .where({ email });
@@ -193,6 +196,7 @@ export class UserResolver {
               tries,
               rut_id,
               show_dropout,
+              show_student_list,
               locked,
             });
           }

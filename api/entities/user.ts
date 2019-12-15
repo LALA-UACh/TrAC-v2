@@ -96,6 +96,9 @@ export class UpsertedUser implements Partial<User> {
   @Field({ defaultValue: false })
   show_dropout: boolean;
 
+  @Field({ defaultValue: false })
+  show_student_list: boolean;
+
   @Field({ defaultValue: true })
   locked: boolean;
 }

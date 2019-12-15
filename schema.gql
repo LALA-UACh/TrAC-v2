@@ -190,6 +190,7 @@ input UpsertedUser {
   oldEmail: EmailAddress
   rut_id: String = ""
   show_dropout: Boolean = false
+  show_student_list: Boolean = false
   tries: Float = 0
   type: UserType = Student
 }
