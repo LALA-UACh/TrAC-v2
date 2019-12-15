@@ -1,4 +1,3 @@
-import { toInteger } from "lodash";
 import {
   Arg,
   Authorized,
@@ -12,6 +11,7 @@ import {
 } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
+import { STUDENT_LIST_UNAUTHORIZED, STUDENT_NOT_FOUND } from "../../constants";
 import { IContext } from "../../interfaces";
 import {
   IStudent,
@@ -65,10 +65,7 @@ export class StudentResolver {
       )
       .first();
 
-    assertIsDefined(
-      IsAuthorized,
-      `No tiene autorización para visualizar el estudiante especificado o el estudiante no pudo ser encontrado!`
-    );
+    assertIsDefined(IsAuthorized, STUDENT_NOT_FOUND);
 
     const studentData = await StudentTable()
       .select("name", "state")
@@ -77,7 +74,7 @@ export class StudentResolver {
       })
       .first();
 
-    assertIsDefined(studentData, `Estudiante no encontrado!`);
+    assertIsDefined(studentData, STUDENT_NOT_FOUND);
 
     return {
       id: student_id,
@@ -104,10 +101,7 @@ export class StudentResolver {
       })
       .first();
 
-    assertIsDefined(
-      IsAuthorized,
-      `No tiene autorización para visualizar los estudiantes del programa seleccionado!`
-    );
+    assertIsDefined(IsAuthorized, STUDENT_LIST_UNAUTHORIZED);
 
     const studentList = await StudentProgramTable()
       .select("id", "name", "state", "last_term")

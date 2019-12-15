@@ -91,7 +91,7 @@ export const StudentList: FC<{
     "ascending" | "descending" | undefined
   >("student_list_direction_sort", undefined);
 
-  const [sortedStudentList, setSortedStudentList] = useState(
+  const [sortedStudentList, setSortedStudentList] = useState(() =>
     sortBy(studentListData, columnSort)
   );
 

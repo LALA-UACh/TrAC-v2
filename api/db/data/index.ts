@@ -1,7 +1,8 @@
 import sha1 from "crypto-js/sha1";
 
 import { dbAuth, dbConfig, dbTracking } from "../";
-import { baseConfig, UserType } from "../../../constants";
+import { UserType } from "../../../constants";
+import { baseConfig } from "../../../constants/baseConfig";
 import {
   CONFIGURATION_TABLE,
   ConfigurationTable,

@@ -2,7 +2,7 @@ import sha1 from "crypto-js/sha1";
 import { ValidationErrors } from "final-form";
 import Cookies from "js-cookie";
 import Router from "next/router";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { useUpdateEffect } from "react-use";
 import {
@@ -21,6 +21,7 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Image } from "@chakra-ui/core";
 
 import { LOCKED_USER, WRONG_INFO } from "../../constants";
+import { ConfigContext } from "../components/dashboard/Config";
 import { CURRENT_USER, LOGIN } from "../graphql/queries";
 
 const Login: FC = () => {
@@ -49,6 +50,20 @@ const Login: FC = () => {
     },
   });
 
+  const {
+    LOGIN_WRONG_INFO_MESSAGE,
+    LOGIN_LOCKED_USER_MESSAGE,
+    LOGIN_PUT_VALID_EMAIL,
+    LOGIN_PUT_VALID_PASSWORD_LENGTH,
+    LOGIN_EMAIL_LABEL,
+    LOGIN_EMAIL_PLACEHOLDER,
+    LOGIN_PASSWORD_LABEL,
+    LOGIN_PASSWORD_PLACEHOLDER,
+    LOGIN_REMEMBER_SESSION,
+    LOGIN_BUTTON,
+    LOGIN_ERROR_TITLE,
+  } = useContext(ConfigContext);
+
   return (
     <Grid centered padded>
       <Grid.Row>
@@ -64,13 +79,13 @@ const Login: FC = () => {
       {!loading && (data?.login?.error || errorMutation) && (
         <Grid.Row>
           <Message negative>
-            <Message.Header>Error!</Message.Header>
+            <Message.Header>{LOGIN_ERROR_TITLE}</Message.Header>
             {(() => {
               switch (data?.login?.error) {
                 case WRONG_INFO:
-                  return "Información ingresada erronea. Verificar datos o su cuenta puede ser bloqueda por seguridad.";
+                  return LOGIN_WRONG_INFO_MESSAGE;
                 case LOCKED_USER:
-                  return "Usuario bloqueado. Por favor revisar correo para recuperar su cuenta.";
+                  return LOGIN_LOCKED_USER_MESSAGE;
                 default:
                   if (errorMutation) {
                     return errorMutation.message;
@@ -106,10 +121,10 @@ const Login: FC = () => {
         validate={({ email, password }) => {
           const errors: ValidationErrors = {};
           if (!email || !isEmail(email)) {
-            errors.email = "Ingrese un Email Válido";
+            errors.email = LOGIN_PUT_VALID_EMAIL;
           }
           if (!password || !isLength(password, { min: 3, max: 100 })) {
-            errors.password = "Ingrese una contraseña de largo válido";
+            errors.password = LOGIN_PUT_VALID_PASSWORD_LENGTH;
           }
           return errors;
         }}
@@ -124,8 +139,8 @@ const Login: FC = () => {
                       error={error && touched}
                       disabled={loading}
                     >
-                      <label>Correo Electrónico</label>
-                      <Input {...input} placeholder="email@uach.cl" />
+                      <label>{LOGIN_EMAIL_LABEL}</label>
+                      <Input {...input} placeholder={LOGIN_EMAIL_PLACEHOLDER} />
                       <label>{touched && error}</label>
                     </FormSemantic.Field>
                   )}
@@ -137,8 +152,11 @@ const Login: FC = () => {
                       error={error && touched}
                       disabled={loading}
                     >
-                      <label>Contraseña</label>
-                      <Input {...input} placeholder="contraseña" />
+                      <label>{LOGIN_PASSWORD_LABEL}</label>
+                      <Input
+                        {...input}
+                        placeholder={LOGIN_PASSWORD_PLACEHOLDER}
+                      />
                       {<label>{touched && error}</label>}
                     </FormSemantic.Field>
                   )}
@@ -147,7 +165,7 @@ const Login: FC = () => {
               <Segment basic>
                 <Checkbox
                   toggle
-                  label="Mantenerse conectado"
+                  label={LOGIN_REMEMBER_SESSION}
                   onChange={() => {
                     setSession(!session);
                   }}
@@ -167,7 +185,7 @@ const Login: FC = () => {
                   loading={loading}
                 >
                   <Icon name="sign-in" />
-                  Ingresar
+                  {LOGIN_BUTTON}
                 </Button>
               </Segment>
             </FormSemantic>

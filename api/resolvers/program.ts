@@ -11,6 +11,11 @@ import {
 } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
+import {
+  PROGRAM_NOT_FOUND,
+  PROGRAM_UNAUTHORIZED,
+  STUDENT_NOT_FOUND,
+} from "../../constants";
 import { IContext } from "../../interfaces";
 import { ArrayPropertyType, IfImplements } from "../../interfaces/utils";
 import { ADMIN } from "../consts";
@@ -32,7 +37,7 @@ export class ProgramResolver {
   @Mutation(() => Program)
   async program(
     @Ctx() { user }: IContext,
-    @Arg("id", { nullable: true }) id?: string,
+    @Arg("id") id: string,
     @Arg("student_id", { nullable: true }) student_id?: string
   ): Promise<
     Pick<Program, "id" | "name" | "desc" | "active"> & {
@@ -42,104 +47,58 @@ export class ProgramResolver {
     assertIsDefined(user, `Authorization in context is broken`);
 
     assertIsDefined(
-      id || student_id,
-      `Debe especificar al menos programa o estudiante!`
+      await UserProgramsTable()
+        .select("program")
+        .where({
+          program: id,
+          email: user.email,
+        })
+        .first(),
+      PROGRAM_UNAUTHORIZED
     );
 
-    if (student_id && !id) {
-      const [studentData, userProgramsToMap] = await Promise.all([
+    if (student_id) {
+      const [programData, curriculums] = await Promise.all([
+        ProgramTable()
+          .select("id", "name", "desc", "active")
+          .where({
+            id,
+          })
+          .whereIn(
+            "id",
+            StudentProgramTable()
+              .distinct("program_id")
+              .where({
+                student_id,
+              })
+          )
+          .first(),
         StudentProgramTable()
-          .distinct("program_id", "start_year", "curriculum")
+          .distinct("curriculum", "start_year")
           .where({
             student_id,
           })
           .orderBy("start_year", "desc"),
-        UserProgramsTable()
-          .select("program")
-          .where({
-            email: user.email,
-          }),
       ]);
 
-      const userPrograms = userProgramsToMap.map(({ program }) => program);
-
-      const studentProgramData = studentData.find(({ program_id }) => {
-        return userPrograms.includes(program_id);
-      });
-
-      assertIsDefined(
-        studentProgramData,
-        `No tiene autorización para visualizar el estudiante especificado o el estudiante no pudo ser encontrado!`
-      );
-
-      const programData = await ProgramTable()
-        .select("id", "name", "desc", "active")
-        .where({ id: studentProgramData.program_id })
-        .first();
-
-      assertIsDefined(programData, `Estudiante no pudo ser encontrado!`);
+      assertIsDefined(programData, STUDENT_NOT_FOUND);
 
       return {
         ...programData,
-        curriculums: [{ id: studentProgramData.curriculum }],
+        curriculums:
+          curriculums?.map(({ curriculum }) => ({
+            id: curriculum,
+          })) ?? [],
       };
     } else {
-      assertIsDefined(
-        await UserProgramsTable()
-          .select("program")
-          .where({
-            program: id,
-            email: user.email,
-          })
-          .first(),
-        `No tiene autorización para visualizar el programa seleccionado!`
-      );
-      if (student_id) {
-        const [programData, curriculums] = await Promise.all([
-          ProgramTable()
-            .select("id", "name", "desc", "active")
-            .where({
-              id,
-            })
-            .whereIn(
-              "id",
-              StudentProgramTable()
-                .distinct("program_id")
-                .where({
-                  student_id,
-                })
-            )
-            .first(),
-          StudentProgramTable()
-            .distinct("curriculum", "start_year")
-            .where({
-              student_id,
-            })
-            .orderBy("start_year", "desc"),
-        ]);
+      const programData = await ProgramTable()
+        .select("id", "name", "desc", "active")
+        .where({ id })
+        .first();
 
-        assertIsDefined(
-          programData,
-          `Estudiante no encontrado o no pertenece al programa solicitado!`
-        );
+      assertIsDefined(programData, PROGRAM_NOT_FOUND);
 
-        return {
-          ...programData,
-          curriculums:
-            curriculums?.map(({ curriculum }) => ({
-              id: curriculum,
-            })) ?? [],
-        };
-      } else {
-        const programData = await ProgramTable()
-          .select("id", "name", "desc", "active")
-          .where({ id })
-          .first();
-
-        assertIsDefined(programData, `Programa no encontrado!`);
-
-        return programData;
-      }
+      return programData;
     }
   }
 

@@ -1,8 +1,7 @@
 import sha1 from "crypto-js/sha1";
-import map from "lodash/map";
-import some from "lodash/some";
+import { compact, map, some } from "lodash";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Field, Form } from "react-final-form";
 import {
   Divider,
@@ -18,48 +17,9 @@ import matches from "validator/lib/matches";
 import { useMutation } from "@apollo/react-hooks";
 
 import { USED_OLD_PASSWORD, WRONG_INFO } from "../../../../constants";
+import { ConfigContext } from "../../../components/dashboard/Config";
 import { CURRENT_USER, UNLOCK } from "../../../graphql/queries";
 
-const validatePassword = (password = "", confirm_password = "") => {
-  const conditions = {
-    password: {
-      length: password.length >= 8 && password.length <= 100,
-      specialSymbol: matches(password, /[~¡!$&+,:;=¿?@#|'<>.^*(){}"%\-_]/),
-      lowercase: matches(password, /[a-z]/),
-      uppercase: matches(password, /[A-Z]/),
-      number: matches(password, /[0-9]/),
-    },
-
-    confirm_password: password === confirm_password,
-  };
-
-  const validPassword = map(conditions.password, (v, k) => {
-    if (!v)
-      switch (k) {
-        case "length":
-          return "El largo de la contraseña tiene que ser de al menos 8 caracteres y máximo de 100 caracteres.";
-        case "specialSymbol":
-          return `La contraseña debe contener al menos un caracter especial (~¡!$&+,:;=¿?@#|'<>.^*(){}"%-_).`;
-        case "lowercase":
-          return "La contraseña debe contener al menos una letra minúscula.";
-        case "uppercase":
-          return "La contraseña debe contener al menos una letra mayúscula.";
-        case "number":
-          return "La contraseña debe contener al menos un número.";
-      }
-  })
-    .filter(v => v)
-    .join("\n");
-
-  const validConfirmPassword = !conditions.confirm_password
-    ? "Debe repetir su contraseña correctamente."
-    : "";
-
-  return {
-    password: validPassword || undefined,
-    confirm_password: validConfirmPassword || undefined,
-  };
-};
 export default () => {
   const {
     query: { email, unlockKey },
@@ -94,9 +54,68 @@ export default () => {
     }
   }, []);
 
+  const {
+    UNLOCK_LENGTH_VALIDATION,
+    UNLOCK_SPECIAL_SYMBOL_VALIDATION,
+    UNLOCK_LOWERCASE_VALIDATION,
+    UNLOCK_UPPERCASE_VALIDATION,
+    UNLOCK_NUMBER_VALIDATION,
+    UNLOCK_REPEAT_VALIDATION,
+    UNLOCK_NEW_PASSWORD_LABEL,
+    UNLOCK_NEW_PASSWORD_PLACEHOLDER,
+    UNLOCK_NEW_PASSWORD_REPEAT_LABEL,
+    UNLOCK_ACTIVE_ACCOUNT_LABEL,
+    UNLOCK_ERROR_TITLE,
+    UNLOCK_WRONG_INFO_MESSAGE,
+    UNLOCK_USER_OLD_PASSWORD_MESSAGE,
+  } = useContext(ConfigContext);
+
   if (errorUnlock) {
     console.error(JSON.stringify(errorUnlock, null, 2));
   }
+
+  const validatePassword = (password = "", confirm_password = "") => {
+    const conditions = {
+      password: {
+        length: password.length >= 8 && password.length <= 100,
+        specialSymbol: matches(password, /[~¡!$&+,:;=¿?@#|'<>.^*(){}"%\-_]/),
+        lowercase: matches(password, /[a-z]/),
+        uppercase: matches(password, /[A-Z]/),
+        number: matches(password, /[0-9]/),
+      },
+
+      confirm_password: password === confirm_password,
+    };
+
+    const validPassword = compact(
+      map(conditions.password, (v, k) => {
+        if (!v)
+          switch (k) {
+            case "length":
+              return UNLOCK_LENGTH_VALIDATION;
+            case "specialSymbol":
+              return UNLOCK_SPECIAL_SYMBOL_VALIDATION;
+            case "lowercase":
+              return UNLOCK_LOWERCASE_VALIDATION;
+            case "uppercase":
+              return UNLOCK_UPPERCASE_VALIDATION;
+            case "number":
+              return UNLOCK_NUMBER_VALIDATION;
+            default:
+              return undefined;
+          }
+      })
+    ).join("\n");
+
+    const validConfirmPassword = !conditions.confirm_password
+      ? UNLOCK_REPEAT_VALIDATION
+      : "";
+
+    return {
+      password: validPassword || undefined,
+      confirm_password: validConfirmPassword || undefined,
+    };
+  };
 
   if (
     typeof email !== "string" ||
@@ -137,11 +156,11 @@ export default () => {
                           <FormSemantic.Field
                             error={dirty || touched ? invalid : false}
                           >
-                            <label>Nueva contraseña</label>
+                            <label>{UNLOCK_NEW_PASSWORD_LABEL}</label>
                             <FormSemantic.Input
                               {...input}
                               type="password"
-                              placeholder="contraseña"
+                              placeholder={UNLOCK_NEW_PASSWORD_PLACEHOLDER}
                               autoComplete="new-password"
                             />
                           </FormSemantic.Field>
@@ -155,11 +174,11 @@ export default () => {
                         <FormSemantic.Field
                           error={dirty || touched ? invalid : false}
                         >
-                          <label>Repita su contraseña</label>
+                          <label>{UNLOCK_NEW_PASSWORD_REPEAT_LABEL}</label>
                           <FormSemantic.Input
                             {...input}
                             type="password"
-                            placeholder="contraseña"
+                            placeholder={UNLOCK_NEW_PASSWORD_PLACEHOLDER}
                             autoComplete="new-password"
                           />
                         </FormSemantic.Field>
@@ -177,7 +196,7 @@ export default () => {
                       loading={loadingUnlock}
                     >
                       <Icon name="lock open" />
-                      Activar cuenta
+                      {UNLOCK_ACTIVE_ACCOUNT_LABEL}
                     </FormSemantic.Button>
                   </Segment>
                 </FormSemantic>
@@ -207,15 +226,15 @@ export default () => {
       {(errorUnlock || dataUnlock?.unlock.error) && (
         <Grid.Row>
           <Message error>
-            <Message.Header>Error!</Message.Header>
+            <Message.Header>{UNLOCK_ERROR_TITLE}</Message.Header>
             <p>
               {(() => {
                 if (dataUnlock?.unlock.error) {
                   switch (dataUnlock.unlock.error) {
                     case WRONG_INFO:
-                      return "Usuario ingresado no está bloqueado o el código ingresado es erróneo.";
+                      return UNLOCK_WRONG_INFO_MESSAGE;
                     case USED_OLD_PASSWORD:
-                      return "No puede ingresar una contraseña usada anteriormente.";
+                      return UNLOCK_USER_OLD_PASSWORD_MESSAGE;
                     default:
                       return dataUnlock.unlock.error;
                   }

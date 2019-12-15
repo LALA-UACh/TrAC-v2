@@ -1,20 +1,15 @@
 export const WRONG_INFO = "WRONG_INFO";
 export const USED_OLD_PASSWORD = "USED_OLD_PASSWORD";
 export const LOCKED_USER = "LOCKED_USER";
+export const STUDENT_NOT_FOUND = "STUDENT_NOT_FOUND";
+export const STUDENT_LIST_UNAUTHORIZED = "STUDENT_LIST_UNAUTHORIZED";
+export const PROGRAM_UNAUTHORIZED = "PROGRAM_UNAUTHORIZED";
+export const PROGRAM_NOT_FOUND = "PROGRAM_NOT_FOUND";
+
 export const GRAPHQL_URL =
   typeof window === "undefined"
     ? `${process?.env?.DOMAIN ?? "http://localhost:3000"}/api/graphql`
     : "/api/graphql";
-
-export const CURRENT_DISTRIBUTION_LABEL = ({
-  term,
-  year,
-}: {
-  term: string | number;
-  year: number;
-}) => {
-  return `Calificaciones ${term} ${year}`;
-};
 
 export enum StateCourse {
   Passed = "Passed",
@@ -34,79 +29,6 @@ export enum TermType {
   Second = "Second",
   Anual = "Anual",
 }
-
-export const baseConfig = {
-  HISTORIC_GRADES: "Calificaciones históricas",
-  GRADES_SCALES: "Escala de notas",
-  DROPOUT_PREDICTION: "Predicción de abandono",
-  DROPOUT_PREDICTION_DESCRIPTION:
-    "El sistema estima una probabilidad de abandono de",
-  DROPOUT_PREDICTION_ACCURACY: "acierto del modelo:",
-  SEMESTRAL_GRADE_COLOR: "rgb(70,130,180)",
-  CUMULATED_GRADE_COLOR: "rgb(173,66,244)",
-  PROGRAM_GRADE_COLOR: "rgb(102,102,102)",
-  STATE_PASSED_LABEL_MINI: "AP",
-  STATE_FAILED_LABEL_MINI: "RE",
-  STATE_CANCELED_LABEL_MINI: "AN",
-  STATE_PENDING_LABEL_MINI: "PEN",
-  STATE_CURRENT_LABEL_MINI: "CUR",
-  SEARCH_BUTTON_LABEL: "Buscar",
-  LOGOUT_BUTTON_LABEL: "Salir",
-  SEMESTRAL_GRADE_LABEL: "PSP",
-  CUMULATED_GRADE_LABEL: "PGA",
-  PROGRAM_GRADE_LABEL: "PGA de carrera",
-  FLOW_CIRCLE_COLOR: "rgb(245,101,101)",
-  FLOW_CIRCLE_LABEL: "Fluj",
-  REQ_CIRCLE_LABEL: "Req",
-  REQ_CIRCLE_COLOR: "rgb(66,153,225)",
-  ACTIVE_COURSE_BOX_COLOR: "gray.500",
-  FLOW_COURSE_BOX_COLOR: "red.400",
-  REQUISITE_COURSE_BOX_COLOR: "blue.400",
-  EXPLICIT_SEMESTER_COURSE_BOX_COLOR: "yellow.400",
-  INACTIVE_COURSE_BOX_COLOR: "gray.400",
-  MIN_PASS_SCALE_COLOR: "#b0ffa1",
-  MAX_PASS_SCALE_COLOR: "#5bff3b",
-  MIN_FAIL_SCALE_COLOR: "#ff4040",
-  MAX_FAIL_SCALE_COLOR: "#ff8282",
-  STATE_COURSE_CURRENT_COLOR: "blue",
-  STATE_COURSE_CANCELED_COLOR: "white",
-  STATE_COURSE_PENDING_COLOR: "blue.300",
-  STATE_COURSE_CIRCLE_STROKE: "white",
-  COURSE_BOX_BACKGROUND_COLOR: "rgb(245,245,245)",
-  COURSE_BOX_TEXT_COLOR: "black",
-  DROPOUT_BACKGROUND_COLOR: "rgb(252,249,165)",
-  DROPOUT_TEXT_COLOR: "black",
-  HISTOGRAM_BAR_ACTIVE: "rgb(122,122,122)",
-  HISTOGRAM_BAR_INACTIVE: "rgb(191,191,191)",
-  SEARCH_BAR_BACKGROUND_COLOR: "rgb(52,58,64)",
-  TAKEN_SEMESTER_BOX_ACTIVE: "yellow.400",
-  TAKEN_SEMESTER_BOX_INACTIVE: "grey",
-  TAKEN_SEMESTER_BOX_BACKGROUND_COLOR: "rgb(245,245,245)",
-  TAKEN_SEMESTER_BOX_TEXT_COLOR: "black",
-  SEMESTER_HEADER_TEXT_COLOR: "rgb(70,130,180)",
-  TIMELINE_TOOLTIP_TEXT_COLOR: "rgb(255,255,255)",
-  TIMELINE_EXPLICIT_CIRCLE_COLOR: "rgb(236,201,75)",
-  TIMELINE_AXIS_COLOR: "black",
-  TIMELINE_AXIS_TEXT_COLOR: "black",
-  TIMELINE_PASS_LINE_COLOR: "black",
-  PASS_GRADE: 4,
-  MIN_GRADE: 7,
-  MAX_GRADE: 1,
-  NO_CURRICULUMS_LABEL: "Sin planes",
-  PROGRAM_NOT_SPECIFIED_PLACEHOLDER: "Programa no especificado",
-  CURRICULUM_LABEL: "Plan",
-  STUDENT_LABEL: "Estudiante",
-  PLACEHOLDER_SEARCH_STUDENT: "ID del estudiante",
-  STUDENT_LIST_TITLE: "Lista de estudiantes",
-  ENTRY_YEAR_LABEL: "Ingreso",
-  PROGRESS_LABEL: "Progreso",
-  RISK_LABEL: "Riesgo",
-  RISK_HIGH_THRESHOLD: 80,
-  RISK_HIGH_COLOR: "rgb(255,0,0)",
-  RISK_MEDIUM_THRESHOLD: 50,
-  RISK_MEDIUM_COLOR: "rgb(252,186,3)",
-  RISK_LOW_COLOR: "rgb(128,255,0)",
-};
 
 export const defaultUserType = (type?: string): UserType => {
   switch (type) {

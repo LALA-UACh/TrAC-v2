@@ -7,11 +7,7 @@ import { useUpdateEffect } from "react-use";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 
-import {
-  CURRENT_DISTRIBUTION_LABEL,
-  StateCourse,
-  termTypeToNumber,
-} from "../../../constants";
+import { StateCourse, termTypeToNumber } from "../../../constants";
 import { ICourse, ITakenCourse } from "../../../interfaces";
 import { TrackingContext } from "../../components/Tracking";
 import { ConfigContext } from "./Config";
@@ -284,14 +280,24 @@ export const CourseBox: FC<ICourse> = ({
     [contextFlow, contextRequisites, code, config]
   );
 
-  const HistogramNow = useMemo(
-    () =>
+  const HistogramNow = useMemo(() => {
+    const currentDistributionLabel = ({
+      term,
+      year,
+    }: {
+      term: string | number;
+      year: number;
+    }) => {
+      return `${config.GRADES_LABEL} ${term} ${year}`;
+    };
+
+    return (
       currentDistribution &&
       term &&
       year && (
         <Histogram
           key="now"
-          label={CURRENT_DISTRIBUTION_LABEL({
+          label={currentDistributionLabel({
             term: termTypeToNumber(term),
             year,
           })}
@@ -299,9 +305,9 @@ export const CourseBox: FC<ICourse> = ({
           grade={grade}
           bandColors={taken?.[0]?.bandColors ?? bandColors}
         />
-      ),
-    [currentDistribution, term, year, grade, taken]
-  );
+      )
+    );
+  }, [currentDistribution, term, year, grade, taken, config]);
 
   const HistogramHistoric = useMemo(() => {
     return (

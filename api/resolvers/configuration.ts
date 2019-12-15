@@ -3,7 +3,7 @@ import { toNumber } from "lodash";
 import { Query, Resolver } from "type-graphql";
 import { isNumeric } from "validator";
 
-import { baseConfig } from "../../constants";
+import { baseConfig } from "../../constants/baseConfig";
 import { ConfigurationTable } from "../db/tables";
 
 @Resolver()

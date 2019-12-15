@@ -1,5 +1,5 @@
 import { uniq } from "lodash";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useLogger } from "react-use";
 import { useRememberState } from "use-remember-state";
@@ -7,8 +7,13 @@ import { useRememberState } from "use-remember-state";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Box, Stack } from "@chakra-ui/core";
 
+import {
+  PROGRAM_NOT_FOUND,
+  PROGRAM_UNAUTHORIZED,
+  STUDENT_NOT_FOUND,
+} from "../../constants";
 import { ITakenCourse } from "../../interfaces";
-import { Config } from "../components/dashboard/Config";
+import { ConfigContext } from "../components/dashboard/Config";
 import { CoursesFlow } from "../components/dashboard/CoursesFlow";
 import { Dropout } from "../components/dashboard/Dropout";
 import { SearchBar } from "../components/dashboard/SearchBar";
@@ -263,110 +268,125 @@ const Dashboard: FC = () => {
     };
   }, [searchStudentData, searchProgramData, curriculum]);
 
+  const {
+    ERROR_STUDENT_NOT_FOUND_MESSAGE,
+    ERROR_PROGRAM_UNAUTHORIZED_MESSAGE,
+    ERROR_PROGRAM_NOT_FOUND,
+  } = useContext(ConfigContext);
+
   return (
-    <Config>
-      <TrackingContext.Provider value={trackingData}>
-        <SearchBar
-          error={`${uniq(
-            [
-              ...(searchProgramError?.graphQLErrors ?? []),
-              ...(searchStudentError?.graphQLErrors ?? []),
-            ].map(({ message }) => message)
-          ).join("\n") ?? ""}`.trim()}
-          searchResult={{
-            curriculums:
-              searchProgramData?.program?.curriculums?.map(({ id }) => {
-                return id;
-              }) ?? [],
-            student: searchStudentData?.student?.id,
-          }}
-          isSearchLoading={searchProgramLoading || searchStudentLoading}
-          setProgram={setProgram}
-          onSearch={async ({ student_id, program_id }) => {
-            try {
-              const [programSearch, studentSearch] = await Promise.all([
-                searchProgram({
-                  variables: {
-                    program_id,
-                    student_id: student_id || undefined,
-                  },
-                }),
-                searchStudent({
-                  variables: { student_id, program_id },
-                }),
-              ]);
-
-              if (programSearch.data?.program && studentSearch.data?.student) {
-                return true;
-              }
-            } catch (err) {
-              console.error(err);
+    <TrackingContext.Provider value={trackingData}>
+      <SearchBar
+        error={uniq(
+          [
+            ...(searchProgramError?.graphQLErrors ?? []),
+            ...(searchStudentError?.graphQLErrors ?? []),
+          ].map(({ message }) => {
+            switch (message) {
+              case STUDENT_NOT_FOUND:
+                return ERROR_STUDENT_NOT_FOUND_MESSAGE;
+              case PROGRAM_UNAUTHORIZED:
+                return ERROR_PROGRAM_UNAUTHORIZED_MESSAGE;
+              case PROGRAM_NOT_FOUND:
+                return ERROR_PROGRAM_NOT_FOUND;
+              default:
+                return message;
             }
+          })
+        )
+          .join("\n")
+          .trim()}
+        searchResult={{
+          curriculums:
+            searchProgramData?.program?.curriculums?.map(({ id }) => {
+              return id;
+            }) ?? [],
+          student: searchStudentData?.student?.id,
+        }}
+        isSearchLoading={searchProgramLoading || searchStudentLoading}
+        setProgram={setProgram}
+        onSearch={async ({ student_id, program_id }) => {
+          try {
+            const [programSearch, studentSearch] = await Promise.all([
+              searchProgram({
+                variables: {
+                  program_id,
+                  student_id: student_id || undefined,
+                },
+              }),
+              searchStudent({
+                variables: { student_id, program_id },
+              }),
+            ]);
 
-            return false;
-          }}
-          mock={mock}
-          setMock={setMock}
-          curriculum={curriculum}
-          setCurriculum={setCurriculum}
-        />
-        <CoursesFlow curriculum={curriculum} program={program}>
-          <ScrollContainer activationDistance={5} hideScrollbars={false}>
-            <Stack isInline flexWrap="wrap-reverse">
-              <Box>
-                {mock && mockData ? (
-                  <TimeLine
-                    CUMULATED_GRADE={mockData.default.mockTimeline.PGA}
-                    SEMESTRAL_GRADE={mockData.default.mockTimeline.PSP}
-                    PROGRAM_GRADE={mockData.default.mockTimeline.ProgramPGA}
-                    semestersTaken={mockData.default.mockSemestersTaken}
-                  />
-                ) : (
-                  TimeLineComponent
-                )}
-              </Box>
+            if (programSearch.data?.program && studentSearch.data?.student) {
+              return true;
+            }
+          } catch (err) {
+            console.error(err);
+          }
+
+          return false;
+        }}
+        mock={mock}
+        setMock={setMock}
+        curriculum={curriculum}
+        setCurriculum={setCurriculum}
+      />
+      <CoursesFlow curriculum={curriculum} program={program}>
+        <ScrollContainer activationDistance={5} hideScrollbars={false}>
+          <Stack isInline flexWrap="wrap-reverse">
+            <Box>
               {mock && mockData ? (
-                <Dropout
-                  probability={mockData.default.mockDropout.prob_dropout}
-                  accuracy={mockData.default.mockDropout.model_accuracy}
+                <TimeLine
+                  CUMULATED_GRADE={mockData.default.mockTimeline.PGA}
+                  SEMESTRAL_GRADE={mockData.default.mockTimeline.PSP}
+                  PROGRAM_GRADE={mockData.default.mockTimeline.ProgramPGA}
+                  semestersTaken={mockData.default.mockSemestersTaken}
                 />
               ) : (
-                DropoutComponent
+                TimeLineComponent
               )}
-            </Stack>
+            </Box>
+            {mock && mockData ? (
+              <Dropout
+                probability={mockData.default.mockDropout.prob_dropout}
+                accuracy={mockData.default.mockDropout.model_accuracy}
+              />
+            ) : (
+              DropoutComponent
+            )}
+          </Stack>
 
-            <Stack isInline pl="50px">
-              {mock && mockData
-                ? mockData.default.mockSemestersTaken.map(
-                    ({ term, year }, key) => {
-                      return (
-                        <TakenSemesterBox key={key} term={term} year={year} />
-                      );
-                    }
-                  )
-                : TakenSemestersComponent}
-            </Stack>
-          </ScrollContainer>
-
-          <ScrollContainer
-            hideScrollbars={false}
-            vertical={false}
-            activationDistance={5}
-          >
-            <Stack isInline spacing={8}>
-              {mock && mockData
-                ? mockData.default.mockSemesters.map(({ semester }, key) => {
+          <Stack isInline pl="50px">
+            {mock && mockData
+              ? mockData.default.mockSemestersTaken.map(
+                  ({ term, year }, key) => {
                     return (
-                      <Semester key={key} courses={semester} n={key + 1} />
+                      <TakenSemesterBox key={key} term={term} year={year} />
                     );
-                  })
-                : SemestersComponent}
-            </Stack>
-          </ScrollContainer>
-          <Tracking />
-        </CoursesFlow>
-      </TrackingContext.Provider>
-    </Config>
+                  }
+                )
+              : TakenSemestersComponent}
+          </Stack>
+        </ScrollContainer>
+
+        <ScrollContainer
+          hideScrollbars={false}
+          vertical={false}
+          activationDistance={5}
+        >
+          <Stack isInline spacing={8}>
+            {mock && mockData
+              ? mockData.default.mockSemesters.map(({ semester }, key) => {
+                  return <Semester key={key} courses={semester} n={key + 1} />;
+                })
+              : SemestersComponent}
+          </Stack>
+        </ScrollContainer>
+        <Tracking />
+      </CoursesFlow>
+    </TrackingContext.Provider>
   );
 };
 

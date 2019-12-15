@@ -1,7 +1,8 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
 import { AuthResult } from "../../api/entities/auth";
-import { baseConfig, StateCourse, TermType, UserType } from "../../constants";
+import { StateCourse, TermType, UserType } from "../../constants";
+import { baseConfig } from "../../constants/baseConfig";
 import { IfImplements } from "../../typings/utils";
 import { Program, Student, User } from "./medium";
 
@@ -146,9 +147,9 @@ export const SEARCH_PROGRAM: DocumentNode<
       Program
     > | null;
   },
-  { program_id?: string; student_id?: string }
+  { program_id: string; student_id?: string }
 > = gql`
-  mutation($program_id: String, $student_id: String) {
+  mutation($program_id: String!, $student_id: String) {
     program(id: $program_id, student_id: $student_id) {
       id
       name

@@ -3,7 +3,7 @@ import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
 
-import { baseConfig } from "../../../constants";
+import { baseConfig } from "../../../constants/baseConfig";
 import { CONFIG_QUERY } from "../../graphql/queries";
 import { failColorScale, passColorScale } from "./CourseBox";
 import { scaleAxisX, scaleColorX } from "./Histogram";
