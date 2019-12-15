@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import csv from "csvtojson";
 import { conformsTo, toInteger, toString } from "lodash";
-import { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Dropzone from "react-dropzone";
 import {
   Button,
@@ -19,9 +19,9 @@ import isJSON from "validator/lib/isJSON";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 
 import {
-  addUsersProgramsAdminMutation,
-  allProgramsAdminQuery,
-  allUsersAdminQuery,
+  ADD_USERS_PROGRAMS_ADMIN,
+  ALL_PROGRAMS_ADMIN,
+  ALL_USERS_ADMIN,
 } from "../../../graphql/adminQueries";
 
 export const ImportPrograms: FC = () => {
@@ -29,7 +29,7 @@ export const ImportPrograms: FC = () => {
     "AdminImportProgramsData",
     "email,program\n"
   );
-  const { data: allPrograms } = useQuery(allProgramsAdminQuery);
+  const { data: allPrograms } = useQuery(ALL_PROGRAMS_ADMIN);
   const [open, setOpen] = useRememberState("AdminImportProgramsOpen", false);
 
   const [isEnabled, setIsEnabled] = useState(false);
@@ -77,7 +77,7 @@ export const ImportPrograms: FC = () => {
   }, [parsedData, allPrograms]);
 
   const [importPrograms, { error: errorImportPrograms, loading }] = useMutation(
-    addUsersProgramsAdminMutation,
+    ADD_USERS_PROGRAMS_ADMIN,
     {
       variables: {
         user_programs: parsedData,
@@ -85,7 +85,7 @@ export const ImportPrograms: FC = () => {
       update: (cache, { data }) => {
         if (data?.addUsersPrograms) {
           cache.writeQuery({
-            query: allUsersAdminQuery,
+            query: ALL_USERS_ADMIN,
             data: {
               users: data.addUsersPrograms,
             },

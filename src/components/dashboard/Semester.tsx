@@ -1,4 +1,4 @@
-import { FC, memo, useContext } from "react";
+import React, { FC, memo, useContext } from "react";
 
 import { Stack, Text } from "@chakra-ui/core";
 

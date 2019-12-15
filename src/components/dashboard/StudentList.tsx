@@ -1,5 +1,12 @@
 import { chunk, some, sortBy, toInteger, truncate, uniq } from "lodash";
-import { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  FC,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import ReactTooltip from "react-tooltip";
 import { useUpdateEffect } from "react-use";
 import { Pagination, Progress, Table, TableCell } from "semantic-ui-react";

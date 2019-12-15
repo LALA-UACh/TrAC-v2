@@ -2,7 +2,7 @@ import { scaleLinear } from "d3-scale";
 import { motion } from "framer-motion";
 import toInteger from "lodash/toInteger";
 import toString from "lodash/toString";
-import { FC, memo, useCallback, useContext, useMemo } from "react";
+import React, { FC, memo, useCallback, useContext, useMemo } from "react";
 
 import { AxisBottom, AxisLeft } from "@vx/axis";
 

@@ -1,5 +1,5 @@
 import { sortBy, truncate } from "lodash";
-import { FC, useEffect } from "react";
+import React, { FC, useEffect } from "react";
 import { Grid, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 

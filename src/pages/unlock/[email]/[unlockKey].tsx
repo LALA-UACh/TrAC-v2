@@ -1,7 +1,7 @@
 import sha1 from "crypto-js/sha1";
 import { compact, map, some } from "lodash";
 import { useRouter } from "next/router";
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Field, Form } from "react-final-form";
 import {
   Divider,

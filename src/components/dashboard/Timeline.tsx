@@ -1,6 +1,6 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
-import {
+import React, {
   cloneElement,
   FC,
   memo,

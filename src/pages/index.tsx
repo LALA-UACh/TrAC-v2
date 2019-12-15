@@ -1,7 +1,14 @@
 import { uniq } from "lodash";
-import { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  FC,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
-import { useLogger } from "react-use";
+import { useLogger, useUpdateEffect } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -72,10 +79,14 @@ const Dashboard: FC = () => {
     },
   ] = useMutation(SEARCH_STUDENT);
 
-  useLogger("index", {
-    searchProgramData,
-    searchStudentData,
-  });
+  useUpdateEffect(() => {
+    if (process.env.NODE_ENV !== "test") {
+      console.log({
+        searchProgramData,
+        searchStudentData,
+      });
+    }
+  }, [searchProgramData, searchStudentError]);
 
   useEffect(() => {
     if (!currentUserData?.currentUser?.user?.admin && mock === true) {

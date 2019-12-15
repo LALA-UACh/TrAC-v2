@@ -1,4 +1,4 @@
-import { cloneElement, FC, useState } from "react";
+import React, { cloneElement, FC, useState } from "react";
 import { Confirm as ConfirmSemantic } from "semantic-ui-react";
 
 export const Confirm: FC<{

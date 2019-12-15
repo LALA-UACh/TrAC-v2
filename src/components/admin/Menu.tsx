@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { Icon, Menu, MenuItemProps } from "semantic-ui-react";
 
 export const AdminMenu: FC<{

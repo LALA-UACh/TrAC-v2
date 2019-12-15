@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import csv from "csvtojson";
 import { toInteger, toString } from "lodash";
-import { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Dropzone from "react-dropzone";
 import {
   Button,
@@ -19,8 +19,8 @@ import isEmail from "validator/lib/isEmail";
 import { useMutation } from "@apollo/react-hooks";
 
 import {
-  adminUpsertUsersMutation,
-  allUsersAdminQuery,
+  ALL_USERS_ADMIN,
+  UPSERT_USERS_ADMIN,
 } from "../../../graphql/adminQueries";
 
 export const ImportUsers: FC = () => {
@@ -59,21 +59,18 @@ export const ImportUsers: FC = () => {
     );
   });
 
-  const [importUsers, { error, loading }] = useMutation(
-    adminUpsertUsersMutation,
-    {
-      update: (cache, { data }) => {
-        if (data?.upsertUsers) {
-          cache.writeQuery({
-            query: allUsersAdminQuery,
-            data: {
-              users: data.upsertUsers,
-            },
-          });
-        }
-      },
-    }
-  );
+  const [importUsers, { error, loading }] = useMutation(UPSERT_USERS_ADMIN, {
+    update: (cache, { data }) => {
+      if (data?.upsertUsers) {
+        cache.writeQuery({
+          query: ALL_USERS_ADMIN,
+          data: {
+            users: data.upsertUsers,
+          },
+        });
+      }
+    },
+  });
 
   const handleSubmit = async () => {
     if (isEnabled) {

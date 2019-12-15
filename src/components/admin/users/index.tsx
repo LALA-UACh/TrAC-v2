@@ -1,12 +1,12 @@
 import { sortBy, truncate } from "lodash";
-import { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Button, Grid, Icon, Message, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation } from "@apollo/react-hooks";
 
 import { UserType } from "../../../../constants";
-import { adminMailLockedUsersMutation } from "../../../graphql/adminQueries";
+import { MAIL_LOCKED_USERS_ADMIN } from "../../../graphql/adminQueries";
 import { Confirm } from "../../Confirm";
 import { ImportUsers } from "./ImportUsers";
 import { UpdateUser } from "./UpdateUser";
@@ -67,7 +67,7 @@ export const Users: FC<{
       error: errorMailLockedUsers,
       loading: loadingMailLockedUsers,
     },
-  ] = useMutation(adminMailLockedUsersMutation);
+  ] = useMutation(MAIL_LOCKED_USERS_ADMIN);
 
   return (
     <Grid centered>

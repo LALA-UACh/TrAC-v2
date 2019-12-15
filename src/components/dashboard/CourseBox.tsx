@@ -1,7 +1,7 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
 import { truncate } from "lodash";
-import { FC, useContext, useMemo, useState } from "react";
+import React, { FC, useContext, useMemo, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { useUpdateEffect } from "react-use";
 

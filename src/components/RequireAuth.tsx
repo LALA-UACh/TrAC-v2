@@ -1,5 +1,5 @@
 import Router from "next/router";
-import { FC, useEffect } from "react";
+import React, { FC, useEffect } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
 

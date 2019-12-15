@@ -33,7 +33,7 @@ const AllUsersAdminFragment = gql`
   }
 `;
 
-export const allUsersAdminQuery: DocumentNode<{
+export const ALL_USERS_ADMIN: DocumentNode<{
   users: IAllUsersAdmin;
 }> = gql`
   query {
@@ -44,7 +44,7 @@ export const allUsersAdminQuery: DocumentNode<{
   ${AllUsersAdminFragment}
 `;
 
-export const allProgramsAdminQuery: DocumentNode<{
+export const ALL_PROGRAMS_ADMIN: DocumentNode<{
   programs: IfImplements<{ id: string }, Program>[];
 }> = gql`
   query {
@@ -54,7 +54,7 @@ export const allProgramsAdminQuery: DocumentNode<{
   }
 `;
 
-export const addUsersProgramsAdminMutation: DocumentNode<
+export const ADD_USERS_PROGRAMS_ADMIN: DocumentNode<
   {
     addUsersPrograms: IAllUsersAdmin[];
   },
@@ -73,7 +73,7 @@ export const addUsersProgramsAdminMutation: DocumentNode<
   ${AllUsersAdminFragment}
 `;
 
-export const updateUserProgramsAdminMutation: DocumentNode<
+export const UPDATE_USER_PROGRAMS_ADMIN: DocumentNode<
   {
     updateUserPrograms: IAllUsersAdmin;
   },
@@ -93,7 +93,7 @@ export const updateUserProgramsAdminMutation: DocumentNode<
   ${AllUsersAdminFragment}
 `;
 
-export const adminUpsertUsersMutation: DocumentNode<
+export const UPSERT_USERS_ADMIN: DocumentNode<
   {
     upsertUsers: IAllUsersAdmin;
   },
@@ -118,7 +118,7 @@ export const adminUpsertUsersMutation: DocumentNode<
   ${AllUsersAdminFragment}
 `;
 
-export const adminDeleteUserMutation: DocumentNode<
+export const DELETE_USER_ADMIN: DocumentNode<
   {
     deleteUser: IAllUsersAdmin;
   },
@@ -134,7 +134,7 @@ export const adminDeleteUserMutation: DocumentNode<
   ${AllUsersAdminFragment}
 `;
 
-export const adminLockMailUserMutation: DocumentNode<
+export const LOCK_MAIL_USER_ADMIN: DocumentNode<
   {
     lockMailUser: {
       mailResult: Record<string, any>;
@@ -154,7 +154,7 @@ export const adminLockMailUserMutation: DocumentNode<
   ${AllUsersAdminFragment}
 `;
 
-export const adminMailLockedUsersMutation: DocumentNode<{
+export const MAIL_LOCKED_USERS_ADMIN: DocumentNode<{
   mailAllLockedUsers: Record<string, any>[];
 }> = gql`
   mutation {

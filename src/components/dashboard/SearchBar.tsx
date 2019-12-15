@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { range } from "lodash";
 import Link from "next/link";
 import { generate } from "randomstring";
-import {
+import React, {
   ChangeEvent,
   Dispatch,
   FC,

@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import React, { FC, useMemo } from "react";
 import { Grid, Message } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
@@ -8,12 +8,12 @@ import { AdminMenu } from "../components/admin/Menu";
 import { Programs } from "../components/admin/programs";
 import { Users } from "../components/admin/users";
 import { RequireAuth } from "../components/RequireAuth";
-import { allUsersAdminQuery } from "../graphql/adminQueries";
+import { ALL_USERS_ADMIN } from "../graphql/adminQueries";
 
 const Admin: FC = () => {
   const [active, setActive] = useRememberState("admin_menu_tab", "users");
 
-  const { data, loading, error } = useQuery(allUsersAdminQuery);
+  const { data, loading, error } = useQuery(ALL_USERS_ADMIN);
 
   const ActiveTab = useMemo(() => {
     switch (active) {

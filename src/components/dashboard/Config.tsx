@@ -1,4 +1,4 @@
-import { createContext, FC } from "react";
+import React, { createContext, FC } from "react";
 import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";

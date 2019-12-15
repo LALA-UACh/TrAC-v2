@@ -1,14 +1,14 @@
 import { truncate } from "lodash";
-import { cloneElement, FC, useEffect, useState } from "react";
+import React, { cloneElement, FC, useEffect, useState } from "react";
 import { Button, Dropdown, Grid, Icon, Label, Modal } from "semantic-ui-react";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 
 import { Confirm } from "../../../components/Confirm";
 import {
-  allProgramsAdminQuery,
-  allUsersAdminQuery,
-  updateUserProgramsAdminMutation,
+  ALL_PROGRAMS_ADMIN,
+  ALL_USERS_ADMIN,
+  UPDATE_USER_PROGRAMS_ADMIN,
 } from "../../../graphql/adminQueries";
 
 export const UpdatePrograms: FC<{
@@ -17,7 +17,7 @@ export const UpdatePrograms: FC<{
 }> = ({ children, program }) => {
   const [open, setOpen] = useState(false);
 
-  const { data: allPrograms } = useQuery(allProgramsAdminQuery);
+  const { data: allPrograms } = useQuery(ALL_PROGRAMS_ADMIN);
 
   const [selectedPrograms, setSelectedPrograms] = useState(program.programs);
 
@@ -25,7 +25,7 @@ export const UpdatePrograms: FC<{
     setSelectedPrograms(program.programs);
   }, [program.programs]);
 
-  const [updateProgram] = useMutation(updateUserProgramsAdminMutation, {
+  const [updateProgram] = useMutation(UPDATE_USER_PROGRAMS_ADMIN, {
     variables: {
       update_user: {
         oldPrograms: program.programs,
@@ -36,7 +36,7 @@ export const UpdatePrograms: FC<{
     update: (cache, { data }) => {
       if (data?.updateUserPrograms) {
         cache.writeQuery({
-          query: allUsersAdminQuery,
+          query: ALL_USERS_ADMIN,
           data: {
             users: data.updateUserPrograms,
           },

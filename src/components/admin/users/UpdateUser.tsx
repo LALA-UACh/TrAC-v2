@@ -1,5 +1,5 @@
 import toInteger from "lodash/toInteger";
-import { cloneElement, FC, useEffect, useState } from "react";
+import React, { cloneElement, FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {
   Button,
@@ -19,10 +19,10 @@ import { Box, Flex } from "@chakra-ui/core";
 
 import { UserType } from "../../../../constants";
 import {
-  adminDeleteUserMutation,
-  adminLockMailUserMutation,
-  adminUpsertUsersMutation,
-  allUsersAdminQuery,
+  ALL_USERS_ADMIN,
+  DELETE_USER_ADMIN,
+  LOCK_MAIL_USER_ADMIN,
+  UPSERT_USERS_ADMIN,
 } from "../../../graphql/adminQueries";
 import { Confirm } from "../../Confirm";
 
@@ -54,11 +54,11 @@ export const UpdateUser: FC<{
   const [
     updateUser,
     { error: errorUpdate, loading: loadingUpdateUser },
-  ] = useMutation(adminUpsertUsersMutation, {
+  ] = useMutation(UPSERT_USERS_ADMIN, {
     update: (cache, { data }) => {
       if (data?.upsertUsers) {
         cache.writeQuery({
-          query: allUsersAdminQuery,
+          query: ALL_USERS_ADMIN,
           data: {
             users: data.upsertUsers,
           },
@@ -78,14 +78,14 @@ export const UpdateUser: FC<{
       error: errorLockMailUser,
       data: dataLockMailUser,
     },
-  ] = useMutation(adminLockMailUserMutation, {
+  ] = useMutation(LOCK_MAIL_USER_ADMIN, {
     variables: {
       email: user.email,
     },
     update: (cache, { data }) => {
       if (data) {
         cache.writeQuery({
-          query: allUsersAdminQuery,
+          query: ALL_USERS_ADMIN,
           data: {
             users: data.lockMailUser.users,
           },
@@ -97,7 +97,7 @@ export const UpdateUser: FC<{
   const [openMailMessage, setOpenMailMessage] = useState(false);
 
   const [deleteUser, { loading: loadingDeleteUser }] = useMutation(
-    adminDeleteUserMutation,
+    DELETE_USER_ADMIN,
     {
       variables: {
         email: user.email,
@@ -105,7 +105,7 @@ export const UpdateUser: FC<{
       update: (cache, { data }) => {
         if (data?.deleteUser) {
           cache.writeQuery({
-            query: allUsersAdminQuery,
+            query: ALL_USERS_ADMIN,
             data: {
               users: data.deleteUser,
             },
