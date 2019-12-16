@@ -1,6 +1,6 @@
 apps:
   - name: trac_api
-    script: /home/trac/api/dist/api/index.js
+    script: api/dist/api/index.js
     interpreter_args:
       - -r
       - dotenv/config
@@ -14,7 +14,7 @@ apps:
     combine_logs: true
     time: true
   - name: trac_client
-    script: /home/trac/node_modules/next/dist/bin/next
+    script: node_modules/next/dist/bin/next
     args: start
     interpreter: node
     interpreter_args:
@@ -29,3 +29,13 @@ apps:
     autorestart: false
     env:
       NODE_ENV: production
+  - name: trac_worker
+    script: worker.ts
+    interpreter: node
+    interpreter_args:
+      - -r
+      - ./ts-hook.js
+    out_file: logs/out_worker.log
+    error_file: logs/error_worker.log
+    combine_logs: true
+    time: true

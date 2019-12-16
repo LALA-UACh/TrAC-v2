@@ -6,6 +6,7 @@ pg.types.setTypeParser(20, "text", parseInt);
 pg.types.setTypeParser(1700, parseFloat);
 
 const dbPassword = process.env.POSTGRES_PASSWORD;
+const dbHost = process.env.POSTGRES_HOST || "localhost";
 
 const authDbName = "auth-lala";
 const dataDbName = "lalauach";
@@ -17,8 +18,8 @@ const baseConfig: Config =
     ? {
         client: "pg",
         connection: {
-          host: "localhost",
           user: "postgres",
+          host: dbHost,
           password: dbPassword,
         },
       }

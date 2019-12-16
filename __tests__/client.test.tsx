@@ -31,7 +31,7 @@ jest.mock("next/router", () => ({
 describe("unlock", () => {
   test("renders correctly", async () => {
     await act(async () => {
-      const { getByText } = render(
+      const { getByText, unmount } = render(
         <MockedProvider
           mocks={[
             {
@@ -60,6 +60,7 @@ describe("unlock", () => {
 
         expect(NewPasswordFieldLabel).toBeTruthy();
       });
+      unmount();
     });
   });
 });
@@ -67,7 +68,7 @@ describe("unlock", () => {
 describe("login", () => {
   test("renders correctly", async () => {
     await act(async () => {
-      const { getByText } = render(
+      const { getByText, unmount } = render(
         <MockedProvider
           mocks={[
             {
@@ -95,6 +96,7 @@ describe("login", () => {
         expect(LoginButton).toBeTruthy();
         expect(LoginButton).toHaveAttribute("disabled");
       });
+      unmount();
     });
   });
 });
@@ -102,7 +104,7 @@ describe("login", () => {
 describe("dashboard", () => {
   test("renders correctly", async () => {
     await act(async () => {
-      const { getByText } = render(
+      const { getByText, unmount } = render(
         <MockedProvider
           mocks={[
             {
@@ -139,6 +141,7 @@ describe("dashboard", () => {
         expect(SearchButton).toBeTruthy();
         expect(SearchButton).toHaveAttribute("disabled");
       });
+      unmount();
     });
   });
 });
