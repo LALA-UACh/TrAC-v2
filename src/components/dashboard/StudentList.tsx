@@ -30,6 +30,7 @@ import {
 } from "@chakra-ui/core";
 
 import { CURRENT_USER, STUDENT_LIST } from "../../graphql/queries";
+import { TrackingContext } from "../Tracking";
 import { ConfigContext } from "./Config";
 
 type columnNames =
@@ -45,6 +46,8 @@ export const StudentList: FC<{
   program_id?: string;
   searchStudent: (student: string) => Promise<void>;
 }> = ({ mockData, program_id, searchStudent }) => {
+  const Tracking = useContext(TrackingContext);
+
   const { data: dataStudentList, loading: loadingData } = useQuery(
     STUDENT_LIST,
     {
@@ -83,6 +86,14 @@ export const StudentList: FC<{
   );
 
   useUpdateEffect(() => {
+    Tracking.current.track({
+      action: "click",
+      effect: isOpen ? "open-student-list" : "close-student-list",
+      target: isOpen ? "student-list-button" : "outside-student-list",
+    });
+  }, [isOpen]);
+
+  useUpdateEffect(() => {
     if (isOpen) {
       localStorage.setItem("student_list_open", "1");
     } else {
@@ -117,6 +128,14 @@ export const StudentList: FC<{
     "student_list_page_selected",
     1
   );
+
+  useUpdateEffect(() => {
+    Tracking.current.track({
+      action: "click",
+      target: "student-list-header-sort",
+      effect: `sort-student-list-by-${columnSort.join("|")}-${directionSort}`,
+    });
+  }, [directionSort, columnSort]);
 
   const [studentListChunks, setStudentListChunks] = useState(() =>
     chunk(sortedStudentList, nStudentPerChunk)
@@ -196,6 +215,11 @@ export const StudentList: FC<{
               totalPages={studentListChunks.length}
               activePage={pageSelected}
               onPageChange={(_, { activePage }) => {
+                Tracking.current.track({
+                  action: "click",
+                  target: `student-list-pagination`,
+                  effect: `set-student-list-page-to-${activePage}`,
+                });
                 setPageSelected(toInteger(activePage));
               }}
             />

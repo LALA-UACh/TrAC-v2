@@ -9,7 +9,7 @@ import React, {
   useState,
 } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
-import { useUpdateEffect } from "react-use";
+import { useMount, useUpdateEffect } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -98,21 +98,26 @@ const Dashboard: FC = () => {
   }, [currentUserData, mock, setMock]);
 
   useEffect(() => {
+    trackingData.current.curriculum = curriculum;
+  }, [curriculum]);
+
+  useEffect(() => {
     if (searchStudentData?.student) {
       setMock(false);
-      trackingData.current.program = searchStudentData.student.programs[0].id;
-      trackingData.current.curriculum =
-        searchStudentData.student.curriculums[0];
-      trackingData.current.showingProgress = true;
       trackingData.current.student = searchStudentData.student.id;
     } else {
-      trackingData.current.showingProgress = false;
+      trackingData.current.student = undefined;
     }
   }, [searchStudentData]);
 
   useEffect(() => {
     if (searchProgramData?.program) {
+      trackingData.current.showingProgress = true;
+      trackingData.current.program = searchProgramData.program.id;
       setMock(false);
+    } else {
+      trackingData.current.showingProgress = false;
+      trackingData.current.program = undefined;
     }
   }, [searchProgramData]);
 
@@ -301,6 +306,16 @@ const Dashboard: FC = () => {
     ERROR_PROGRAM_NOT_FOUND,
   } = useContext(ConfigContext);
 
+  useMount(() => {
+    setTimeout(() => {
+      trackingData.current.track({
+        action: "login",
+        effect: "load-app",
+        target: "website",
+      });
+    }, 2000);
+  });
+
   return (
     <TrackingContext.Provider value={trackingData}>
       {currentUserData?.currentUser?.user?.type === UserType.Director ? (
@@ -348,14 +363,16 @@ const Dashboard: FC = () => {
                 }),
               ]);
 
-              if (programSearch.data?.program && studentSearch.data?.student) {
-                return true;
+              if (studentSearch.data?.student && programSearch.data?.program) {
+                return "student";
+              } else if (programSearch.data?.program) {
+                return "program";
               }
             } catch (err) {
               console.error(err);
             }
 
-            return false;
+            return undefined;
           }}
           mock={mock}
           setMock={setMock}

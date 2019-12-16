@@ -12,6 +12,7 @@ import { TRACK } from "../graphql/queries";
 
 export type TrackingTemplateData = {
   program?: string;
+  program_menu?: string;
   curriculum?: string;
   student?: string;
   showingProgress?: boolean;
@@ -26,6 +27,7 @@ export type TrackingRef = Partial<
   Pick<
     TrackingTemplateData,
     | "program"
+    | "program_menu"
     | "curriculum"
     | "student"
     | "showingProgress"
@@ -46,6 +48,7 @@ export const TrackingContext = createContext<MutableRefObject<TrackingRef>>({
 
 const trackingTemplate = ({
   program,
+  program_menu,
   curriculum,
   student,
   showingProgress,
@@ -55,10 +58,9 @@ const trackingTemplate = ({
   effect,
   target,
 }: TrackingTemplateData) => {
-  return `program=${program || null},curriculum=${curriculum ||
-    null},student=${student || null},showing-progress=${
-    showingProgress ? 1 : 0
-  },showing-prediction=${
+  return `program=${program || null},program-menu=${program_menu ||
+    null},curriculum=${curriculum || null},student=${student ||
+    null},showing-progress=${showingProgress ? 1 : 0},showing-prediction=${
     showingPrediction ? 1 : 0
   },courses-open=${coursesOpen ||
     null},action=${action},effect=${effect},target=${target}`;
@@ -77,31 +79,35 @@ export const Tracking: FC<{
 
   useEffect(() => {
     TrackingData.current.track = async ({ action, effect, target }) => {
-      const {
-        program,
-        curriculum,
-        student,
-        coursesOpen,
-        showingPrediction,
-        showingProgress,
-      } = TrackingData.current;
+      setTimeout(() => {
+        const {
+          program,
+          curriculum,
+          student,
+          coursesOpen,
+          showingPrediction,
+          showingProgress,
+          program_menu,
+        } = TrackingData.current;
 
-      trackMutate({
-        variables: {
-          data: trackingTemplate({
-            program,
-            curriculum,
-            student,
-            coursesOpen,
-            showingPrediction,
-            showingProgress,
-            action,
-            effect,
-            target,
-          }),
-          datetime_client: new Date(),
-        },
-      });
+        trackMutate({
+          variables: {
+            data: trackingTemplate({
+              program,
+              program_menu,
+              curriculum,
+              student,
+              coursesOpen,
+              showingPrediction,
+              showingProgress,
+              action,
+              effect,
+              target,
+            }),
+            datetime_client: new Date(),
+          },
+        });
+      }, 100);
     };
   }, [trackMutate]);
 

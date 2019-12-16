@@ -58,7 +58,7 @@ export const SearchBar: FC<{
   onSearch: (input: {
     student_id: string;
     program_id: string;
-  }) => Promise<boolean>;
+  }) => Promise<"student" | "program" | undefined>;
   searchResult?: {
     curriculums: string[];
     student?: string;
@@ -162,6 +162,10 @@ export const SearchBar: FC<{
     }
   }, [program, setProgram, programsOptions, setProgramProp]);
 
+  useEffect(() => {
+    Tracking.current.program_menu = program?.value;
+  }, [program]);
+
   return (
     <Flex
       width="100%"
@@ -180,7 +184,12 @@ export const SearchBar: FC<{
             isLoading={isSearchLoading}
             isDisabled={isSearchLoading}
             placeholder={PROGRAM_NOT_SPECIFIED_PLACEHOLDER}
-            onChange={selected => {
+            onChange={(selected: any) => {
+              Tracking.current.track({
+                action: "click",
+                effect: `change-program-menu-to-${selected?.value}`,
+                target: "program-menu",
+              });
               setProgram(
                 selected as $ElementType<typeof programsOptions, number>
               );
@@ -212,6 +221,11 @@ export const SearchBar: FC<{
                     : undefined
                 }
                 onChange={selected => {
+                  Tracking.current.track({
+                    action: "click",
+                    target: "curriculum-menu",
+                    effect: "change-curriculum",
+                  });
                   setCurriculum(
                     (selected as { label: string; value: string }).value
                   );
@@ -290,25 +304,39 @@ export const SearchBar: FC<{
 
                 if (program) {
                   ev.preventDefault();
-                  const ok = await onSearch({
+                  const onSearchResult = await onSearch({
                     student_id,
                     program_id: program.value,
                   });
-                  if (ok) {
-                    addStudentOption(student_id);
-                    setStudentId("");
 
-                    Tracking.current.track({
-                      action: "click",
-                      effect: "load-student",
-                      target: "searchButton",
-                    });
-                  } else {
-                    Tracking.current.track({
-                      action: "click",
-                      effect: "wrong-student",
-                      target: "searchButton",
-                    });
+                  switch (onSearchResult) {
+                    case "student": {
+                      addStudentOption(student_id);
+                      setStudentId("");
+                      Tracking.current.track({
+                        action: "click",
+                        effect: "load-student",
+                        target: "search-button",
+                      });
+                      break;
+                    }
+                    case "program": {
+                      Tracking.current.student = undefined;
+                      Tracking.current.track({
+                        action: "click",
+                        effect: "load-program",
+                        target: "search-button",
+                      });
+                      break;
+                    }
+                    default: {
+                      Tracking.current.student = student_id;
+                      Tracking.current.track({
+                        action: "click",
+                        effect: "wrong-student",
+                        target: "search-button",
+                      });
+                    }
                   }
                 }
               }}
@@ -364,13 +392,38 @@ export const SearchBar: FC<{
             searchStudent={async (student_id: string) => {
               if (program) {
                 setStudentId(student_id);
-                const ok = await onSearch({
+                const onSearchResult = await onSearch({
                   student_id,
                   program_id: program?.value,
                 });
-                if (ok) {
-                  addStudentOption(student_id);
-                  setStudentId("");
+                switch (onSearchResult) {
+                  case "student": {
+                    addStudentOption(student_id);
+                    setStudentId("");
+                    Tracking.current.track({
+                      action: "click",
+                      effect: "load-student",
+                      target: "student-list-row",
+                    });
+                    break;
+                  }
+                  case "program": {
+                    Tracking.current.student = undefined;
+                    Tracking.current.track({
+                      action: "click",
+                      effect: "load-program",
+                      target: "student-list-row",
+                    });
+                    break;
+                  }
+                  default: {
+                    Tracking.current.student = student_id;
+                    Tracking.current.track({
+                      action: "click",
+                      effect: "wrong-student",
+                      target: "student-list-row",
+                    });
+                  }
                 }
               }
             }}
