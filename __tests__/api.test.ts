@@ -3,8 +3,8 @@ import gql, { DocumentNode } from "graphql-tag-ts";
 import { update } from "lodash";
 import { getTracker, mock, Tracker } from "mock-knex";
 
+import { apolloTestClient } from "../api/apollo/apolloTestClient";
 import { dbAuth, dbConfig, dbData, dbTracking } from "../api/db";
-import { apolloTestClient } from "../api/utils/apolloTestClient";
 import {
   LOCKED_USER,
   USED_OLD_PASSWORD,
@@ -24,7 +24,7 @@ const testingUserOk = {
   tries: 0,
   unlockKey: "",
   type: UserType.Director,
-  rut_id: "",
+  student_id: "",
   show_dropout: true,
 };
 
@@ -40,7 +40,7 @@ const testingUserLock = {
   tries: 0,
   unlockKey: "",
   type: UserType.Director,
-  rut_id: "",
+  student_id: "",
   show_dropout: true,
 };
 

@@ -48,13 +48,13 @@ export class AuthResolver {
   async currentUser(@Ctx() { user, token }: IContext): Promise<AuthResult> {
     if (user) {
       if (defaultUserType(user.type) === UserType.Student) {
-        if (!user.rut_id) {
+        if (!user.student_id) {
           return {};
         }
         const studentData = await StudentTable()
           .select("id")
           .where({
-            id: user.rut_id,
+            id: user.student_id,
           })
           .first();
         if (!studentData) {
@@ -89,7 +89,7 @@ export class AuthResolver {
 
     if (user) {
       if (defaultUserType(user.type) === UserType.Student) {
-        if (!user.rut_id) {
+        if (!user.student_id) {
           return {
             error: WRONG_INFO,
           };
@@ -97,7 +97,7 @@ export class AuthResolver {
         const studentData = await StudentTable()
           .select("id")
           .where({
-            id: user.rut_id,
+            id: user.student_id,
           })
           .first();
         if (!studentData) {
@@ -199,7 +199,7 @@ export class AuthResolver {
       return { error: WRONG_INFO };
     } else {
       if (defaultUserType(user.type) === UserType.Student) {
-        if (!user.rut_id) {
+        if (!user.student_id) {
           return {
             error: WRONG_INFO,
           };
@@ -207,7 +207,7 @@ export class AuthResolver {
         const studentData = await StudentTable()
           .select("id")
           .where({
-            id: user.rut_id,
+            id: user.student_id,
           })
           .first();
         if (!studentData) {

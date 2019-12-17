@@ -31,7 +31,7 @@ import {
   User,
   UserProgram,
 } from "../entities/user";
-import { assertIsDefined } from "../utils";
+import { assertIsDefined } from "../utils/assert";
 import { sendMail, UnlockMail } from "../utils/mail";
 
 @Resolver(() => User)
@@ -141,7 +141,7 @@ export class UserResolver {
           name,
           type,
           tries,
-          rut_id,
+          student_id,
           show_dropout,
           show_student_list,
           locked,
@@ -157,7 +157,7 @@ export class UserResolver {
                 name,
                 type,
                 tries,
-                rut_id,
+                student_id,
                 show_dropout,
                 show_student_list,
                 locked,
@@ -181,7 +181,7 @@ export class UserResolver {
                   name,
                   type,
                   tries,
-                  rut_id,
+                  student_id,
                   show_dropout,
                   show_student_list,
                   locked,
@@ -194,7 +194,7 @@ export class UserResolver {
               name,
               type,
               tries,
-              rut_id,
+              student_id,
               show_dropout,
               show_student_list,
               locked,

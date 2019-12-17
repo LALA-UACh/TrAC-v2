@@ -31,7 +31,8 @@ import {
 } from "../db/tables";
 import { Dropout } from "../entities/dropout";
 import { Student } from "../entities/student";
-import { assertIsDefined } from "../utils";
+import { anonService } from "../utils/anonymization";
+import { assertIsDefined } from "../utils/assert";
 import { PartialProgram } from "./program";
 import { PartialTerm } from "./term";
 
@@ -52,6 +53,10 @@ export class StudentResolver {
     assertIsDefined(user, `Error on authorization context`);
 
     if (defaultUserType(user.type) === UserType.Student) {
+      const student_id = await anonService.getAnonymousIdOrGetItBack(
+        user.student_id
+      );
+
       const studentData = await StudentProgramTable()
         .select("program_id", "name", "state")
         .innerJoin<IStudent>(
@@ -60,13 +65,13 @@ export class StudentResolver {
           `${STUDENT_PROGRAM_TABLE_NAME}.student_id`
         )
         .orderBy("start_year", "desc")
-        .where({ student_id: user.rut_id })
+        .where({ student_id: student_id })
         .first();
 
       assertIsDefined(studentData, STUDENT_NOT_FOUND);
 
       return {
-        id: user.rut_id,
+        id: student_id,
         name: studentData.name,
         state: studentData.state,
         programs: [{ id: studentData.program_id }],
@@ -78,6 +83,8 @@ export class StudentResolver {
       if (student_id === "") {
         return null;
       }
+
+      student_id = await anonService.getAnonymousIdOrGetItBack(student_id);
 
       const AuthenticatedUserPrograms = await UserProgramsTable()
         .select("program")

@@ -1,55 +1,26 @@
-import "reflect-metadata";
-
-import { ApolloServer } from "apollo-server-express";
 import cookieParser from "cookie-parser";
 import express from "express";
-import { EmailAddressResolver } from "graphql-scalars";
-import { GraphQLJSON, GraphQLJSONObject } from "graphql-type-json";
-import { buildSchemaSync } from "type-graphql";
+import { toInteger } from "lodash";
 
-import * as resolvers from "./resolvers";
-import { authChecker } from "./utils/authChecker";
-import { buildContext } from "./utils/buildContext";
-
-const schema = buildSchemaSync({
-  resolvers: [
-    ...Object.values(resolvers),
-    GraphQLJSON.toString(),
-    GraphQLJSONObject.toString(),
-    EmailAddressResolver.toString(),
-  ] as any,
-  authChecker,
-  emitSchemaFile: true,
-  validate: true,
-});
+import { apolloServer } from "./apollo/server";
 
 const app = express();
 
-const cookieParserRouter = cookieParser();
-app.use(cookieParserRouter);
+app.use(cookieParser());
 
-export const apolloServer = new ApolloServer({
-  schema,
-  playground: {
-    settings: {
-      "request.credentials": "include",
-    },
-  },
-  context: ({ req, res }) => buildContext({ req, res }),
-  introspection: true,
-  debug: process.env.NODE_ENV !== "production",
-});
 apolloServer.applyMiddleware({
   app,
   path: "/api/graphql",
 });
 
-app.use("/", (req, res) => res.redirect("/api/graphql"));
+app.use("/", (_req, res) => res.redirect("/api/graphql"));
+
+const port = process.env.API_PORT ? toInteger(process.env.API_PORT) : 4000;
 
 if (process.env.NODE_ENV !== "test") {
-  app.listen({ port: 4000 }, () => {
+  app.listen({ port }, () => {
     console.log(
-      `🚀 Server ready at http://localhost:4000${apolloServer.graphqlPath}`
+      `🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`
     );
   });
 }

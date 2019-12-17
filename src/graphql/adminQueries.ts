@@ -10,7 +10,7 @@ type IAllUsersAdmin = IfImplements<
     name: string;
     tries: number;
     type: UserType;
-    rut_id?: string;
+    student_id?: string;
     show_dropout: boolean;
     show_student_list: boolean;
     locked: boolean;
@@ -25,7 +25,7 @@ const AllUsersAdminFragment = gql`
     name
     tries
     type
-    rut_id
+    student_id
     show_dropout
     show_student_list
     locked
@@ -106,7 +106,7 @@ export const UPSERT_USERS_ADMIN: DocumentNode<
       name?: string;
       type?: UserType;
       tries?: number;
-      rut_id?: string;
+      student_id?: string;
       show_dropout?: boolean;
       show_student_list?: boolean;
       locked?: boolean;

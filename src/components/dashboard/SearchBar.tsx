@@ -157,7 +157,11 @@ export const SearchBar: FC<{
   >("program_input", undefined);
 
   useEffect(() => {
-    if (program === undefined && programsOptions[0]) {
+    if (
+      programsOptions.findIndex(programFound => {
+        return programFound.value === program?.value;
+      }) === -1
+    ) {
       setProgram(programsOptions[0]);
     }
   }, [program, setProgram, programsOptions, setProgramProp]);
@@ -180,7 +184,7 @@ export const SearchBar: FC<{
         <Box width={350} mr={4}>
           <Select
             options={programsOptions}
-            value={program}
+            value={program || null}
             isLoading={isSearchLoading}
             isDisabled={isSearchLoading}
             placeholder={PROGRAM_NOT_SPECIFIED_PLACEHOLDER}

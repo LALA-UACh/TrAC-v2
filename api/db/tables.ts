@@ -174,7 +174,7 @@ export interface IUser {
   unlockKey: string;
   admin: boolean;
   type: string;
-  rut_id: string;
+  student_id: string;
   show_dropout: boolean;
   show_student_list: boolean;
 }

@@ -9,7 +9,7 @@ import {
   StudentCourseTable,
 } from "../db/tables";
 import { TakenCourse } from "../entities/takenCourse";
-import { assertIsDefined } from "../utils";
+import { assertIsDefined } from "../utils/assert";
 
 export type PartialTakenCourse = Pick<TakenCourse, "id" | "code" | "equiv">;
 

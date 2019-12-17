@@ -9,7 +9,7 @@ import {
   StudentCourseTable,
 } from "../db/tables";
 import { Course } from "../entities/course";
-import { assertIsDefined } from "../utils";
+import { assertIsDefined } from "../utils/assert";
 
 const creditsFormat = ({
   credits,

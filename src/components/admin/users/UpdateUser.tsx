@@ -32,7 +32,7 @@ export const UpdateUser: FC<{
     name: string;
     tries: number;
     type: UserType;
-    rut_id?: string;
+    student_id?: string;
     show_dropout: boolean;
     show_student_list: boolean;
     locked: boolean;
@@ -132,7 +132,7 @@ export const UpdateUser: FC<{
           name: user.name,
           type: user.type,
           tries: user.tries,
-          rut_id: user.rut_id,
+          student_id: user.student_id,
           show_dropout: user.show_dropout,
           show_student_list: user.show_student_list,
           locked: user.locked,
@@ -142,7 +142,7 @@ export const UpdateUser: FC<{
           name,
           tries,
           type,
-          rut_id,
+          student_id,
           show_dropout,
           show_student_list,
           locked,
@@ -151,7 +151,7 @@ export const UpdateUser: FC<{
           name: string;
           tries: number;
           type: UserType;
-          rut_id?: string;
+          student_id?: string;
           show_dropout: boolean;
           show_student_list: boolean;
           locked: boolean;
@@ -165,7 +165,7 @@ export const UpdateUser: FC<{
                     email,
                     name,
                     tries,
-                    rut_id,
+                    student_id,
                     type,
                     show_dropout,
                     show_student_list,
@@ -301,7 +301,7 @@ export const UpdateUser: FC<{
                     </Box>
                   </Flex>
 
-                  <Field name="rut_id" initialValue={user.rut_id}>
+                  <Field name="student_id" initialValue={user.student_id}>
                     {({ input }) => (
                       <FormSemantic.Field>
                         <label>ID (student identification number)</label>

@@ -17,7 +17,7 @@ export const Users: FC<{
     name: string;
     tries: number;
     type: UserType;
-    rut_id?: string;
+    student_id?: string;
     show_dropout: boolean;
     show_student_list: boolean;
     locked: boolean;
@@ -176,10 +176,10 @@ export const Users: FC<{
                 type
               </Table.HeaderCell>
               <Table.HeaderCell
-                sorted={column === "rut_id" ? direction : undefined}
-                onClick={handleSort("rut_id")}
+                sorted={column === "student_id" ? direction : undefined}
+                onClick={handleSort("student_id")}
               >
-                rut_id
+                student_id
               </Table.HeaderCell>
               <Table.HeaderCell
                 sorted={column === "show_dropout" ? direction : undefined}
@@ -205,7 +205,7 @@ export const Users: FC<{
                   locked,
                   tries,
                   type,
-                  rut_id,
+                  student_id,
                   show_dropout,
                   show_student_list,
                 },
@@ -219,7 +219,7 @@ export const Users: FC<{
                     locked,
                     tries,
                     type,
-                    rut_id,
+                    student_id,
                     show_dropout,
                     show_student_list,
                   }}
@@ -232,7 +232,9 @@ export const Users: FC<{
                     </Table.Cell>
                     <Table.Cell>{tries}</Table.Cell>
                     <Table.Cell>{type}</Table.Cell>
-                    <Table.Cell>{truncate(rut_id, { length: 10 })}</Table.Cell>
+                    <Table.Cell>
+                      {truncate(student_id, { length: 10 })}
+                    </Table.Cell>
                     <Table.Cell>
                       <Icon
                         circular

@@ -34,7 +34,7 @@ export class User implements Partial<IUser> {
   type: UserType;
 
   @Field()
-  rut_id: string;
+  student_id: string;
 
   @Field()
   show_dropout: boolean;
@@ -91,7 +91,7 @@ export class UpsertedUser implements Partial<User> {
   tries: number;
 
   @Field({ defaultValue: "" })
-  rut_id: string;
+  student_id: string;
 
   @Field({ defaultValue: false })
   show_dropout: boolean;

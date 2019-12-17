@@ -61,7 +61,7 @@ const Dashboard: FC = () => {
         setMockData(data);
       });
     }
-  }, [mock, mockData]);
+  }, [mock, mockData, setMockData]);
 
   const trackingData = useRef<TrackingRef>({ track: async () => {} });
   const [

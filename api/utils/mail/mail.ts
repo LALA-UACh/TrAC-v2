@@ -4,7 +4,7 @@ const GMAIL_USERNAME = process.env.GMAIL_USERNAME;
 
 const DOMAIN =
   process.env.NODE_ENV === "production"
-    ? requireEnv(["DOMAIN"]).DOMAIN
+    ? requireEnv("DOMAIN").DOMAIN
     : "http://localhost:3000";
 
 export const UnlockMail = ({

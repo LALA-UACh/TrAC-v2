@@ -1,4 +1,4 @@
-import { defaultsDeep } from "lodash";
+import { defaultsDeep, intersectionWith } from "lodash";
 import {
   Arg,
   Authorized,
@@ -29,7 +29,8 @@ import {
   UserProgramsTable,
 } from "../db/tables";
 import { Program } from "../entities/program";
-import { assertIsDefined } from "../utils";
+import { anonService } from "../utils/anonymization";
+import { assertIsDefined } from "../utils/assert";
 import { PartialCourse } from "./course";
 
 export type PartialProgram = Pick<Program, "id">;
@@ -50,14 +51,17 @@ export class ProgramResolver {
     assertIsDefined(user, `Authorization in context is broken`);
 
     if (defaultUserType(user.type) === UserType.Student) {
+      student_id = await anonService.getAnonymousIdOrGetItBack(user.student_id);
+
       const studentProgram = await StudentProgramTable()
         .distinct("program_id", "curriculum", "start_year")
         .where({
-          student_id: user.rut_id,
+          student_id,
         })
         .orderBy("start_year", "desc");
+
       assertIsDefined(studentProgram[0], STUDENT_NOT_FOUND);
-      student_id = user.rut_id;
+
       id = studentProgram[0].program_id;
       const curriculums = studentProgram.map(({ curriculum }) => {
         return {
@@ -83,6 +87,8 @@ export class ProgramResolver {
       );
 
       if (student_id) {
+        student_id = await anonService.getAnonymousIdOrGetItBack(student_id);
+
         const [programData, curriculums] = await Promise.all([
           ProgramTable()
             .select("id", "name", "desc", "active")
@@ -139,15 +145,26 @@ export class ProgramResolver {
   async myPrograms(@Ctx() { user }: IContext): Promise<Pick<Program, "id">[]> {
     assertIsDefined(user, `Authorization in context is broken`);
 
-    return (
-      await UserProgramsTable()
+    const [userPrograms, allPrograms] = await Promise.all([
+      UserProgramsTable()
         .select("program")
         .where({
           email: user.email,
-        })
-    ).map(({ program }) => ({
-      id: program,
-    }));
+        }),
+      ProgramTable().select("id"),
+    ]);
+
+    return intersectionWith(
+      userPrograms,
+      allPrograms,
+      (userProgram, program) => {
+        return userProgram.program === program.id;
+      }
+    ).map(({ program }) => {
+      return {
+        id: program,
+      };
+    });
   }
 
   @FieldResolver()

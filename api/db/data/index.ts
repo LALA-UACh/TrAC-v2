@@ -56,9 +56,9 @@ const dataImport = async () => {
         table
           .enum("type", Object.values(UserType))
           .notNullable()
-          .defaultTo(UserType.Student);
+          .defaultTo(UserType.Director);
         table
-          .text("rut_id")
+          .text("student_id")
           .notNullable()
           .defaultTo("");
         table
@@ -80,6 +80,7 @@ const dataImport = async () => {
         type: UserType.Director,
         show_dropout: true,
         show_student_list: true,
+        student_id: "",
       });
     }
   });

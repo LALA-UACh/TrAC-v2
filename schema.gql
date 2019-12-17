@@ -188,9 +188,9 @@ input UpsertedUser {
   locked: Boolean = true
   name: String = "default_name"
   oldEmail: EmailAddress
-  rut_id: String = ""
   show_dropout: Boolean = false
   show_student_list: Boolean = false
+  student_id: String = ""
   tries: Float = 0
   type: UserType = Student
 }
@@ -201,9 +201,9 @@ type User {
   locked: Boolean!
   name: String!
   programs: [Program!]!
-  rut_id: String!
   show_dropout: Boolean!
   show_student_list: Boolean!
+  student_id: String!
   tries: Float!
   type: UserType!
   unlockKey: String!

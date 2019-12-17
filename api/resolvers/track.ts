@@ -4,6 +4,7 @@ import { UserType } from "../../constants";
 import { IContext } from "../../interfaces";
 import { TrackingTable } from "../db/tables";
 import { Track, TrackInput } from "../entities/track";
+import { anonService } from "../utils/anonymization";
 
 @Resolver(() => Track)
 export class TrackResolver {
@@ -13,6 +14,19 @@ export class TrackResolver {
     @Args() { datetime_client, data }: TrackInput,
     @Ctx() { user }: IContext
   ) {
+    const pattern = /(.*student=)(?<student_id>.*)(,showing-progress=.*)/;
+    const match = data.match(pattern);
+    const student_id = match?.groups?.student_id;
+
+    if (student_id && student_id !== "null") {
+      const anonymousId = await anonService.getAnonymousIdOrGetItBack(
+        student_id
+      );
+      data = data.replace(pattern, (_fullMatch, p1, _student_id, p3) => {
+        return [p1, anonymousId, p3].join("");
+      });
+    }
+
     TrackingTable()
       .insert({
         app_id:
