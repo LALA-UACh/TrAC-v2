@@ -65,4 +65,4 @@ export const dbConfig = knex({
   // debug: true,
 });
 
-import("./initialData");
+import("./mockData");

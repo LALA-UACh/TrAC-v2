@@ -21,8 +21,8 @@ import {
 import { IContext } from "../../../interfaces";
 import {
   IStudent,
-  STUDENT_PROGRAM_TABLE_NAME,
-  STUDENT_TABLE_NAME,
+  STUDENT_PROGRAM_TABLE,
+  STUDENT_TABLE,
   StudentDropoutTable,
   StudentProgramTable,
   StudentTable,
@@ -60,9 +60,9 @@ export class StudentResolver {
       const studentData = await StudentProgramTable()
         .select("program_id", "name", "state")
         .innerJoin<IStudent>(
-          STUDENT_TABLE_NAME,
-          `${STUDENT_TABLE_NAME}.id`,
-          `${STUDENT_PROGRAM_TABLE_NAME}.student_id`
+          STUDENT_TABLE,
+          `${STUDENT_TABLE}.id`,
+          `${STUDENT_PROGRAM_TABLE}.student_id`
         )
         .orderBy("start_year", "desc")
         .where({ student_id: student_id })
@@ -144,9 +144,9 @@ export class StudentResolver {
     const studentList = await StudentProgramTable()
       .select("id", "name", "state", "last_term")
       .rightJoin<IStudent>(
-        STUDENT_TABLE_NAME,
-        `${STUDENT_PROGRAM_TABLE_NAME}.student_id`,
-        `${STUDENT_TABLE_NAME}.id`
+        STUDENT_TABLE,
+        `${STUDENT_PROGRAM_TABLE}.student_id`,
+        `${STUDENT_TABLE}.id`
       )
       .where({
         program_id,

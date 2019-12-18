@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1700,
+    "name": "AGRONOMÍA",
+    "desc": "",
+    "tags": "",
+    "active": true,
+    "last_gpa": 4.49
+  },
+  {
+    "id": 1708,
+    "name": "INGENIERÍA CIVIL EN INFORMÁTICA",
+    "desc": "",
+    "tags": "",
+    "active": true,
+    "last_gpa": 4.31
+  }
+]

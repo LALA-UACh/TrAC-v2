@@ -11,7 +11,9 @@ export interface ICourse {
   grade_pass_min: number;
 }
 
-export const CourseTable = () => dbData<ICourse>("course");
+export const COURSE_TABLE = "course";
+
+export const CourseTable = () => dbData<ICourse>(COURSE_TABLE);
 
 // -------------------------------------------------------------------------------------
 export interface ICourseStats {
@@ -32,7 +34,9 @@ export interface ICourseStats {
   color_bands: string;
 }
 
-export const CourseStatsTable = () => dbData<ICourseStats>("course_stats");
+export const COURSE_STATS_TABLE = "course_stats";
+
+export const CourseStatsTable = () => dbData<ICourseStats>(COURSE_STATS_TABLE);
 
 // -------------------------------------------------------------------------------------
 
@@ -41,7 +45,9 @@ export interface IParameter {
   loading_date: Date;
 }
 
-export const ParameterTable = () => dbData<IParameter>("parameter");
+export const PARAMETER_TABLE = "parameter";
+
+export const ParameterTable = () => dbData<IParameter>(PARAMETER_TABLE);
 
 // -------------------------------------------------------------------------------------
 
@@ -54,7 +60,9 @@ export interface IProgram {
   last_gpa: number;
 }
 
-export const ProgramTable = () => dbData<IProgram>("program");
+export const PROGRAM_TABLE = "program";
+
+export const ProgramTable = () => dbData<IProgram>(PROGRAM_TABLE);
 
 // -------------------------------------------------------------------------------------
 
@@ -73,8 +81,10 @@ export interface IProgramStructure {
   tags: string;
 }
 
+export const PROGRAM_STRUCTURE_TABLE = "program_structure";
+
 export const ProgramStructureTable = () =>
-  dbData<IProgramStructure>("program_structure");
+  dbData<IProgramStructure>(PROGRAM_STRUCTURE_TABLE);
 
 // -------------------------------------------------------------------------------------
 
@@ -84,9 +94,9 @@ export interface IStudent {
   state: string;
 }
 
-export const STUDENT_TABLE_NAME = "student";
+export const STUDENT_TABLE = "student";
 
-export const StudentTable = () => dbData<IStudent>(STUDENT_TABLE_NAME);
+export const StudentTable = () => dbData<IStudent>(STUDENT_TABLE);
 
 // -------------------------------------------------------------------------------------
 
@@ -107,20 +117,24 @@ export interface IStudentCourse {
   duplicates: number;
 }
 
+export const STUDENT_COURSE_TABLE = "student_course";
+
 export const StudentCourseTable = () =>
-  dbData<IStudentCourse>("student_course");
+  dbData<IStudentCourse>(STUDENT_COURSE_TABLE);
 
 // -------------------------------------------------------------------------------------
 export interface IStudentDropout {
   student_id: string;
-  prob_dropout: number;
-  weight_per_semester: string;
+  prob_dropout?: number;
+  weight_per_semester?: string;
   active: boolean;
-  model_accuracy: number;
+  model_accuracy?: number;
 }
 
+export const STUDENT_DROPOUT_TABLE = "student_dropout";
+
 export const StudentDropoutTable = () =>
-  dbData<IStudentDropout>("student_dropout");
+  dbData<IStudentDropout>(STUDENT_DROPOUT_TABLE);
 
 // -------------------------------------------------------------------------------------
 export interface IStudentProgram {
@@ -135,10 +149,10 @@ export interface IStudentProgram {
   completion: number;
 }
 
-export const STUDENT_PROGRAM_TABLE_NAME = "student_program";
+export const STUDENT_PROGRAM_TABLE = "student_program";
 
 export const StudentProgramTable = () =>
-  dbData<IStudentProgram>(STUDENT_PROGRAM_TABLE_NAME);
+  dbData<IStudentProgram>(STUDENT_PROGRAM_TABLE);
 
 // -------------------------------------------------------------------------------------
 
@@ -157,4 +171,6 @@ export interface IStudentTerm {
   mention: string;
 }
 
-export const StudentTermTable = () => dbData<IStudentTerm>("student_term");
+export const STUDENT_TERM_TABLE = "student_term";
+
+export const StudentTermTable = () => dbData<IStudentTerm>(STUDENT_TERM_TABLE);

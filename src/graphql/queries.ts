@@ -226,8 +226,8 @@ export const SEARCH_STUDENT: DocumentNode<
           }>;
         }>;
         dropout?: {
-          prob_dropout: number;
-          model_accuracy: number;
+          prob_dropout?: number;
+          model_accuracy?: number;
           active: boolean;
         };
       },

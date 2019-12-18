@@ -1,0 +1,16 @@
+[
+  {
+    "student_id": "6fdb8a7f5bbaf0c68dbca0f5462e866a",
+    "prob_dropout": 36.16,
+    "weight_per_semester": 0.2,
+    "active": true,
+    "model_accuracy": 0.82
+  },
+  {
+    "student_id": "e078c7de4d67798a915801ba7e2539fb",
+    "prob_dropout": 60.56,
+    "weight_per_semester": 0.2,
+    "active": true,
+    "model_accuracy": 0.82
+  }
+]

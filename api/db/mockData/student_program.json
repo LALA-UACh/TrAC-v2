@@ -1,0 +1,35 @@
+[
+  {
+    "student_id": "238de40ae2a0e9f417c495e913d56773",
+    "program_id": 1700,
+    "curriculum": 2013,
+    "start_year": 2013,
+    "mention": "",
+    "last_term": 20191,
+    "n_courses": 101,
+    "n_passed_courses": 54,
+    "completion": 0.53
+  },
+  {
+    "student_id": "6fdb8a7f5bbaf0c68dbca0f5462e866a",
+    "program_id": 1708,
+    "curriculum": 2015,
+    "start_year": 2015,
+    "mention": "",
+    "last_term": 20191,
+    "n_courses": 69,
+    "n_passed_courses": 50,
+    "completion": 0.72
+  },
+  {
+    "student_id": "e078c7de4d67798a915801ba7e2539fb",
+    "program_id": 1708,
+    "curriculum": 2017,
+    "start_year": 2017,
+    "mention": "",
+    "last_term": 20191,
+    "n_courses": 62,
+    "n_passed_courses": 24,
+    "completion": 0.39
+  }
+]

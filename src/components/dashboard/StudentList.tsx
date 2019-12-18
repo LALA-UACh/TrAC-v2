@@ -193,6 +193,7 @@ export const StudentList: FC<{
         ref={btnRef}
         variantColor="blue"
         onClick={onOpen}
+        cursor="pointer"
       >
         {STUDENT_LIST_TITLE}
       </Button>
@@ -205,7 +206,7 @@ export const StudentList: FC<{
         size="lg"
       >
         <DrawerOverlay />
-        <DrawerContent transition={isOpen ? "1s all" : "0s all"}>
+        <DrawerContent transition={isOpen ? "0.3s all" : "0s all"}>
           <DrawerHeader height={20} display="flex" alignItems="center">
             {STUDENT_LIST_TITLE} {loadingData && <Spinner ml={3} />}
           </DrawerHeader>

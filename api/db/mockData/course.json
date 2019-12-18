@@ -1,0 +1,2302 @@
+[
+  {
+    "id": "ADMI100-90",
+    "name": "ADMINISTRACION DE EMPRESAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT04",
+    "name": "OPTATIVO 4",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "AGRO080-06",
+    "name": "PRACTICA BASICA I",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "AGRO081-06",
+    "name": "PRACTICA BASICA II",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "AGRO082-06",
+    "name": "PRACTICA BASICA III",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "AGRO180-06",
+    "name": "PRACTICA DE HABILIDADES Y DESTREZAS I",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "AGRO181-06",
+    "name": "PRACTICA DE HABILIDADES Y DESTREZAS II",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "AGRO182-06",
+    "name": "PRACTICA DE HABILIDADES Y DESTREZAS III",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "AGRO192-90",
+    "name": "GIRA CENTRO-NORTE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "AGRO198-90",
+    "name": "PRACTICA DE INSTITUCIONES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT05",
+    "name": "OPTATIVO 5",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN009-07",
+    "name": "COMUNICACION: IDIOMA ESPAÑOL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN012-07",
+    "name": "GEOMETRIA PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN017-07",
+    "name": "ALGEBRA PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN019-07",
+    "name": "QUIMICA PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN036-07",
+    "name": "ALGEBRA LINEAL PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN037-07",
+    "name": "CALCULO I PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN038-07",
+    "name": "FISICA I PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN039-07",
+    "name": "COMUNICACION: IDIOMA INGLES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN041-07",
+    "name": "ECUACIONES DIFERENCIALES PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN042-07",
+    "name": "CALCULO II PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN043-07",
+    "name": "FISICA II PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN052-07",
+    "name": "ESTADISTICA Y PROBABILIDADES PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN053-07",
+    "name": "METODOS NUMERICOS PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN054-07",
+    "name": "FISICA III PARA INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN065-14",
+    "name": "ÁLGEBRA PARA INGENIERÍA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN067-14",
+    "name": "GEOMETRÍA PARA INGENIERÍA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN069-14",
+    "name": "QUÍMICA PARA INGENIERÍA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN071-14",
+    "name": "COMUNICACIÓN IDIOMA ESPAÑOL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN073-14",
+    "name": "ÁLGEBRA LINEAL PARA INGENIERÍA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN075-14",
+    "name": "CÁLCULO EN UNA VARIABLE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN077-14",
+    "name": "FÍSICA: MECÁNICA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN079-14",
+    "name": "COMUNICACIÓN IDIOMA INGLÉS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN081-14",
+    "name": "ECUACIONES DIFERENCIALES PARA INGENIERÍA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN083-14",
+    "name": "CÁLCULO EN VARIAS VARIABLES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN085-14",
+    "name": "FÍSICA: ONDAS Y ELECTROMAGNETISMO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN087-14",
+    "name": "MÉTODOS NUMÉRICOS PARA INGENIERÍA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN091-14",
+    "name": "ESTADÍSTICA Y PROBABILIDADES PARA INGENIERÍA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN140-17",
+    "name": "INGLÉS INSTRUMENTAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BAIN150-17",
+    "name": "INGLÉS FUNCIONAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BIOQ104-04",
+    "name": "BIOQUIMICA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BOTN017-04",
+    "name": "BOTANICA BASICA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "BOTN143-04",
+    "name": "BOTANICA AGRICOLA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "CIDI020-90",
+    "name": "INGLES INSTRUMENTAL I",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "CIDI100-90",
+    "name": "INGLES INSTRUMENTAL II",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "CIDI108-02",
+    "name": "INGLES FUNCIONAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "DYRE060-90",
+    "name": "EDUCACIÓN FÍSICA Y SALUD",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "DYRE070-14",
+    "name": "EDUCACIÓN FÍSICA Y SALUD",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR110-90",
+    "name": "TEORIA ECONOMICA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR200-04",
+    "name": "DESARROLLO RURAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR201-05",
+    "name": "ANALISIS FINANCIERO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR203-05",
+    "name": "ECONOMIA DE LA PRODUCCION",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR204-04",
+    "name": "ADMINISTRACION AGRICOLA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR206-05",
+    "name": "ECONOMIA DE LOS RECURSOS NATURALES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR207-05",
+    "name": "PLANIFICACION Y CONTROL DE GESTION",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR208-05",
+    "name": "GESTION DE RECURSOS HUMANOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR209-05",
+    "name": "COMERCIO AGRICOLA INTERNACIONAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR210-05",
+    "name": "PROGRAMACION Y OPTIMIZACION DE EMPRESAS AGRICOLAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR212-90",
+    "name": "COMERCIALIZACION AGROPECUARIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR213-90",
+    "name": "FORMULACION Y EVALUACION DE PROYECTOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR215-05",
+    "name": "TALLER DE PROYECTOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR295-08",
+    "name": "PROYECTO DE MEMORIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EAGR297-08",
+    "name": "MEMORIA DE TITULO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EICI146-17",
+    "name": "PRÁCTICA INICIAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EICI223-17",
+    "name": "GESTIÓN ORGANIZACIONAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EICI247-08",
+    "name": "REALIDAD TECNOLOGICA NACIONAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EICI270-17",
+    "name": "TALLER DE EMPRENDIMIENTO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EICI297-90",
+    "name": "PRACTICA PROFESIONAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "EICI298-09",
+    "name": "PROYECTO DE TITULO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT01",
+    "name": "OPTATIVO 1",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT100",
+    "name": "OPTATIVO DE ESPECIALIZACIÓN I",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT101",
+    "name": "OPTATIVO DE ESPECIALIZACIÓN II",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT111",
+    "name": "OPTATIVO DE ESPECIALIZACIÓN III",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT112",
+    "name": "OPTATIVO DE PROFUNDIZACIÓN I",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT116",
+    "name": "OPTATIVO DE PROFUNDIZACIÓN II",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT12",
+    "name": "OFG 1",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT20",
+    "name": "OPTATIVO PROFESIONAL 1",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT21",
+    "name": "OPTATIVO PROFESIONAL 2",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT22",
+    "name": "OPTATIVO PROFESIONAL 3",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ESTD224-03",
+    "name": "MODELO DE INFERENCIA ESTADISTICA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "FSCA106-01",
+    "name": "FISICA GENERAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO165-00",
+    "name": "COMPILADORES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "GEOG100-90",
+    "name": "INTRODUCCION A LAS GEOCIENCIAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "GEOG122-90",
+    "name": "CLIMATOLOGIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS121-90",
+    "name": "EDAFOLOGIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ICML105-12",
+    "name": "ZOOLOGIA BASICA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ICSO109-04",
+    "name": "SOCIOLOGIA Y DESARROLLO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IECO102-05",
+    "name": "ECONOMIA GENERAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS111-04",
+    "name": "INGENIERIA AGRICOLA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS122-04",
+    "name": "RECURSOS NATURALES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS123-04",
+    "name": "FERTILIDAD Y FERTILIZANTES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS209-05",
+    "name": "FISICA DE SUELOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS211-90",
+    "name": "MECANIZACION AGRICOLA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS212-90",
+    "name": "MANEJO ENERGETICO A NIVEL PREDIAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS217-05",
+    "name": "LABORATORIO DE SUELOS Y AGUAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS218-05",
+    "name": "DISENO DE RIEGO Y DRENAJE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS219-05",
+    "name": "EVALUACION DE SUELOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS223-05",
+    "name": "FERTILIDAD DE SUELOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS224-90",
+    "name": "RECONOCIMIENTO Y CLASIFICACION DE SUELOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS231-90",
+    "name": "RIEGO Y DRENAJE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS295-08",
+    "name": "PROYECTO DE MEMORIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "IIAS297-08",
+    "name": "MEMORIA DE TITULO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO013-07",
+    "name": "INTRODUCCION A LA PROGRAMACION",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO015-08",
+    "name": "TALLER DE INGENIERIA I",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO023-08",
+    "name": "PROGRAMACION",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO025-08",
+    "name": "TALLER DE INGENIERIA II",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO033-07",
+    "name": "PROGRAMACION ORIENTADA A OBJETOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO035-08",
+    "name": "TALLER DE INGENIERIA III",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO043-07",
+    "name": "ESTRUCTURAS DISCRETAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO045-08",
+    "name": "TALLER",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO053-07",
+    "name": "ESTRUCTURAS DE DATOS Y ALGORITMOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO063-17",
+    "name": "INTRODUCCIÓN A LA PROGRAMACIÓN",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO073-17",
+    "name": "TALLER DE INGENIERÍA: INTRODUCCIÓN A LA PROFESIÓN",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO081-17",
+    "name": "PROGRAMACIÓN",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO083-17",
+    "name": "TALLER DE INGENIERÍA: PROGRAMACIÓN APLICADA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO085-17",
+    "name": "ESTRUCTURA DE DATOS Y ALGORITMOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO088-17",
+    "name": "TALLER DE INGENIERÍA: ESTRUCTURA DE DATOS Y ALGORITMOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO090-17",
+    "name": "PROGRAMACIÓN ORIENTADA A OBJETO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO099-17",
+    "name": "ESTRUCTURAS DISCRETAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO104-17",
+    "name": "TALLER DE CONSTRUCCIÓN DE SOFTWARE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO128-17",
+    "name": "ARQUITECTURA DE COMPUTADORES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO133-17",
+    "name": "BASE DE DATOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO139-17",
+    "name": "TEORÍA DE AUTÓMATAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO145-17",
+    "name": "DISEÑO Y ANÁLISIS DE ALGORITMOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO163-08",
+    "name": "PROGRAMACION CONCURRENTE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO164-00",
+    "name": "TEORIA DE AUTOMATAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO172-00",
+    "name": "INVESTIGACION OPERATIVA I",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO173-00",
+    "name": "INVESTIGACION OPERATIVA II",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO175-08",
+    "name": "TALLER DE CONSTRUCCION DE SOFTWARE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO182-00",
+    "name": "SISTEMA OPERATIVO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO183-00",
+    "name": "ANALISIS DE SISTEMAS LINEALES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO184-08",
+    "name": "ARQUITECTURA DE COMPUTADORES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO185-97",
+    "name": "COMUNICACIONES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO188-17",
+    "name": "PROGRAMACIÓN EN PARADIGMAS FUNCIONAL Y PARALELO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO189-08",
+    "name": "SOFTWARE DE INGENIERIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO198-17",
+    "name": "SISTEMAS OPERATIVOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO200-17",
+    "name": "INVESTIGACIÓN OPERATIVA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO208-17",
+    "name": "INGENIERÍA DE REQUISITOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO229-17",
+    "name": "ARQUITECTURA DE SOFTWARE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO231-12",
+    "name": "ADMINISTRACION DE TIC",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO234-12",
+    "name": "ESTRATEGIA Y SISTEMAS DE INFORMACION",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO236-15",
+    "name": "TALLER DE SOFTWARE- PROYECTO INTEGRACIÓN DE TIC",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO237-15",
+    "name": "ARQUITECTURA DE SISTEMAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO239-17",
+    "name": "COMUNICACIONES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO245-17",
+    "name": "INTERACCIÓN HUMANO-COMPUTADOR",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO248-17",
+    "name": "INGENIERÍA DE SOFTWARE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO251-08",
+    "name": "SEMINARIO DE ETICA PROFESIONAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO252-97",
+    "name": "PROYECTO I",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO253-08",
+    "name": "ANTEPROYECTO DE TITULO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO257-17",
+    "name": "INTELIGENCIA ARTIFICIAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO261-08",
+    "name": "BASES DE DATOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO263-08",
+    "name": "FUNDAMENTOS DE INGENIERIA DE SOFTWARE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO264-00",
+    "name": "TALLER INGENIERIA DE SOFTWARE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO265-08",
+    "name": "COMPUTACION GRAFICA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO266-08",
+    "name": "INTERFAZ HUMANO - COMPUTADOR",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO267-00",
+    "name": "INTELIGENCIA ARTIFICIAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO268-00",
+    "name": "TALLER DE BASE DE DATOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO270-00",
+    "name": "INGENIERIA DE SISTEMAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO270-17",
+    "name": "EVALUACIÓN DE PROYECTOS INFORMÁTICOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO271-08",
+    "name": "SISTEMAS DE INFORMACION",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO272-00",
+    "name": "INGENIERIA ECONOMICA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO273-00",
+    "name": "EVALUACION DE DESEMPEÑO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO274-00",
+    "name": "SIMULACION",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO275-08",
+    "name": "SISTEMAS DE GESTION ESTRATEGICOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO276-08",
+    "name": "SISTEMAS DE GESTION TACTICOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO278-17",
+    "name": "SISTEMAS DE INFORMACIÓN",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO280-17",
+    "name": "SEMINARIO DE ÉTICA PROFESIONAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO281-08",
+    "name": "REDES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO282-17",
+    "name": "TALLER DE INGENIERÍA DE SOFTWARE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO284-08",
+    "name": "TALLER DE INTEGRACION DE TIC",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO286-17",
+    "name": "SISTEMAS DE GESTIÓN",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO288-17",
+    "name": "SISTEMAS DISTRIBUIDOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO289-17",
+    "name": "TALLER DE INTEGRACIÓN DE TECNOLOGÍA DE LA INFORMACIÓN Y COMUNICACIÓN",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO290-17",
+    "name": "MÉTODOS Y MODELOS DE INGENIERÍA DE SOFTWARE",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO293-17",
+    "name": "TECNOLOGÍA DE LA INFORMACIÓN PARA LA GESTIÓN ORGANIZACIONAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO294-17",
+    "name": "REALIDAD TECNOLÓGICA NACIONAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO295-17",
+    "name": "PRÁCTICA PROFESIONAL (a) y (b)",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO297-17",
+    "name": "TALLER DE TÍTULO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO298-17",
+    "name": "PROYECTO DE TÍTULO: ARTÍCULO DE INVESTIGACIÓN (b)",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO299-17",
+    "name": "PROYECTO DE TÍTULO: MEMORIA (a)",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "MATM014-04",
+    "name": "ALGEBRA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "MATM114-04",
+    "name": "CALCULO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "MATM115-04",
+    "name": "CALCULO NUMERICO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "MICR105-90",
+    "name": "MICROBIOLOGIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN200-04",
+    "name": "PRODUCCION ANIMAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN100-04",
+    "name": "SISTEMAS AGROPECUARIOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN111-04",
+    "name": "NUTRICION ANIMAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN112-04",
+    "name": "FISIOLOGIA ANIMAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN121-90",
+    "name": "MANEJO DE PRADERAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN124-04",
+    "name": "ALIMENTACION ANIMAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN203-05",
+    "name": "PRODUCCION Y MANEJO DE FORRAJES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN213-05",
+    "name": "TALLER DE SISTEMAS PECUARIOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN215-05",
+    "name": "PRODUCCION AVIAR",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN244-05",
+    "name": "PRODUCCION DE LECHE BOVINA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN245-05",
+    "name": "PRODUCCION DE CARNE BOVINA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN246-05",
+    "name": "PRODUCCION PORCINA Y DE ESPECIES NO TRADICIONALES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN248-05",
+    "name": "PRODUCCION DE RUMIANTES MENORES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN261-90",
+    "name": "MEJORAMIENTO ANIMAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN295-08",
+    "name": "PROYECTO DE MEMORIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PRAN297-08",
+    "name": "MEMORIA DE TITULO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE101-90",
+    "name": "AGROECOLOGIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE102-90",
+    "name": "FISIOLOGIA VEGETAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE103-04",
+    "name": "GENETICA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE110-04",
+    "name": "FISIOLOGIA DE CULTIVOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE113-04",
+    "name": "TALLER DE EXPRESION ORAL Y ESCRITA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE121-90",
+    "name": "PROPAGACION DE PLANTAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE131-90",
+    "name": "ENTOMOLOGIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE141-90",
+    "name": "FITOPATOLOGIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE201-90",
+    "name": "PROTECCION VEGETAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE211-90",
+    "name": "CEREALES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE213-90",
+    "name": "RAICES Y TUBERCULOS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE215-04",
+    "name": "CULTIVOS ANUALES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE216-05",
+    "name": "FLORICULTURA Y ORNAMENTALES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE221-90",
+    "name": "FRUTICULTURA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE227-07",
+    "name": "TALLER DE CULTIVOS Y SISTEMAS",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE228-07",
+    "name": "TALLER DE SANIDAD VEGETAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE231-90",
+    "name": "ENTOMOLOGIA AGRICOLA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE235-07",
+    "name": "MALHERBOLOGIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE241-90",
+    "name": "FITOPATOLOGIA AGRICOLA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE246-07",
+    "name": "OLERICULTURA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE250-05",
+    "name": "MEJORAMIENTO VEGETAL",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE253-05",
+    "name": "MANEJO POST-COSECHA DE PRODUCTOS VEGETALES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE261-07",
+    "name": "MANEJO Y PRODUCCION FRUTICOLA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE295-08",
+    "name": "PROYECTO DE MEMORIA",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "PSVE297-08",
+    "name": "MEMORIA DE TITULO",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "QUIM105-90",
+    "name": "QUIMICA GENERAL (TEORICO-PRACTICO)",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "QUIM113-90",
+    "name": "QUIMICA ORGANICA (TEORICO-PRACTICO)",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "INFO276-17",
+    "name": "REDES",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT02",
+    "name": "OPTATIVO 2",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  },
+  {
+    "id": "ELECT03",
+    "name": "OPTATIVO 3",
+    "description": "",
+    "tags": "",
+    "grading": "scale",
+    "grade_min": 1,
+    "grade_max": 7,
+    "grade_pass_min": 4
+  }
+]

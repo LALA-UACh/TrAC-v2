@@ -6,7 +6,7 @@ import { Flex, Stack, Text } from "@chakra-ui/core";
 import { ConfigContext } from "../Config";
 import { TrackingContext } from "../Tracking";
 
-export const Dropout: FC<{ probability: number; accuracy: number }> = memo(
+export const Dropout: FC<{ probability?: number; accuracy?: number }> = memo(
   ({ probability, accuracy }) => {
     const {
       DROPOUT_BACKGROUND_COLOR,
@@ -76,10 +76,10 @@ export const Dropout: FC<{ probability: number; accuracy: number }> = memo(
                     {DROPOUT_PREDICTION_DESCRIPTION}
                   </Text>
                   <Text fontSize="2.5em" fontWeight="bold" ml={5} mb={0}>
-                    {probability}%
+                    {probability ?? "-"}%
                   </Text>
                   <Text ml={5}>
-                    ({DROPOUT_PREDICTION_ACCURACY} <b>{accuracy}</b>)
+                    ({DROPOUT_PREDICTION_ACCURACY} <b>{accuracy ?? "-"}</b>)
                   </Text>
                 </motion.div>
               )}
