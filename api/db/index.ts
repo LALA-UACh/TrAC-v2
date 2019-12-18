@@ -9,7 +9,7 @@ const dbPassword = process.env.POSTGRES_PASSWORD;
 const dbHost = process.env.POSTGRES_HOST || "localhost";
 
 const authDbName = "auth-lala";
-const dataDbName = "lalauach";
+const dataDbName = "data-lala";
 const trackingDbName = "tracking";
 const configDbName = "config";
 
