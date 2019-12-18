@@ -1,5 +1,6 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
+import { last, round, toInteger } from "lodash";
 import React, {
   cloneElement,
   FC,
@@ -85,20 +86,45 @@ export const GradeScale = scaleLinear();
 export const YAxisScale = scaleLinear();
 
 export const TimeLine: FC<{
-  CUMULATED_GRADE: number[];
-  SEMESTRAL_GRADE: number[];
-  PROGRAM_GRADE: number[];
+  cumulatedGrades: number[];
+  semestralGrades: number[];
+  programGrades: number[];
   semestersTaken: { year: number; term: string }[];
 }> = memo(
-  ({ CUMULATED_GRADE, SEMESTRAL_GRADE, PROGRAM_GRADE, semestersTaken }) => {
+  ({
+    cumulatedGrades: cumulatedGradesProp,
+    semestralGrades: semestralGradesProp,
+    programGrades,
+    semestersTaken,
+  }) => {
     const config = useContext(ConfigContext);
     const { checkExplicitSemester } = useContext(CoursesFlowContext);
 
-    const width = Math.max((CUMULATED_GRADE.length - 1) * 120 + 60, 650);
+    const { cumulatedGrades, semestralGrades } = useMemo(() => {
+      if (
+        toInteger(last(cumulatedGradesProp)) === 0 &&
+        toInteger(last(semestralGradesProp)) === 0
+      ) {
+        return {
+          cumulatedGrades: cumulatedGradesProp
+            .slice(0, -1)
+            .map(n => round(n, 2)),
+          semestralGrades: semestralGradesProp
+            .slice(0, -1)
+            .map(n => round(n, 2)),
+        };
+      }
+      return {
+        cumulatedGrades: cumulatedGradesProp.map(n => round(n, 2)),
+        semestralGrades: semestralGradesProp.map(n => round(n, 2)),
+      };
+    }, [cumulatedGradesProp, semestralGradesProp]);
+
+    const width = Math.max((cumulatedGrades.length - 1) * 120 + 60, 650);
 
     const CirclesComponent = useMemo(
       () =>
-        CUMULATED_GRADE.map((CUMULATED_GRADE, key) => {
+        cumulatedGrades.map((CUMULATED_GRADE, key) => {
           return (
             <g key={key}>
               <TimeLineTooltip grade={CUMULATED_GRADE}>
@@ -109,17 +135,17 @@ export const TimeLine: FC<{
                   fill={config.CUMULATED_GRADE_COLOR}
                 />
               </TimeLineTooltip>
-              <TimeLineTooltip grade={PROGRAM_GRADE[key]}>
+              <TimeLineTooltip grade={programGrades[key]}>
                 <circle
-                  cy={GradeScale(PROGRAM_GRADE[key])}
+                  cy={GradeScale(programGrades[key])}
                   cx={key * 70 + 70}
                   r={5}
                   fill={config.PROGRAM_GRADE_COLOR}
                 />
               </TimeLineTooltip>
-              <TimeLineTooltip grade={SEMESTRAL_GRADE[key]}>
+              <TimeLineTooltip grade={semestralGrades[key]}>
                 <circle
-                  cy={GradeScale(SEMESTRAL_GRADE[key])}
+                  cy={GradeScale(semestralGrades[key])}
                   cx={key * 70 + 70}
                   r={5}
                   fill={
@@ -137,9 +163,9 @@ export const TimeLine: FC<{
           );
         }),
       [
-        SEMESTRAL_GRADE,
-        CUMULATED_GRADE,
-        PROGRAM_GRADE,
+        semestralGrades,
+        cumulatedGrades,
+        programGrades,
         semestersTaken,
         checkExplicitSemester,
         config,
@@ -148,40 +174,41 @@ export const TimeLine: FC<{
 
     const StrokesComponent = useMemo(
       () =>
-        CUMULATED_GRADE.map((_, key) => {
+        cumulatedGrades.map((_, key) => {
           return (
             <g key={key}>
-              {SEMESTRAL_GRADE[key + 1] !== undefined && (
+              {semestralGrades[key + 1] !== undefined && (
                 <line
                   stroke={config.SEMESTRAL_GRADE_COLOR}
                   x1={key * 70 + 70}
-                  y1={GradeScale(SEMESTRAL_GRADE[key])}
+                  y1={GradeScale(semestralGrades[key])}
                   x2={(key + 1) * 70 + 70}
-                  y2={GradeScale(SEMESTRAL_GRADE[key + 1])}
+                  y2={GradeScale(semestralGrades[key + 1])}
                 />
               )}
-              {CUMULATED_GRADE[key + 1] !== undefined && (
+              {cumulatedGrades[key + 1] !== undefined && (
                 <line
                   stroke={config.CUMULATED_GRADE_COLOR}
                   x1={key * 70 + 70}
-                  y1={GradeScale(CUMULATED_GRADE[key])}
+                  y1={GradeScale(cumulatedGrades[key])}
                   x2={(key + 1) * 70 + 70}
-                  y2={GradeScale(CUMULATED_GRADE[key + 1])}
+                  y2={GradeScale(cumulatedGrades[key + 1])}
                 />
               )}
-              {PROGRAM_GRADE[key + 1] !== undefined && (
-                <line
-                  stroke={config.PROGRAM_GRADE_COLOR}
-                  x1={key * 70 + 70}
-                  y1={GradeScale(PROGRAM_GRADE[key])}
-                  x2={(key + 1) * 70 + 70}
-                  y2={GradeScale(PROGRAM_GRADE[key + 1])}
-                />
-              )}
+              {cumulatedGrades[key + 1] !== undefined &&
+                programGrades[key + 1] !== undefined && (
+                  <line
+                    stroke={config.PROGRAM_GRADE_COLOR}
+                    x1={key * 70 + 70}
+                    y1={GradeScale(programGrades[key])}
+                    x2={(key + 1) * 70 + 70}
+                    y2={GradeScale(programGrades[key + 1])}
+                  />
+                )}
             </g>
           );
         }),
-      [SEMESTRAL_GRADE, CUMULATED_GRADE, PROGRAM_GRADE, config]
+      [semestralGrades, cumulatedGrades, programGrades, config]
     );
 
     const LabelAxisComponent = useMemo(
@@ -210,14 +237,14 @@ export const TimeLine: FC<{
           <line
             x1={39}
             y1={170}
-            x2={CUMULATED_GRADE.length * 100 + 160}
+            x2={cumulatedGrades.length * 100 + 160}
             y2={40 + 130}
             stroke={config.TIMELINE_AXIS_COLOR}
           />
           <line
             x1={39}
             y1={GradeScale(config.PASS_GRADE)}
-            x2={CUMULATED_GRADE.length * 100 + 160}
+            x2={cumulatedGrades.length * 100 + 160}
             y2={GradeScale(config.PASS_GRADE)}
             stroke={config.TIMELINE_PASS_LINE_COLOR}
             strokeDasharray="2"
@@ -238,7 +265,7 @@ export const TimeLine: FC<{
           </text>
         </>
       ),
-      [CUMULATED_GRADE, config]
+      [cumulatedGrades, config]
     );
     const height = 270;
     const scale = 0.7;

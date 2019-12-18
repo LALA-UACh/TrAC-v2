@@ -170,9 +170,9 @@ const Dashboard: FC = () => {
       );
       TimeLineComponent = (
         <TimeLine
-          CUMULATED_GRADE={cumulated_grade.slice().reverse()}
-          SEMESTRAL_GRADE={semestral_grade.slice().reverse()}
-          PROGRAM_GRADE={program_grade.slice().reverse()}
+          cumulatedGrades={cumulated_grade.slice().reverse()}
+          semestralGrades={semestral_grade.slice().reverse()}
+          programGrades={program_grade.slice().reverse()}
           semestersTaken={semestersTaken.slice().reverse()}
         />
       );
@@ -399,9 +399,9 @@ const Dashboard: FC = () => {
             <Box>
               {mock && mockData ? (
                 <TimeLine
-                  CUMULATED_GRADE={mockData.default.mockTimeline.PGA}
-                  SEMESTRAL_GRADE={mockData.default.mockTimeline.PSP}
-                  PROGRAM_GRADE={mockData.default.mockTimeline.ProgramPGA}
+                  cumulatedGrades={mockData.default.mockTimeline.PGA}
+                  semestralGrades={mockData.default.mockTimeline.PSP}
+                  programGrades={mockData.default.mockTimeline.ProgramPGA}
                   semestersTaken={mockData.default.mockSemestersTaken}
                 />
               ) : (

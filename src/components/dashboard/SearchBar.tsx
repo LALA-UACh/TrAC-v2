@@ -158,13 +158,14 @@ export const SearchBar: FC<{
 
   useEffect(() => {
     if (
+      myProgramsData?.myPrograms &&
       programsOptions.findIndex(programFound => {
         return programFound.value === program?.value;
       }) === -1
     ) {
       setProgram(programsOptions[0]);
     }
-  }, [program, setProgram, programsOptions, setProgramProp]);
+  }, [program, setProgram, programsOptions, setProgramProp, myProgramsData]);
 
   useEffect(() => {
     Tracking.current.program_menu = program?.value;
