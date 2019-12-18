@@ -58,11 +58,8 @@ class AnonymizationService {
           if (!err?.message?.match(/timeout/g)) {
             // If anonymization service didn't timed out
             console.error("Anonymization service error!", err);
-            this.status = anonServiceStatus.unknown;
-          } else {
-            // If anonymization service timed out we assume it's not available
-            this.status = anonServiceStatus.disabled;
           }
+          this.status = anonServiceStatus.unknown;
         }
       }
     }
