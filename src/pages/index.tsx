@@ -393,7 +393,7 @@ const Dashboard: FC = () => {
           ) : null}
         </>
       )}
-      <CoursesFlow curriculum={curriculum} program={program}>
+      <CoursesFlow curriculum={curriculum} program={program} mock={mock}>
         <ScrollContainer activationDistance={5} hideScrollbars={false}>
           <Stack isInline flexWrap="wrap-reverse">
             <Box>

@@ -38,11 +38,11 @@ export const CoursesFlowContext = createContext<{
   semestersTaken: [],
 });
 
-export const CoursesFlow: FC<{ program?: string; curriculum?: string }> = ({
-  children,
-  curriculum,
-  program,
-}) => {
+export const CoursesFlow: FC<{
+  program?: string;
+  curriculum?: string;
+  mock: boolean;
+}> = ({ children, curriculum, program, mock }) => {
   const Tracking = useContext(TrackingContext);
   const [explicitSemester, setExplicitSemester] = useState<
     string | undefined
@@ -102,7 +102,7 @@ export const CoursesFlow: FC<{ program?: string; curriculum?: string }> = ({
       semestersTaken: [],
     });
     setExplicitSemester(undefined);
-  }, [curriculum, program, setState, setExplicitSemester]);
+  }, [curriculum, program, setState, setExplicitSemester, mock]);
 
   useEffect(() => {
     Tracking.current.coursesOpen = active.join("|");
