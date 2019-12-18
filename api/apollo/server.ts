@@ -33,6 +33,7 @@ export const apolloServer = new ApolloServer({
         }
       : false,
   context: ({ req, res }) => buildContext({ req, res }),
-  introspection: process.env.NODE_ENV !== "production",
+  introspection:
+    !!process.env.SHOW_GRAPHQL_API || process.env.NODE_ENV !== "production",
   debug: process.env.NODE_ENV !== "production",
 });

@@ -1,9 +1,6 @@
 apps:
   - name: trac_api
     script: /home/trac/api/dist/api/index.js
-    interpreter_args:
-      - -r
-      - dotenv/config
     exec_mode: cluster
     instances: 1
     wait_ready: true

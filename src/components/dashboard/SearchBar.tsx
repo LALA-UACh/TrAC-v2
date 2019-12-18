@@ -182,7 +182,7 @@ export const SearchBar: FC<{
     >
       <Flex alignItems="center" wrap="wrap">
         <Box width={350} mr={4}>
-          <Select
+          <Select<{ value: string; label: string }>
             options={programsOptions}
             value={program || null}
             isLoading={isSearchLoading}

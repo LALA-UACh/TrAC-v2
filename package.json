@@ -13,7 +13,7 @@
     "clean": "rm -rf logs/*",
     "dev": "cross-env NODE_ENV=development run-p -l watch-*",
     "start": "run-p start-client start-api",
-    "start-api": "node -r dotenv/config api/dist/api/index.js",
+    "start-api": "node api/dist/api/index.js",
     "start-client": "next start",
     "start-pm2": "pm2 start ecosystem.yaml",
     "start-pm2-dev": "pm2 start ecosystem-dev.yaml",
@@ -21,7 +21,7 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "watch-api-build": "tsc -P api -w",
-    "watch-api-run": "nodemon --delay 1 -r dotenv/config --inspect=27050 api/dist/api/index.js",
+    "watch-api-run": "nodemon --delay 1 --inspect=27050 api/dist/api/index.js",
     "watch-client": "next"
   },
   "dependencies": {
@@ -57,6 +57,7 @@
     "graphql-tag": "^2.10.1",
     "graphql-tag-ts": "^0.1.12",
     "graphql-type-json": "^0.3.1",
+    "graphql-voyager": "^1.0.0-rc.28",
     "http-proxy-middleware": "^0.20.0",
     "js-cookie": "^2.2.1",
     "json-stringify-safe": "^5.0.1",
