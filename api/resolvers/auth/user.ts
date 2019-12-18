@@ -12,10 +12,10 @@ import {
 } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
-import { defaultUserType } from "../../constants";
-import { ArrayPropertyType } from "../../interfaces/utils";
-import { ADMIN } from "../consts";
-import { dbAuth } from "../db";
+import { defaultUserType } from "../../../constants";
+import { ArrayPropertyType } from "../../../interfaces/utils";
+import { ADMIN } from "../../api_constants";
+import { dbAuth } from "../../db";
 import {
   IUser,
   IUserPrograms,
@@ -23,16 +23,16 @@ import {
   USER_PROGRAMS_TABLE,
   UserProgramsTable,
   UserTable,
-} from "../db/tables";
+} from "../../db/tables";
 import {
   LockedUserResult,
   UpdateUserPrograms,
   UpsertedUser,
   User,
   UserProgram,
-} from "../entities/user";
-import { assertIsDefined } from "../utils/assert";
-import { sendMail, UnlockMail } from "../utils/mail";
+} from "../../entities/auth/user";
+import { assertIsDefined } from "../../utils/assert";
+import { sendMail, UnlockMail } from "../../utils/mail";
 
 @Resolver(() => User)
 export class UserResolver {

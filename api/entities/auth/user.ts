@@ -9,10 +9,10 @@ import {
   registerEnumType,
 } from "type-graphql";
 
-import { UserType } from "../../constants";
-import { ADMIN } from "../consts";
-import { IUser } from "../db/tables";
-import { Program } from "./program";
+import { UserType } from "../../../constants";
+import { ADMIN } from "../../api_constants";
+import { IUser } from "../../db/tables";
+import { Program } from "../data/program";
 
 registerEnumType(UserType, {
   name: "UserType",

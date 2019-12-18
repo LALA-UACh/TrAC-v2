@@ -6,10 +6,9 @@ import {
   CourseStatsTable,
   CourseTable,
   ProgramStructureTable,
-  StudentCourseTable,
-} from "../db/tables";
-import { Course } from "../entities/course";
-import { assertIsDefined } from "../utils/assert";
+} from "../../db/tables";
+import { Course } from "../../entities/data/course";
+import { assertIsDefined } from "../../utils/assert";
 
 const creditsFormat = ({
   credits,

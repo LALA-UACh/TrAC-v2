@@ -10,7 +10,7 @@ import {
   USER_PROGRAMS_TABLE,
   USERS_TABLE,
   UserTable,
-} from "../../db/tables";
+} from "../tables";
 
 const dataImport = async () => {
   dbAuth.schema.hasTable(USERS_TABLE).then(async exists => {

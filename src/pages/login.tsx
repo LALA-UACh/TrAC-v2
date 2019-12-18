@@ -21,7 +21,7 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Image } from "@chakra-ui/core";
 
 import { LOCKED_USER, WRONG_INFO } from "../../constants";
-import { ConfigContext } from "../components/dashboard/Config";
+import { ConfigContext } from "../components/Config";
 import { CURRENT_USER, LOGIN } from "../graphql/queries";
 
 const Login: FC = () => {

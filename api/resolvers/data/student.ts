@@ -17,8 +17,8 @@ import {
   STUDENT_LIST_UNAUTHORIZED,
   STUDENT_NOT_FOUND,
   UserType,
-} from "../../constants";
-import { IContext } from "../../interfaces";
+} from "../../../constants";
+import { IContext } from "../../../interfaces";
 import {
   IStudent,
   STUDENT_PROGRAM_TABLE_NAME,
@@ -28,11 +28,11 @@ import {
   StudentTable,
   StudentTermTable,
   UserProgramsTable,
-} from "../db/tables";
-import { Dropout } from "../entities/dropout";
-import { Student } from "../entities/student";
-import { anonService } from "../utils/anonymization";
-import { assertIsDefined } from "../utils/assert";
+} from "../../db/tables";
+import { Dropout } from "../../entities/data/dropout";
+import { Student } from "../../entities/data/student";
+import { anonService } from "../../utils/anonymization";
+import { assertIsDefined } from "../../utils/assert";
 import { PartialProgram } from "./program";
 import { PartialTerm } from "./term";
 

@@ -1,10 +1,9 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
-import { AuthResult } from "../../api/entities/auth";
 import { StateCourse, TermType, UserType } from "../../constants";
 import { baseConfig } from "../../constants/baseConfig";
 import { IfImplements } from "../../typings/utils";
-import { Program, Student, User } from "./medium";
+import { AuthResult, Program, Student, User } from "./medium";
 
 export const UserFragment = gql`
   fragment UserFragment on User {

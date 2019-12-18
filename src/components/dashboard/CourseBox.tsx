@@ -10,7 +10,7 @@ import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 import { StateCourse, termTypeToNumber } from "../../../constants";
 import { ICourse, ITakenCourse } from "../../../interfaces";
 import { TrackingContext } from "../../components/Tracking";
-import { ConfigContext } from "./Config";
+import { ConfigContext } from "../Config";
 import { CoursesFlowContext } from "./CoursesFlow";
 import { Histogram } from "./Histogram";
 

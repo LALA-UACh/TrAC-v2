@@ -1,4 +1,4 @@
-import { dbAuth, dbConfig, dbData, dbTracking } from "./";
+import { dbData } from "../";
 
 export interface ICourse {
   id: string;
@@ -158,68 +158,3 @@ export interface IStudentTerm {
 }
 
 export const StudentTermTable = () => dbData<IStudentTerm>("student_term");
-
-// -------------------------------------------------------------------------------------
-
-export const USERS_TABLE = "users";
-export interface IUser {
-  email: string;
-  password: string;
-  name: string;
-  oldPassword1: string;
-  oldPassword2: string;
-  oldPassword3: string;
-  locked: boolean;
-  tries: number;
-  unlockKey: string;
-  admin: boolean;
-  type: string;
-  student_id: string;
-  show_dropout: boolean;
-  show_student_list: boolean;
-}
-
-export const UserTable = () => dbAuth<IUser>(USERS_TABLE);
-
-// -------------------------------------------------------------------------------------
-
-export interface IUserPrograms {
-  email: string;
-  program: string;
-}
-
-export const USER_PROGRAMS_TABLE = "user-programs";
-
-export const UserProgramsTable = () =>
-  dbAuth<IUserPrograms>(USER_PROGRAMS_TABLE);
-
-// -------------------------------------------------------------------------------------
-
-export interface ITrack {
-  id: number;
-
-  app_id: string;
-
-  user_id: string;
-
-  datetime: Date;
-
-  datetime_client: Date;
-
-  data: string;
-}
-
-export const TRACKING_TABLE = "tracking";
-
-export const TrackingTable = () => dbTracking<ITrack>(TRACKING_TABLE);
-
-// -------------------------------------------------------------------------------------
-
-interface IConfiguration {
-  name: string;
-  value: string;
-}
-
-export const CONFIGURATION_TABLE = "configuration";
-export const ConfigurationTable = () =>
-  dbConfig<IConfiguration>(CONFIGURATION_TABLE);

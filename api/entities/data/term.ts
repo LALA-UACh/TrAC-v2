@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType, registerEnumType } from "type-graphql";
 
-import { TermType } from "../../constants";
+import { TermType } from "../../../constants";
 import { TakenCourse } from "./takenCourse";
 
 registerEnumType(TermType, {

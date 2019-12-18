@@ -3,8 +3,8 @@ import React, { FC, memo, useContext, useMemo } from "react";
 import { Box } from "@chakra-ui/core";
 
 import { termTypeToNumber } from "../../../constants";
+import { ConfigContext } from "../Config";
 import { TrackingContext } from "../Tracking";
-import { ConfigContext } from "./Config";
 import { CoursesFlowContext } from "./CoursesFlow";
 
 export const TakenSemesterBox: FC<{ year: number; term: string }> = memo(

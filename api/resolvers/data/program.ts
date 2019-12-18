@@ -17,20 +17,20 @@ import {
   PROGRAM_UNAUTHORIZED,
   STUDENT_NOT_FOUND,
   UserType,
-} from "../../constants";
-import { IContext } from "../../interfaces";
-import { ArrayPropertyType, IfImplements } from "../../interfaces/utils";
-import { ADMIN } from "../consts";
+} from "../../../constants";
+import { IContext } from "../../../interfaces";
+import { ArrayPropertyType, IfImplements } from "../../../interfaces/utils";
+import { ADMIN } from "../../api_constants";
 import {
   ProgramStructureTable,
   ProgramTable,
   StudentProgramTable,
   StudentTable,
   UserProgramsTable,
-} from "../db/tables";
-import { Program } from "../entities/program";
-import { anonService } from "../utils/anonymization";
-import { assertIsDefined } from "../utils/assert";
+} from "../../db/tables";
+import { Program } from "../../entities/data/program";
+import { anonService } from "../../utils/anonymization";
+import { assertIsDefined } from "../../utils/assert";
 import { PartialCourse } from "./course";
 
 export type PartialProgram = Pick<Program, "id">;

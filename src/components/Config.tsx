@@ -3,11 +3,11 @@ import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
 
-import { baseConfig } from "../../../constants/baseConfig";
-import { CONFIG_QUERY } from "../../graphql/queries";
-import { failColorScale, passColorScale } from "./CourseBox";
-import { scaleAxisX, scaleColorX } from "./Histogram";
-import { GradeScale, YAxisScale } from "./Timeline";
+import { baseConfig } from "../../constants/baseConfig";
+import { CONFIG_QUERY } from "../graphql/queries";
+import { failColorScale, passColorScale } from "./dashboard/CourseBox";
+import { scaleAxisX, scaleColorX } from "./dashboard/Histogram";
+import { GradeScale, YAxisScale } from "./dashboard/Timeline";
 
 export const ConfigContext = createContext(baseConfig);
 

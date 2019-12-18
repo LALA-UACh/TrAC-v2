@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 
-import { SECRET } from "../consts";
+import { SECRET } from "../api_constants";
 import { IUser, UserTable } from "../db/tables";
-import { AuthResolver } from "../resolvers/auth";
+import { AuthResolver } from "../resolvers/auth/auth";
 
 export const buildContext = async ({
   req,

@@ -30,8 +30,8 @@ import {
 } from "@chakra-ui/core";
 
 import { CURRENT_USER, STUDENT_LIST } from "../../graphql/queries";
+import { ConfigContext } from "../Config";
 import { TrackingContext } from "../Tracking";
-import { ConfigContext } from "./Config";
 
 type columnNames =
   | "student_id"

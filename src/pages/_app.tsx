@@ -8,7 +8,7 @@ import React from "react";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { theme, ThemeProvider } from "@chakra-ui/core";
 
-import { Config } from "../components/dashboard/Config";
+import { Config } from "../components/Config";
 import { withApollo } from "../utils/withApollo";
 
 Router.events.on("routeChangeStart", () => NProgress.start());

@@ -10,12 +10,12 @@ import {
   USED_OLD_PASSWORD,
   UserType,
   WRONG_INFO,
-} from "../../constants";
-import { IContext } from "../../interfaces";
-import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../consts";
-import { StudentTable, UserTable } from "../db/tables";
-import { AuthResult, LoginInput, UnlockInput } from "../entities/auth";
-import { sendMail, UnlockMail } from "../utils/mail";
+} from "../../../constants";
+import { IContext } from "../../../interfaces";
+import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../../api_constants";
+import { StudentTable, UserTable } from "../../db/tables";
+import { AuthResult, LoginInput, UnlockInput } from "../../entities/auth/auth";
+import { sendMail, UnlockMail } from "../../utils/mail";
 
 @Resolver()
 export class AuthResolver {

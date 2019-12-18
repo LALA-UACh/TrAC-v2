@@ -2,14 +2,14 @@ import { uniqBy } from "lodash";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
-import { defaultTermType } from "../../constants";
+import { defaultTermType } from "../../../constants";
 import {
   ProgramTable,
   StudentCourseTable,
   StudentTermTable,
-} from "../db/tables";
-import { Term } from "../entities/term";
-import { assertIsDefined } from "../utils/assert";
+} from "../../db/tables";
+import { Term } from "../../entities/data/term";
+import { assertIsDefined } from "../../utils/assert";
 import { PartialTakenCourse } from "./takenCourse";
 
 export type PartialTerm = Pick<Term, "id">;

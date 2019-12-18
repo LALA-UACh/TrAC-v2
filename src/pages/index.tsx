@@ -22,7 +22,7 @@ import {
   UserType,
 } from "../../constants";
 import { ITakenCourse } from "../../interfaces";
-import { ConfigContext } from "../components/dashboard/Config";
+import { ConfigContext } from "../components/Config";
 import { CoursesFlow } from "../components/dashboard/CoursesFlow";
 import { Semester } from "../components/dashboard/Semester";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";

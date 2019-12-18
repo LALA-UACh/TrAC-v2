@@ -17,7 +17,7 @@ import matches from "validator/lib/matches";
 import { useMutation } from "@apollo/react-hooks";
 
 import { USED_OLD_PASSWORD, WRONG_INFO } from "../../../../constants";
-import { ConfigContext } from "../../../components/dashboard/Config";
+import { ConfigContext } from "../../../components/Config";
 import { CURRENT_USER, UNLOCK } from "../../../graphql/queries";
 
 export default () => {

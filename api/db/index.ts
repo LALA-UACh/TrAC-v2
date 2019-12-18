@@ -65,4 +65,4 @@ export const dbConfig = knex({
   // debug: true,
 });
 
-import("./data");
+import("./initialData");
