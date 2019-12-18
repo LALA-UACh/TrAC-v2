@@ -104,12 +104,13 @@ export const CourseBox: FC<ICourse> = ({
     switch (state) {
       case StateCourse.Passed: {
         const gradeToCompare = grade ?? config.MAX_GRADE;
+
         return (
           bandColorsCourse.find(({ min, max }) => {
             return gradeToCompare <= max && gradeToCompare >= min;
           })?.color ??
           bandColorsCourse[bandColorsCourse.length - 1]?.color ??
-          "rgb(0,255,0)"
+          config.STATE_COLOR_PASS_FALLBACK
         );
       }
       case StateCourse.Failed: {
@@ -119,7 +120,7 @@ export const CourseBox: FC<ICourse> = ({
             return gradeToCompare <= max && gradeToCompare >= min;
           })?.color ??
           bandColorsCourse[0]?.color ??
-          "rgb(255,0,0)"
+          config.STATE_COLOR_FAIL_FALLBACK
         );
       }
       case StateCourse.Current: {

@@ -308,6 +308,20 @@
     "mention": ""
   },
   {
+    "id": 50997,
+    "student_id": "6fdb8a7f5bbaf0c68dbca0f5462e866a",
+    "year": 2019,
+    "term": 2,
+    "situation": "",
+    "t_gpa": 0,
+    "c_gpa": 0,
+    "comments": 0,
+    "program_id": 1708,
+    "curriculum": 2015,
+    "start_year": 2015,
+    "mention": ""
+  },
+  {
     "id": 125720,
     "student_id": "e078c7de4d67798a915801ba7e2539fb",
     "year": 2017,
@@ -371,6 +385,20 @@
     "situation": "REGULAR",
     "t_gpa": 4.85,
     "c_gpa": 5.49,
+    "comments": 0,
+    "program_id": 1708,
+    "curriculum": 2017,
+    "start_year": 2017,
+    "mention": ""
+  },
+  {
+    "id": 125725,
+    "student_id": "e078c7de4d67798a915801ba7e2539fb",
+    "year": 2019,
+    "term": 2,
+    "situation": "",
+    "t_gpa": 0,
+    "c_gpa": 0,
     "comments": 0,
     "program_id": 1708,
     "curriculum": 2017,

@@ -107,4 +107,6 @@ export const baseConfig = {
     "No está autorizado para ver el programa especificado",
   ERROR_PROGRAM_NOT_FOUND: "Programa especificado no pudo ser encontrado.",
   CHECK_STUDENT_FROM_LIST_LABEL: "Ver estudiante",
+  STATE_COLOR_PASS_FALLBACK: "rgb(102,180,62)",
+  STATE_COLOR_FAIL_FALLBACK: "rgb(214,96,77)",
 };
