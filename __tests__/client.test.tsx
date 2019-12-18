@@ -9,7 +9,7 @@ import { act, render } from "@testing-library/react";
 import { UserType } from "../constants";
 import { baseConfig } from "../constants/baseConfig";
 import { ALL_USERS_ADMIN } from "../src/graphql/adminQueries";
-import { CURRENT_USER } from "../src/graphql/queries";
+import { CURRENT_USER, TRACK } from "../src/graphql/queries";
 import AdminPage from "../src/pages/admin";
 import IndexPage from "../src/pages/index";
 import LoginPage from "../src/pages/login";
@@ -125,6 +125,16 @@ describe("dashboard", () => {
                     },
                     __typename: "AuthResult",
                   },
+                },
+              },
+            },
+            {
+              request: {
+                query: TRACK,
+              },
+              result: {
+                data: {
+                  track: true,
                 },
               },
             },
