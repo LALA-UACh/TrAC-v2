@@ -89,7 +89,7 @@ const Dashboard: FC = () => {
         searchStudentData,
       });
     }
-  }, [searchProgramData, searchStudentError]);
+  }, [searchProgramData, searchStudentData]);
 
   useEffect(() => {
     if (!currentUserData?.currentUser?.user?.admin && mock === true) {
