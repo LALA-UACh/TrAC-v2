@@ -24,7 +24,7 @@ export const Dropout: FC<{ probability?: number; accuracy?: number }> = memo(
     }, [show]);
 
     return (
-      <Flex alignItems="center">
+      <Flex alignItems="center" ml="1em">
         <Flex
           backgroundColor={DROPOUT_BACKGROUND_COLOR}
           boxShadow={

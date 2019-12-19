@@ -395,7 +395,7 @@ const Dashboard: FC = () => {
       )}
       <CoursesFlow curriculum={curriculum} program={program} mock={mock}>
         <ScrollContainer activationDistance={5} hideScrollbars={false}>
-          <Stack isInline flexWrap="wrap-reverse">
+          <Flex>
             <Box>
               {mock && mockData ? (
                 <TimeLine
@@ -416,7 +416,7 @@ const Dashboard: FC = () => {
             ) : (
               DropoutComponent
             )}
-          </Stack>
+          </Flex>
 
           <Stack isInline pl="50px">
             {mock && mockData
