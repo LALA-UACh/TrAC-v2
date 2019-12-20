@@ -129,7 +129,7 @@ export class TakenCourseResolver {
     );
 
     const dataTakenCourse = await StudentCourseTable()
-      .select("year", "term")
+      .select("year", "term", "p_group")
       .where({ id })
       .first();
 
@@ -144,6 +144,7 @@ export class TakenCourseResolver {
         course_taken: code,
         year: dataTakenCourse.year,
         term: dataTakenCourse.term,
+        p_group: dataTakenCourse.p_group,
       })
       .first();
 
