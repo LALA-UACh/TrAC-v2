@@ -1,6 +1,6 @@
 apps:
   - name: trac_api
-    script: /home/trac/api/dist/api/index.js
+    script: api/dist/api/index.js
     exec_mode: cluster
     instances: 1
     wait_ready: true
@@ -11,7 +11,7 @@ apps:
     combine_logs: true
     time: true
   - name: trac_client
-    script: /home/trac/node_modules/next/dist/bin/next
+    script: node_modules/next/dist/bin/next
     args: start
     interpreter: node
     interpreter_args:
