@@ -19,10 +19,12 @@ import {
   Button,
   Drawer,
   DrawerBody,
+  DrawerCloseButton,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
+  Flex,
   Icon,
   Spinner,
   Text,
@@ -204,14 +206,17 @@ export const StudentList: FC<{
         onClose={onClose}
         finalFocusRef={btnRef}
         size="lg"
+        scrollBehavior="inside"
+        isFullHeight
       >
         <DrawerOverlay />
         <DrawerContent transition={isOpen ? "0.3s all" : "0s all"}>
+          <DrawerCloseButton />
           <DrawerHeader height={20} display="flex" alignItems="center">
             {STUDENT_LIST_TITLE} {loadingData && <Spinner ml={3} />}
           </DrawerHeader>
 
-          <DrawerBody overflowY="scroll">
+          <DrawerBody>
             <Pagination
               totalPages={studentListChunks.length}
               activePage={pageSelected}
@@ -336,7 +341,6 @@ export const StudentList: FC<{
               </Table.Body>
             </Table>
           </DrawerBody>
-
           <DrawerFooter justifyContent="flex-start">
             <Icon
               name={isOpen ? "chevron-left" : "chevron-right"}
