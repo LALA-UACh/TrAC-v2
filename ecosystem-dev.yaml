@@ -2,7 +2,7 @@ apps:
   - name: trac_api
     script: api/dist/api/index.js
     exec_mode: cluster
-    instances: 1
+    instances: 2
     wait_ready: true
     env:
       NODE_ENV: production
@@ -13,12 +13,8 @@ apps:
   - name: trac_client
     script: node_modules/next/dist/bin/next
     args: start
-    interpreter: node
-    interpreter_args:
-      - -r
-      - dotenv/config
     exec_mode: cluster
-    instances: 1
+    instances: 2
     out_file: logs/out_client.log
     error_file: logs/error_client.log
     combine_logs: true

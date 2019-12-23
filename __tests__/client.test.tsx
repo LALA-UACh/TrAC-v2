@@ -9,9 +9,8 @@ import { act, render } from "@testing-library/react";
 import { UserType } from "../constants";
 import { baseConfig } from "../constants/baseConfig";
 import { ALL_USERS_ADMIN } from "../src/graphql/adminQueries";
-import { CURRENT_USER, TRACK } from "../src/graphql/queries";
+import { CURRENT_USER } from "../src/graphql/queries";
 import AdminPage from "../src/pages/admin";
-import IndexPage from "../src/pages/index";
 import LoginPage from "../src/pages/login";
 import UnlockPage from "../src/pages/unlock/[email]/[unlockKey]";
 
@@ -95,61 +94,6 @@ describe("login", () => {
 
         expect(LoginButton).toBeTruthy();
         expect(LoginButton).toHaveAttribute("disabled");
-      });
-      unmount();
-    });
-  });
-});
-
-describe("dashboard", () => {
-  test("renders correctly", async () => {
-    await act(async () => {
-      const { getByText, unmount } = render(
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: CURRENT_USER,
-              },
-              result: {
-                data: {
-                  currentUser: {
-                    user: {
-                      email: "asd@gmail.com",
-                      name: "name",
-                      admin: true,
-                      type: UserType.Director,
-                      show_dropout: true,
-                      show_student_list: true,
-                      __typename: "User",
-                    },
-                    __typename: "AuthResult",
-                  },
-                },
-              },
-            },
-            {
-              request: {
-                query: TRACK,
-              },
-              result: {
-                data: {
-                  track: true,
-                },
-              },
-            },
-          ]}
-          addTypename={true}
-        >
-          <IndexPage />
-        </MockedProvider>
-      );
-
-      await waitForExpect(async () => {
-        const SearchButton = getByText(baseConfig.SEARCH_BUTTON_LABEL);
-
-        expect(SearchButton).toBeTruthy();
-        expect(SearchButton).toHaveAttribute("disabled");
       });
       unmount();
     });
