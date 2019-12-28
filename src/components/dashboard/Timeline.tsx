@@ -60,7 +60,7 @@ const TimeLineTooltip: FC<{
               rx={5}
             />
             <text
-              x={(children.props?.cx ?? children.props?.x ?? 0) + 10}
+              x={(children.props?.cx ?? children.props?.x ?? 0) + 11}
               y={(children.props?.cy ?? children.props?.y ?? 0) - 5}
               fill={TIMELINE_TOOLTIP_TEXT_COLOR}
             >
