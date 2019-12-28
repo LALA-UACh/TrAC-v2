@@ -210,7 +210,7 @@ export const StudentList: FC<{
         isFullHeight
       >
         <DrawerOverlay />
-        <DrawerContent transition={isOpen ? "0.3s all" : "0s all"}>
+        <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader height={20} display="flex" alignItems="center">
             {STUDENT_LIST_TITLE} {loadingData && <Spinner ml={3} />}
