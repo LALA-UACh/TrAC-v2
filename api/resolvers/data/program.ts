@@ -25,7 +25,6 @@ import {
   ProgramStructureTable,
   ProgramTable,
   StudentProgramTable,
-  StudentTable,
   UserProgramsTable,
 } from "../../db/tables";
 import { Program } from "../../entities/data/program";

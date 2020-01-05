@@ -78,36 +78,39 @@ export const Tracking: FC<{
   });
 
   useEffect(() => {
-    TrackingData.current.track = async ({ action, effect, target }) => {
-      setTimeout(() => {
-        const {
-          program,
-          curriculum,
-          student,
-          coursesOpen,
-          showingPrediction,
-          showingProgress,
-          program_menu,
-        } = TrackingData.current;
+    TrackingData.current.track = ({ action, effect, target }) => {
+      return new Promise(resolve => {
+        setTimeout(async () => {
+          const {
+            program,
+            curriculum,
+            student,
+            coursesOpen,
+            showingPrediction,
+            showingProgress,
+            program_menu,
+          } = TrackingData.current;
 
-        trackMutate({
-          variables: {
-            data: trackingTemplate({
-              program,
-              program_menu,
-              curriculum,
-              student,
-              coursesOpen,
-              showingPrediction,
-              showingProgress,
-              action,
-              effect,
-              target,
-            }),
-            datetime_client: new Date(),
-          },
-        });
-      }, 100);
+          trackMutate({
+            variables: {
+              data: trackingTemplate({
+                program,
+                program_menu,
+                curriculum,
+                student,
+                coursesOpen,
+                showingPrediction,
+                showingProgress,
+                action,
+                effect,
+                target,
+              }),
+              datetime_client: new Date(),
+            },
+          });
+          resolve();
+        }, 10);
+      });
     };
   }, [trackMutate]);
 

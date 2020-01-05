@@ -4,7 +4,6 @@ import {
   Authorized,
   Field,
   InputType,
-  Int,
   ObjectType,
   registerEnumType,
 } from "type-graphql";

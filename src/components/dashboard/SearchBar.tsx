@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { range } from "lodash";
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import { generate } from "randomstring";
 import React, {
   ChangeEvent,
@@ -12,6 +12,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useState,
 } from "react";
 import Select from "react-select";
 import { Button, Icon } from "semantic-ui-react";
@@ -143,6 +144,8 @@ export const SearchBar: FC<{
     }
   }, [student_id, setStudentId]);
 
+  const [logoutLoading, setLogoutLoading] = useState(false);
+
   const programsOptions = useMemo(() => {
     return (
       myProgramsData?.myPrograms.map(({ id, name }) => ({
@@ -155,6 +158,8 @@ export const SearchBar: FC<{
   const [program, setProgram] = useRememberState<
     $ElementType<typeof programsOptions, number> | undefined
   >("program_input", undefined);
+
+  const { push } = useRouter();
 
   useEffect(() => {
     if (
@@ -176,13 +181,14 @@ export const SearchBar: FC<{
       width="100%"
       justifyContent="space-between"
       alignItems="center"
+      alignContent="flex-end"
       backgroundColor={SEARCH_BAR_BACKGROUND_COLOR}
       p={3}
       cursor="default"
       wrap="wrap"
     >
-      <Flex alignItems="center" wrap="wrap">
-        <Box width={350} mr={4}>
+      <Flex wrap="wrap" alignItems="center">
+        <Box width={300} mr={4} fontSize="0.85em">
           <Select<{ value: string; label: string }>
             options={programsOptions}
             value={program || null}
@@ -243,25 +249,38 @@ export const SearchBar: FC<{
         ) : searchResult?.curriculums.length === 1 ? (
           <Tag
             mr={2}
+            mt={1}
+            p={2}
           >{`${searchResult?.program_id} | ${CURRICULUM_LABEL}: ${searchResult?.curriculums[0]}`}</Tag>
         ) : null}
         {searchResult?.student && (
           <Tag
             cursor="text"
+            mt={1}
+            mb={1}
             mr={2}
+            p={1}
+            maxW="300px"
+            textAlign="center"
           >{`${STUDENT_LABEL}: ${searchResult.student}`}</Tag>
         )}
 
         <form>
           <Flex wrap="wrap" alignItems="center">
-            <InputGroup size="lg">
+            <InputGroup size="lg" mt={2} mb={2}>
               <Input
                 borderColor="gray.400"
                 fontFamily="Lato"
                 variant="outline"
+                fontSize="1em"
                 width={Math.min(
-                  Math.max(pixelWidth(student_id ?? "", { size: 21 }), 180),
-                  350
+                  // Width should maximum 300 for mobile
+                  Math.max(
+                    // Width has to be at least 160 for the placeholder text
+                    pixelWidth(student_id ?? "", { size: 21 }),
+                    160
+                  ),
+                  300
                 )}
                 list="student_options"
                 placeholder={PLACEHOLDER_SEARCH_STUDENT}
@@ -377,7 +396,7 @@ export const SearchBar: FC<{
         </form>
       </Flex>
 
-      <Box>
+      <Flex wrap="wrap" justifyContent="flex-end" className="stack">
         {currentUserData?.currentUser?.user?.admin && (
           <MockingMode mock={mock} setMock={setMock} />
         )}
@@ -434,22 +453,29 @@ export const SearchBar: FC<{
             }}
           />
         )}
-        <Link href="/logout">
-          <Button
-            negative
-            size="big"
-            onClick={() => {
-              Tracking.current.track({
-                action: "click",
-                effect: "logout",
-                target: "logoutButton",
-              });
-            }}
-          >
-            {LOGOUT_BUTTON_LABEL}
-          </Button>
-        </Link>
-      </Box>
+
+        <Button
+          negative
+          size="large"
+          disabled={logoutLoading}
+          loading={logoutLoading}
+          onClick={async () => {
+            setLogoutLoading(true);
+
+            await Tracking.current.track({
+              action: "click",
+              effect: "logout",
+              target: "logoutButton",
+            });
+            push("/logout");
+          }}
+          icon
+          labelPosition="left"
+        >
+          <Icon name="power off" />
+          {LOGOUT_BUTTON_LABEL}
+        </Button>
+      </Flex>
     </Flex>
   );
 };

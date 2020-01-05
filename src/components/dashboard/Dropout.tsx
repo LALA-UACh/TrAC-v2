@@ -55,6 +55,7 @@ export const Dropout: FC<{ probability?: number; accuracy?: number }> = memo(
               ml={4}
               textAlign="center"
               fontWeight="bold"
+              fontFamily="Lato"
               className="verticalText"
               fontSize="1.2em"
             >
@@ -72,13 +73,19 @@ export const Dropout: FC<{ probability?: number; accuracy?: number }> = memo(
                     opacity: 0,
                   }}
                 >
-                  <Text width="290px" pl={5} pb={0} mb={0}>
+                  <Text width="290px" pl={5} pb={0} mb={0} fontFamily="Lato">
                     {DROPOUT_PREDICTION_DESCRIPTION}
                   </Text>
-                  <Text fontSize="2.5em" fontWeight="bold" ml={5} mb={0}>
+                  <Text
+                    fontSize="2.5em"
+                    fontWeight="bold"
+                    ml={5}
+                    mb={0}
+                    fontFamily="Lato"
+                  >
                     {probability ?? "-"}%
                   </Text>
-                  <Text ml={5}>
+                  <Text ml={5} fontFamily="Lato">
                     ({DROPOUT_PREDICTION_ACCURACY} <b>{accuracy ?? "-"}</b>)
                   </Text>
                 </motion.div>

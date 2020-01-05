@@ -1,14 +1,13 @@
 import { chunk, some, sortBy, toInteger, truncate, uniq } from "lodash";
 import React, {
-  Dispatch,
   FC,
-  SetStateAction,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { FaListOl } from "react-icons/fa";
 import ReactTooltip from "react-tooltip";
 import { useUpdateEffect } from "react-use";
 import { Pagination, Progress, Table, TableCell } from "semantic-ui-react";
@@ -24,7 +23,6 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
-  Flex,
   Icon,
   Spinner,
   Text,
@@ -196,6 +194,8 @@ export const StudentList: FC<{
         variantColor="blue"
         onClick={onOpen}
         cursor="pointer"
+        leftIcon={FaListOl}
+        fontFamily="Lato"
       >
         {STUDENT_LIST_TITLE}
       </Button>
