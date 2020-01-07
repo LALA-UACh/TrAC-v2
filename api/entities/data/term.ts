@@ -31,6 +31,10 @@ export class Term {
   @Field()
   situation: string;
 
+  // student_term => comments
+  @Field()
+  comments: string;
+
   // student_term => t_gpa
   @Field()
   semestral_grade: number;

@@ -150,6 +150,7 @@ type TakenCourse {
 }
 
 type Term {
+  comments: String!
   cumulated_grade: Float!
   id: Int!
   program_grade: Float!

@@ -109,4 +109,5 @@ export const baseConfig = {
   CHECK_STUDENT_FROM_LIST_LABEL: "Ver estudiante",
   STATE_COLOR_PASS_FALLBACK: "rgb(102,180,62)",
   STATE_COLOR_FAIL_FALLBACK: "rgb(214,96,77)",
+  CREDITS_LABEL: "Creditos",
 };

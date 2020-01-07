@@ -2,6 +2,7 @@ import { toInteger, toNumber, trim } from "lodash";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
+import { baseConfig } from "../../../constants/baseConfig";
 import {
   CourseStatsTable,
   CourseTable,
@@ -19,7 +20,7 @@ const creditsFormat = ({
 }) => {
   return [
     {
-      label: "Credits",
+      label: baseConfig.CREDITS_LABEL,
       value: credits ?? 0,
     },
     {

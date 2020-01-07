@@ -181,8 +181,15 @@ const Dashboard: FC = () => {
           {searchStudentData.student.terms
             .slice()
             .reverse()
-            .map(({ term, year }, key) => {
-              return <TakenSemesterBox key={key} term={term} year={year} />;
+            .map(({ term, year, comments }, key) => {
+              return (
+                <TakenSemesterBox
+                  key={key}
+                  term={term}
+                  year={year}
+                  comments={comments}
+                />
+              );
             })}
         </>
       );
@@ -423,7 +430,12 @@ const Dashboard: FC = () => {
               ? mockData.default.mockSemestersTaken.map(
                   ({ term, year }, key) => {
                     return (
-                      <TakenSemesterBox key={key} term={term} year={year} />
+                      <TakenSemesterBox
+                        key={key}
+                        term={term}
+                        year={year}
+                        comments={""}
+                      />
                     );
                   }
                 )

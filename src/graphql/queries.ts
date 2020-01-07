@@ -209,6 +209,7 @@ export const SEARCH_STUDENT: DocumentNode<
           semestral_grade: number;
           cumulated_grade: number;
           program_grade: number;
+          comments: string;
           takenCourses: Array<{
             id: number;
             code: string;
@@ -258,6 +259,7 @@ export const SEARCH_STUDENT: DocumentNode<
         semestral_grade
         cumulated_grade
         program_grade
+        comments
         takenCourses {
           id
           code

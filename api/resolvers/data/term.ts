@@ -62,6 +62,20 @@ export class TermResolver {
   }
 
   @FieldResolver()
+  async comments(
+    @Root()
+    { id }: PartialTerm
+  ): Promise<$PropertyType<Term, "comments">> {
+    assertIsDefined(id, `id needs to be available for Terms field resolvers`);
+    const termData = await StudentTermTable()
+      .select("comments")
+      .where({ id })
+      .first();
+    assertIsDefined(termData, `comments could not be found for ${id} term`);
+    return termData.comments;
+  }
+
+  @FieldResolver()
   async situation(
     @Root()
     { id }: PartialTerm
