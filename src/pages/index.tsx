@@ -436,6 +436,7 @@ const Dashboard: FC = () => {
                       // "Elim-Reinc",
                       // "Pendiente",
                       // "Egresado",
+                      // "Reincorp",
                     ];
                     return (
                       <TakenSemesterBox

@@ -35,6 +35,7 @@ export const TakenSemesterBox: FC<{
   const badgeProps = useMemo<BadgeProps>(() => {
     switch (comments.toUpperCase()) {
       case "ELIM-REINC":
+      case "REINCORP":
         return {
           variantColor: "orange",
         };
