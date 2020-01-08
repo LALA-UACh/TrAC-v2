@@ -5,7 +5,7 @@ import React, { FC, useContext, useMemo, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { useUpdateEffect } from "react-use";
 
-import { Box, Flex, Stack, Text } from "@chakra-ui/core";
+import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/core";
 
 import { StateCourse, termTypeToNumber } from "../../../constants";
 import { ICourse, ITakenCourse } from "../../../interfaces";
@@ -55,6 +55,7 @@ export const CourseBox: FC<ICourse> = ({
     currentDistribution,
     term,
     year,
+    parallelGroup,
   } = useMemo<Partial<ITakenCourse>>(() => {
     const foundSemesterTaken = checkExplicitSemester(semestersTaken);
     if (foundSemesterTaken) {
@@ -176,15 +177,27 @@ export const CourseBox: FC<ICourse> = ({
   const NameComponent = useMemo(() => {
     return (
       <Stack spacing={1}>
-        <Text>
-          <b>{taken?.find(({ equiv }) => equiv)?.equiv || code}</b>
-        </Text>
+        <Flex alignItems="center">
+          <Text m={0}>
+            <b>{taken?.find(({ equiv }) => equiv)?.equiv || code}</b>
+          </Text>
+          {!!parallelGroup && (
+            <Badge
+              ml={2}
+              backgroundColor={config.PARALLEL_GROUP_BACKGROUND_COLOR}
+              color={config.PARALLEL_GROUP_LABEL_COLOR}
+            >
+              {config.PARALLEL_GROUP_LABEL}: {parallelGroup}
+            </Badge>
+          )}
+        </Flex>
+
         <Text fontSize={9} maxWidth="150px">
           {truncate(name, { length: 35 })}
         </Text>
       </Stack>
     );
-  }, [code, name, taken]);
+  }, [code, name, taken, config]);
 
   const RegistrationComponent = useMemo(
     () =>
