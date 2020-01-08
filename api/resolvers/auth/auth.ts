@@ -15,6 +15,7 @@ import { IContext } from "../../../interfaces";
 import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../../api_constants";
 import { StudentTable, UserTable } from "../../db/tables";
 import { AuthResult, LoginInput, UnlockInput } from "../../entities/auth/auth";
+import { anonService } from "../../utils/anonymization";
 import { sendMail, UnlockMail } from "../../utils/mail";
 
 @Resolver()
@@ -54,7 +55,7 @@ export class AuthResolver {
         const studentData = await StudentTable()
           .select("id")
           .where({
-            id: user.student_id,
+            id: await anonService.getAnonymousIdOrGetItBack(user.student_id),
           })
           .first();
         if (!studentData) {
@@ -97,7 +98,7 @@ export class AuthResolver {
         const studentData = await StudentTable()
           .select("id")
           .where({
-            id: user.student_id,
+            id: await anonService.getAnonymousIdOrGetItBack(user.student_id),
           })
           .first();
         if (!studentData) {
@@ -207,7 +208,7 @@ export class AuthResolver {
         const studentData = await StudentTable()
           .select("id")
           .where({
-            id: user.student_id,
+            id: await anonService.getAnonymousIdOrGetItBack(user.student_id),
           })
           .first();
         if (!studentData) {

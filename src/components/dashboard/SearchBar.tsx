@@ -146,6 +146,8 @@ export const SearchBar: FC<{
 
   const [logoutLoading, setLogoutLoading] = useState(false);
 
+  const [studentIdShow, setStudentIdShow] = useState("");
+
   const programsOptions = useMemo(() => {
     return (
       myProgramsData?.myPrograms.map(({ id, name }) => ({
@@ -262,7 +264,7 @@ export const SearchBar: FC<{
             p={1}
             maxW="300px"
             textAlign="center"
-          >{`${STUDENT_LABEL}: ${searchResult.student}`}</Tag>
+          >{`${STUDENT_LABEL}: ${studentIdShow}`}</Tag>
         )}
 
         <form>
@@ -325,7 +327,6 @@ export const SearchBar: FC<{
               disabled={isSearchLoading || !program?.value}
               onClick={async ev => {
                 setProgramProp(program?.value);
-
                 if (program) {
                   ev.preventDefault();
                   const onSearchResult = await onSearch({
@@ -336,6 +337,7 @@ export const SearchBar: FC<{
                   switch (onSearchResult) {
                     case "student": {
                       addStudentOption(student_id);
+                      setStudentIdShow(student_id);
                       setStudentId("");
                       Tracking.current.track({
                         action: "click",
@@ -346,6 +348,7 @@ export const SearchBar: FC<{
                     }
                     case "program": {
                       Tracking.current.student = undefined;
+                      setStudentIdShow("");
                       Tracking.current.track({
                         action: "click",
                         effect: "load-program",
@@ -355,6 +358,7 @@ export const SearchBar: FC<{
                     }
                     default: {
                       Tracking.current.student = student_id;
+                      setStudentIdShow("");
                       Tracking.current.track({
                         action: "click",
                         effect: "wrong-student",
@@ -424,6 +428,7 @@ export const SearchBar: FC<{
                   case "student": {
                     addStudentOption(student_id);
                     setStudentId("");
+                    setStudentIdShow(student_id);
                     Tracking.current.track({
                       action: "click",
                       effect: "load-student",
@@ -432,6 +437,7 @@ export const SearchBar: FC<{
                     break;
                   }
                   case "program": {
+                    setStudentIdShow("");
                     Tracking.current.student = undefined;
                     Tracking.current.track({
                       action: "click",
@@ -441,6 +447,7 @@ export const SearchBar: FC<{
                     break;
                   }
                   default: {
+                    setStudentIdShow("");
                     Tracking.current.student = student_id;
                     Tracking.current.track({
                       action: "click",
