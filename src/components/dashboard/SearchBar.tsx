@@ -252,6 +252,7 @@ export const SearchBar: FC<{
           <Tag
             mr={2}
             mt={1}
+            mb={1}
             p={2}
           >{`${searchResult?.program_id} | ${CURRICULUM_LABEL}: ${searchResult?.curriculums[0]}`}</Tag>
         ) : null}
@@ -261,7 +262,7 @@ export const SearchBar: FC<{
             mt={1}
             mb={1}
             mr={2}
-            p={1}
+            p={3}
             maxW="300px"
             textAlign="center"
           >{`${STUDENT_LABEL}: ${studentIdShow}`}</Tag>
