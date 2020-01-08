@@ -429,12 +429,20 @@ const Dashboard: FC = () => {
             {mock && mockData
               ? mockData.default.mockSemestersTaken.map(
                   ({ term, year }, key) => {
+                    const commentOptions = [
+                      "",
+                      "Pendiente",
+                      "Eliminado",
+                      // "Elim-Reinc",
+                      // "Pendiente",
+                      // "Egresado",
+                    ];
                     return (
                       <TakenSemesterBox
                         key={key}
                         term={term}
                         year={year}
-                        comments={""}
+                        comments={commentOptions[key] || ""}
                       />
                     );
                   }

@@ -1,6 +1,6 @@
 import React, { FC, memo, useContext, useMemo } from "react";
 
-import { Box, Stack } from "@chakra-ui/core";
+import { Badge, BadgeProps, Box, Stack } from "@chakra-ui/core";
 
 import { termTypeToNumber } from "../../../constants";
 import { ConfigContext } from "../Config";
@@ -32,6 +32,32 @@ export const TakenSemesterBox: FC<{
     return config.TAKEN_SEMESTER_BOX_INACTIVE;
   }, [term, year, checkExplicitSemester, semestersTaken, config]);
 
+  const badgeProps = useMemo<BadgeProps>(() => {
+    switch (comments.toUpperCase()) {
+      case "ELIM-REINC":
+        return {
+          variantColor: "orange",
+        };
+      case "ELIMINADO":
+        return {
+          variantColor: "red",
+        };
+      case "EGRESADO": {
+        return {
+          variantColor: "blue",
+        };
+      }
+      case "PENDIENTE":
+        return {
+          variantColor: "purple",
+        };
+    }
+    return {
+      backgroundColor: "black",
+      color: "white",
+    };
+  }, [comments]);
+
   return (
     <Box
       textAlign="center"
@@ -46,6 +72,8 @@ export const TakenSemesterBox: FC<{
       className="unselectable"
       transition="0.4s all ease-in-out"
       whiteSpace="nowrap"
+      alignItems="center"
+      display="flex"
       onClick={() => {
         const open = toggleExplicitSemester(year, term);
         Tracking.current.track({
@@ -61,7 +89,11 @@ export const TakenSemesterBox: FC<{
           <Box>
             <b>{`${termTypeToNumber(term)}S ${year}`}</b>
           </Box>
-          <Box>{comments}</Box>
+          <Box>
+            <Badge borderRadius="5px" fontSize="0.5em" {...badgeProps}>
+              {comments}
+            </Badge>
+          </Box>
         </Stack>
       ) : (
         <b>{`${termTypeToNumber(term)}S ${year}`}</b>
