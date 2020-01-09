@@ -18,7 +18,9 @@ export const buildContext = async ({
     const authorizationToken: string | undefined =
       req.cookies.authorization || req.headers.authorization;
     if (authorizationToken) {
-      const userJWT = verify(authorizationToken, SECRET) as {
+      const userJWT = verify(authorizationToken, SECRET, {
+        ignoreExpiration: process.env.NODE_ENV === "development",
+      }) as {
         email: string;
       };
 
