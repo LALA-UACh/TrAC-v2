@@ -113,38 +113,40 @@ export const LOGOUT: DocumentNode<{
   }
 `;
 
+export type IProgramData = IfImplements<
+  {
+    id: string;
+    name: string;
+    desc: string;
+    active: boolean;
+    curriculums: {
+      id: string;
+      semesters: {
+        id: number;
+        courses: {
+          code: string;
+          name: string;
+          credits: { label: string; value: number }[];
+          mention: string;
+          flow: { code: string }[];
+          requisites: {
+            code: string;
+          }[];
+          historicalDistribution: {
+            label: string;
+            value: number;
+          }[];
+          bandColors: { min: number; max: number; color: string }[];
+        }[];
+      }[];
+    }[];
+  },
+  Program
+>;
+
 export const SEARCH_PROGRAM: DocumentNode<
   {
-    program: IfImplements<
-      {
-        id: string;
-        name: string;
-        desc: string;
-        active: boolean;
-        curriculums: {
-          id: string;
-          semesters: {
-            id: number;
-            courses: {
-              code: string;
-              name: string;
-              credits: { label: string; value: number }[];
-              mention: string;
-              flow: { code: string }[];
-              requisites: {
-                code: string;
-              }[];
-              historicalDistribution: {
-                label: string;
-                value: number;
-              }[];
-              bandColors: { min: number; max: number; color: string }[];
-            }[];
-          }[];
-        }[];
-      },
-      Program
-    > | null;
+    program: IProgramData | null;
   },
   { program_id?: string; student_id?: string }
 > = gql`
@@ -188,52 +190,54 @@ export const SEARCH_PROGRAM: DocumentNode<
   }
 `;
 
+export type IStudentData = IfImplements<
+  {
+    id: string;
+    programs: {
+      id: string;
+      name: string;
+    }[];
+    curriculums: string[];
+    start_year: number;
+    mention: string;
+    terms: Array<{
+      id: number;
+      student_id: string;
+      year: number;
+      term: TermType;
+      situation: string;
+      semestral_grade: number;
+      cumulated_grade: number;
+      program_grade: number;
+      comments: string;
+      takenCourses: Array<{
+        id: number;
+        code: string;
+        equiv: string;
+        name: string;
+        registration: string;
+        grade: number;
+        state: StateCourse;
+        parallelGroup: number;
+        currentDistribution: Array<{
+          label: string;
+          value: number;
+        }>;
+        bandColors: { min: number; max: number; color: string }[];
+      }>;
+    }>;
+    dropout?: {
+      prob_dropout?: number;
+      model_accuracy?: number;
+      active: boolean;
+    };
+  },
+  Student
+>;
+
 export const SEARCH_STUDENT: DocumentNode<
   {
-    student?: IfImplements<
-      {
-        id: string;
-        programs: {
-          id: string;
-          name: string;
-        }[];
-        curriculums: string[];
-        start_year: number;
-        mention: string;
-        terms: Array<{
-          id: number;
-          student_id: string;
-          year: number;
-          term: TermType;
-          situation: string;
-          semestral_grade: number;
-          cumulated_grade: number;
-          program_grade: number;
-          comments: string;
-          takenCourses: Array<{
-            id: number;
-            code: string;
-            equiv: string;
-            name: string;
-            registration: string;
-            grade: number;
-            state: StateCourse;
-            parallelGroup: number;
-            currentDistribution: Array<{
-              label: string;
-              value: number;
-            }>;
-            bandColors: { min: number; max: number; color: string }[];
-          }>;
-        }>;
-        dropout?: {
-          prob_dropout?: number;
-          model_accuracy?: number;
-          active: boolean;
-        };
-      },
-      Student
-    >;
+    student?: IStudentData;
   },
   {
     student_id?: string;

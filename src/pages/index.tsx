@@ -88,6 +88,16 @@ const Dashboard: FC = () => {
         searchProgramData,
         searchStudentData,
       });
+      console.log(
+        JSON.stringify(
+          {
+            searchProgramData,
+            searchStudentData,
+          },
+          null,
+          2
+        )
+      );
     }
   }, [searchProgramData, searchStudentData]);
 
@@ -139,13 +149,22 @@ const Dashboard: FC = () => {
     let TakenSemestersComponent: JSX.Element | null = null;
     let SemestersComponent: JSX.Element | null = null;
 
-    if (searchStudentData?.student) {
+    const studentData =
+      mock && mockData
+        ? mockData.default.searchStudentData.student
+        : searchStudentData?.student;
+    const programData =
+      mock && mockData
+        ? mockData.default.searchProgramData.program
+        : searchProgramData?.program;
+
+    if (studentData) {
       const {
         cumulated_grade,
         semestral_grade,
         program_grade,
         semestersTaken,
-      } = searchStudentData.student.terms.reduce<{
+      } = studentData.terms.reduce<{
         cumulated_grade: number[];
         semestral_grade: number[];
         program_grade: number[];
@@ -177,8 +196,8 @@ const Dashboard: FC = () => {
         />
       );
       TakenSemestersComponent = (
-        <>
-          {searchStudentData.student.terms
+        <Flex alignItems="center">
+          {studentData.terms
             .slice()
             .reverse()
             .map(({ term, year, comments }, key) => {
@@ -191,26 +210,26 @@ const Dashboard: FC = () => {
                 />
               );
             })}
-        </>
+        </Flex>
       );
       if (
-        searchStudentData.student.dropout?.active &&
+        studentData.dropout?.active &&
         currentUserData?.currentUser?.user?.show_dropout
       ) {
         DropoutComponent = (
           <Dropout
-            probability={searchStudentData.student.dropout.prob_dropout}
-            accuracy={searchStudentData.student.dropout.model_accuracy}
+            probability={studentData.dropout.prob_dropout}
+            accuracy={studentData.dropout.model_accuracy}
           />
         );
       }
     }
-    if (searchProgramData) {
+    if (programData) {
       const curriculums =
-        searchProgramData?.program?.curriculums
+        programData?.curriculums
           .filter(({ id }) => {
-            if (searchStudentData?.student) {
-              return searchStudentData.student.curriculums.includes(id);
+            if (studentData) {
+              return studentData.curriculums.includes(id);
             }
             return true;
           })
@@ -242,12 +261,12 @@ const Dashboard: FC = () => {
                       bandColors,
                       taken: (() => {
                         const taken: ITakenCourse[] = [];
-                        if (searchStudentData?.student) {
+                        if (studentData) {
                           for (const {
                             term,
                             year,
                             takenCourses,
-                          } of searchStudentData.student.terms) {
+                          } of studentData.terms) {
                             for (const {
                               code: courseCode,
                               equiv,
@@ -305,7 +324,7 @@ const Dashboard: FC = () => {
       TakenSemestersComponent,
       SemestersComponent,
     };
-  }, [searchStudentData, searchProgramData, curriculum]);
+  }, [searchStudentData, searchProgramData, curriculum, mock, mockData]);
 
   const {
     ERROR_STUDENT_NOT_FOUND_MESSAGE,
@@ -320,7 +339,7 @@ const Dashboard: FC = () => {
         effect: "load-app",
         target: "website",
       });
-    }, 2000);
+    }, 1000);
   });
 
   return (
@@ -403,52 +422,12 @@ const Dashboard: FC = () => {
       <CoursesFlow curriculum={curriculum} program={program} mock={mock}>
         <ScrollContainer activationDistance={5} hideScrollbars={false}>
           <Flex>
-            <Box>
-              {mock && mockData ? (
-                <TimeLine
-                  cumulatedGrades={mockData.default.mockTimeline.PGA}
-                  semestralGrades={mockData.default.mockTimeline.PSP}
-                  programGrades={mockData.default.mockTimeline.ProgramPGA}
-                  semestersTaken={mockData.default.mockSemestersTaken}
-                />
-              ) : (
-                TimeLineComponent
-              )}
-            </Box>
-            {mock && mockData ? (
-              <Dropout
-                probability={mockData.default.mockDropout.prob_dropout}
-                accuracy={mockData.default.mockDropout.model_accuracy}
-              />
-            ) : (
-              DropoutComponent
-            )}
+            <Box>{TimeLineComponent}</Box>
+            {DropoutComponent}
           </Flex>
 
           <Stack isInline pl="50px">
-            {mock && mockData
-              ? mockData.default.mockSemestersTaken.map(
-                  ({ term, year }, key) => {
-                    const commentOptions = [
-                      "",
-                      "Pendiente",
-                      "Eliminado",
-                      // "Elim-Reinc",
-                      // "Pendiente",
-                      // "Egresado",
-                      // "Reincorp",
-                    ];
-                    return (
-                      <TakenSemesterBox
-                        key={key}
-                        term={term}
-                        year={year}
-                        comments={commentOptions[key] || ""}
-                      />
-                    );
-                  }
-                )
-              : TakenSemestersComponent}
+            {TakenSemestersComponent}
           </Stack>
         </ScrollContainer>
 
@@ -458,11 +437,7 @@ const Dashboard: FC = () => {
           activationDistance={5}
         >
           <Stack isInline spacing={8}>
-            {mock && mockData
-              ? mockData.default.mockSemesters.map(({ semester }, key) => {
-                  return <Semester key={key} courses={semester} n={key + 1} />;
-                })
-              : SemestersComponent}
+            {SemestersComponent}
           </Stack>
         </ScrollContainer>
         <Tracking />

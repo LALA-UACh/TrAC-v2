@@ -410,7 +410,7 @@ export const SearchBar: FC<{
             program_id={program?.value}
             mockData={
               mock
-                ? range(50).map(() => ({
+                ? range(70).map(() => ({
                     student_id: "mock_" + generate(),
                     dropout_probability: Math.round(Math.random() * 100),
                     start_year: 2005 + Math.round(Math.random() * 14),

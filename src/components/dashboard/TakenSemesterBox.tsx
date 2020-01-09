@@ -33,6 +33,9 @@ export const TakenSemesterBox: FC<{
   }, [term, year, checkExplicitSemester, semestersTaken, config]);
 
   const badgeProps = useMemo<BadgeProps>(() => {
+    if (!comments) {
+      return {};
+    }
     switch (comments.toUpperCase()) {
       case "ELIM-REINC":
       case "REINCORP":
@@ -67,7 +70,10 @@ export const TakenSemesterBox: FC<{
       borderRadius="8px"
       backgroundColor={config.TAKEN_SEMESTER_BOX_BACKGROUND_COLOR}
       p="6px"
-      m={3}
+      mt={0}
+      mb={3}
+      ml={3}
+      mr={3}
       fontSize="1.2em"
       cursor="pointer"
       className="unselectable"
@@ -84,6 +90,7 @@ export const TakenSemesterBox: FC<{
         });
       }}
       color={config.TAKEN_SEMESTER_BOX_TEXT_COLOR}
+      height={comments ? "4em" : "2em"}
     >
       {comments ? (
         <Stack>

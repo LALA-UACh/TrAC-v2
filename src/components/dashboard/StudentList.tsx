@@ -307,7 +307,7 @@ export const StudentList: FC<{
                             data-tip={`${CHECK_STUDENT_FROM_LIST_LABEL} ${student_id}`}
                             data-for={`student_list_check_${key}`}
                           >
-                            {truncate(student_id.toString(), { length: 20 })}
+                            {truncate(student_id.toString(), { length: 16 })}
                           </Text>
                         </Table.Cell>
                         <Table.Cell>
