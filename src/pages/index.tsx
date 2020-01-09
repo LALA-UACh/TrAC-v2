@@ -1,15 +1,8 @@
 import { uniq } from "lodash";
 import dynamic from "next/dynamic";
-import React, {
-  FC,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FC, useContext, useEffect, useRef, useState } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
-import { useMount, useUpdateEffect } from "react-use";
+import { useAsync, useMount, useUpdateEffect } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -41,7 +34,9 @@ const Dropout = dynamic(() => import("../components/dashboard/Dropout"));
 const Dashboard: FC = () => {
   const [program, setProgram] = useState<string | undefined>(undefined);
 
-  const [curriculum, setCurriculum] = useState<string | undefined>(undefined);
+  const [chosenCurriculum, setChosenCurriculum] = useState<string | undefined>(
+    undefined
+  );
 
   const { data: currentUserData } = useQuery(CURRENT_USER, {
     fetchPolicy: "cache-only",
@@ -53,13 +48,11 @@ const Dashboard: FC = () => {
   );
 
   const [mockData, setMockData] = useState<
-    typeof import("../../constants/mockData")
+    Promise<typeof import("../../constants/mockData")>
   >();
   useEffect(() => {
     if (mock && !mockData) {
-      import("../../constants/mockData").then(data => {
-        setMockData(data);
-      });
+      setMockData(import("../../constants/mockData"));
     }
   }, [mock, mockData, setMockData]);
 
@@ -88,28 +81,18 @@ const Dashboard: FC = () => {
         searchProgramData,
         searchStudentData,
       });
-      console.log(
-        JSON.stringify(
-          {
-            searchProgramData,
-            searchStudentData,
-          },
-          null,
-          2
-        )
-      );
     }
   }, [searchProgramData, searchStudentData]);
 
   useEffect(() => {
-    if (!currentUserData?.currentUser?.user?.admin && mock === true) {
+    if (!currentUserData?.currentUser?.user?.admin && mock) {
       setMock(false);
     }
   }, [currentUserData, mock, setMock]);
 
   useEffect(() => {
-    trackingData.current.curriculum = curriculum;
-  }, [curriculum]);
+    trackingData.current.curriculum = chosenCurriculum;
+  }, [chosenCurriculum]);
 
   useEffect(() => {
     if (searchStudentData?.student) {
@@ -139,24 +122,20 @@ const Dashboard: FC = () => {
   }, [currentUserData, searchProgram, searchStudent]);
 
   const {
-    TimeLineComponent,
-    TakenSemestersComponent,
-    SemestersComponent,
-    DropoutComponent,
-  } = useMemo(() => {
+    value: dashboardComponents,
+    loading: loadingComponents,
+  } = useAsync(async () => {
     let TimeLineComponent: JSX.Element | null = null;
     let DropoutComponent: JSX.Element | null = null;
     let TakenSemestersComponent: JSX.Element | null = null;
     let SemestersComponent: JSX.Element | null = null;
 
-    const studentData =
-      mock && mockData
-        ? mockData.default.searchStudentData.student
-        : searchStudentData?.student;
-    const programData =
-      mock && mockData
-        ? mockData.default.searchProgramData.program
-        : searchProgramData?.program;
+    const studentData = mock
+      ? (await mockData)?.default.searchStudentData.student
+      : searchStudentData?.student;
+    const programData = mock
+      ? (await mockData)?.default.searchProgramData.program
+      : searchProgramData?.program;
 
     if (studentData) {
       const {
@@ -305,7 +284,9 @@ const Dashboard: FC = () => {
             return { id: curriculumId, semesters };
           }) ?? [];
       const data = curriculums.find(({ id: curriculumId }) => {
-        return curriculum ? curriculumId === curriculum : true;
+        return !mock && chosenCurriculum
+          ? curriculumId === chosenCurriculum
+          : true;
       });
       if (data) {
         SemestersComponent = (
@@ -324,8 +305,14 @@ const Dashboard: FC = () => {
       TakenSemestersComponent,
       SemestersComponent,
     };
-  }, [searchStudentData, searchProgramData, curriculum, mock, mockData]);
+  }, [searchStudentData, searchProgramData, chosenCurriculum, mock, mockData]);
 
+  const {
+    TimeLineComponent,
+    TakenSemestersComponent,
+    SemestersComponent,
+    DropoutComponent,
+  } = dashboardComponents || {};
   const {
     ERROR_STUDENT_NOT_FOUND_MESSAGE,
     ERROR_PROGRAM_UNAUTHORIZED_MESSAGE,
@@ -402,8 +389,8 @@ const Dashboard: FC = () => {
           }}
           mock={mock}
           setMock={setMock}
-          curriculum={curriculum}
-          setCurriculum={setCurriculum}
+          curriculum={chosenCurriculum}
+          setCurriculum={setChosenCurriculum}
         />
       ) : (
         <>
@@ -419,7 +406,9 @@ const Dashboard: FC = () => {
           ) : null}
         </>
       )}
-      <CoursesFlow curriculum={curriculum} program={program} mock={mock}>
+      <CoursesFlow curriculum={chosenCurriculum} program={program} mock={mock}>
+        {loadingComponents && <Spinner m={5} size="xl" />}
+
         <ScrollContainer activationDistance={5} hideScrollbars={false}>
           <Flex>
             <Box>{TimeLineComponent}</Box>
