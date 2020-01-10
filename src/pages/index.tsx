@@ -1,8 +1,15 @@
 import { uniq } from "lodash";
 import dynamic from "next/dynamic";
-import React, { FC, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
-import { useAsync, useMount, useUpdateEffect } from "react-use";
+import { useMount, useUpdateEffect } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -48,11 +55,13 @@ const Dashboard: FC = () => {
   );
 
   const [mockData, setMockData] = useState<
-    Promise<typeof import("../../constants/mockData")>
+    typeof import("../../constants/mockData")
   >();
   useEffect(() => {
     if (mock && !mockData) {
-      setMockData(import("../../constants/mockData"));
+      import("../../constants/mockData").then(data => {
+        setMockData(data);
+      });
     }
   }, [mock, mockData, setMockData]);
 
@@ -122,19 +131,21 @@ const Dashboard: FC = () => {
   }, [currentUserData, searchProgram, searchStudent]);
 
   const {
-    value: dashboardComponents,
-    loading: loadingComponents,
-  } = useAsync(async () => {
+    TimeLineComponent,
+    TakenSemestersComponent,
+    SemestersComponent,
+    DropoutComponent,
+  } = useMemo(() => {
     let TimeLineComponent: JSX.Element | null = null;
     let DropoutComponent: JSX.Element | null = null;
     let TakenSemestersComponent: JSX.Element | null = null;
     let SemestersComponent: JSX.Element | null = null;
 
     const studentData = mock
-      ? (await mockData)?.default.searchStudentData.student
+      ? mockData?.default.searchStudentData.student
       : searchStudentData?.student;
     const programData = mock
-      ? (await mockData)?.default.searchProgramData.program
+      ? mockData?.default.searchProgramData.program
       : searchProgramData?.program;
 
     if (studentData) {
@@ -308,12 +319,6 @@ const Dashboard: FC = () => {
   }, [searchStudentData, searchProgramData, chosenCurriculum, mock, mockData]);
 
   const {
-    TimeLineComponent,
-    TakenSemestersComponent,
-    SemestersComponent,
-    DropoutComponent,
-  } = dashboardComponents || {};
-  const {
     ERROR_STUDENT_NOT_FOUND_MESSAGE,
     ERROR_PROGRAM_UNAUTHORIZED_MESSAGE,
     ERROR_PROGRAM_NOT_FOUND,
@@ -407,8 +412,6 @@ const Dashboard: FC = () => {
         </>
       )}
       <CoursesFlow curriculum={chosenCurriculum} program={program} mock={mock}>
-        {loadingComponents && <Spinner m={5} size="xl" />}
-
         <ScrollContainer activationDistance={5} hideScrollbars={false}>
           <Flex>
             <Box>{TimeLineComponent}</Box>
