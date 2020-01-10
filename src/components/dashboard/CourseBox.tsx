@@ -472,9 +472,13 @@ export const CourseBox: FC<ICourse> = ({
       height={height}
       borderRadius={5}
       opacity={opacity}
-      border="2px"
+      border={config.COURSE_BOX_BORDER_WIDTH_INACTIVE}
       borderColor={borderColor}
-      borderWidth={active === code ? "3.5px" : "2px"}
+      borderWidth={
+        active === code
+          ? config.COURSE_BOX_BORDER_WIDTH_ACTIVE
+          : config.COURSE_BOX_BORDER_WIDTH_INACTIVE
+      }
       cursor="pointer"
       transition="0.4s all ease-in-out"
       onClick={() => {
