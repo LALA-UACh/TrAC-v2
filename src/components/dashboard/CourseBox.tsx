@@ -407,6 +407,7 @@ export const CourseBox: FC<ICourse> = ({
               | "error"
               | "info"
               | "light";
+            let tooltipLabel: number | string | undefined = grade;
             switch (state) {
               case StateCourse.Failed:
                 tooltipType = "error";
@@ -417,6 +418,7 @@ export const CourseBox: FC<ICourse> = ({
                 color = config.STATE_COURSE_CURRENT_COLOR;
                 break;
               case StateCourse.Canceled:
+                tooltipLabel = config.CANCELED_HISTORIC_TOOLTIP_LABEL;
                 tooltipType = "light";
                 color = config.STATE_COURSE_CANCELED_COLOR;
                 break;
@@ -441,7 +443,7 @@ export const CourseBox: FC<ICourse> = ({
                 <svg
                   width={16}
                   height={16}
-                  data-tip={grade}
+                  data-tip={tooltipLabel}
                   data-for={tooltipKey}
                 >
                   <circle
@@ -452,9 +454,7 @@ export const CourseBox: FC<ICourse> = ({
                     fill={color}
                   />
                 </svg>
-                {state !== StateCourse.Canceled && (
-                  <ReactTooltip id={tooltipKey} type={tooltipType} />
-                )}
+                <ReactTooltip id={tooltipKey} type={tooltipType} />
               </Box>
             );
           })}
