@@ -1,9 +1,9 @@
-import { apolloTestClient, await } from "()";
 import sha1 from "crypto-js/sha1";
 import gql, { DocumentNode } from "graphql-tag-ts";
 import { update } from "lodash";
 import { getTracker, mock, Tracker } from "mock-knex";
 
+import { apolloTestClient } from "../api/apollo/apolloTestClient";
 import { dbAuth, dbConfig, dbData, dbTracking } from "../api/db";
 import {
   LOCKED_USER,
@@ -228,7 +228,7 @@ describe("authentication", () => {
   `;
 
   test("successful login and currentUser", async () => {
-    let { query, mutate, setOptions } = await apolloTestClient()();
+    let { query, mutate, setOptions } = await apolloTestClient();
 
     const currentUserEmpty = await query(currentUserGql);
 
@@ -281,7 +281,7 @@ describe("authentication", () => {
   });
 
   test("lock and unlock user", async () => {
-    const { mutate, query, setOptions } = await apolloTestClient()();
+    const { mutate, query, setOptions } = await apolloTestClient();
 
     const wrongPassword = sha1("wrong").toString();
 
