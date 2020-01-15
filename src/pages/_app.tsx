@@ -1,3 +1,6 @@
+import "../../public/style.css";
+import "../../public/nprogress.css";
+
 import ApolloClient from "apollo-client";
 import App from "next/app";
 import Head from "next/head";
