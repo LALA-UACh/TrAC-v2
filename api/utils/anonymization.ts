@@ -55,7 +55,7 @@ class AnonymizationService {
             return getAnonymousIdResult;
           }
         } catch (err) {
-          if (!err?.message?.match(/timeout/g)) {
+          if (!err?.message?.match(/timeout|timedout/gi)) {
             // If anonymization service didn't timed out
             console.error("Anonymization service error!", err);
           }
