@@ -1,4 +1,4 @@
-import { toInteger } from "lodash";
+import { isEqual, toInteger } from "lodash";
 import React, { cloneElement, FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {
@@ -26,6 +26,7 @@ import {
   UPSERT_USERS_ADMIN,
 } from "../../../graphql/adminQueries";
 import { Confirm } from "../../Confirm";
+import { useUpdateUserConfigModal } from "./UpdateUserConfig";
 
 export const UpdateUser: FC<{
   user: {
@@ -115,6 +116,13 @@ export const UpdateUser: FC<{
       },
     }
   );
+
+  const { userConfigModal, config } = useUpdateUserConfigModal({
+    email: user.email,
+    config: user.config,
+  });
+
+
   return (
     <Modal
       trigger={cloneElement(children, {
@@ -162,6 +170,7 @@ export const UpdateUser: FC<{
                     student_id,
                     type,
                     locked,
+                    config,
                   },
                 ],
               },
@@ -302,37 +311,6 @@ export const UpdateUser: FC<{
                     )}
                   </Field>
 
-                  {/* <Field type="checkbox" name="show_dropout">
-                    {({ input }) => (
-                      <FormSemantic.Field>
-                        <Checkbox
-                          {...input}
-                          toggle
-                          label="Show dropout prediction"
-                          onChange={() => {
-                            input.onChange(!input.checked);
-                          }}
-                          type="checkbox"
-                        />
-                      </FormSemantic.Field>
-                    )}
-                  </Field>
-                  <Field type="checkbox" name="show_student_list">
-                    {({ input }) => (
-                      <FormSemantic.Field>
-                        <Checkbox
-                          {...input}
-                          toggle
-                          label="Show student list"
-                          onChange={() => {
-                            input.onChange(!input.checked);
-                          }}
-                          type="checkbox"
-                        />
-                      </FormSemantic.Field>
-                    )}
-                  </Field> */}
-
                   <Field type="checkbox" name="locked">
                     {({ input }) => (
                       <FormSemantic.Field>
@@ -355,16 +333,19 @@ export const UpdateUser: FC<{
                     labelPosition="left"
                     primary
                     disabled={
-                      pristine ||
-                      hasValidationErrors ||
-                      loadingUpdateUser ||
-                      loadingDeleteUser
+                      isEqual(config, user.config) &&
+                      (pristine ||
+                        hasValidationErrors ||
+                        loadingUpdateUser ||
+                        loadingDeleteUser)
                     }
                     loading={loadingUpdateUser}
                   >
                     <Icon name="save outline" />
                     Save
                   </Button>
+
+                  {userConfigModal}
 
                   <Confirm
                     header={`Are you sure you want to ${

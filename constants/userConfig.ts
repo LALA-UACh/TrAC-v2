@@ -4,4 +4,4 @@ export const baseUserConfig = {
   FOREPLAN: false,
 };
 
-export type UserConfig = typeof baseUserConfig & {};
+export type UserConfig = typeof baseUserConfig & Record<string, any>;
