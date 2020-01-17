@@ -405,7 +405,7 @@ export const SearchBar: FC<{
         {currentUserData?.currentUser?.user?.admin && (
           <MockingMode mock={mock} setMock={setMock} />
         )}
-        {currentUserData?.currentUser?.user?.show_student_list && (
+        {currentUserData?.currentUser?.user?.config?.SHOW_STUDENT_LIST && (
           <StudentList
             program_id={program?.value}
             mockData={

@@ -1,13 +1,33 @@
-import { EmailAddressResolver as EmailAddress } from "graphql-scalars";
 import { GraphQLJSONObject } from "graphql-type-json";
 import { toNumber } from "lodash";
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Query, Resolver } from "type-graphql";
 import { isNumeric } from "validator";
 
 import { baseConfig } from "../../constants/baseConfig";
 import { UserConfig } from "../../constants/userConfig";
 import { ConfigurationTable, UserConfigurationTable } from "../db/tables";
-import { User } from "../entities/auth/user";
+
+export const upsertUserConfig = async (email: string, config: UserConfig) => {
+  let userConfig = await UserConfigurationTable()
+    .select("config")
+    .where({ email });
+
+  if (!userConfig) {
+    userConfig = await UserConfigurationTable()
+      .insert({
+        email,
+        config,
+      })
+      .returning("config");
+  } else {
+    userConfig = await UserConfigurationTable()
+      .update({
+        config,
+      })
+      .where({ email })
+      .returning("config");
+  }
+};
 
 @Resolver()
 export class ConfigurationResolver {
@@ -27,31 +47,5 @@ export class ConfigurationResolver {
       },
       baseConfig
     );
-  }
-
-  @Mutation(() => User)
-  async updateUserConfig(
-    @Arg("email", () => EmailAddress) email: string,
-    @Arg("config", () => GraphQLJSONObject) config: UserConfig
-  ) {
-    let userConfig = await UserConfigurationTable()
-      .select("config")
-      .where({ email });
-
-    if (!userConfig) {
-      userConfig = await UserConfigurationTable()
-        .insert({
-          email,
-          config,
-        })
-        .returning("config");
-    } else {
-      userConfig = await UserConfigurationTable()
-        .update({
-          config,
-        })
-        .where({ email })
-        .returning("config");
-    }
   }
 }

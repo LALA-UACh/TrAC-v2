@@ -16,7 +16,7 @@ import { defaultUserType } from "../../../constants";
 import { baseUserConfig } from "../../../constants/userConfig";
 import { ArrayPropertyType } from "../../../interfaces/utils";
 import { ADMIN } from "../../api_constants";
-import { dbAuth } from "../../db";
+import { dbAuth, dbConfig } from "../../db";
 import {
   IUser,
   IUserPrograms,
@@ -35,6 +35,7 @@ import {
 } from "../../entities/auth/user";
 import { assertIsDefined } from "../../utils/assert";
 import { sendMail, UnlockMail } from "../../utils/mail";
+import { upsertUserConfig } from "../config";
 
 @Resolver(() => User)
 export class UserResolver {
@@ -138,69 +139,108 @@ export class UserResolver {
     @Arg("users", () => [UpsertedUser])
     users: UpsertedUser[]
   ): Promise<User[]> {
-    await Promise.all(
-      users.map(
-        async ({ oldEmail, email, name, type, tries, student_id, locked }) => {
-          /**
-           * If there is an old email, we assume that we are
-           * updating an existing user
-           */
-          if (oldEmail) {
-            return UserTable()
-              .update({
-                email,
-                name,
-                type,
-                tries,
-                student_id,
-                locked,
-              })
-              .where({
-                email: oldEmail,
-              });
-          } else {
-            /**
-             * Otherwise, we have to check if the email already exists
-             * to decide if inserts or updates
-             */
-            const foundUser = await UserTable()
-              .select("email")
-              .where({ email })
-              .first();
+    const [trxAuth, trxConfig] = await Promise.all([
+      dbAuth.transaction(),
+      dbConfig.transaction(),
+    ]);
+    try {
+      await Promise.all(
+        users.map(
+          async ({
+            oldEmail,
+            email,
+            name,
+            type,
+            tries,
+            student_id,
+            locked,
+            config = baseUserConfig,
+          }) => {
+            const userConfigPromise = upsertUserConfig(email, config);
 
-            if (foundUser) {
-              return UserTable()
-                .update({
+            /**
+             * If there is an old email, we assume that we are
+             * updating an existing user
+             */
+
+            if (oldEmail) {
+              if (oldEmail !== email) {
+                await UserConfigurationTable()
+                  .delete()
+                  .where({
+                    email: oldEmail,
+                  });
+              }
+              return await Promise.all([
+                userConfigPromise,
+                UserTable()
+                  .update({
+                    email,
+                    name,
+                    type,
+                    tries,
+                    student_id,
+                    locked,
+                  })
+                  .where({
+                    email: oldEmail,
+                  }),
+              ]);
+            } else {
+              /**
+               * Otherwise, we have to check if the email already exists
+               * to decide if inserts or updates
+               */
+              const foundUser = await UserTable()
+                .select("email")
+                .where({ email })
+                .first();
+
+              if (foundUser) {
+                return await Promise.all([
+                  userConfigPromise,
+                  UserTable()
+                    .update({
+                      name,
+                      type,
+                      tries,
+                      student_id,
+                      locked,
+                    })
+                    .where({ email }),
+                ]);
+              }
+
+              return await Promise.all([
+                userConfigPromise,
+                UserTable().insert({
+                  email,
                   name,
                   type,
                   tries,
                   student_id,
                   locked,
-                })
-                .where({ email });
+                }),
+              ]);
             }
-
-            return UserTable().insert({
-              email,
-              name,
-              type,
-              tries,
-              student_id,
-              locked,
-            });
           }
-        }
-      )
-    );
+        )
+      );
 
-    return (await UserTable().select("*")).map(({ type, ...rest }) => {
-      return {
-        ...rest,
-        type: defaultUserType(type),
-        programs: [],
-        config: baseUserConfig,
-      };
-    });
+      await Promise.all([trxAuth.commit(), trxConfig.commit()]);
+
+      return (await UserTable().select("*")).map(({ type, ...rest }) => {
+        return {
+          ...rest,
+          type: defaultUserType(type),
+          programs: [],
+          config: baseUserConfig,
+        };
+      });
+    } catch (err) {
+      await Promise.all([trxAuth.rollback(), trxConfig.rollback()]);
+      throw err;
+    }
   }
 
   @Authorized([ADMIN])

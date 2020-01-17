@@ -6,6 +6,7 @@ import { useRememberState } from "use-remember-state";
 import { useMutation } from "@apollo/react-hooks";
 
 import { UserType } from "../../../../constants";
+import { UserConfig } from "../../../../constants/userConfig";
 import { MAIL_LOCKED_USERS_ADMIN } from "../../../graphql/adminQueries";
 import { Confirm } from "../../Confirm";
 import { ImportUsers } from "./ImportUsers";
@@ -18,8 +19,7 @@ export const Users: FC<{
     tries: number;
     type: UserType;
     student_id?: string;
-    show_dropout: boolean;
-    show_student_list: boolean;
+    config: UserConfig;
     locked: boolean;
   }[];
 }> = ({ users }) => {
@@ -199,16 +199,7 @@ export const Users: FC<{
           <Table.Body>
             {sortedUsers.map(
               (
-                {
-                  email,
-                  name,
-                  locked,
-                  tries,
-                  type,
-                  student_id,
-                  show_dropout,
-                  show_student_list,
-                },
+                { email, name, locked, tries, type, student_id, config },
                 key
               ) => (
                 <UpdateUser
@@ -220,8 +211,7 @@ export const Users: FC<{
                     tries,
                     type,
                     student_id,
-                    show_dropout,
-                    show_student_list,
+                    config,
                   }}
                 >
                   <Table.Row style={{ cursor: "pointer" }}>
@@ -239,7 +229,7 @@ export const Users: FC<{
                       <Icon
                         circular
                         name={
-                          show_dropout
+                          config.SHOW_DROPOUT
                             ? "check circle outline"
                             : "times circle outline"
                         }
@@ -249,7 +239,7 @@ export const Users: FC<{
                       <Icon
                         circular
                         name={
-                          show_student_list
+                          config.SHOW_STUDENT_LIST
                             ? "check circle outline"
                             : "times circle outline"
                         }

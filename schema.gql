@@ -185,12 +185,11 @@ input UpdateUserPrograms {
 }
 
 input UpsertedUser {
+  config: JSONObject
   email: EmailAddress!
   locked: Boolean = true
   name: String = "default_name"
   oldEmail: EmailAddress
-  show_dropout: Boolean = false
-  show_student_list: Boolean = false
   student_id: String = ""
   tries: Float = 0
   type: UserType = Student
@@ -198,12 +197,11 @@ input UpsertedUser {
 
 type User {
   admin: Boolean!
+  config: JSONObject!
   email: EmailAddress!
   locked: Boolean!
   name: String!
   programs: [Program!]!
-  show_dropout: Boolean!
-  show_student_list: Boolean!
   student_id: String!
   tries: Float!
   type: UserType!

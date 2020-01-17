@@ -1,9 +1,12 @@
+import "dotenv/config";
+
 import ms from "ms";
 import Shell from "shelljs";
 
-const gitRemoteUrl = "git://github.com/LALA-UACh/TrAC-v2";
+const gitRemoteUrl =
+  process.env.GIT_REMOTE_URL ?? "git://github.com/LALA-UACh/TrAC-v2";
 
-const branch = "master";
+const branch = process.env.GIT_BRANCH ?? "master";
 
 console.log("Worker started!");
 

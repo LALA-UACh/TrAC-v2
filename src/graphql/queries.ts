@@ -2,31 +2,31 @@ import gql, { DocumentNode } from "graphql-tag-ts";
 
 import { StateCourse, TermType, UserType } from "../../constants";
 import { baseConfig } from "../../constants/baseConfig";
+import { UserConfig } from "../../constants/userConfig";
 import { IfImplements } from "../../typings/utils";
-import { AuthResult, Program, Student, User } from "./medium";
+import { Program, Student } from "./medium";
 
+export type IUserData = {
+  email: string;
+  name: string;
+  admin: boolean;
+  type: UserType;
+  config: UserConfig;
+};
 export const UserFragment = gql`
   fragment UserFragment on User {
     email
     name
     admin
     type
-    show_dropout
-    show_student_list
+    config
   }
 `;
 
 export const LOGIN: DocumentNode<
   {
     login: {
-      user?: {
-        email: string;
-        name: string;
-        admin: boolean;
-        type: UserType;
-        show_dropout: boolean;
-        show_student_list: boolean;
-      };
+      user?: IUserData;
       error?: string;
     };
   },
@@ -47,19 +47,9 @@ export const LOGIN: DocumentNode<
 `;
 
 export const CURRENT_USER: DocumentNode<{
-  currentUser?: IfImplements<
-    {
-      user?: {
-        email: string;
-        name: string;
-        admin: boolean;
-        type: UserType;
-        show_dropout: boolean;
-        show_student_list: boolean;
-      };
-    },
-    AuthResult
-  >;
+  currentUser?: {
+    user?: IUserData;
+  };
 }> = gql`
   query {
     currentUser {
@@ -74,17 +64,7 @@ export const CURRENT_USER: DocumentNode<{
 export const UNLOCK: DocumentNode<
   {
     unlock: {
-      user?: IfImplements<
-        {
-          email: string;
-          name: string;
-          admin: boolean;
-          type: UserType;
-          show_dropout: boolean;
-          show_student_list: boolean;
-        },
-        User
-      >;
+      user?: IUserData;
       error?: string;
     };
   },

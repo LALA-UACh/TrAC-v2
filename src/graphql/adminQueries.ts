@@ -1,33 +1,32 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
 import { UserType } from "../../constants";
+import { UserConfig } from "../../constants/userConfig";
 import { IfImplements } from "../../typings/utils";
 import { Program, User } from "./medium";
 
-type IAllUsersAdmin = IfImplements<
+type IUsersAdmin = IfImplements<
   {
     email: string;
     name: string;
     tries: number;
     type: UserType;
     student_id?: string;
-    show_dropout: boolean;
-    show_student_list: boolean;
     locked: boolean;
     programs: { id: string }[];
+    config: UserConfig;
   },
   User
->[];
+>;
 
-const AllUsersAdminFragment = gql`
-  fragment allUsersAdminFragment on User {
+const UserAdminFragment = gql`
+  fragment UserAdminFragment on User {
     email
     name
     tries
     type
     student_id
-    show_dropout
-    show_student_list
+    config
     locked
     programs {
       id
@@ -36,14 +35,14 @@ const AllUsersAdminFragment = gql`
 `;
 
 export const ALL_USERS_ADMIN: DocumentNode<{
-  users: IAllUsersAdmin;
+  users: IUsersAdmin[];
 }> = gql`
   query {
     users {
-      ...allUsersAdminFragment
+      ...UserAdminFragment
     }
   }
-  ${AllUsersAdminFragment}
+  ${UserAdminFragment}
 `;
 
 export const ALL_PROGRAMS_ADMIN: DocumentNode<{
@@ -58,7 +57,7 @@ export const ALL_PROGRAMS_ADMIN: DocumentNode<{
 
 export const ADD_USERS_PROGRAMS_ADMIN: DocumentNode<
   {
-    addUsersPrograms: IAllUsersAdmin[];
+    addUsersPrograms: IUsersAdmin[];
   },
   {
     user_programs: {
@@ -69,15 +68,15 @@ export const ADD_USERS_PROGRAMS_ADMIN: DocumentNode<
 > = gql`
   mutation($user_programs: [UserProgram!]!) {
     addUsersPrograms(user_programs: $user_programs) {
-      ...allUsersAdminFragment
+      ...UserAdminFragment
     }
   }
-  ${AllUsersAdminFragment}
+  ${UserAdminFragment}
 `;
 
 export const UPDATE_USER_PROGRAMS_ADMIN: DocumentNode<
   {
-    updateUserPrograms: IAllUsersAdmin;
+    updateUserPrograms: IUsersAdmin[];
   },
   {
     update_user: {
@@ -89,15 +88,15 @@ export const UPDATE_USER_PROGRAMS_ADMIN: DocumentNode<
 > = gql`
   mutation($update_user: UpdateUserPrograms!) {
     updateUserPrograms(userPrograms: $update_user) {
-      ...allUsersAdminFragment
+      ...UserAdminFragment
     }
   }
-  ${AllUsersAdminFragment}
+  ${UserAdminFragment}
 `;
 
 export const UPSERT_USERS_ADMIN: DocumentNode<
   {
-    upsertUsers: IAllUsersAdmin;
+    upsertUsers: IUsersAdmin[];
   },
   {
     users: {
@@ -107,23 +106,22 @@ export const UPSERT_USERS_ADMIN: DocumentNode<
       type?: UserType;
       tries?: number;
       student_id?: string;
-      show_dropout?: boolean;
-      show_student_list?: boolean;
+      config?: UserConfig;
       locked?: boolean;
     }[];
   }
 > = gql`
   mutation($users: [UpsertedUser!]!) {
     upsertUsers(users: $users) {
-      ...allUsersAdminFragment
+      ...UserAdminFragment
     }
   }
-  ${AllUsersAdminFragment}
+  ${UserAdminFragment}
 `;
 
 export const DELETE_USER_ADMIN: DocumentNode<
   {
-    deleteUser: IAllUsersAdmin;
+    deleteUser: IUsersAdmin[];
   },
   {
     email: string;
@@ -131,17 +129,17 @@ export const DELETE_USER_ADMIN: DocumentNode<
 > = gql`
   mutation($email: EmailAddress!) {
     deleteUser(email: $email) {
-      ...allUsersAdminFragment
+      ...UserAdminFragment
     }
   }
-  ${AllUsersAdminFragment}
+  ${UserAdminFragment}
 `;
 
 export const LOCK_MAIL_USER_ADMIN: DocumentNode<
   {
     lockMailUser: {
       mailResult: Record<string, any>;
-      users: IAllUsersAdmin;
+      users: IUsersAdmin[];
     };
   },
   { email: string }
@@ -150,11 +148,11 @@ export const LOCK_MAIL_USER_ADMIN: DocumentNode<
     lockMailUser(email: $email) {
       mailResult
       users {
-        ...allUsersAdminFragment
+        ...UserAdminFragment
       }
     }
   }
-  ${AllUsersAdminFragment}
+  ${UserAdminFragment}
 `;
 
 export const MAIL_LOCKED_USERS_ADMIN: DocumentNode<{

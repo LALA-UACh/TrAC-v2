@@ -11,6 +11,7 @@ import {
   UserType,
   WRONG_INFO,
 } from "../constants";
+import { baseUserConfig } from "../constants/userConfig";
 
 const testingUserOk = {
   email: "test@test.test",
@@ -25,7 +26,7 @@ const testingUserOk = {
   unlockKey: "",
   type: UserType.Director,
   student_id: "",
-  show_dropout: true,
+  config: baseUserConfig,
 };
 
 const testingUserLock = {
@@ -41,7 +42,7 @@ const testingUserLock = {
   unlockKey: "",
   type: UserType.Director,
   student_id: "",
-  show_dropout: true,
+  config: baseUserConfig,
 };
 
 const usersTable = [testingUserOk, testingUserLock];

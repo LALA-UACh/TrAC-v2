@@ -84,6 +84,11 @@ export class UpsertedUser implements Partial<User> {
   })
   type: UserType;
 
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  config?: UserConfig;
+
   @Field({ defaultValue: 0 })
   tries: number;
 

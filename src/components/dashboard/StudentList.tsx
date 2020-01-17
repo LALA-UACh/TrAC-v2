@@ -153,7 +153,7 @@ export const StudentList: FC<{
 
   const showDropout = useMemo(() => {
     return (
-      !!currentUserData?.currentUser?.user?.show_dropout &&
+      !!currentUserData?.currentUser?.user?.config?.SHOW_DROPOUT &&
       some(studentListData, ({ dropout_probability }) => {
         return (dropout_probability ?? -1) !== -1;
       })

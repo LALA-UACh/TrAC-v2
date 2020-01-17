@@ -8,6 +8,7 @@ import { act, render } from "@testing-library/react";
 
 import { UserType } from "../constants";
 import { baseConfig } from "../constants/baseConfig";
+import { baseUserConfig } from "../constants/userConfig";
 import { ALL_USERS_ADMIN } from "../src/graphql/adminQueries";
 import { CURRENT_USER } from "../src/graphql/queries";
 import AdminPage from "../src/pages/admin";
@@ -118,8 +119,7 @@ describe("admin", () => {
                       name: "name",
                       admin: true,
                       type: UserType.Director,
-                      show_dropout: true,
-                      show_student_list: true,
+                      config: baseUserConfig,
                       __typename: "User",
                     },
                     __typename: "AuthResult",

@@ -204,7 +204,7 @@ const Dashboard: FC = () => {
       );
       if (
         studentData.dropout?.active &&
-        currentUserData?.currentUser?.user?.show_dropout
+        currentUserData?.currentUser?.user?.config?.SHOW_DROPOUT
       ) {
         DropoutComponent = (
           <Dropout

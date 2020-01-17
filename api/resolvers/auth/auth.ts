@@ -11,6 +11,7 @@ import {
   UserType,
   WRONG_INFO,
 } from "../../../constants";
+import { baseUserConfig } from "../../../constants/userConfig";
 import { IContext } from "../../../interfaces";
 import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../../api_constants";
 import { StudentTable, UserTable } from "../../db/tables";
@@ -68,6 +69,7 @@ export class AuthResolver {
           ...user,
           type: defaultUserType(user.type),
           programs: [],
+          config: baseUserConfig,
         },
         token,
       };
@@ -128,6 +130,7 @@ export class AuthResolver {
             ...user,
             type,
             programs: [],
+            config: baseUserConfig,
           },
           token,
         };
@@ -252,6 +255,7 @@ export class AuthResolver {
                 ...user,
                 type,
                 programs: [],
+                config: baseUserConfig,
               },
               token,
             };

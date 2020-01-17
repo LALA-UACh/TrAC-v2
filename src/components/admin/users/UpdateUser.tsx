@@ -18,6 +18,7 @@ import { useMutation } from "@apollo/react-hooks";
 import { Box, Flex } from "@chakra-ui/core";
 
 import { UserType } from "../../../../constants";
+import { UserConfig } from "../../../../constants/userConfig";
 import {
   ALL_USERS_ADMIN,
   DELETE_USER_ADMIN,
@@ -33,8 +34,7 @@ export const UpdateUser: FC<{
     tries: number;
     type: UserType;
     student_id?: string;
-    show_dropout: boolean;
-    show_student_list: boolean;
+    config: UserConfig;
     locked: boolean;
   };
   children: JSX.Element;
@@ -133,8 +133,6 @@ export const UpdateUser: FC<{
           type: user.type,
           tries: user.tries,
           student_id: user.student_id,
-          show_dropout: user.show_dropout,
-          show_student_list: user.show_student_list,
           locked: user.locked,
         }}
         onSubmit={async ({
@@ -143,8 +141,6 @@ export const UpdateUser: FC<{
           tries,
           type,
           student_id,
-          show_dropout,
-          show_student_list,
           locked,
         }: {
           email: string;
@@ -152,8 +148,6 @@ export const UpdateUser: FC<{
           tries: number;
           type: UserType;
           student_id?: string;
-          show_dropout: boolean;
-          show_student_list: boolean;
           locked: boolean;
         }) => {
           try {
@@ -167,8 +161,6 @@ export const UpdateUser: FC<{
                     tries,
                     student_id,
                     type,
-                    show_dropout,
-                    show_student_list,
                     locked,
                   },
                 ],
@@ -310,7 +302,7 @@ export const UpdateUser: FC<{
                     )}
                   </Field>
 
-                  <Field type="checkbox" name="show_dropout">
+                  {/* <Field type="checkbox" name="show_dropout">
                     {({ input }) => (
                       <FormSemantic.Field>
                         <Checkbox
@@ -339,7 +331,7 @@ export const UpdateUser: FC<{
                         />
                       </FormSemantic.Field>
                     )}
-                  </Field>
+                  </Field> */}
 
                   <Field type="checkbox" name="locked">
                     {({ input }) => (
