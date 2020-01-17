@@ -1,7 +1,7 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
-import { truncate } from "lodash";
-import React, { FC, useContext, useMemo, useState } from "react";
+import { some, truncate } from "lodash";
+import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { useUpdateEffect } from "react-use";
 
@@ -71,7 +71,22 @@ export const CourseBox: FC<ICourse> = ({
 
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      if (localStorage.getItem(`${code}_active`)) {
+        setOpen(true);
+      }
+    }
+  }, [setOpen]);
+
   useUpdateEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      if (open) {
+        localStorage.setItem(`${code}_active`, "1");
+      } else {
+        localStorage.removeItem(`${code}_active`);
+      }
+    }
     if (open) {
       add({
         course: code,
@@ -88,18 +103,43 @@ export const CourseBox: FC<ICourse> = ({
     setOpen(false);
   }, [code]);
 
-  const height = (() => {
+  const { height, width } = useMemo(() => {
+    let height: number | undefined = undefined;
+    let width: number | undefined = undefined;
     if (open) {
-      if (taken[0]?.currentDistribution && historicDistribution) {
-        return 350;
-      } else {
-        return 350 - 130;
+      const currentDistr = taken[0]?.currentDistribution;
+      if (currentDistr && some(currentDistr, ({ value }) => value)) {
+        width = 350;
+        if (
+          historicDistribution &&
+          some(historicDistribution, ({ value }) => value)
+        ) {
+          height = 350;
+        } else {
+          height = 350 - 130;
+        }
+      } else if (
+        historicDistribution &&
+        some(historicDistribution, ({ value }) => value)
+      ) {
+        width = 350;
+        height = 350 - 130;
       }
+    } else {
+      width = 180;
+      height = 120;
     }
-    return 120;
-  })();
+    if (!width) {
+      width = 220;
+    }
+    if (!height) {
+      height = 140;
+    }
 
-  const stateColor = (() => {
+    return { height, width };
+  }, [taken, historicDistribution, open]);
+
+  const stateColor = useMemo(() => {
     const bandColorsCourse = taken?.[0]?.bandColors ?? bandColors;
 
     switch (state) {
@@ -137,7 +177,7 @@ export const CourseBox: FC<ICourse> = ({
         return "transparent";
       }
     }
-  })();
+  }, [grade, bandColors, taken, config]);
 
   const opacity = (() => {
     if (active) {
@@ -178,7 +218,7 @@ export const CourseBox: FC<ICourse> = ({
     return (
       <Stack spacing={1}>
         <Flex alignItems="center">
-          <Text m={0}>
+          <Text m={0} whiteSpace="nowrap">
             <b>{taken?.find(({ equiv }) => equiv)?.equiv || code}</b>
           </Text>
           {!!parallelGroup && (
@@ -193,11 +233,11 @@ export const CourseBox: FC<ICourse> = ({
         </Flex>
 
         <Text fontSize={9} maxWidth="150px">
-          {truncate(name, { length: 35 })}
+          {truncate(name, { length: open ? 60 : 35 })}
         </Text>
       </Stack>
     );
-  }, [code, name, taken, config]);
+  }, [code, name, taken, config, open]);
 
   const RegistrationComponent = useMemo(
     () =>
@@ -212,9 +252,9 @@ export const CourseBox: FC<ICourse> = ({
           exit={{
             opacity: 0,
           }}
-          className="registration_box"
+          style={{ width: "100%" }}
         >
-          <Text fontSize="9px">
+          <Text fontSize="9px" mr={2} textAlign="end">
             <b>{registration}</b>
           </Text>
         </motion.div>
@@ -230,17 +270,18 @@ export const CourseBox: FC<ICourse> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="credits_box"
         >
-          {credits.map(({ label, value }, key) => {
-            return (
-              value !== -1 && (
-                <Text fontSize="9px" key={key}>
-                  <b>{`${label}: ${value}`}</b>
-                </Text>
-              )
-            );
-          })}
+          <Box pos="absolute" bottom="10px" left="10px">
+            {credits.map(({ label, value }, key) => {
+              return (
+                value !== -1 && (
+                  <Text fontSize="9px" key={key}>
+                    <b>{`${label}: ${value}`}</b>
+                  </Text>
+                )
+              );
+            })}
+          </Box>
         </motion.div>
       ),
     [open, credits]
@@ -258,9 +299,8 @@ export const CourseBox: FC<ICourse> = ({
           exit={{
             opacity: 0,
           }}
-          className="req_circle_box"
         >
-          <Box mt="-10px">
+          <Box mt="-10px" pos="absolute" right="8px" top="80px">
             <svg width={32} height={32}>
               <circle
                 r={15}
@@ -307,6 +347,7 @@ export const CourseBox: FC<ICourse> = ({
 
     return (
       currentDistribution &&
+      some(currentDistribution, ({ value }) => value) &&
       term &&
       year && (
         <Histogram
@@ -324,16 +365,17 @@ export const CourseBox: FC<ICourse> = ({
   }, [currentDistribution, term, year, grade, taken, config]);
 
   const HistogramHistoric = useMemo(() => {
-    return (
-      historicDistribution && (
-        <Histogram
-          key="historic"
-          label={config.HISTORIC_GRADES}
-          distribution={historicDistribution}
-          grade={grade}
-          bandColors={bandColors}
-        />
-      )
+    return historicDistribution &&
+      some(historicDistribution, ({ value }) => value) ? (
+      <Histogram
+        key="historic"
+        label={config.HISTORIC_GRADES}
+        distribution={historicDistribution}
+        grade={grade}
+        bandColors={bandColors}
+      />
+    ) : (
+      <Badge>{config.NO_HISTORIC_DATA}</Badge>
     );
   }, [historicDistribution, grade, config]);
 
@@ -468,7 +510,7 @@ export const CourseBox: FC<ICourse> = ({
       m={1}
       color={config.COURSE_BOX_TEXT_COLOR}
       bg={config.COURSE_BOX_BACKGROUND_COLOR}
-      width={open ? 350 : 180}
+      width={width}
       height={height}
       borderRadius={5}
       opacity={opacity}

@@ -90,10 +90,10 @@ export const TakenSemesterBox: FC<{
         });
       }}
       color={config.TAKEN_SEMESTER_BOX_TEXT_COLOR}
-      height={comments ? "4em" : "2em"}
+      height="3em"
     >
       {comments ? (
-        <Stack>
+        <Stack spacing={0}>
           <Box>
             <b>{`${termTypeToNumber(term)}S ${year}`}</b>
           </Box>

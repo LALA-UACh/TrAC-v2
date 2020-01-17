@@ -2224,10 +2224,10 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@^24.0.25":
-  version "24.0.25"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-24.0.25.tgz#2aba377824ce040114aa906ad2cac2c85351360f"
-  integrity sha512-hnP1WpjN4KbGEK4dLayul6lgtys6FPz0UfxMeMQCv0M+sTnzN3ConfiO72jHgLxl119guHgI8gLqDOrRLsyp2g==
+"@types/jest@^24.9.0":
+  version "24.9.0"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-24.9.0.tgz#78c6991cd1734cf0d390be24875e310bb0a9fb74"
+  integrity sha512-dXvuABY9nM1xgsXlOtLQXJKdacxZJd7AtvLsKZ/0b57ruMXDKCOXAC/M75GbllQX6o1pcZ5hAG4JzYy7Z/wM2w==
   dependencies:
     jest-diff "^24.3.0"
 
@@ -2241,10 +2241,10 @@
   resolved "https://registry.yarnpkg.com/@types/json-stringify-safe/-/json-stringify-safe-5.0.0.tgz#df34d054419d39323a3730966bacba02ac5e474e"
   integrity sha512-UUA1sH0RSRROdInuDOA1yoRzbi5xVFD1RHCoOvNRPTNwR8zBkJ/84PZ6NhKVDtKp0FTeIccJCdQz1X2aJPr4uw==
 
-"@types/jsonwebtoken@^8.3.5":
-  version "8.3.5"
-  resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-8.3.5.tgz#ff9be1151a844095df1ff5f723651298c2c07659"
-  integrity sha512-VGM1gb+LwsQ5EPevvbvdnKncajBdYqNcrvixBif1BsiDQiSF1q+j4bBTvKC6Bt9n2kqNSx+yNTY2TVJ360E7EQ==
+"@types/jsonwebtoken@^8.3.6":
+  version "8.3.6"
+  resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-8.3.6.tgz#e6515e8d857572ac8ed594baabf4e17571a20f0b"
+  integrity sha512-v55iKItGvKw5AD1tMn9/W257GbvNQhUskozvaD4EWPyc61qZ7ri2Fgm4/8ra7OR+pq8EEialVPYkyofX1b8alQ==
   dependencies:
     "@types/node" "*"
 
@@ -10573,10 +10573,10 @@ react-icons@^3.8.0:
   dependencies:
     camelcase "^5.0.0"
 
-react-indiana-drag-scroll@^1.5.3:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/react-indiana-drag-scroll/-/react-indiana-drag-scroll-1.5.3.tgz#09c2489901bad6c8df42ed90f2b7fbf2bf5ce646"
-  integrity sha512-Tikj/blvjNj/T2aDMRivroQPcg9ShCiHhuJptd8Tl9IGM5++TsfVe/zu9p6+fTu2NoO0vfiXsNMs4QDoOrUITA==
+react-indiana-drag-scroll@^1.5.4:
+  version "1.5.4"
+  resolved "https://registry.yarnpkg.com/react-indiana-drag-scroll/-/react-indiana-drag-scroll-1.5.4.tgz#4adcbf38c12b20d24be4c3b000c4c8f85758fbae"
+  integrity sha512-MKvrdDLwti6upNriFSHBVM+5UJWWOMaxEf3WhREAJ7hnAvpQYTIKM2FTyAwdmcONy19j4HfM0gp75PLCxIyXpw==
   dependencies:
     classnames "^2.2.6"
     debounce "^1.2.0"
@@ -10673,10 +10673,10 @@ react-transition-group@^2.2.1:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-use@^13.17.0:
-  version "13.17.0"
-  resolved "https://registry.yarnpkg.com/react-use/-/react-use-13.17.0.tgz#5c4c2e3c85d586833dc6c10a5cadddb8b40a5d6d"
-  integrity sha512-0VY4H9RFavqMc5edYliSNUauXesM9K7wcnjqG0VfY+bPO/uOAqJRAdOUSg2tvdyLVR6IuKjk2F4dyOlHQ40y+w==
+react-use@^13.19.0:
+  version "13.19.0"
+  resolved "https://registry.yarnpkg.com/react-use/-/react-use-13.19.0.tgz#00c7650012021e75b5cf9ea8c1b1b4e1c22eb076"
+  integrity sha512-By7d8ZhdWo0Ns2BW/Gla5EDrj9rTJ8p/ueJKv7SbqlDQvu9lpwovWGWKjY5Vjz5gAG3tZrSSxd1gK+gw7gZniQ==
   dependencies:
     "@types/js-cookie" "2.2.4"
     "@xobotyi/scrollbar-width" "1.5.0"
@@ -12374,10 +12374,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.7.4:
-  version "3.7.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.4.tgz#1743a5ec5fef6a1fa9f3e4708e33c81c73876c19"
-  integrity sha512-A25xv5XCtarLwXpcDNZzCGvW2D1S3/bACratYBx2sax8PefsFhlYmkQicKHvpYflFS8if4zne5zT5kpJ7pzuvw==
+typescript@^3.8.0-beta:
+  version "3.8.0-beta"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.0-beta.tgz#acdcaf9f24c7e20b1ff0a6329d1e8d63691e2e13"
+  integrity sha512-mQEmQUJg0CQBhf/GSVnGscKv/jrKsrLxE01AhdjYmBNoXX2Iah3i38ufxXByXacK6Fc5Nr9oMz7MjpjgddiknA==
 
 ua-parser-js@^0.7.18:
   version "0.7.20"
