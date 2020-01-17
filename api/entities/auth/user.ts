@@ -9,6 +9,7 @@ import {
 } from "type-graphql";
 
 import { UserType } from "../../../constants";
+import { UserConfig } from "../../../constants/userConfig";
 import { ADMIN } from "../../api_constants";
 import { IUser } from "../../db/tables";
 import { Program } from "../data/program";
@@ -35,12 +36,6 @@ export class User implements Partial<IUser> {
   @Field()
   student_id: string;
 
-  @Field()
-  show_dropout: boolean;
-
-  @Field()
-  show_student_list: boolean;
-
   @Authorized([ADMIN])
   @Field()
   locked: boolean;
@@ -55,6 +50,9 @@ export class User implements Partial<IUser> {
 
   @Field(() => [Program])
   programs: Program[];
+
+  @Field(() => GraphQLJSONObject)
+  config: UserConfig;
 }
 
 @InputType()
@@ -91,12 +89,6 @@ export class UpsertedUser implements Partial<User> {
 
   @Field({ defaultValue: "" })
   student_id: string;
-
-  @Field({ defaultValue: false })
-  show_dropout: boolean;
-
-  @Field({ defaultValue: false })
-  show_student_list: boolean;
 
   @Field({ defaultValue: true })
   locked: boolean;

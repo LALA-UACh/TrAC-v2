@@ -13,6 +13,7 @@ import {
 import { $PropertyType } from "utility-types";
 
 import { defaultUserType } from "../../../constants";
+import { baseUserConfig } from "../../../constants/userConfig";
 import { ArrayPropertyType } from "../../../interfaces/utils";
 import { ADMIN } from "../../api_constants";
 import { dbAuth } from "../../db";
@@ -21,6 +22,7 @@ import {
   IUserPrograms,
   ProgramTable,
   USER_PROGRAMS_TABLE,
+  UserConfigurationTable,
   UserProgramsTable,
   UserTable,
 } from "../../db/tables";
@@ -44,6 +46,7 @@ export class UserResolver {
         ...rest,
         type: defaultUserType(type),
         programs: [],
+        config: baseUserConfig,
       };
     });
   }
@@ -80,6 +83,7 @@ export class UserResolver {
         ...rest,
         type: defaultUserType(type),
         programs: [],
+        config: baseUserConfig,
       };
     });
   }
@@ -123,6 +127,7 @@ export class UserResolver {
         ...rest,
         type: defaultUserType(type),
         programs: [],
+        config: baseUserConfig,
       };
     });
   }
@@ -135,17 +140,7 @@ export class UserResolver {
   ): Promise<User[]> {
     await Promise.all(
       users.map(
-        async ({
-          oldEmail,
-          email,
-          name,
-          type,
-          tries,
-          student_id,
-          show_dropout,
-          show_student_list,
-          locked,
-        }) => {
+        async ({ oldEmail, email, name, type, tries, student_id, locked }) => {
           /**
            * If there is an old email, we assume that we are
            * updating an existing user
@@ -158,8 +153,6 @@ export class UserResolver {
                 type,
                 tries,
                 student_id,
-                show_dropout,
-                show_student_list,
                 locked,
               })
               .where({
@@ -182,8 +175,6 @@ export class UserResolver {
                   type,
                   tries,
                   student_id,
-                  show_dropout,
-                  show_student_list,
                   locked,
                 })
                 .where({ email });
@@ -195,8 +186,6 @@ export class UserResolver {
               type,
               tries,
               student_id,
-              show_dropout,
-              show_student_list,
               locked,
             });
           }
@@ -209,6 +198,7 @@ export class UserResolver {
         ...rest,
         type: defaultUserType(type),
         programs: [],
+        config: baseUserConfig,
       };
     });
   }
@@ -254,6 +244,7 @@ export class UserResolver {
           ...rest,
           type: defaultUserType(type),
           programs: [],
+          config: baseUserConfig,
         };
       }),
     };
@@ -299,6 +290,7 @@ export class UserResolver {
         ...rest,
         type: defaultUserType(type),
         programs: [],
+        config: baseUserConfig,
       };
     });
   }
@@ -315,5 +307,17 @@ export class UserResolver {
     ).map(({ program }) => {
       return { id: program };
     });
+  }
+
+  @FieldResolver()
+  async config(
+    @Root() { email }: Pick<User, "email">
+  ): Promise<Pick<User, "config">["config"]> {
+    const configRow = await UserConfigurationTable()
+      .select("config")
+      .where({ email })
+      .first();
+
+    return { ...baseUserConfig, ...configRow?.config };
   }
 }

@@ -4,6 +4,7 @@ import { chunk } from "lodash";
 import { dbAuth, dbConfig, dbData, dbTracking } from "../";
 import { UserType } from "../../../constants";
 import { baseConfig } from "../../../constants/baseConfig";
+import { baseUserConfig } from "../../../constants/userConfig";
 import {
   CONFIGURATION_TABLE,
   ConfigurationTable,
@@ -28,7 +29,9 @@ import {
   StudentTable,
   StudentTermTable,
   TRACKING_TABLE,
+  USER_CONFIGURATION_TABLE,
   USER_PROGRAMS_TABLE,
+  UserConfigurationTable,
   UserProgramsTable,
   USERS_TABLE,
   UserTable,
@@ -83,14 +86,6 @@ const dataImport = async () => {
           .text("student_id")
           .notNullable()
           .defaultTo("");
-        table
-          .boolean("show_dropout")
-          .notNullable()
-          .defaultTo(false);
-        table
-          .boolean("show_student_list")
-          .notNullable()
-          .defaultTo(false);
       });
 
       await UserTable().insert({
@@ -100,8 +95,6 @@ const dataImport = async () => {
         locked: false,
         admin: true,
         type: UserType.Director,
-        show_dropout: true,
-        show_student_list: true,
         student_id: (await import("./student.json")).default[0].id,
       });
     }
@@ -122,6 +115,23 @@ const dataImport = async () => {
           };
         })
       );
+    }
+  });
+
+  dbConfig.schema.hasTable(USER_CONFIGURATION_TABLE).then(async exists => {
+    if (!exists) {
+      await dbConfig.schema.createTable(USER_CONFIGURATION_TABLE, table => {
+        table
+          .text("email")
+          .primary()
+          .notNullable();
+        table.json("config").notNullable();
+      });
+
+      await UserConfigurationTable().insert({
+        email: "admin@admin.dev",
+        config: baseUserConfig,
+      });
     }
   });
 
