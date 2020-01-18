@@ -4,7 +4,6 @@ import { chunk } from "lodash";
 import { dbAuth, dbConfig, dbData, dbTracking } from "../";
 import { UserType } from "../../../constants";
 import { baseConfig } from "../../../constants/baseConfig";
-import { baseUserConfig } from "../../../constants/userConfig";
 import {
   CONFIGURATION_TABLE,
   ConfigurationTable,
@@ -130,7 +129,11 @@ const dataImport = async () => {
 
       await UserConfigurationTable().insert({
         email: "admin@admin.dev",
-        config: baseUserConfig,
+        config: {
+          SHOW_DROPOUT: true,
+          SHOW_STUDENT_LIST: true,
+          FOREPLAN: true,
+        },
       });
     }
   });
