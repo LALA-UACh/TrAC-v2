@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useSetState } from "react-use";
 import { Button, Checkbox, Icon, Input, Modal } from "semantic-ui-react";
 
@@ -24,8 +24,6 @@ export const useUpdateUserConfigModal = ({
       ...oldConfig,
     });
   }, [oldConfig, setConfig]);
-
-  console.log({ oldConfig, config });
 
   const userConfigModal = useMemo(() => {
     return (

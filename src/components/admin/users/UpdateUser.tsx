@@ -122,7 +122,6 @@ export const UpdateUser: FC<{
     config: user.config,
   });
 
-
   return (
     <Modal
       trigger={cloneElement(children, {

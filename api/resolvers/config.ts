@@ -4,30 +4,7 @@ import { Query, Resolver } from "type-graphql";
 import { isNumeric } from "validator";
 
 import { baseConfig } from "../../constants/baseConfig";
-import { UserConfig } from "../../constants/userConfig";
-import { ConfigurationTable, UserConfigurationTable } from "../db/tables";
-
-export const upsertUserConfig = async (email: string, config: UserConfig) => {
-  let userConfig = await UserConfigurationTable()
-    .select("config")
-    .where({ email });
-
-  if (!userConfig) {
-    userConfig = await UserConfigurationTable()
-      .insert({
-        email,
-        config,
-      })
-      .returning("config");
-  } else {
-    userConfig = await UserConfigurationTable()
-      .update({
-        config,
-      })
-      .where({ email })
-      .returning("config");
-  }
-};
+import { ConfigurationTable } from "../db/tables";
 
 @Resolver()
 export class ConfigurationResolver {

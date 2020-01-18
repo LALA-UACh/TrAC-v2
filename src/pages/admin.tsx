@@ -15,6 +15,12 @@ const Admin: FC = () => {
 
   const { data, loading, error } = useQuery(ALL_USERS_ADMIN);
 
+  if (data) {
+    console.log("data_all_users_admin", {
+      data,
+    });
+  }
+
   const ActiveTab = useMemo(() => {
     switch (active) {
       case "users":

@@ -16,7 +16,7 @@ import { defaultUserType } from "../../../constants";
 import { baseUserConfig } from "../../../constants/userConfig";
 import { ArrayPropertyType } from "../../../interfaces/utils";
 import { ADMIN } from "../../api_constants";
-import { dbAuth, dbConfig } from "../../db";
+import { dbAuth } from "../../db";
 import {
   IUser,
   IUserPrograms,
@@ -35,7 +35,6 @@ import {
 } from "../../entities/auth/user";
 import { assertIsDefined } from "../../utils/assert";
 import { sendMail, UnlockMail } from "../../utils/mail";
-import { upsertUserConfig } from "../config";
 
 @Resolver(() => User)
 export class UserResolver {
@@ -139,10 +138,6 @@ export class UserResolver {
     @Arg("users", () => [UpsertedUser])
     users: UpsertedUser[]
   ): Promise<User[]> {
-    const [trxAuth, trxConfig] = await Promise.all([
-      dbAuth.transaction(),
-      dbConfig.transaction(),
-    ]);
     try {
       await Promise.all(
         users.map(
@@ -154,80 +149,79 @@ export class UserResolver {
             tries,
             student_id,
             locked,
-            config = baseUserConfig,
+            config,
           }) => {
-            const userConfigPromise = upsertUserConfig(email, config);
-
-            /**
-             * If there is an old email, we assume that we are
-             * updating an existing user
-             */
-
-            if (oldEmail) {
-              if (oldEmail !== email) {
-                await UserConfigurationTable()
-                  .delete()
-                  .where({
-                    email: oldEmail,
-                  });
+            const configPromise = new Promise(async (resolve, reject) => {
+              if (!config) {
+                return resolve();
               }
-              return await Promise.all([
-                userConfigPromise,
-                UserTable()
-                  .update({
+              try {
+                const userConfig = await UserConfigurationTable()
+                  .select("config")
+                  .where({ email: oldEmail ?? email })
+                  .first();
+                if (!userConfig) {
+                  await UserConfigurationTable().insert({
                     email,
-                    name,
-                    type,
-                    tries,
-                    student_id,
-                    locked,
-                  })
-                  .where({
-                    email: oldEmail,
-                  }),
-              ]);
-            } else {
-              /**
-               * Otherwise, we have to check if the email already exists
-               * to decide if inserts or updates
-               */
-              const foundUser = await UserTable()
-                .select("email")
-                .where({ email })
-                .first();
-
-              if (foundUser) {
-                return await Promise.all([
-                  userConfigPromise,
-                  UserTable()
+                    config,
+                  });
+                } else {
+                  await UserConfigurationTable()
                     .update({
+                      email,
+                      config,
+                    })
+                    .where({
+                      email: oldEmail ?? email,
+                    });
+                }
+                resolve();
+              } catch (err) {
+                reject(err);
+              }
+            });
+            const userPromise = new Promise(async (resolve, reject) => {
+              try {
+                const foundUser = await UserTable()
+                  .select("email")
+                  .where({
+                    email: oldEmail ?? email,
+                  })
+                  .first();
+
+                if (foundUser) {
+                  await UserTable()
+                    .update({
+                      email,
                       name,
                       type,
                       tries,
                       student_id,
                       locked,
                     })
-                    .where({ email }),
-                ]);
+                    .where({
+                      email: oldEmail ?? email,
+                    });
+                } else {
+                  await UserTable().insert({
+                    email,
+                    name,
+                    type,
+                    tries,
+                    student_id,
+                    locked,
+                  });
+                }
+                resolve();
+              } catch (err) {
+                reject(err);
               }
+            });
 
-              return await Promise.all([
-                userConfigPromise,
-                UserTable().insert({
-                  email,
-                  name,
-                  type,
-                  tries,
-                  student_id,
-                  locked,
-                }),
-              ]);
-            }
+            await Promise.all([configPromise, userPromise]);
           }
         )
       );
-
-      await Promise.all([trxAuth.commit(), trxConfig.commit()]);
 
       return (await UserTable().select("*")).map(({ type, ...rest }) => {
         return {
@@ -238,7 +232,6 @@ export class UserResolver {
         };
       });
     } catch (err) {
-      await Promise.all([trxAuth.rollback(), trxConfig.rollback()]);
       throw err;
     }
   }
@@ -358,6 +351,6 @@ export class UserResolver {
       .where({ email })
       .first();
 
-    return { ...baseUserConfig, ...configRow?.config };
+    return { ...baseUserConfig, ...(configRow?.config ?? {}) };
   }
 }

@@ -182,14 +182,18 @@ export const Users: FC<{
                 student_id
               </Table.HeaderCell>
               <Table.HeaderCell
-                sorted={column === "show_dropout" ? direction : undefined}
-                onClick={handleSort("show_dropout")}
+                sorted={
+                  column === "config.SHOW_DROPOUT" ? direction : undefined
+                }
+                onClick={handleSort("config.SHOW_DROPOUT")}
               >
                 show_dropout
               </Table.HeaderCell>
               <Table.HeaderCell
-                sorted={column === "show_student_list" ? direction : undefined}
-                onClick={handleSort("show_student_list")}
+                sorted={
+                  column === "config.SHOW_STUDENT_LIST" ? direction : undefined
+                }
+                onClick={handleSort("config.SHOW_STUDENT_LIST")}
               >
                 show_student_list
               </Table.HeaderCell>
@@ -201,53 +205,55 @@ export const Users: FC<{
               (
                 { email, name, locked, tries, type, student_id, config },
                 key
-              ) => (
-                <UpdateUser
-                  key={key}
-                  user={{
-                    email,
-                    name,
-                    locked,
-                    tries,
-                    type,
-                    student_id,
-                    config,
-                  }}
-                >
-                  <Table.Row style={{ cursor: "pointer" }}>
-                    <Table.Cell>{email}</Table.Cell>
-                    <Table.Cell>{name}</Table.Cell>
-                    <Table.Cell>
-                      <Icon circular name={locked ? "lock" : "lock open"} />
-                    </Table.Cell>
-                    <Table.Cell>{tries}</Table.Cell>
-                    <Table.Cell>{type}</Table.Cell>
-                    <Table.Cell>
-                      {truncate(student_id, { length: 10 })}
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Icon
-                        circular
-                        name={
-                          config.SHOW_DROPOUT
-                            ? "check circle outline"
-                            : "times circle outline"
-                        }
-                      />
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Icon
-                        circular
-                        name={
-                          config.SHOW_STUDENT_LIST
-                            ? "check circle outline"
-                            : "times circle outline"
-                        }
-                      />
-                    </Table.Cell>
-                  </Table.Row>
-                </UpdateUser>
-              )
+              ) => {
+                return (
+                  <UpdateUser
+                    key={key}
+                    user={{
+                      email,
+                      name,
+                      locked,
+                      tries,
+                      type,
+                      student_id,
+                      config,
+                    }}
+                  >
+                    <Table.Row style={{ cursor: "pointer" }}>
+                      <Table.Cell>{email}</Table.Cell>
+                      <Table.Cell>{name}</Table.Cell>
+                      <Table.Cell>
+                        <Icon circular name={locked ? "lock" : "lock open"} />
+                      </Table.Cell>
+                      <Table.Cell>{tries}</Table.Cell>
+                      <Table.Cell>{type}</Table.Cell>
+                      <Table.Cell>
+                        {truncate(student_id, { length: 10 })}
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Icon
+                          circular
+                          name={
+                            config?.SHOW_DROPOUT
+                              ? "check circle outline"
+                              : "times circle outline"
+                          }
+                        />
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Icon
+                          circular
+                          name={
+                            config?.SHOW_STUDENT_LIST
+                              ? "check circle outline"
+                              : "times circle outline"
+                          }
+                        />
+                      </Table.Cell>
+                    </Table.Row>
+                  </UpdateUser>
+                );
+              }
             )}
           </Table.Body>
         </Table>
