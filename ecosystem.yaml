@@ -13,10 +13,6 @@ apps:
   - name: trac_client
     script: node_modules/next/dist/bin/next
     args: start
-    interpreter: node
-    interpreter_args:
-      - -r
-      - dotenv/config
     exec_mode: cluster
     instances: 2
     out_file: logs/out_client.log
