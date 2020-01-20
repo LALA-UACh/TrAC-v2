@@ -1,3 +1,4 @@
+import { toSafeInteger, toString } from "lodash";
 import React, { useEffect, useMemo } from "react";
 import { useSetState } from "react-use";
 import { Button, Checkbox, Icon, Input, Modal } from "semantic-ui-react";
@@ -32,38 +33,53 @@ export const useUpdateUserConfigModal = ({
         <Modal.Content>
           <Stack>
             {Object.keys(baseUserConfig).map(key => {
+              const ConfigInput = () => {
+                switch (typeof baseUserConfig[key]) {
+                  case "boolean":
+                    return (
+                      <Checkbox
+                        checked={config[key]}
+                        label={key}
+                        onChange={() => {
+                          setConfig({
+                            [key]: !config[key],
+                          });
+                        }}
+                        type="checkbox"
+                      />
+                    );
+                  case "string":
+                    return (
+                      <Input
+                        value={config[key]}
+                        label={key}
+                        placeholder={baseUserConfig[key]}
+                        onChange={(_, { value }) => {
+                          setConfig({
+                            [key]: toString(value),
+                          });
+                        }}
+                      />
+                    );
+                  case "number":
+                    return (
+                      <Input
+                        value={config[key]}
+                        label={key}
+                        onChange={(_, { value }) => {
+                          setConfig({
+                            [key]: toSafeInteger(value),
+                          });
+                        }}
+                      />
+                    );
+                  default:
+                    return null;
+                }
+              };
               return (
                 <Box key={key}>
-                  {(() => {
-                    switch (typeof config[key]) {
-                      case "boolean":
-                        return (
-                          <Checkbox
-                            checked={config[key]}
-                            label={key}
-                            onChange={() => {
-                              setConfig({
-                                [key]: !config[key],
-                              });
-                            }}
-                            type="checkbox"
-                          />
-                        );
-                      case "string":
-                        return (
-                          <Input
-                            value={config[key]}
-                            onChange={(_, { value }) => {
-                              setConfig({
-                                [key]: value,
-                              });
-                            }}
-                          />
-                        );
-                      default:
-                        return null;
-                    }
-                  })()}
+                  <ConfigInput />
                 </Box>
               );
             })}

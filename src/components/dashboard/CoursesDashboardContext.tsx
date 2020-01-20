@@ -27,7 +27,7 @@ export type ICoursesDashboardActions =
         course: string;
         flow: string[];
         requisites: string[];
-        semestersTaken: { year: number; term: string }[];
+        semestersTaken?: { year: number; term: string }[];
       }
     >
   | Action<"removeCourse", string>
@@ -41,8 +41,8 @@ export interface ICoursesDashboardData {
   flowHistory: Record<string, boolean>[];
   requisites?: Record<string, boolean>;
   requisitesHistory: Record<string, boolean>[];
-  semestersTaken: ITakenSemester[];
-  semestersTakenHistory: ITakenSemester[][];
+  semestersTaken: ITakenSemester[] | undefined;
+  semestersTakenHistory: (ITakenSemester[] | undefined)[];
   explicitSemester?: string;
 }
 
@@ -119,11 +119,13 @@ const courseDashboardReducer: Reducer<
         flow: flowHistory[0],
         requisites: requisitesHistory[0],
         semestersTaken: action.payload.semestersTaken,
-        explicitSemester: checkExplicitSemesterCallback(state.explicitSemester)(
-          action.payload.semestersTaken
-        )
-          ? state.explicitSemester
-          : undefined,
+        explicitSemester:
+          action.payload.semestersTaken &&
+          checkExplicitSemesterCallback(state.explicitSemester)(
+            action.payload.semestersTaken
+          )
+            ? state.explicitSemester
+            : undefined,
       };
     }
     case "removeCourse": {

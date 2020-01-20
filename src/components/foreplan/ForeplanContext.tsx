@@ -11,28 +11,37 @@ import { useDebounce } from "react-use";
 import { Action } from "../../../interfaces";
 
 export type IForeplanActions =
-  | Action<"activate">
-  | Action<"disable">
-  | Action<"addCourse", string>;
+  | Action<"activateForeplan">
+  | Action<"disableForeplan">
+  | Action<"addCourseForeplan", string>
+  | Action<"removeCourseForeplan", string>;
 
 export interface IForeplanData {
   active: boolean;
+  foreplanCourses: string[];
 }
 
-const defaultForeplanData: IForeplanData = { active: false };
+const defaultForeplanData: IForeplanData = {
+  active: false,
+  foreplanCourses: [],
+};
 
 const foreplanReducer: Reducer<IForeplanData, IForeplanActions> = (
   state,
   action
 ) => {
   switch (action.type) {
-    case "activate": {
+    case "activateForeplan": {
       return { ...state, active: true };
     }
-    case "disable": {
+    case "disableForeplan": {
       return { ...state, active: false };
     }
-    case "addCourse": {
+    case "addCourseForeplan": {
+      action.payload;
+      return state;
+    }
+    case "removeCourseForeplan": {
       action.payload;
       return state;
     }
