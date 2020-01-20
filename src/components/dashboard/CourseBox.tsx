@@ -526,22 +526,16 @@ export const CourseBox: FC<ICourse> = ({
           }}
           className="foreplanCourseCheckbox"
         >
-          <Flex height="100%" direction="column" justifyContent="flex-end">
-            <Box mb={1}>
-              <Checkbox
-                checked={checked}
-                onChange={ev => {
-                  ev.stopPropagation();
-                  foreplanCtx.dispatch({
-                    type: checked
-                      ? "removeCourseForeplan"
-                      : "addCourseForeplan",
-                    payload: code,
-                  });
-                }}
-              />
-            </Box>
-          </Flex>
+          <Checkbox
+            checked={checked}
+            onChange={ev => {
+              ev.stopPropagation();
+              foreplanCtx.dispatch({
+                type: checked ? "removeCourseForeplan" : "addCourseForeplan",
+                payload: code,
+              });
+            }}
+          />
         </motion.div>
       );
 
