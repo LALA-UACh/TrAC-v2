@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 import { useMutation } from "@apollo/react-hooks";
 
+import { LoadingPage } from "../components/Loading";
 import { CURRENT_USER, LOGOUT } from "../graphql/queries";
 
 export default () => {
@@ -21,5 +22,5 @@ export default () => {
       Router.replace("/login");
     })();
   }, []);
-  return null;
+  return <LoadingPage />;
 };

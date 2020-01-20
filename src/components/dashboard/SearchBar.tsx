@@ -33,7 +33,8 @@ import {
   Tag,
 } from "@chakra-ui/core";
 
-import { CURRENT_USER, MY_PROGRAMS } from "../../graphql/queries";
+import { MY_PROGRAMS } from "../../graphql/queries";
+import { useUser } from "../../utils/useUser";
 import { ConfigContext } from "../Config";
 import { TrackingContext } from "../Tracking";
 
@@ -97,9 +98,7 @@ export const SearchBar: FC<{
     }
   }, [curriculum, setCurriculum, searchResult?.curriculums]);
 
-  const { data: currentUserData } = useQuery(CURRENT_USER, {
-    fetchPolicy: "cache-only",
-  });
+  const { user } = useUser();
 
   const {
     LOGOUT_BUTTON_LABEL,
@@ -402,10 +401,8 @@ export const SearchBar: FC<{
       </Flex>
 
       <Flex wrap="wrap" justifyContent="flex-end" className="stack">
-        {currentUserData?.currentUser?.user?.admin && (
-          <MockingMode mock={mock} setMock={setMock} />
-        )}
-        {currentUserData?.currentUser?.user?.config?.SHOW_STUDENT_LIST && (
+        {user?.admin && <MockingMode mock={mock} setMock={setMock} />}
+        {user?.config?.SHOW_STUDENT_LIST && (
           <StudentList
             program_id={program?.value}
             mockData={

@@ -29,7 +29,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/core";
 
-import { CURRENT_USER, STUDENT_LIST } from "../../graphql/queries";
+import { STUDENT_LIST } from "../../graphql/queries";
+import { useUser } from "../../utils/useUser";
 import { ConfigContext } from "../Config";
 import { TrackingContext } from "../Tracking";
 
@@ -77,9 +78,7 @@ export const StudentList: FC<{
     );
   }, [dataStudentList, mockData]);
 
-  const { data: currentUserData } = useQuery(CURRENT_USER, {
-    fetchPolicy: "cache-only",
-  });
+  const { user } = useUser();
 
   const { isOpen, onOpen, onClose } = useDisclosure(
     localStorage.getItem("student_list_open") ? true : false
@@ -153,12 +152,12 @@ export const StudentList: FC<{
 
   const showDropout = useMemo(() => {
     return (
-      !!currentUserData?.currentUser?.user?.config?.SHOW_DROPOUT &&
+      !!user?.config?.SHOW_DROPOUT &&
       some(studentListData, ({ dropout_probability }) => {
         return (dropout_probability ?? -1) !== -1;
       })
     );
-  }, [currentUserData, studentListData]);
+  }, [user, studentListData]);
 
   const {
     STUDENT_LIST_TITLE,

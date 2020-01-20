@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 import { Grid, Message } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
@@ -7,19 +7,20 @@ import { useQuery } from "@apollo/react-hooks";
 import { AdminMenu } from "../components/admin/Menu";
 import { Programs } from "../components/admin/programs";
 import { Users } from "../components/admin/users";
-import { RequireAuth } from "../components/RequireAuth";
+import { LoadingPage } from "../components/Loading";
 import { ALL_USERS_ADMIN } from "../graphql/adminQueries";
+import { useUser } from "../utils/useUser";
 
 const Admin: FC = () => {
   const [active, setActive] = useRememberState("admin_menu_tab", "users");
 
   const { data, loading, error } = useQuery(ALL_USERS_ADMIN);
 
-  if (data) {
-    console.log("data_all_users_admin", {
-      data,
-    });
-  }
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "test" && data) {
+      console.log("data_all_users_admin", data);
+    }
+  }, [data]);
 
   const ActiveTab = useMemo(() => {
     switch (active) {
@@ -60,9 +61,14 @@ const Admin: FC = () => {
 };
 
 export default () => {
-  return (
-    <RequireAuth admin>
-      <Admin />
-    </RequireAuth>
-  );
+  const { loading } = useUser({
+    requireAuth: true,
+    requireAdmin: true,
+  });
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+
+  return <Admin />;
 };

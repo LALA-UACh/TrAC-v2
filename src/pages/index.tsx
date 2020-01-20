@@ -12,8 +12,8 @@ import ScrollContainer from "react-indiana-drag-scroll";
 import { useMount, useUpdateEffect } from "react-use";
 import { useRememberState } from "use-remember-state";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
-import { Box, Flex, Spinner, Stack } from "@chakra-ui/core";
+import { useMutation } from "@apollo/react-hooks";
+import { Box, Flex, Stack } from "@chakra-ui/core";
 
 import {
   PROGRAM_NOT_FOUND,
@@ -27,13 +27,10 @@ import { CoursesDashboard } from "../components/dashboard/CoursesDashboardContex
 import { Semester } from "../components/dashboard/Semester";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
-import { RequireAuth } from "../components/RequireAuth";
+import { LoadingPage } from "../components/Loading";
 import { Tracking, TrackingContext, TrackingRef } from "../components/Tracking";
-import {
-  CURRENT_USER,
-  SEARCH_PROGRAM,
-  SEARCH_STUDENT,
-} from "../graphql/queries";
+import { SEARCH_PROGRAM, SEARCH_STUDENT } from "../graphql/queries";
+import { useUser } from "../utils/useUser";
 
 const SearchBar = dynamic(() => import("../components/dashboard/SearchBar"));
 const Dropout = dynamic(() => import("../components/dashboard/Dropout"));
@@ -45,14 +42,8 @@ const Dashboard: FC = () => {
     undefined
   );
 
-  const { data: currentUserData } = useQuery(CURRENT_USER, {
-    fetchPolicy: "cache-only",
-  });
-
-  const [mock, setMock] = useRememberState(
-    "mockMode",
-    !!currentUserData?.currentUser?.user?.admin
-  );
+  const { user } = useUser();
+  const [mock, setMock] = useRememberState("mockMode", !!user?.admin);
 
   const [mockData, setMockData] = useState<
     typeof import("../../constants/mockData")
@@ -94,10 +85,10 @@ const Dashboard: FC = () => {
   }, [searchProgramData, searchStudentData]);
 
   useEffect(() => {
-    if (!currentUserData?.currentUser?.user?.admin && mock) {
+    if (!user?.admin && mock) {
       setMock(false);
     }
-  }, [currentUserData, mock, setMock]);
+  }, [user, mock, setMock]);
 
   useEffect(() => {
     trackingData.current.curriculum = chosenCurriculum;
@@ -124,11 +115,11 @@ const Dashboard: FC = () => {
   }, [searchProgramData]);
 
   useEffect(() => {
-    if (currentUserData?.currentUser?.user?.type === UserType.Student) {
+    if (user?.type === UserType.Student) {
       searchProgram();
       searchStudent();
     }
-  }, [currentUserData, searchProgram, searchStudent]);
+  }, [user, searchProgram, searchStudent]);
 
   const {
     TimeLineComponent,
@@ -202,10 +193,7 @@ const Dashboard: FC = () => {
             })}
         </Flex>
       );
-      if (
-        studentData.dropout?.active &&
-        currentUserData?.currentUser?.user?.config?.SHOW_DROPOUT
-      ) {
+      if (studentData.dropout?.active && user?.config?.SHOW_DROPOUT) {
         DropoutComponent = (
           <Dropout
             probability={studentData.dropout.prob_dropout}
@@ -336,7 +324,7 @@ const Dashboard: FC = () => {
 
   return (
     <TrackingContext.Provider value={trackingData}>
-      {currentUserData?.currentUser?.user?.type === UserType.Director ? (
+      {user?.type === UserType.Director ? (
         <SearchBar
           error={uniq(
             [
@@ -400,14 +388,7 @@ const Dashboard: FC = () => {
       ) : (
         <>
           {searchProgramLoading || searchStudentLoading ? (
-            <Flex
-              justifyContent="center"
-              alignItems="center"
-              height="100vh"
-              width="100vw"
-            >
-              <Spinner size="xl" />
-            </Flex>
+            <LoadingPage />
           ) : null}
         </>
       )}
@@ -443,9 +424,12 @@ const Dashboard: FC = () => {
 };
 
 export default () => {
-  return (
-    <RequireAuth>
-      <Dashboard />
-    </RequireAuth>
-  );
+  const { loading } = useUser({
+    requireAuth: true,
+  });
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+  return <Dashboard />;
 };

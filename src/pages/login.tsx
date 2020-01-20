@@ -17,12 +17,14 @@ import {
 } from "semantic-ui-react";
 import { isEmail, isLength } from "validator";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 import { Image } from "@chakra-ui/core";
 
 import { LOCKED_USER, WRONG_INFO } from "../../constants";
 import { ConfigContext } from "../components/Config";
+import { LoadingPage } from "../components/Loading";
 import { CURRENT_USER, LOGIN } from "../graphql/queries";
+import { useUser } from "../utils/useUser";
 
 const Login: FC = () => {
   const [session, setSession] = useState(() =>
@@ -197,17 +199,16 @@ const Login: FC = () => {
 };
 
 export default () => {
-  const { data, loading } = useQuery(CURRENT_USER, {
-    ssr: false,
-  });
+  const { loading, user } = useUser();
+
   useEffect(() => {
-    if (!loading && data?.currentUser?.user?.email) {
+    if (!loading && user?.email) {
       Router.push("/");
     }
-  }, [loading, data]);
+  }, [loading, user]);
 
-  if (loading || data?.currentUser?.user?.email) {
-    return null;
+  if (loading) {
+    return <LoadingPage />;
   }
   return <Login />;
 };
