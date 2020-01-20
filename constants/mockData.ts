@@ -4004,7 +4004,7 @@ const data: {
               name: "ARQUITECTURA DE SOFTWARE",
               registration: "REGISTRADA",
               grade: 0,
-              state: StateCourse.Current,
+              state: StateCourse.Pending,
               parallelGroup: 0,
               currentDistribution: [],
               bandColors: [],
@@ -4163,8 +4163,8 @@ const data: {
               equiv: "",
               name: "TEORÍA DE AUTÓMATAS",
               registration: "CURSADA",
-              grade: 4.6,
-              state: StateCourse.Passed,
+              grade: 3.6,
+              state: StateCourse.Failed,
               parallelGroup: 0,
               currentDistribution: [
                 {
@@ -4221,8 +4221,8 @@ const data: {
               equiv: "",
               name: "BASE DE DATOS",
               registration: "CURSADA",
-              grade: 4.8,
-              state: StateCourse.Passed,
+              grade: 2.8,
+              state: StateCourse.Failed,
               parallelGroup: 0,
               currentDistribution: [
                 {
@@ -5200,8 +5200,8 @@ const data: {
               equiv: "",
               name: "TALLER DE INGENIERÍA: PROGRAMACIÓN APLICADA",
               registration: "CURSADA",
-              grade: 6,
-              state: StateCourse.Passed,
+              grade: 1,
+              state: StateCourse.Failed,
               parallelGroup: 1,
               currentDistribution: [
                 {
