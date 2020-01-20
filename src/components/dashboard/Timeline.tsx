@@ -156,7 +156,7 @@ export const TimeLine: FC<{
                       ? config.TIMELINE_EXPLICIT_CIRCLE_COLOR
                       : config.SEMESTRAL_GRADE_COLOR
                   }
-                  style={{ transition: "0.4s all ease-in-out" }}
+                  style={{ transition: "all 0.4s ease-in-out" }}
                 />
               </TimeLineTooltip>
             </g>

@@ -45,7 +45,7 @@ export const Dropout: FC<{ probability?: number; accuracy?: number }> = memo(
           }}
           color={DROPOUT_TEXT_COLOR}
           cursor="pointer"
-          transition="0.4s box-shadow ease-in-out"
+          transition="box-shadow 0.4s ease-in-out"
         >
           <Stack className="unselectable" isInline pt={10} pb={10}>
             <Text

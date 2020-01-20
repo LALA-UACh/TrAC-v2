@@ -40,3 +40,7 @@ body {
 .cursorText {
   cursor: text;
 }
+
+.foreplanCourseCheckbox {
+  height: 100%;
+}

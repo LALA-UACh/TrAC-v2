@@ -68,14 +68,12 @@ export const TakenSemesterBox: FC<{
       borderRadius="8px"
       backgroundColor={config.TAKEN_SEMESTER_BOX_BACKGROUND_COLOR}
       p="6px"
-      mt={0}
-      mb={3}
       ml={3}
       mr={3}
       fontSize="1.2em"
       cursor="pointer"
       className="unselectable"
-      transition="0.4s all ease-in-out"
+      transition="all 0.4s ease-in-out"
       whiteSpace="nowrap"
       alignItems="center"
       display="flex"

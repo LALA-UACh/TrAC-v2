@@ -9,7 +9,7 @@ import React, {
   useState,
 } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
-import { useMount, useUpdateEffect } from "react-use";
+import { useUpdateEffect } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation } from "@apollo/react-hooks";
@@ -27,6 +27,7 @@ import { CoursesDashboard } from "../components/dashboard/CoursesDashboardContex
 import { Semester } from "../components/dashboard/Semester";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
+import { ForeplanContextContainer } from "../components/foreplan/ForeplanContext";
 import { LoadingPage } from "../components/Loading";
 import { Tracking, TrackingContext, TrackingRef } from "../components/Tracking";
 import { SEARCH_PROGRAM, SEARCH_STUDENT } from "../graphql/queries";
@@ -34,6 +35,9 @@ import { useUser } from "../utils/useUser";
 
 const SearchBar = dynamic(() => import("../components/dashboard/SearchBar"));
 const Dropout = dynamic(() => import("../components/dashboard/Dropout"));
+const ForeplanModeSwitch = dynamic(() =>
+  import("../components/foreplan/ForeplanModeSwitch")
+);
 
 const Dashboard: FC = () => {
   const [program, setProgram] = useState<string | undefined>(undefined);
@@ -177,7 +181,7 @@ const Dashboard: FC = () => {
         />
       );
       TakenSemestersComponent = (
-        <Flex alignItems="center">
+        <Flex alignItems="center" justifyContent="center" mt={0} mb={3}>
           {studentData.terms
             .slice()
             .reverse()
@@ -191,6 +195,7 @@ const Dashboard: FC = () => {
                 />
               );
             })}
+          {user?.config?.FOREPLAN && <ForeplanModeSwitch />}
         </Flex>
       );
       if (studentData.dropout?.active && user?.config?.SHOW_DROPOUT) {
@@ -312,15 +317,17 @@ const Dashboard: FC = () => {
     ERROR_PROGRAM_NOT_FOUND,
   } = useContext(ConfigContext);
 
-  useMount(() => {
-    setTimeout(() => {
-      trackingData.current.track({
-        action: "login",
-        effect: "load-app",
-        target: "website",
-      });
-    }, 1000);
-  });
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        trackingData.current.track({
+          action: "login",
+          effect: "load-app",
+          target: "website",
+        });
+      }, 1000);
+    }
+  }, [user]);
 
   return (
     <TrackingContext.Provider value={trackingData}>
@@ -397,27 +404,31 @@ const Dashboard: FC = () => {
         program={program}
         mock={mock}
       >
-        <ScrollContainer activationDistance={5} hideScrollbars={false}>
-          <Flex>
-            <Box>{TimeLineComponent}</Box>
-            {DropoutComponent}
-          </Flex>
-
-          <Stack isInline pl="50px">
-            {TakenSemestersComponent}
-          </Stack>
-        </ScrollContainer>
-
-        <ScrollContainer
-          hideScrollbars={false}
-          vertical={false}
-          activationDistance={5}
+        <ForeplanContextContainer
+          distinct={`${program}${chosenCurriculum}${searchStudentData?.student?.id}`}
         >
-          <Stack isInline spacing={8}>
-            {SemestersComponent}
-          </Stack>
-        </ScrollContainer>
-        <Tracking />
+          <ScrollContainer activationDistance={5} hideScrollbars={false}>
+            <Flex>
+              <Box>{TimeLineComponent}</Box>
+              {DropoutComponent}
+            </Flex>
+
+            <Stack isInline pl="50px">
+              {TakenSemestersComponent}
+            </Stack>
+          </ScrollContainer>
+
+          <ScrollContainer
+            hideScrollbars={false}
+            vertical={false}
+            activationDistance={5}
+          >
+            <Stack isInline spacing={8}>
+              {SemestersComponent}
+            </Stack>
+          </ScrollContainer>
+          <Tracking />
+        </ForeplanContextContainer>
       </CoursesDashboard>
     </TrackingContext.Provider>
   );
@@ -431,5 +442,6 @@ export default () => {
   if (loading) {
     return <LoadingPage />;
   }
+
   return <Dashboard />;
 };

@@ -4,6 +4,7 @@ import { some, truncate } from "lodash";
 import React, { FC, useContext, useMemo, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { useDebounce, useUpdateEffect } from "react-use";
+import { Checkbox } from "semantic-ui-react";
 
 import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/core";
 
@@ -11,6 +12,7 @@ import { StateCourse, termTypeToNumber } from "../../../constants";
 import { ICourse, ITakenCourse } from "../../../interfaces";
 import { TrackingContext } from "../../components/Tracking";
 import { ConfigContext } from "../Config";
+import { ForeplanContext } from "../foreplan/ForeplanContext";
 import { CoursesDashboardContext } from "./CoursesDashboardContext";
 import { Histogram } from "./Histogram";
 
@@ -31,13 +33,14 @@ export const CourseBox: FC<ICourse> = ({
   const config = useContext(ConfigContext);
   const Tracking = useContext(TrackingContext);
   const {
-    dispatch,
-    active,
+    dispatch: dispatchDashboard,
+    activeCourse,
     flow: contextFlow,
     requisites: contextRequisites,
     checkExplicitSemester,
     explicitSemester,
   } = useContext(CoursesDashboardContext);
+  const foreplanCtx = useContext(ForeplanContext);
 
   const { semestersTaken } = useMemo(() => {
     const semestersTaken = taken.map(({ term, year }) => {
@@ -173,8 +176,12 @@ export const CourseBox: FC<ICourse> = ({
   }, [grade, bandColors, taken, config]);
 
   const opacity = (() => {
-    if (active) {
-      if (active === code || contextFlow?.[code] || contextRequisites?.[code]) {
+    if (activeCourse) {
+      if (
+        activeCourse === code ||
+        contextFlow?.[code] ||
+        contextRequisites?.[code]
+      ) {
         return 1;
       }
     }
@@ -185,14 +192,14 @@ export const CourseBox: FC<ICourse> = ({
       }
       return 0.5;
     }
-    if (!active && !explicitSemester) {
+    if (!activeCourse && !explicitSemester) {
       return 1;
     }
     return 0.5;
   })();
 
   const borderColor = (() => {
-    if (active === code) {
+    if (activeCourse === code) {
       return config.ACTIVE_COURSE_BOX_COLOR;
     }
     if (contextFlow?.[code]) {
@@ -427,7 +434,7 @@ export const CourseBox: FC<ICourse> = ({
         </Text>
       )
     );
-  }, [grade, state, config]);
+  }, [grade, state, config, code]);
 
   const HistoricalCirclesComponent = useMemo(
     () =>
@@ -498,6 +505,51 @@ export const CourseBox: FC<ICourse> = ({
     [taken, config, code]
   );
 
+  const { ForeplanCourseCheckbox } = useMemo(() => {
+    const { state } = taken[0] || {};
+    if (
+      foreplanCtx.active &&
+      (state === undefined ||
+        state === StateCourse.Failed ||
+        state === StateCourse.Canceled)
+    ) {
+      const checked = !!foreplanCtx.foreplanCourses[code];
+      const ForeplanCourseCheckbox = (
+        <motion.div
+          key="foreplanCourseCheckbox"
+          initial={{
+            opacity: 0,
+          }}
+          animate={{ opacity: 1 }}
+          exit={{
+            opacity: 0,
+          }}
+          className="foreplanCourseCheckbox"
+        >
+          <Flex height="100%" direction="column" justifyContent="flex-end">
+            <Box mb={1}>
+              <Checkbox
+                checked={checked}
+                onChange={ev => {
+                  ev.stopPropagation();
+                  foreplanCtx.dispatch({
+                    type: checked
+                      ? "removeCourseForeplan"
+                      : "addCourseForeplan",
+                    payload: code,
+                  });
+                }}
+              />
+            </Box>
+          </Flex>
+        </motion.div>
+      );
+
+      return { ForeplanCourseCheckbox };
+    }
+    return {};
+  }, [foreplanCtx, code, state, taken]);
+
   return (
     <Flex
       m={1}
@@ -510,17 +562,17 @@ export const CourseBox: FC<ICourse> = ({
       border={config.COURSE_BOX_BORDER_WIDTH_INACTIVE}
       borderColor={borderColor}
       borderWidth={
-        active === code
+        activeCourse === code
           ? config.COURSE_BOX_BORDER_WIDTH_ACTIVE
           : config.COURSE_BOX_BORDER_WIDTH_INACTIVE
       }
       cursor="pointer"
-      transition="0.4s all ease-in-out"
+      transition="all 0.4s ease-in-out"
       onClick={() => {
         setOpen(open => !open);
 
         if (!open) {
-          dispatch({
+          dispatchDashboard({
             type: "addCourse",
             payload: {
               course: code,
@@ -530,7 +582,7 @@ export const CourseBox: FC<ICourse> = ({
             },
           });
         } else {
-          dispatch({
+          dispatchDashboard({
             type: "removeCourse",
             payload: code,
           });
@@ -542,9 +594,16 @@ export const CourseBox: FC<ICourse> = ({
           effect: `${open ? "close" : "open"}-course-box`,
         });
       }}
-      className="unselectable"
+      className="unselectable courseBox"
     >
-      <Flex w="100%" h="100%" pt={2} pl={2} pos="relative">
+      <Flex
+        w="100%"
+        h="100%"
+        pt={2}
+        pl={2}
+        pos="relative"
+        className="mainBlock"
+      >
         {NameComponent}
 
         <AnimatePresence>
@@ -566,13 +625,15 @@ export const CourseBox: FC<ICourse> = ({
         alignItems="center"
         borderRadius="0px 3px 3px 0px"
         zIndex={0}
-        transition="0.4s all ease-in-out"
+        transition="all 0.4s ease-in-out"
         borderLeft="1px solid"
         borderColor={borderColor}
+        className="secondaryBlock"
       >
         {GradeComponent}
 
         {HistoricalCirclesComponent}
+        <AnimatePresence>{ForeplanCourseCheckbox}</AnimatePresence>
       </Flex>
     </Flex>
   );

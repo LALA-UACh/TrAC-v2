@@ -12,6 +12,7 @@ import React, {
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
 
 import { Action, ITakenSemester } from "../../../interfaces";
+import { stringListToBooleanMap } from "../../utils";
 import { TrackingContext } from "../Tracking";
 
 const emDash = "—";
@@ -35,7 +36,7 @@ export type ICoursesDashboardActions =
   | Action<"reset">;
 
 export interface ICoursesDashboardData {
-  active?: string;
+  activeCourse?: string;
   activeHistory: string[];
   flow?: Record<string, boolean>;
   flowHistory: Record<string, boolean>[];
@@ -71,18 +72,11 @@ const checkExplicitSemesterCallback = (explicitSemester?: string) => (
   return undefined;
 };
 
-const stringListToBooleanMap = (list: string[]): Record<string, boolean> => {
-  return list.reduce((ac, v) => ({ ...ac, [v]: true }), {});
-};
-
 const rememberCourseDashboardDataKey = "TrAC_dashboard_data";
 
 const initCourseDashboardData = (
-  initialData = defaultCourseDashboardData,
-  remember = true
+  initialData = defaultCourseDashboardData
 ): ReducerState<typeof courseDashboardReducer> => {
-  if (!remember) return initialData;
-
   try {
     const rememberedData = localStorage.getItem(rememberCourseDashboardDataKey);
     if (!rememberedData) return initialData;
@@ -115,7 +109,7 @@ const courseDashboardReducer: Reducer<
           action.payload.semestersTaken,
           ...state.semestersTakenHistory,
         ],
-        active: action.payload.course,
+        activeCourse: action.payload.course,
         flow: flowHistory[0],
         requisites: requisitesHistory[0],
         semestersTaken: action.payload.semestersTaken,
@@ -151,7 +145,7 @@ const courseDashboardReducer: Reducer<
           flowHistory: stateFlowHistory,
           requisitesHistory: stateRequisitesHistory,
           semestersTakenHistory: stateSemestersTakenHistory,
-          active: stateActiveHistory[0],
+          activeCourse: stateActiveHistory[0],
           flow: stateFlowHistory[0],
           requisites: stateRequisitesHistory[0],
           semestersTaken: stateSemestersTakenHistory[0],
@@ -167,7 +161,7 @@ const courseDashboardReducer: Reducer<
       };
     }
     case "reset": {
-      return initCourseDashboardData(defaultCourseDashboardData, false);
+      return defaultCourseDashboardData;
     }
     default: {
       console.error("CourseDashboard action not handled!", action);

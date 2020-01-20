@@ -96,3 +96,5 @@ export const termTypeToNumber = (type?: string): number => {
       return 0;
   }
 };
+
+export const LAST_TIME_USED = "last_time_used";
