@@ -40,3 +40,5 @@ export type ICourse = {
   taken: ITakenCourse[];
   bandColors: { min: number; max: number; color: string }[];
 };
+
+export * from "./utils";

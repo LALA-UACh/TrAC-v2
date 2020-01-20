@@ -1,9 +1,9 @@
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
 import { some, truncate } from "lodash";
-import React, { FC, useContext, useEffect, useMemo, useState } from "react";
+import React, { FC, useContext, useMemo, useState } from "react";
 import ReactTooltip from "react-tooltip";
-import { useUpdateEffect } from "react-use";
+import { useDebounce, useUpdateEffect } from "react-use";
 
 import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/core";
 
@@ -11,7 +11,7 @@ import { StateCourse, termTypeToNumber } from "../../../constants";
 import { ICourse, ITakenCourse } from "../../../interfaces";
 import { TrackingContext } from "../../components/Tracking";
 import { ConfigContext } from "../Config";
-import { CoursesFlowContext } from "./CoursesFlow";
+import { CoursesDashboardContext } from "./CoursesDashboardContext";
 import { Histogram } from "./Histogram";
 
 export const passColorScale = scaleLinear<string, number>();
@@ -31,14 +31,13 @@ export const CourseBox: FC<ICourse> = ({
   const config = useContext(ConfigContext);
   const Tracking = useContext(TrackingContext);
   const {
-    add,
-    remove,
+    dispatch,
     active,
     flow: contextFlow,
     requisites: contextRequisites,
     checkExplicitSemester,
     explicitSemester,
-  } = useContext(CoursesFlowContext);
+  } = useContext(CoursesDashboardContext);
 
   const { semestersTaken } = useMemo(() => {
     const semestersTaken = taken.map(({ term, year }) => {
@@ -69,35 +68,29 @@ export const CourseBox: FC<ICourse> = ({
     return taken[0] || {};
   }, [semestersTaken, explicitSemester, checkExplicitSemester, taken]);
 
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
+  const [open, setOpen] = useState(() => {
+    try {
       if (localStorage.getItem(`${code}_active`)) {
-        setOpen(true);
+        return true;
       }
-    }
-  }, [setOpen]);
+    } catch (err) {}
 
-  useUpdateEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      if (open) {
-        localStorage.setItem(`${code}_active`, "1");
-      } else {
-        localStorage.removeItem(`${code}_active`);
-      }
-    }
-    if (open) {
-      add({
-        course: code,
-        flow,
-        requisites,
-        semestersTaken,
-      });
-    } else {
-      remove(code);
-    }
-  }, [open]);
+    return false;
+  });
+
+  useDebounce(
+    () => {
+      try {
+        if (open) {
+          localStorage.setItem(`${code}_active`, "1");
+        } else {
+          localStorage.removeItem(`${code}_active`);
+        }
+      } catch (err) {}
+    },
+    3000,
+    [open]
+  );
 
   useUpdateEffect(() => {
     setOpen(false);
@@ -525,6 +518,23 @@ export const CourseBox: FC<ICourse> = ({
       transition="0.4s all ease-in-out"
       onClick={() => {
         setOpen(open => !open);
+
+        if (!open) {
+          dispatch({
+            type: "addCourse",
+            payload: {
+              course: code,
+              flow,
+              requisites,
+              semestersTaken,
+            },
+          });
+        } else {
+          dispatch({
+            type: "removeCourse",
+            payload: code,
+          });
+        }
 
         Tracking.current.track({
           action: "click",

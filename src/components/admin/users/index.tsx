@@ -41,7 +41,7 @@ export const Users: FC<{
       } else {
         setSortedUsers(sortBy(users, [column]).reverse());
       }
-  }, [users, column, direction]);
+  }, [users, column, direction, setSortedUsers]);
 
   const handleSort = (clickedColumn: string) => () => {
     if (column !== clickedColumn) {

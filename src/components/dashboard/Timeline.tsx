@@ -15,7 +15,7 @@ import pixelWidth from "string-pixel-width";
 import { AxisLeft } from "@vx/axis";
 
 import { ConfigContext } from "../Config";
-import { CoursesFlowContext } from "./CoursesFlow";
+import { CoursesDashboardContext } from "./CoursesDashboardContext";
 
 const TimeLineTooltip: FC<{
   children: ReactElement;
@@ -98,7 +98,7 @@ export const TimeLine: FC<{
     semestersTaken,
   }) => {
     const config = useContext(ConfigContext);
-    const { checkExplicitSemester } = useContext(CoursesFlowContext);
+    const { checkExplicitSemester } = useContext(CoursesDashboardContext);
 
     const { cumulatedGrades, semestralGrades } = useMemo(() => {
       if (

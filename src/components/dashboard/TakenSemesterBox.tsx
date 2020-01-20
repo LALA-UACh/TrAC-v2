@@ -4,8 +4,7 @@ import { Badge, BadgeProps, Box, Stack } from "@chakra-ui/core";
 
 import { termTypeToNumber } from "../../../constants";
 import { ConfigContext } from "../Config";
-import { TrackingContext } from "../Tracking";
-import { CoursesFlowContext } from "./CoursesFlow";
+import { CoursesDashboardContext } from "./CoursesDashboardContext";
 
 export const TakenSemesterBox: FC<{
   year: number;
@@ -13,13 +12,12 @@ export const TakenSemesterBox: FC<{
   comments: string;
 }> = memo(({ year, term, comments }) => {
   const config = useContext(ConfigContext);
-  const Tracking = useContext(TrackingContext);
   const {
-    toggleExplicitSemester,
+    dispatch,
     checkExplicitSemester,
     semestersTaken,
     explicitSemester,
-  } = useContext(CoursesFlowContext);
+  } = useContext(CoursesDashboardContext);
 
   const borderColor = useMemo(() => {
     if (
@@ -82,11 +80,9 @@ export const TakenSemesterBox: FC<{
       alignItems="center"
       display="flex"
       onClick={() => {
-        const open = toggleExplicitSemester(year, term);
-        Tracking.current.track({
-          action: "click",
-          target: `semester-box-${year}-${term}`,
-          effect: `${open ? "load" : "unload"}-semester`,
+        dispatch({
+          type: "toggleExplicitSemester",
+          payload: { term, year },
         });
       }}
       color={config.TAKEN_SEMESTER_BOX_TEXT_COLOR}

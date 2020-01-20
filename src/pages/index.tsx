@@ -23,7 +23,7 @@ import {
 } from "../../constants";
 import { ITakenCourse } from "../../interfaces";
 import { ConfigContext } from "../components/Config";
-import { CoursesFlow } from "../components/dashboard/CoursesFlow";
+import { CoursesDashboard } from "../components/dashboard/CoursesDashboardContext";
 import { Semester } from "../components/dashboard/Semester";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
@@ -411,7 +411,11 @@ const Dashboard: FC = () => {
           ) : null}
         </>
       )}
-      <CoursesFlow curriculum={chosenCurriculum} program={program} mock={mock}>
+      <CoursesDashboard
+        curriculum={chosenCurriculum}
+        program={program}
+        mock={mock}
+      >
         <ScrollContainer activationDistance={5} hideScrollbars={false}>
           <Flex>
             <Box>{TimeLineComponent}</Box>
@@ -433,7 +437,7 @@ const Dashboard: FC = () => {
           </Stack>
         </ScrollContainer>
         <Tracking />
-      </CoursesFlow>
+      </CoursesDashboard>
     </TrackingContext.Provider>
   );
 };
