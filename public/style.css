@@ -5,6 +5,7 @@
   height: auto;
   max-height: 20vh;
 }
+
 .unselectable {
   user-select: none;
   -moz-user-select: none;
@@ -12,52 +13,21 @@
   -webkit-user-select: none;
   -o-user-select: none;
 }
+
 .verticalText {
   writing-mode: vertical-rl;
   text-align: center;
   transform: rotate(180deg);
 }
-.histogram_box {
-  position: absolute !important;
-  bottom: 0 !important;
-  transform-origin: 0% 100%;
-  -moz-transform-origin: 0% 100%;
-  -ms-transform-origin: 0% 100%;
-  -o-transform-origin: 0% 100%;
-  -webkit-transform-origin: 0% 100%;
-  transition-timing-function: ease-in-out;
-  -webkit-transition-timing-function: ease-in-out;
-  -o-transition-timing-function: ease-in-out;
-  -moz-transition-timing-function: ease-in-out;
-}
-.histogram_box.foreplanActive {
-  padding-bottom: 20px;
-}
 
 body {
   overflow-y: scroll !important;
 }
+
 .cursorPointer {
   cursor: pointer;
 }
+
 .cursorText {
   cursor: text;
-}
-
-.foreplanCourseCheckbox {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding-bottom: 6px;
-}
-
-.foreplanCourseStats {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-.paddingLeft {
-  padding-left: 5px;
 }

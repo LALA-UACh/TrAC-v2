@@ -38,6 +38,9 @@ const Dropout = dynamic(() => import("../components/dashboard/Dropout"));
 const ForeplanModeSwitch = dynamic(() =>
   import("../components/foreplan/ForeplanModeSwitch")
 );
+const ForeplanSummary = dynamic(() =>
+  import("../components/foreplan/ForeplanSummary")
+);
 
 const Dashboard: FC = () => {
   const [program, setProgram] = useState<string | undefined>(undefined);
@@ -411,6 +414,7 @@ const Dashboard: FC = () => {
             <Flex>
               <Box>{TimeLineComponent}</Box>
               {DropoutComponent}
+              {user?.config.FOREPLAN && <ForeplanSummary />}
             </Flex>
 
             <Stack isInline pl="50px">

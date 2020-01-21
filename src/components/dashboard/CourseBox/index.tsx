@@ -9,13 +9,15 @@ import { Checkbox } from "semantic-ui-react";
 
 import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/core";
 
-import { StateCourse, termTypeToNumber } from "../../../constants";
-import { ICourse, ITakenCourse } from "../../../interfaces";
-import { TrackingContext } from "../../components/Tracking";
-import { ConfigContext } from "../Config";
-import { ForeplanContext } from "../foreplan/ForeplanContext";
-import { CoursesDashboardContext } from "./CoursesDashboardContext";
-import { Histogram } from "./Histogram";
+import { StateCourse, termTypeToNumber } from "../../../../constants";
+import { ICourse, ITakenCourse } from "../../../../interfaces";
+import { useUser } from "../../../utils/useUser";
+import { ConfigContext } from "../../Config";
+import { ForeplanContext } from "../../foreplan/ForeplanContext";
+import { TrackingContext } from "../../Tracking";
+import { CoursesDashboardContext } from "../CoursesDashboardContext";
+import { Histogram } from "../Histogram";
+import styles from "./index.module.css";
 
 export const passColorScale = scaleLinear<string, number>();
 
@@ -46,6 +48,10 @@ export const CourseBox: FC<ICourse> = ({
     explicitSemester,
   } = useContext(CoursesDashboardContext);
   const foreplanCtx = useContext(ForeplanContext);
+
+  const { user } = useUser({
+    fetchPolicy: "cache-only",
+  });
 
   const { semestersTaken } = useMemo(() => {
     const semestersTaken = taken.map(({ term, year }) => {
@@ -402,8 +408,8 @@ export const CourseBox: FC<ICourse> = ({
             scale: 0.4,
           }}
           className={classNames({
-            histogram_box: true,
-            foreplanActive: foreplanCtx.active,
+            [styles.histogramBox]: true,
+            [styles.foreplanActive]: foreplanCtx.active,
           })}
         >
           {HistogramNow}
@@ -532,17 +538,20 @@ export const CourseBox: FC<ICourse> = ({
           exit={{
             opacity: 0,
           }}
-          className="foreplanCourseCheckbox"
+          className={styles.foreplanCourseCheckbox}
         >
           <Checkbox
             checked={checked}
             onChange={ev => {
+              ev.preventDefault();
               ev.stopPropagation();
               foreplanCtx.dispatch({
                 type: checked ? "removeCourseForeplan" : "addCourseForeplan",
                 payload: code,
               });
             }}
+            className={styles.foreplanCheckboxInput}
+            // borderColor="rgb(156,156,156)"
           />
         </motion.div>
       );
@@ -554,7 +563,7 @@ export const CourseBox: FC<ICourse> = ({
           ? ((failRateColorScaleNegative(randomFailRate) as unknown) as string)
           : ((failRateColorScalePositive(randomFailRate) as unknown) as string);
 
-      const ForeplanCourseStats = (
+      const ForeplanCourseStats = user?.config.FOREPLAN_COURSE_STATS && (
         <motion.div
           key="foreplanCourseStats"
           initial={{
@@ -564,25 +573,41 @@ export const CourseBox: FC<ICourse> = ({
           exit={{
             opacity: 0,
           }}
-          className="foreplanCourseStats"
+          className={styles.foreplanCourseStats}
         >
-          <svg height="10px" width="10px">
-            <rect width="10px" height="10px" fill={fillColor} />
-          </svg>
-          <svg className="paddingLeft" height="10px" width="20px">
-            {range(0, random(1, 5)).map(i => {
-              return (
-                <rect height="10px" width="1px" x={i * 3} y={0} fill="black" />
-              );
-            })}
-          </svg>
+          {user?.config.FOREPLAN_COURSE_FAIL_RATE_STATS && (
+            <svg height="10px" width="10px">
+              <rect width="10px" height="10px" fill={fillColor} />
+            </svg>
+          )}
+
+          {user?.config.FOREPLAN_COURSE_EFFORT_STATS && (
+            <svg
+              className={styles.foreplanCourseEffortStats}
+              height="10px"
+              width="20px"
+            >
+              {range(0, random(1, 5)).map(i => {
+                return (
+                  <rect
+                    key={i}
+                    height="10px"
+                    width="1px"
+                    x={i * 3}
+                    y={0}
+                    fill="black"
+                  />
+                );
+              })}
+            </svg>
+          )}
         </motion.div>
       );
 
       return { ForeplanCourseCheckbox, ForeplanCourseStats };
     }
     return {};
-  }, [foreplanCtx, code, state, taken]);
+  }, [foreplanCtx, code, state, taken, user]);
 
   return (
     <Flex
@@ -651,7 +676,7 @@ export const CourseBox: FC<ICourse> = ({
         </AnimatePresence>
       </Flex>
       <Flex
-        mr={"-0.5px"}
+        mr="-0.5px"
         w="40px"
         mt="-0.4px"
         h="100.5%"

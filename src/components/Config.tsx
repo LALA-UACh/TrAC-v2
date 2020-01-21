@@ -36,10 +36,16 @@ export const Config: FC = ({ children }) => {
     .domain([configState.MIN_GRADE, configState.PASS_GRADE]);
 
   failRateColorScalePositive
-    .range([configState.MIN_PASS_SCALE_COLOR, configState.MAX_PASS_SCALE_COLOR])
+    .range([
+      configState.FAIL_RATE_COLOR_SCALE_POSITIVE_MIN_COLOR,
+      configState.FAIL_RATE_COLOR_SCALE_POSITIVE_MAX_COLOR,
+    ])
     .domain([0, 0.3]);
   failRateColorScaleNegative
-    .range(["rgb(245,132,66)", "rgb(255,0,0)"])
+    .range([
+      configState.FAIL_RATE_COLOR_SCALE_NEGATIVE_MIN_COLOR,
+      configState.FAIL_RATE_COLOR_SCALE_NEGATIVE_MAX_COLOR,
+    ])
     .domain([0.3, 1]);
 
   scaleColorX
