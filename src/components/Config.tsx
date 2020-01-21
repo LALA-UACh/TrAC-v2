@@ -5,7 +5,12 @@ import { useQuery } from "@apollo/react-hooks";
 
 import { baseConfig } from "../../constants/baseConfig";
 import { CONFIG_QUERY } from "../graphql/queries";
-import { failColorScale, passColorScale } from "./dashboard/CourseBox";
+import {
+  failColorScale,
+  failRateColorScaleNegative,
+  failRateColorScalePositive,
+  passColorScale,
+} from "./dashboard/CourseBox";
 import { scaleAxisX, scaleColorX } from "./dashboard/Histogram";
 import { GradeScale, YAxisScale } from "./dashboard/Timeline";
 
@@ -29,6 +34,14 @@ export const Config: FC = ({ children }) => {
   failColorScale
     .range([configState.MIN_FAIL_SCALE_COLOR, configState.MAX_FAIL_SCALE_COLOR])
     .domain([configState.MIN_GRADE, configState.PASS_GRADE]);
+
+  failRateColorScalePositive
+    .range([configState.MIN_PASS_SCALE_COLOR, configState.MAX_PASS_SCALE_COLOR])
+    .domain([0, 0.3]);
+  failRateColorScaleNegative
+    .range(["rgb(245,132,66)", "rgb(255,0,0)"])
+    .domain([0.3, 1]);
+
   scaleColorX
     .range([0, 250])
     .domain([configState.MIN_GRADE, configState.MAX_GRADE]);

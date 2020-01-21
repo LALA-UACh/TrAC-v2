@@ -1,6 +1,7 @@
+import classNames from "classnames";
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
-import { some, truncate } from "lodash";
+import { random, range, some, truncate } from "lodash";
 import React, { FC, useContext, useMemo, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { useDebounce, useUpdateEffect } from "react-use";
@@ -19,6 +20,10 @@ import { Histogram } from "./Histogram";
 export const passColorScale = scaleLinear<string, number>();
 
 export const failColorScale = scaleLinear<string, number>();
+
+export const failRateColorScalePositive = scaleLinear<string, number>();
+
+export const failRateColorScaleNegative = scaleLinear<string, number>();
 
 export const CourseBox: FC<ICourse> = ({
   name,
@@ -300,7 +305,7 @@ export const CourseBox: FC<ICourse> = ({
             opacity: 0,
           }}
         >
-          <Box mt="-10px" pos="absolute" right="8px" top="80px">
+          <Box mt="-15px" pos="absolute" right="8px" top="80px">
             <svg width={32} height={32}>
               <circle
                 r={15}
@@ -396,14 +401,17 @@ export const CourseBox: FC<ICourse> = ({
             opacity: 0,
             scale: 0.4,
           }}
-          className="histogram_box"
+          className={classNames({
+            histogram_box: true,
+            foreplanActive: foreplanCtx.active,
+          })}
         >
           {HistogramNow}
 
           {HistogramHistoric}
         </motion.div>
       ),
-    [open, HistogramNow, HistogramHistoric]
+    [open, HistogramNow, HistogramHistoric, foreplanCtx.active]
   );
 
   const GradeComponent = useMemo(() => {
@@ -505,7 +513,7 @@ export const CourseBox: FC<ICourse> = ({
     [taken, config, code]
   );
 
-  const { ForeplanCourseCheckbox } = useMemo(() => {
+  const { ForeplanCourseCheckbox, ForeplanCourseStats } = useMemo(() => {
     const { state } = taken[0] || {};
     if (
       foreplanCtx.active &&
@@ -539,7 +547,39 @@ export const CourseBox: FC<ICourse> = ({
         </motion.div>
       );
 
-      return { ForeplanCourseCheckbox };
+      const randomFailRate = Math.random();
+
+      const fillColor =
+        randomFailRate >= 0.3
+          ? ((failRateColorScaleNegative(randomFailRate) as unknown) as string)
+          : ((failRateColorScalePositive(randomFailRate) as unknown) as string);
+
+      const ForeplanCourseStats = (
+        <motion.div
+          key="foreplanCourseStats"
+          initial={{
+            opacity: 0,
+          }}
+          animate={{ opacity: 1 }}
+          exit={{
+            opacity: 0,
+          }}
+          className="foreplanCourseStats"
+        >
+          <svg height="10px" width="10px">
+            <rect width="10px" height="10px" fill={fillColor} />
+          </svg>
+          <svg className="paddingLeft" height="10px" width="20px">
+            {range(0, random(1, 5)).map(i => {
+              return (
+                <rect height="10px" width="1px" x={i * 3} y={0} fill="black" />
+              );
+            })}
+          </svg>
+        </motion.div>
+      );
+
+      return { ForeplanCourseCheckbox, ForeplanCourseStats };
     }
     return {};
   }, [foreplanCtx, code, state, taken]);
@@ -607,6 +647,7 @@ export const CourseBox: FC<ICourse> = ({
           {ReqCircleComponent}
 
           {HistogramsComponent}
+          {ForeplanCourseStats}
         </AnimatePresence>
       </Flex>
       <Flex
