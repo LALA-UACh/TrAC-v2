@@ -550,13 +550,15 @@ export const CourseBox: FC<ICourse> = ({
                 payload: code,
               });
             }}
-            className={styles.foreplanCheckboxInput}
-            // borderColor="rgb(156,156,156)"
+            className={classNames({
+              [styles.foreplanCheckboxInput]: true,
+              [random(0, 1) === 0 ? styles.direct : styles.indirect]: true, //TODO: Use real data
+            })}
           />
         </motion.div>
       );
 
-      const randomFailRate = Math.random();
+      const randomFailRate = Math.random(); //TODO: Use real data
 
       const fillColor =
         randomFailRate >= 0.3
@@ -588,6 +590,7 @@ export const CourseBox: FC<ICourse> = ({
               width="20px"
             >
               {range(0, random(1, 5)).map(i => {
+                //TODO: Use real data
                 return (
                   <rect
                     key={i}
