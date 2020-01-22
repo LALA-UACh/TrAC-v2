@@ -155,6 +155,31 @@ const CoursesDashboardStore = createStore({
 });
 
 export const useCoursesDashboardData = createHook(CoursesDashboardStore);
+export const useActiveCourse = createHook(CoursesDashboardStore, {
+  selector: ({ activeCourse }) => {
+    return activeCourse;
+  },
+});
+export const useActiveRequisites = createHook(CoursesDashboardStore, {
+  selector: ({ requisites }) => {
+    return requisites;
+  },
+});
+export const useActiveFlow = createHook(CoursesDashboardStore, {
+  selector: ({ flow }) => {
+    return flow;
+  },
+});
+export const useActiveSemestersTaken = createHook(CoursesDashboardStore, {
+  selector: ({ semestersTaken }) => {
+    return semestersTaken;
+  },
+});
+export const useExplicitSemester = createHook(CoursesDashboardStore, {
+  selector: ({ explicitSemester }) => {
+    return explicitSemester;
+  },
+});
 
 export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
   distinct,
