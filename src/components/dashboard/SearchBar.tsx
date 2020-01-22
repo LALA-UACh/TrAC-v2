@@ -36,7 +36,7 @@ import {
 import { MY_PROGRAMS } from "../../graphql/queries";
 import { useUser } from "../../utils/useUser";
 import { ConfigContext } from "../Config";
-import { TrackingContext } from "../Tracking";
+import { useTracking } from "../Tracking";
 
 const StudentList = dynamic(() => import("./StudentList"));
 
@@ -111,7 +111,7 @@ export const SearchBar: FC<{
     PLACEHOLDER_SEARCH_STUDENT,
   } = useContext(ConfigContext);
 
-  const Tracking = useContext(TrackingContext);
+  const [, { setTrackingData, track }] = useTracking();
   const { data: myProgramsData, loading: myProgramsLoading } = useQuery(
     MY_PROGRAMS,
     {
@@ -174,8 +174,10 @@ export const SearchBar: FC<{
   }, [program, setProgram, programsOptions, setProgramProp, myProgramsData]);
 
   useEffect(() => {
-    Tracking.current.program_menu = program?.value;
-  }, [program]);
+    setTrackingData({
+      program_menu: program?.value,
+    });
+  }, [program, setTrackingData]);
 
   return (
     <Flex
@@ -197,7 +199,7 @@ export const SearchBar: FC<{
             isDisabled={isSearchLoading}
             placeholder={PROGRAM_NOT_SPECIFIED_PLACEHOLDER}
             onChange={(selected: any) => {
-              Tracking.current.track({
+              track({
                 action: "click",
                 effect: `change-program-menu-to-${selected?.value}`,
                 target: "program-menu",
@@ -233,7 +235,7 @@ export const SearchBar: FC<{
                     : undefined
                 }
                 onChange={selected => {
-                  Tracking.current.track({
+                  track({
                     action: "click",
                     target: "curriculum-menu",
                     effect: "change-curriculum",
@@ -339,7 +341,7 @@ export const SearchBar: FC<{
                       addStudentOption(student_id);
                       setStudentIdShow(student_id);
                       setStudentId("");
-                      Tracking.current.track({
+                      track({
                         action: "click",
                         effect: "load-student",
                         target: "search-button",
@@ -347,9 +349,12 @@ export const SearchBar: FC<{
                       break;
                     }
                     case "program": {
-                      Tracking.current.student = undefined;
+                      setTrackingData({
+                        student: undefined,
+                      });
+
                       setStudentIdShow("");
-                      Tracking.current.track({
+                      track({
                         action: "click",
                         effect: "load-program",
                         target: "search-button",
@@ -357,9 +362,11 @@ export const SearchBar: FC<{
                       break;
                     }
                     default: {
-                      Tracking.current.student = student_id;
+                      setTrackingData({
+                        student: student_id,
+                      });
                       setStudentIdShow("");
-                      Tracking.current.track({
+                      track({
                         action: "click",
                         effect: "wrong-student",
                         target: "search-button",
@@ -427,7 +434,7 @@ export const SearchBar: FC<{
                     addStudentOption(student_id);
                     setStudentId("");
                     setStudentIdShow(student_id);
-                    Tracking.current.track({
+                    track({
                       action: "click",
                       effect: "load-student",
                       target: "student-list-row",
@@ -436,8 +443,10 @@ export const SearchBar: FC<{
                   }
                   case "program": {
                     setStudentIdShow("");
-                    Tracking.current.student = undefined;
-                    Tracking.current.track({
+                    setTrackingData({
+                      student: undefined,
+                    });
+                    track({
                       action: "click",
                       effect: "load-program",
                       target: "student-list-row",
@@ -446,8 +455,10 @@ export const SearchBar: FC<{
                   }
                   default: {
                     setStudentIdShow("");
-                    Tracking.current.student = student_id;
-                    Tracking.current.track({
+                    setTrackingData({
+                      student: student_id,
+                    });
+                    track({
                       action: "click",
                       effect: "wrong-student",
                       target: "student-list-row",
@@ -467,12 +478,14 @@ export const SearchBar: FC<{
           onClick={async () => {
             setLogoutLoading(true);
 
-            await Tracking.current.track({
+            track({
               action: "click",
               effect: "logout",
               target: "logoutButton",
             });
-            push("/logout");
+            setTimeout(() => {
+              push("/logout");
+            }, 1000);
           }}
           icon
           labelPosition="left"

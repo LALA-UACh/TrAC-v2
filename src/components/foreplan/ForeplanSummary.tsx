@@ -1,15 +1,15 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React, { FC, useContext, useMemo } from "react";
+import React, { FC, useMemo } from "react";
 import { FaGripLinesVertical } from "react-icons/fa";
 import { useWindowSize } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 
-import { ForeplanContext } from "./ForeplanContext";
+import { useForeplanData } from "./ForeplanContext";
 
 const ForeplanSummary: FC = () => {
-  const { active, foreplanCourses } = useContext(ForeplanContext);
+  const [{ active, foreplanCourses }] = useForeplanData();
 
   const { height } = useWindowSize();
   const [expanded, setExpanded] = useRememberState(

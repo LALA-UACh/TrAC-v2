@@ -1,13 +1,6 @@
 import { uniq } from "lodash";
 import dynamic from "next/dynamic";
-import React, {
-  FC,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useUpdateEffect } from "react-use";
 import { useRememberState } from "use-remember-state";
@@ -23,13 +16,13 @@ import {
 } from "../../constants";
 import { ITakenCourse } from "../../interfaces";
 import { ConfigContext } from "../components/Config";
-import { CoursesDashboard } from "../components/dashboard/CoursesDashboardContext";
+import { CoursesDashbordManager } from "../components/dashboard/CoursesDashboardContext";
 import { Semester } from "../components/dashboard/Semester";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
-import { ForeplanContextContainer } from "../components/foreplan/ForeplanContext";
+import { ForeplanContextManager } from "../components/foreplan/ForeplanContext";
 import { LoadingPage } from "../components/Loading";
-import { Tracking, TrackingContext, TrackingRef } from "../components/Tracking";
+import { TrackingManager, useTracking } from "../components/Tracking";
 import { SEARCH_PROGRAM, SEARCH_STUDENT } from "../graphql/queries";
 import { useUser } from "../utils/useUser";
 
@@ -63,7 +56,8 @@ const Dashboard: FC = () => {
     }
   }, [mock, mockData, setMockData]);
 
-  const trackingData = useRef<TrackingRef>({ track: async () => {} });
+  const [, { setTrackingData, track }] = useTracking();
+
   const [
     searchProgram,
     {
@@ -98,28 +92,38 @@ const Dashboard: FC = () => {
   }, [user, mock, setMock]);
 
   useEffect(() => {
-    trackingData.current.curriculum = chosenCurriculum;
-  }, [chosenCurriculum]);
+    setTrackingData({
+      curriculum: chosenCurriculum,
+    });
+  }, [chosenCurriculum, setTrackingData]);
 
   useEffect(() => {
     if (searchStudentData?.student) {
       setMock(false);
-      trackingData.current.student = searchStudentData.student.id;
+      setTrackingData({
+        student: searchStudentData.student.id,
+      });
     } else {
-      trackingData.current.student = undefined;
+      setTrackingData({
+        student: undefined,
+      });
     }
-  }, [searchStudentData]);
+  }, [searchStudentData, setTrackingData]);
 
   useEffect(() => {
     if (searchProgramData?.program) {
-      trackingData.current.showingProgress = true;
-      trackingData.current.program = searchProgramData.program.id;
+      setTrackingData({
+        showingProgress: true,
+        program: searchProgramData.program.id,
+      });
       setMock(false);
     } else {
-      trackingData.current.showingProgress = false;
-      trackingData.current.program = undefined;
+      setTrackingData({
+        showingProgress: false,
+        program: undefined,
+      });
     }
-  }, [searchProgramData]);
+  }, [searchProgramData, setTrackingData]);
 
   useEffect(() => {
     if (user?.type === UserType.Student) {
@@ -323,17 +327,17 @@ const Dashboard: FC = () => {
   useEffect(() => {
     if (user) {
       setTimeout(() => {
-        trackingData.current.track({
+        track({
           action: "login",
           effect: "load-app",
           target: "website",
         });
       }, 1000);
     }
-  }, [user]);
+  }, [user, track]);
 
   return (
-    <TrackingContext.Provider value={trackingData}>
+    <>
       {user?.type === UserType.Director ? (
         <SearchBar
           error={uniq(
@@ -402,39 +406,38 @@ const Dashboard: FC = () => {
           ) : null}
         </>
       )}
-      <CoursesDashboard
-        curriculum={chosenCurriculum}
-        program={program}
-        mock={mock}
+
+      <ScrollContainer activationDistance={5} hideScrollbars={false}>
+        <Flex>
+          <Box>{TimeLineComponent}</Box>
+          {DropoutComponent}
+          {user?.config.FOREPLAN && <ForeplanSummary />}
+        </Flex>
+
+        <Stack isInline pl="50px">
+          {TakenSemestersComponent}
+        </Stack>
+      </ScrollContainer>
+
+      <ScrollContainer
+        hideScrollbars={false}
+        vertical={false}
+        activationDistance={5}
       >
-        <ForeplanContextContainer
-          distinct={`${program}${chosenCurriculum}${searchStudentData?.student?.id}`}
-        >
-          <ScrollContainer activationDistance={5} hideScrollbars={false}>
-            <Flex>
-              <Box>{TimeLineComponent}</Box>
-              {DropoutComponent}
-              {user?.config.FOREPLAN && <ForeplanSummary />}
-            </Flex>
+        <Stack isInline spacing={8}>
+          {SemestersComponent}
+        </Stack>
+      </ScrollContainer>
 
-            <Stack isInline pl="50px">
-              {TakenSemestersComponent}
-            </Stack>
-          </ScrollContainer>
+      <TrackingManager />
 
-          <ScrollContainer
-            hideScrollbars={false}
-            vertical={false}
-            activationDistance={5}
-          >
-            <Stack isInline spacing={8}>
-              {SemestersComponent}
-            </Stack>
-          </ScrollContainer>
-          <Tracking />
-        </ForeplanContextContainer>
-      </CoursesDashboard>
-    </TrackingContext.Provider>
+      <ForeplanContextManager
+        distinct={`${program}${chosenCurriculum}${searchStudentData?.student?.id}`}
+      />
+      <CoursesDashbordManager
+        distinct={`${chosenCurriculum}${program}${mock}`}
+      />
+    </>
   );
 };
 

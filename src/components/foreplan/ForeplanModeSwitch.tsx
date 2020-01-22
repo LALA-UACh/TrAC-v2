@@ -3,10 +3,13 @@ import { FC, useContext } from "react";
 import { Button } from "@chakra-ui/core";
 
 import { ConfigContext } from "../Config";
-import { ForeplanContext } from "./ForeplanContext";
+import { useIsForeplanActive } from "./ForeplanContext";
 
 const ForeplanModeSwitch: FC = () => {
-  const { active, dispatch } = useContext(ForeplanContext);
+  const [
+    isForeplanActive,
+    { activateForeplan, disableForeplan },
+  ] = useIsForeplanActive();
   const {
     FOREPLAN_MODE_SWITCH_LABEL,
     FOREPLAN_MODE_SWITCH_ACTIVE_BACKGROUND_COLOR,
@@ -17,16 +20,17 @@ const ForeplanModeSwitch: FC = () => {
     FOREPLAN_MODE_SWITCH_FONT_FAMILY,
     FOREPLAN_MODE_SWITCH_FONT_SIZE,
   } = useContext(ConfigContext);
+
   return (
     <Button
       backgroundColor={
-        active
+        isForeplanActive
           ? FOREPLAN_MODE_SWITCH_ACTIVE_BACKGROUND_COLOR
           : FOREPLAN_MODE_SWITCH_INACTIVE_BACKGROUND_COLOR
       }
       variantColor="blue"
       color={
-        active
+        isForeplanActive
           ? FOREPLAN_MODE_SWITCH_ACTIVE_TEXT_COLOR
           : FOREPLAN_MODE_SWITCH_INACTIVE_TEXT_COLOR
       }
@@ -36,9 +40,11 @@ const ForeplanModeSwitch: FC = () => {
       fontFamily={FOREPLAN_MODE_SWITCH_FONT_FAMILY}
       transition="all 1s"
       onClick={() => {
-        dispatch({
-          type: active ? "disableForeplan" : "activateForeplan",
-        });
+        if (isForeplanActive) {
+          disableForeplan();
+        } else {
+          activateForeplan();
+        }
       }}
     >
       {FOREPLAN_MODE_SWITCH_LABEL}

@@ -13,9 +13,9 @@ import { StateCourse, termTypeToNumber } from "../../../../constants";
 import { ICourse, ITakenCourse } from "../../../../interfaces";
 import { useUser } from "../../../utils/useUser";
 import { ConfigContext } from "../../Config";
-import { ForeplanContext } from "../../foreplan/ForeplanContext";
-import { TrackingContext } from "../../Tracking";
-import { CoursesDashboardContext } from "../CoursesDashboardContext";
+import { useForeplanData } from "../../foreplan/ForeplanContext";
+import { useTracking } from "../../Tracking";
+import { useCoursesDashboardData } from "../CoursesDashboardContext";
 import { Histogram } from "../Histogram";
 import styles from "./index.module.css";
 
@@ -38,16 +38,20 @@ export const CourseBox: FC<ICourse> = ({
   bandColors,
 }) => {
   const config = useContext(ConfigContext);
-  const Tracking = useContext(TrackingContext);
-  const {
-    dispatch: dispatchDashboard,
-    activeCourse,
-    flow: contextFlow,
-    requisites: contextRequisites,
-    checkExplicitSemester,
-    explicitSemester,
-  } = useContext(CoursesDashboardContext);
-  const foreplanCtx = useContext(ForeplanContext);
+  const [, { track }] = useTracking();
+  const [
+    {
+      activeCourse,
+      flow: contextFlow,
+      requisites: contextRequisites,
+      explicitSemester,
+    },
+    { checkExplicitSemester, addCourse, removeCourse },
+  ] = useCoursesDashboardData();
+  const [
+    foreplanCtx,
+    { addCourseForeplan, removeCourseForeplan },
+  ] = useForeplanData();
 
   const { user } = useUser({
     fetchPolicy: "cache-only",
@@ -545,10 +549,11 @@ export const CourseBox: FC<ICourse> = ({
             onChange={ev => {
               ev.preventDefault();
               ev.stopPropagation();
-              foreplanCtx.dispatch({
-                type: checked ? "removeCourseForeplan" : "addCourseForeplan",
-                payload: code,
-              });
+              if (checked) {
+                removeCourseForeplan(code);
+              } else {
+                addCourseForeplan(code);
+              }
             }}
             className={classNames({
               [styles.foreplanCheckboxInput]: true,
@@ -634,23 +639,17 @@ export const CourseBox: FC<ICourse> = ({
         setOpen(open => !open);
 
         if (!open) {
-          dispatchDashboard({
-            type: "addCourse",
-            payload: {
-              course: code,
-              flow,
-              requisites,
-              semestersTaken,
-            },
+          addCourse({
+            course: code,
+            flow,
+            requisites,
+            semestersTaken,
           });
         } else {
-          dispatchDashboard({
-            type: "removeCourse",
-            payload: code,
-          });
+          removeCourse(code);
         }
 
-        Tracking.current.track({
+        track({
           action: "click",
           target: `course-box-${code}`,
           effect: `${open ? "close" : "open"}-course-box`,

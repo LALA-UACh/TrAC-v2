@@ -1,16 +1,11 @@
-import {
-  createContext,
-  FC,
-  MutableRefObject,
-  useContext,
-  useEffect,
-} from "react";
+import { FC, useEffect } from "react";
+import { createHook, createStore } from "react-sweet-state";
 
 import { useMutation } from "@apollo/react-hooks";
 
 import { TRACK } from "../graphql/queries";
 
-export type TrackingTemplateData = {
+type TrackingTemplateData = {
   program?: string;
   program_menu?: string;
   curriculum?: string;
@@ -18,33 +13,10 @@ export type TrackingTemplateData = {
   showingProgress?: boolean;
   showingPrediction?: boolean;
   coursesOpen?: string;
-  action: string;
-  effect: string;
-  target: string;
+  action?: string;
+  effect?: string;
+  target?: string;
 };
-
-export type TrackingRef = Partial<
-  Pick<
-    TrackingTemplateData,
-    | "program"
-    | "program_menu"
-    | "curriculum"
-    | "student"
-    | "showingProgress"
-    | "showingPrediction"
-    | "coursesOpen"
-  >
-> & {
-  track: (data: {
-    action: string;
-    effect: string;
-    target: string;
-  }) => Promise<any>;
-};
-
-export const TrackingContext = createContext<MutableRefObject<TrackingRef>>({
-  current: { track: async () => {} },
-});
 
 const trackingTemplate = ({
   program,
@@ -66,53 +38,49 @@ const trackingTemplate = ({
     null},action=${action},effect=${effect},target=${target}`;
 };
 
-export const Tracking: FC<{
-  program?: number;
-  curriculum?: number;
-  student?: string;
-}> = () => {
-  const TrackingData = useContext(TrackingContext);
+const TrackingStore = createStore({
+  initialState: {} as TrackingTemplateData,
+  actions: {
+    setTrackingData: (
+      data: Omit<TrackingTemplateData, "action" | "effect" | "target">
+    ) => ({ setState }) => {
+      setState(data);
+    },
+    track: (data: { action: string; effect: string; target: string }) => ({
+      setState,
+    }) => {
+      setState(data);
+    },
+  },
+});
+
+const useTrackingStore = createHook(TrackingStore);
+export const useTracking = createHook(TrackingStore, {
+  selector: null,
+});
+
+export const TrackingManager: FC = () => {
+  const [state] = useTrackingStore();
 
   const [trackMutate] = useMutation(TRACK, {
     ignoreResults: true,
   });
 
+  const trackAction = `${state.action || ""}${state.effect ||
+    ""}${state.target || ""}`;
+
   useEffect(() => {
-    TrackingData.current.track = ({ action, effect, target }) => {
-      return new Promise(resolve => {
-        setTimeout(async () => {
-          const {
-            program,
-            curriculum,
-            student,
-            coursesOpen,
-            showingPrediction,
-            showingProgress,
-            program_menu,
-          } = TrackingData.current;
-
-          trackMutate({
-            variables: {
-              data: trackingTemplate({
-                program,
-                program_menu,
-                curriculum,
-                student,
-                coursesOpen,
-                showingPrediction,
-                showingProgress,
-                action,
-                effect,
-                target,
-              }),
-              datetime_client: new Date(),
-            },
-          });
-          resolve();
-        }, 10);
+    if (trackAction) {
+      const data = trackingTemplate(state);
+      trackMutate({
+        variables: {
+          data,
+          datetime_client: new Date(),
+        },
+      }).catch(err => {
+        console.error(JSON.stringify(err, null, 2));
       });
-    };
-  }, [trackMutate]);
-
+    }
+  }, [trackAction]);
   return null;
 };

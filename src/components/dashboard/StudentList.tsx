@@ -32,7 +32,7 @@ import {
 import { STUDENT_LIST } from "../../graphql/queries";
 import { useUser } from "../../utils/useUser";
 import { ConfigContext } from "../Config";
-import { TrackingContext } from "../Tracking";
+import { useTracking } from "../Tracking";
 
 type columnNames =
   | "student_id"
@@ -47,7 +47,7 @@ export const StudentList: FC<{
   program_id?: string;
   searchStudent: (student: string) => Promise<void>;
 }> = ({ mockData, program_id, searchStudent }) => {
-  const Tracking = useContext(TrackingContext);
+  const [, { track }] = useTracking();
 
   const { data: dataStudentList, loading: loadingData } = useQuery(
     STUDENT_LIST,
@@ -85,7 +85,7 @@ export const StudentList: FC<{
   );
 
   useUpdateEffect(() => {
-    Tracking.current.track({
+    track({
       action: "click",
       effect: isOpen ? "open-student-list" : "close-student-list",
       target: isOpen ? "student-list-button" : "outside-student-list",
@@ -129,7 +129,7 @@ export const StudentList: FC<{
   );
 
   useUpdateEffect(() => {
-    Tracking.current.track({
+    track({
       action: "click",
       target: "student-list-header-sort",
       effect: `sort-student-list-by-${columnSort.join("|")}-${directionSort}`,
@@ -220,7 +220,7 @@ export const StudentList: FC<{
               totalPages={studentListChunks.length}
               activePage={pageSelected}
               onPageChange={(_, { activePage }) => {
-                Tracking.current.track({
+                track({
                   action: "click",
                   target: `student-list-pagination`,
                   effect: `set-student-list-page-to-${activePage}`,

@@ -1,39 +1,16 @@
-import React, {
-  createContext,
-  Dispatch,
-  FC,
-  Reducer,
-  ReducerState,
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-} from "react";
+import { FC, useEffect } from "react";
+import { createHook, createStore } from "react-sweet-state";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
 
-import { Action, ITakenSemester } from "../../../interfaces";
+import { ITakenSemester } from "../../../interfaces";
 import { stringListToBooleanMap } from "../../utils";
-import { TrackingContext } from "../Tracking";
+import { useTracking } from "../Tracking";
 
 const emDash = "—";
 
 const pairTermYear = (term: string, year: number) => {
   return term + emDash + year;
 };
-
-export type ICoursesDashboardActions =
-  | Action<
-      "addCourse",
-      {
-        course: string;
-        flow: string[];
-        requisites: string[];
-        semestersTaken?: { year: number; term: string }[];
-      }
-    >
-  | Action<"removeCourse", string>
-  | Action<"toggleExplicitSemester", { year: number; term: string }>
-  | Action<"reset">;
 
 export interface ICoursesDashboardData {
   activeCourse?: string;
@@ -76,7 +53,7 @@ const rememberCourseDashboardDataKey = "TrAC_dashboard_data";
 
 const initCourseDashboardData = (
   initialData = defaultCourseDashboardData
-): ReducerState<typeof courseDashboardReducer> => {
+): ICoursesDashboardData => {
   try {
     const rememberedData = localStorage.getItem(rememberCourseDashboardDataKey);
     if (!rememberedData) return initialData;
@@ -86,45 +63,48 @@ const initCourseDashboardData = (
   }
 };
 
-const courseDashboardReducer: Reducer<
-  ICoursesDashboardData,
-  ICoursesDashboardActions
-> = (state, action) => {
-  switch (action.type) {
-    case "addCourse": {
-      const flowHistory = [
-        stringListToBooleanMap(action.payload.flow),
-        ...state.flowHistory,
-      ];
+const CoursesDashboardStore = createStore({
+  initialState: initCourseDashboardData(),
+  actions: {
+    addCourse: ({
+      course,
+      flow,
+      requisites,
+      semestersTaken,
+    }: {
+      course: string;
+      flow: string[];
+      requisites: string[];
+      semestersTaken?: { year: number; term: string }[];
+    }) => ({ setState, getState }) => {
+      const state = getState();
+
+      const flowHistory = [stringListToBooleanMap(flow), ...state.flowHistory];
       const requisitesHistory = [
-        stringListToBooleanMap(action.payload.requisites),
+        stringListToBooleanMap(requisites),
         ...state.requisitesHistory,
       ];
-      return {
-        ...state,
-        activeHistory: [action.payload.course, ...state.activeHistory],
+
+      setState({
+        activeHistory: [course, ...state.activeHistory],
         flowHistory,
         requisitesHistory,
-        semestersTakenHistory: [
-          action.payload.semestersTaken,
-          ...state.semestersTakenHistory,
-        ],
-        activeCourse: action.payload.course,
+        semestersTakenHistory: [semestersTaken, ...state.semestersTakenHistory],
+        activeCourse: course,
         flow: flowHistory[0],
         requisites: requisitesHistory[0],
-        semestersTaken: action.payload.semestersTaken,
+        semestersTaken: semestersTaken,
         explicitSemester:
-          action.payload.semestersTaken &&
-          checkExplicitSemesterCallback(state.explicitSemester)(
-            action.payload.semestersTaken
-          )
+          semestersTaken &&
+          checkExplicitSemesterCallback(state.explicitSemester)(semestersTaken)
             ? state.explicitSemester
             : undefined,
-      };
-    }
-    case "removeCourse": {
+      });
+    },
+    removeCourse: (course: string) => ({ setState, getState }) => {
+      const state = getState();
       const indexToRemove = state.activeHistory.findIndex(
-        activeCourse => activeCourse === action.payload
+        activeCourse => activeCourse === course
       );
       if (indexToRemove !== -1) {
         const stateActiveHistory = state.activeHistory.slice(0);
@@ -139,8 +119,7 @@ const courseDashboardReducer: Reducer<
         const stateSemestersTakenHistory = state.semestersTakenHistory.slice(0);
         stateSemestersTakenHistory.splice(indexToRemove, 1);
 
-        return {
-          ...state,
+        setState({
           activeHistory: stateActiveHistory,
           flowHistory: stateFlowHistory,
           requisitesHistory: stateRequisitesHistory,
@@ -149,53 +128,40 @@ const courseDashboardReducer: Reducer<
           flow: stateFlowHistory[0],
           requisites: stateRequisitesHistory[0],
           semestersTaken: stateSemestersTakenHistory[0],
-        };
+        });
       }
-      return state;
-    }
-    case "toggleExplicitSemester": {
-      const pair = pairTermYear(action.payload.term, action.payload.year);
-      return {
-        ...state,
-        explicitSemester: state.explicitSemester === pair ? undefined : pair,
-      };
-    }
-    case "reset": {
-      return defaultCourseDashboardData;
-    }
-    default: {
-      console.error("CourseDashboard action not handled!", action);
-    }
-  }
-
-  return state;
-};
-
-export const CoursesDashboardContext = createContext<
-  ICoursesDashboardData & {
-    dispatch: Dispatch<ICoursesDashboardActions>;
+    },
+    toggleExplicitSemester: ({ term, year }: ITakenSemester) => ({
+      setState,
+      getState,
+    }) => {
+      const pair = pairTermYear(term, year);
+      setState({
+        explicitSemester:
+          getState().explicitSemester === pair ? undefined : pair,
+      });
+    },
+    reset: () => ({ setState }) => {
+      setState(defaultCourseDashboardData);
+    },
     checkExplicitSemester: (
-      semestersTaken: ITakenSemester[] | ITakenSemester
-    ) => ITakenSemester | undefined;
-  }
->({
-  ...defaultCourseDashboardData,
-  dispatch: () => {},
-  checkExplicitSemester: () => undefined,
+      semestersTaken: ITakenSemester | ITakenSemester[]
+    ) => ({ getState }) => {
+      const explicitSemester = getState().explicitSemester;
+
+      return checkExplicitSemesterCallback(explicitSemester)(semestersTaken);
+    },
+  },
 });
 
-export const CoursesDashboard: FC<{
-  program?: string;
-  curriculum?: string;
-  mock: boolean;
-}> = ({ children, program, curriculum, mock }) => {
-  const Tracking = useContext(TrackingContext);
+export const useCoursesDashboardData = createHook(CoursesDashboardStore);
 
-  const [state, dispatch] = useReducer(
-    courseDashboardReducer,
-    defaultCourseDashboardData,
-    initCourseDashboardData
-  );
+export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
+  distinct,
+}) => {
+  const [, { track, setTrackingData }] = useTracking();
+
+  const [state, { reset }] = useCoursesDashboardData();
 
   useDebounce(
     () => {
@@ -218,13 +184,13 @@ export const CoursesDashboard: FC<{
       previousExplicitSemester?.split(emDash) ?? [];
 
     if (year && term) {
-      Tracking.current.track({
+      track({
         action: "click",
         target: `semester-box-${year}-${term}`,
         effect: "load-semester",
       });
     } else if (previousTerm && previousYear) {
-      Tracking.current.track({
+      track({
         action: "click",
         target: `semester-box-${previousYear}-${previousTerm}`,
         effect: "unload-semester",
@@ -233,27 +199,14 @@ export const CoursesDashboard: FC<{
   }, [state.explicitSemester, previousExplicitSemester]);
 
   useUpdateEffect(() => {
-    dispatch({ type: "reset" });
-  }, [curriculum, program, mock, dispatch]);
+    reset();
+  }, [distinct, reset]);
 
   useEffect(() => {
-    Tracking.current.coursesOpen = state.activeHistory.join("|");
-  }, [state.activeHistory]);
+    setTrackingData({
+      coursesOpen: state.activeHistory.join("|"),
+    });
+  }, [state.activeHistory, setTrackingData]);
 
-  const checkExplicitSemester = useCallback(
-    checkExplicitSemesterCallback(state.explicitSemester),
-    [state.explicitSemester]
-  );
-
-  return (
-    <CoursesDashboardContext.Provider
-      value={{
-        ...state,
-        dispatch,
-        checkExplicitSemester,
-      }}
-    >
-      {children}
-    </CoursesDashboardContext.Provider>
-  );
+  return null;
 };

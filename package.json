@@ -82,6 +82,7 @@
     "react-indiana-drag-scroll": "^1.5.4",
     "react-intersection-observer": "^8.25.2",
     "react-select": "^3.0.8",
+    "react-sweet-state": "^1.1.1",
     "react-tooltip": "^3.11.2",
     "react-use": "^13.19.0",
     "reflect-metadata": "^0.1.13",
