@@ -8,7 +8,7 @@ import { useTracking } from "../Tracking";
 
 const emDash = "—";
 
-const pairTermYear = (term: string, year: number) => {
+export const pairTermYear = (term: string, year: number) => {
   return term + emDash + year;
 };
 
@@ -156,18 +156,18 @@ const CoursesDashboardStore = createStore({
 
 export const useCoursesDashboardData = createHook(CoursesDashboardStore);
 export const useActiveCourse = createHook(CoursesDashboardStore, {
-  selector: ({ activeCourse }) => {
-    return activeCourse;
+  selector: ({ activeCourse }, { code }: { code: string }) => {
+    return activeCourse === code;
   },
 });
 export const useActiveRequisites = createHook(CoursesDashboardStore, {
-  selector: ({ requisites }) => {
-    return requisites;
+  selector: ({ requisites }, { code }: { code: string }) => {
+    return requisites?.[code];
   },
 });
 export const useActiveFlow = createHook(CoursesDashboardStore, {
-  selector: ({ flow }) => {
-    return flow;
+  selector: ({ flow }, { code }: { code: string }) => {
+    return flow?.[code];
   },
 });
 export const useActiveSemestersTaken = createHook(CoursesDashboardStore, {
@@ -179,6 +179,20 @@ export const useExplicitSemester = createHook(CoursesDashboardStore, {
   selector: ({ explicitSemester }) => {
     return explicitSemester;
   },
+});
+export const useCheckExplicitSemester = createHook(CoursesDashboardStore, {
+  selector: (
+    { explicitSemester },
+    { semestersTaken }: { semestersTaken: ITakenSemester[] | ITakenSemester }
+  ) => {
+    const pair = checkExplicitSemesterCallback(explicitSemester)(
+      semestersTaken
+    );
+    return pair ? pairTermYear(pair.term, pair.year) : pair;
+  },
+});
+export const useDashboardCoursesActions = createHook(CoursesDashboardStore, {
+  selector: null,
 });
 
 export const CoursesDashbordManager: FC<{ distinct?: string }> = ({

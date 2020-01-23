@@ -21,13 +21,19 @@ import { StateCourse, termTypeToNumber } from "../../../../constants";
 import { ICourse, ITakenCourse, ITakenSemester } from "../../../../interfaces";
 import { useUser } from "../../../utils/useUser";
 import { ConfigContext } from "../../Config";
-import { useForeplanData } from "../../foreplan/ForeplanContext";
+import {
+  useIsForeplanActive,
+  useIsForeplanCourseChecked,
+  useIsPossibleToTakeForeplan,
+} from "../../foreplan/ForeplanContext";
 import { useTracking } from "../../Tracking";
 import {
+  pairTermYear,
   useActiveCourse,
   useActiveFlow,
   useActiveRequisites,
-  useCoursesDashboardData,
+  useCheckExplicitSemester,
+  useDashboardCoursesActions,
   useExplicitSemester,
 } from "../CoursesDashboardContext";
 import { Histogram } from "../Histogram";
@@ -61,40 +67,24 @@ const OuterCourseBox: FC<ICourse &
     semestersTaken,
     borderColor,
     open,
-    setOpen,
-    flow,
-    requisites,
   }) => {
     const config = useContext(ConfigContext);
 
-    const [, { track }] = useTracking();
-    const [activeCourse, { addCourse, removeCourse }] = useActiveCourse();
-    const [activeRequisites] = useActiveRequisites();
-    const [activeFlow] = useActiveFlow();
+    const [activeCourse] = useActiveCourse({ code });
     const [explicitSemester, { checkExplicitSemester }] = useExplicitSemester();
 
     const opacity = useMemo(() => {
       if (activeCourse) {
-        if (
-          activeCourse === code ||
-          activeFlow?.[code] ||
-          activeRequisites?.[code]
-        ) {
-          return 1;
-        }
+        return 1;
       }
-
       if (explicitSemester) {
         if (checkExplicitSemester(semestersTaken)) {
           return 1;
         }
         return 0.5;
       }
-      if (!activeCourse && !explicitSemester) {
-        return 1;
-      }
-      return 0.5;
-    }, [code, activeCourse]);
+      return 1;
+    }, [code, activeCourse, explicitSemester]);
 
     const { height, width } = useMemo(() => {
       let height: number | undefined = undefined;
@@ -130,7 +120,7 @@ const OuterCourseBox: FC<ICourse &
       }
 
       return { height, width };
-    }, [taken, historicDistribution, open]);
+    }, [open, taken, historicDistribution]);
 
     return (
       <Flex
@@ -144,12 +134,36 @@ const OuterCourseBox: FC<ICourse &
         border={config.COURSE_BOX_BORDER_WIDTH_INACTIVE}
         borderColor={borderColor}
         borderWidth={
-          activeCourse === code
+          activeCourse
             ? config.COURSE_BOX_BORDER_WIDTH_ACTIVE
             : config.COURSE_BOX_BORDER_WIDTH_INACTIVE
         }
         cursor="pointer"
-        transition="all 0.4s ease-in-out"
+        transition="all 0.2s"
+        className="unselectable courseBox"
+      >
+        {children}
+      </Flex>
+    );
+  }
+);
+
+const MainBlockOuter: FC<OpenState &
+  Pick<ICourse, "code" | "flow" | "requisites"> & {
+    semestersTaken: ITakenSemester[];
+  }> = memo(
+  ({ children, open, setOpen, code, flow, requisites, semestersTaken }) => {
+    const [, { track }] = useTracking();
+    const [, { addCourse, removeCourse }] = useDashboardCoursesActions();
+
+    return (
+      <Flex
+        w="100%"
+        h="100%"
+        pt={2}
+        pl={2}
+        pos="relative"
+        className="mainBlock"
         onClick={() => {
           setOpen(open => !open);
 
@@ -170,21 +184,12 @@ const OuterCourseBox: FC<ICourse &
             effect: `${open ? "close" : "open"}-course-box`,
           });
         }}
-        className="unselectable courseBox"
       >
         {children}
       </Flex>
     );
   }
 );
-
-const MainBlockOuter: FC = memo(({ children }) => {
-  return (
-    <Flex w="100%" h="100%" pt={2} pl={2} pos="relative" className="mainBlock">
-      {children}
-    </Flex>
-  );
-});
 
 const NameComponent: FC<ICourse &
   Pick<OpenState, "open"> &
@@ -328,42 +333,15 @@ const CreditsComponent: FC<Pick<ICourse, "credits">> = memo(({ credits }) => {
   );
 });
 
-const HistogramsComponent: FC = memo(({ children }) => {
-  const [{ active }] = useForeplanData();
-  return (
-    <motion.div
-      key="histograms"
-      initial={{
-        opacity: 0,
-        scale: 0,
-      }}
-      animate={{
-        scale: 1,
-        opacity: 1,
-      }}
-      exit={{
-        opacity: 0,
-        scale: 0.4,
-      }}
-      className={classNames({
-        [styles.histogramBox]: true,
-        [styles.foreplanActive]: active,
-      })}
-    >
-      {children}
-    </motion.div>
-  );
-});
-
 export const ReqCircleComponent: FC<Pick<ICourse, "code">> = memo(
   ({ code }) => {
     const config = useContext(ConfigContext);
-    const [activeRequisites] = useActiveRequisites();
-    const [activeFlow] = useActiveFlow();
+    const [activeRequisites] = useActiveRequisites({ code });
+    const [activeFlow] = useActiveFlow({ code });
 
     return (
       <>
-        {(activeFlow?.[code] || activeRequisites?.[code]) && (
+        {(activeFlow || activeRequisites) && (
           <motion.div
             key="req_circle"
             initial={{
@@ -381,7 +359,7 @@ export const ReqCircleComponent: FC<Pick<ICourse, "code">> = memo(
                   cx={16}
                   cy={16}
                   stroke={
-                    activeFlow?.[code]
+                    activeFlow
                       ? config.FLOW_CIRCLE_COLOR
                       : config.REQ_CIRCLE_COLOR
                   }
@@ -392,12 +370,12 @@ export const ReqCircleComponent: FC<Pick<ICourse, "code">> = memo(
                   y={21}
                   fontWeight="bold"
                   fill={
-                    activeFlow?.[code]
+                    activeFlow
                       ? config.FLOW_CIRCLE_COLOR
                       : config.REQ_CIRCLE_COLOR
                   }
                 >
-                  {activeFlow?.[code]
+                  {activeFlow
                     ? config.FLOW_CIRCLE_LABEL
                     : config.REQ_CIRCLE_LABEL}
                 </text>
@@ -465,11 +443,10 @@ const ForeplanCourseStats: FC<Pick<ICourse, "code">> = memo(({ code }) => {
 
 const ForeplanCourseCheckbox: FC<Pick<ICourse, "code">> = memo(({ code }) => {
   const [
-    foreplanCtx,
+    checked,
     { addCourseForeplan, removeCourseForeplan },
-  ] = useForeplanData();
+  ] = useIsForeplanCourseChecked({ code });
 
-  const checked = !!foreplanCtx.foreplanCourses[code];
   return (
     <motion.div
       key="foreplanCourseCheckbox"
@@ -617,6 +594,33 @@ const currentDistributionLabel = ({
   return `${label} ${term} ${year}`;
 };
 
+const HistogramsComponent: FC = memo(({ children }) => {
+  const [active] = useIsForeplanActive();
+  return (
+    <motion.div
+      key="histograms"
+      initial={{
+        opacity: 0,
+        scale: 0,
+      }}
+      animate={{
+        scale: 1,
+        opacity: 1,
+      }}
+      exit={{
+        opacity: 0,
+        scale: 0.4,
+      }}
+      className={classNames({
+        [styles.histogramBox]: true,
+        [styles.foreplanActive]: active,
+      })}
+    >
+      {children}
+    </motion.div>
+  );
+});
+
 const HistogramNow: FC<Pick<ICourse, "taken" | "bandColors"> &
   Pick<
     CurrentTakenData,
@@ -625,24 +629,23 @@ const HistogramNow: FC<Pick<ICourse, "taken" | "bandColors"> &
   const { GRADES_LABEL: label } = useContext(ConfigContext);
 
   return (
-    <>
-      {currentDistribution &&
-        some(currentDistribution, ({ value }) => value) &&
-        term &&
-        year && (
-          <Histogram
-            key="now"
-            label={currentDistributionLabel({
-              term: termTypeToNumber(term),
-              year,
-              label,
-            })}
-            distribution={currentDistribution}
-            grade={grade}
-            bandColors={taken?.[0]?.bandColors ?? bandColors}
-          />
-        )}
-    </>
+    (currentDistribution &&
+      some(currentDistribution, ({ value }) => value) &&
+      term &&
+      year && (
+        <Histogram
+          key="now"
+          label={currentDistributionLabel({
+            term: termTypeToNumber(term),
+            year,
+            label,
+          })}
+          distribution={currentDistribution}
+          grade={grade}
+          bandColors={taken?.[0]?.bandColors ?? bandColors}
+        />
+      )) ||
+    null
   );
 });
 
@@ -653,21 +656,17 @@ const HistogramHistoric: FC<Pick<
   Pick<CurrentTakenData, "grade">> = memo(
   ({ historicDistribution, bandColors, grade }) => {
     const config = useContext(ConfigContext);
-    return (
-      <>
-        {historicDistribution &&
-        some(historicDistribution, ({ value }) => value) ? (
-          <Histogram
-            key="historic"
-            label={config.HISTORIC_GRADES}
-            distribution={historicDistribution}
-            grade={grade}
-            bandColors={bandColors}
-          />
-        ) : (
-          <Badge>{config.NO_HISTORIC_DATA}</Badge>
-        )}
-      </>
+    return historicDistribution &&
+      some(historicDistribution, ({ value }) => value) ? (
+      <Histogram
+        key="historic"
+        label={config.HISTORIC_GRADES}
+        distribution={historicDistribution}
+        grade={grade}
+        bandColors={bandColors}
+      />
+    ) : (
+      <Badge>{config.NO_HISTORIC_DATA}</Badge>
     );
   }
 );
@@ -676,21 +675,6 @@ export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
   const { code, credits, historicDistribution, taken, bandColors } = course;
   const config = useContext(ConfigContext);
 
-  const [
-    {
-      activeCourse,
-      flow: contextFlow,
-      requisites: contextRequisites,
-      explicitSemester,
-    },
-    { checkExplicitSemester },
-  ] = useCoursesDashboardData();
-  const [foreplanCtx] = useForeplanData();
-
-  const { user } = useUser({
-    fetchPolicy: "cache-only",
-  });
-
   const { semestersTaken } = useMemo(() => {
     const semestersTaken = taken.map(({ term, year }) => {
       return { term, year };
@@ -698,6 +682,17 @@ export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
 
     return { semestersTaken };
   }, [taken]);
+
+  const [activeCourse] = useActiveCourse({ code });
+  const [activeFlow] = useActiveFlow({ code });
+  const [activeRequisites] = useActiveRequisites({ code });
+  const [explicitSemester] = useCheckExplicitSemester({
+    semestersTaken,
+  });
+
+  const { user } = useUser({
+    fetchPolicy: "cache-only",
+  });
 
   const {
     state,
@@ -708,17 +703,14 @@ export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
     year,
     parallelGroup,
   } = useMemo<Partial<ITakenCourse>>(() => {
-    const foundSemesterTaken = checkExplicitSemester(semestersTaken);
-    if (foundSemesterTaken) {
+    if (explicitSemester) {
       const foundData = taken.find(({ term, year }) => {
-        return (
-          year === foundSemesterTaken.year && term === foundSemesterTaken.term
-        );
+        return pairTermYear(term, year) === explicitSemester;
       });
       return foundData || {};
     }
     return taken[0] || {};
-  }, [semestersTaken, explicitSemester, checkExplicitSemester, taken]);
+  }, [semestersTaken, explicitSemester, taken]);
 
   const [open, setOpen] = useState(() => {
     try {
@@ -749,34 +741,31 @@ export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
   }, [code]);
 
   const borderColor = useMemo(() => {
-    if (activeCourse === code) {
+    if (activeCourse) {
       return config.ACTIVE_COURSE_BOX_COLOR;
     }
-    if (contextFlow?.[code]) {
+    if (activeFlow) {
       return config.FLOW_COURSE_BOX_COLOR;
     }
-    if (contextRequisites?.[code]) {
+    if (activeRequisites) {
       return config.REQUISITE_COURSE_BOX_COLOR;
     }
-    if (checkExplicitSemester(semestersTaken)) {
+    if (explicitSemester) {
       return config.EXPLICIT_SEMESTER_COURSE_BOX_COLOR;
     }
     return config.INACTIVE_COURSE_BOX_COLOR;
-  }, [activeCourse, code, contextFlow, contextRequisites, explicitSemester]);
+  }, [
+    activeCourse,
+    activeRequisites,
+    activeFlow,
+    explicitSemester,
+    config,
+    code,
+  ]);
 
-  const foreplanPossibleToTake = useMemo(() => {
-    if (foreplanCtx.active) {
-      switch (state) {
-        case undefined:
-        case StateCourse.Failed:
-        case StateCourse.Canceled: {
-          return true;
-        }
-        default:
-      }
-    }
-    return false;
-  }, [foreplanCtx.active, state]);
+  const [isPossibleToTakeForeplan] = useIsPossibleToTakeForeplan({
+    state,
+  });
 
   return (
     <OuterCourseBox
@@ -786,19 +775,28 @@ export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
       semestersTaken={semestersTaken}
       borderColor={borderColor}
     >
-      <MainBlockOuter>
+      <MainBlockOuter
+        {...course}
+        code={code}
+        open={open}
+        setOpen={setOpen}
+        semestersTaken={semestersTaken}
+      >
         <NameComponent {...course} open={open} parallelGroup={parallelGroup} />
 
         <AnimatePresence>
           {registration && open && (
-            <RegistrationComponent registration={registration} />
+            <RegistrationComponent
+              key="registration"
+              registration={registration}
+            />
           )}
-          {!open && <CreditsComponent credits={credits} />}
+          {!open && <CreditsComponent key="credits" credits={credits} />}
 
-          <ReqCircleComponent code={code} />
+          <ReqCircleComponent key="reqCircle" code={code} />
 
           {open && (
-            <HistogramsComponent>
+            <HistogramsComponent key="histogramsComponent">
               <HistogramNow
                 taken={taken}
                 bandColors={bandColors}
@@ -814,8 +812,8 @@ export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
               />
             </HistogramsComponent>
           )}
-          {foreplanPossibleToTake && user?.config.FOREPLAN_COURSE_STATS && (
-            <ForeplanCourseStats code={code} />
+          {isPossibleToTakeForeplan && user?.config.FOREPLAN_COURSE_STATS && (
+            <ForeplanCourseStats key="foreplanCourseStats" code={code} />
           )}
         </AnimatePresence>
       </MainBlockOuter>
@@ -831,7 +829,9 @@ export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
           <HistoricalCirclesComponent code={code} taken={taken} />
         )}
         <AnimatePresence>
-          {foreplanPossibleToTake && <ForeplanCourseCheckbox code={code} />}
+          {isPossibleToTakeForeplan && user?.config.FOREPLAN && (
+            <ForeplanCourseCheckbox key="foreplanCourseCheckbox" code={code} />
+          )}
         </AnimatePresence>
       </SecondaryBlockOuter>
     </OuterCourseBox>

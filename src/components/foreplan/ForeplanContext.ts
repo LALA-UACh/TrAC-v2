@@ -4,7 +4,7 @@ import { FC, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce, useUpdateEffect } from "react-use";
 
-import { LAST_TIME_USED } from "../../../constants";
+import { LAST_TIME_USED, StateCourse } from "../../../constants";
 import { useUser } from "../../utils/useUser";
 
 export interface IForeplanData {
@@ -65,9 +65,31 @@ const ForeplanStore = createStore({
 
 export const useForeplanData = createHook(ForeplanStore);
 
+export const useIsForeplanCourseChecked = createHook(ForeplanStore, {
+  selector: ({ foreplanCourses }, { code }: { code: string }) => {
+    return !!foreplanCourses[code];
+  },
+});
+
 export const useIsForeplanActive = createHook(ForeplanStore, {
   selector: ({ active }) => {
     return active;
+  },
+});
+
+export const useIsPossibleToTakeForeplan = createHook(ForeplanStore, {
+  selector: ({ active }, { state }: { state: StateCourse | undefined }) => {
+    if (active) {
+      switch (state) {
+        case undefined:
+        case StateCourse.Failed:
+        case StateCourse.Canceled: {
+          return true;
+        }
+        default:
+      }
+    }
+    return false;
   },
 });
 
@@ -76,7 +98,9 @@ export const ForeplanContextManager: FC<{ distinct?: string }> = ({
 }) => {
   const [state, { reset, disableForeplan }] = useForeplanData();
 
-  const { user } = useUser();
+  const { user } = useUser({
+    fetchPolicy: "cache-only",
+  });
 
   useEffect(() => {
     if (state.active && !user?.config.FOREPLAN) {
@@ -109,7 +133,7 @@ export const ForeplanContextManager: FC<{ distinct?: string }> = ({
           localStorage.setItem(rememberForeplanDataKey, JSON.stringify(state));
       } catch (err) {}
     },
-    3000,
+    5000,
     [state]
   );
 
