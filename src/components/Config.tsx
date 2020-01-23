@@ -24,7 +24,7 @@ export const Config: FC = ({ children }) => {
 
   useQuery(CONFIG_QUERY, {
     onCompleted: ({ config }) => {
-      setConfigState(config);
+      setConfigState({ ...baseConfig, ...config });
     },
   });
 

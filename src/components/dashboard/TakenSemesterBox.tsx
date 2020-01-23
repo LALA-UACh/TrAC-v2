@@ -67,17 +67,17 @@ export const TakenSemesterBox: FC<{
   return (
     <Box
       textAlign="center"
-      border="3px solid"
+      border={config.TAKEN_SEMESTER_BOX_BORDER}
       borderColor={borderColor}
-      borderRadius="8px"
+      borderRadius={config.TAKEN_SEMESTER_BOX_BORDER_RADIUS}
       backgroundColor={config.TAKEN_SEMESTER_BOX_BACKGROUND_COLOR}
-      p="6px"
-      ml={3}
-      mr={3}
-      fontSize="1.2em"
+      p={config.TAKEN_SEMESTER_BOX_PADDING}
+      ml={config.TAKEN_SEMESTER_BOX_MARGIN_SIDES}
+      mr={config.TAKEN_SEMESTER_BOX_MARGIN_SIDES}
+      fontSize={config.TAKEN_SEMESTER_BOX_FONT_SIZE}
       cursor="pointer"
       className="unselectable"
-      transition="all 0.4s ease-in-out"
+      transition={config.TAKEN_SEMESTER_BOX_TRANSITION}
       whiteSpace="nowrap"
       alignItems="center"
       display="flex"
@@ -88,7 +88,7 @@ export const TakenSemesterBox: FC<{
         });
       }}
       color={config.TAKEN_SEMESTER_BOX_TEXT_COLOR}
-      height="3em"
+      height={config.TAKEN_SEMESTER_BOX_HEIGHT}
     >
       {comments ? (
         <Stack spacing={0}>

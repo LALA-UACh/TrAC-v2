@@ -36,13 +36,16 @@ const toRoman = (num: number, first = false): string => {
 
 export const Semester: FC<{ courses: ICourse[]; n: number }> = memo(
   ({ courses: semester, n }) => {
-    const { SEMESTER_HEADER_TEXT_COLOR } = useContext(ConfigContext);
+    const {
+      SEMESTER_HEADER_TEXT_COLOR,
+      SEMESTER_HEADER_FONT_SIZE,
+    } = useContext(ConfigContext);
     return (
       <Stack>
         <Text
           color={SEMESTER_HEADER_TEXT_COLOR}
           textAlign="center"
-          fontSize="1.5em"
+          fontSize={SEMESTER_HEADER_FONT_SIZE}
         >
           <b>{toRoman(n, true)}</b>
         </Text>
