@@ -1,5 +1,5 @@
 import { differenceInWeeks } from "date-fns";
-import { size, toInteger } from "lodash";
+import { reduce, size, toInteger } from "lodash";
 import { FC, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce, useUpdateEffect } from "react-use";
@@ -51,18 +51,22 @@ const ForeplanStore = createStore({
       course: string,
       data: IForeplanData["foreplanCoursesData"][string]
     ) => ({ setState, getState }) => {
-      const {
-        foreplanCourses,
-        foreplanCoursesData,
-        totalCreditsTaken,
-      } = getState();
+      const { foreplanCourses, foreplanCoursesData } = getState();
+
+      const newForeplanCourses = { ...foreplanCourses, [course]: true };
+      const newForeplanCoursesData = { ...foreplanCoursesData, [course]: data };
+      const totalCreditsTaken = reduce(
+        newForeplanCoursesData,
+        (acum, { credits }) => {
+          return acum + credits?.[0]?.value ?? 0;
+        },
+        0
+      );
 
       setState({
-        foreplanCourses: { ...foreplanCourses, [course]: true },
-        foreplanCoursesData: { ...foreplanCoursesData, [course]: data },
-        totalCreditsTaken: foreplanCourses[course]
-          ? totalCreditsTaken
-          : totalCreditsTaken + data?.credits?.[0]?.value ?? 0,
+        foreplanCourses: newForeplanCourses,
+        foreplanCoursesData: newForeplanCoursesData,
+        totalCreditsTaken,
       });
     },
     removeCourseForeplan: (course: string) => ({ setState, getState }) => {
@@ -72,15 +76,18 @@ const ForeplanStore = createStore({
           [course]: deletedCourseData,
           ...foreplanCoursesData
         },
-        totalCreditsTaken,
       } = getState();
+      const totalCreditsTaken = reduce(
+        foreplanCoursesData,
+        (acum, { credits }) => {
+          return acum + credits?.[0]?.value ?? 0;
+        },
+        0
+      );
       setState({
         foreplanCourses,
         foreplanCoursesData,
-        totalCreditsTaken:
-          deletedCourse && deletedCourseData
-            ? totalCreditsTaken - deletedCourseData.credits?.[0]?.value ?? 0
-            : totalCreditsTaken,
+        totalCreditsTaken,
       });
     },
     reset: () => ({ setState }) => {

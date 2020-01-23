@@ -283,17 +283,18 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
             padding: 3,
             width: widthContent,
             opacity: 1,
+            overflowY: "auto",
           },
           collapsed: {
             padding: 0,
             width: 0,
             opacity: 0,
+            overflowY: "hidden",
           },
         }}
       >
         <Stack
           p={expanded ? 3 : 0}
-          overflowY={expanded ? "auto" : "hidden"}
           overflowX="hidden"
           opacity={expanded ? undefined : 0}
         >
