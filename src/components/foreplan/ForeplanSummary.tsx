@@ -104,7 +104,7 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
       }}
       width="2em"
     >
-      <AnimatePresence>{!expanded && NText}</AnimatePresence>
+      <AnimatePresence>{!expanded && nCourses > 0 && NText}</AnimatePresence>
 
       <Box
         pos="absolute"
@@ -253,24 +253,53 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
       }
       return "500px";
     }, [width]);
+    const [anyForeplanCourse] = useAnyForeplanCourses();
+
+    const content = useMemo(() => {
+      return (
+        <>
+          <Text fontSize={config.FOREPLAN_SUMMARY_TITLE_FONT_SIZE}>
+            {config.FOREPLAN_SUMMARY_TITLE_LABEL}
+          </Text>
+          {anyForeplanCourse && (
+            <>
+              {user?.config.FOREPLAN_SUMMARY_LIST && <ForeplanContentRowList />}
+              {user?.config.FOREPLAN_SUMMARY_BADGES && (
+                <ForeplanContentBadgesList />
+              )}
+              <ForeplanTotalCredits />
+            </>
+          )}
+        </>
+      );
+    }, [anyForeplanCourse, user, config]);
+
     return (
-      <Stack
-        p={expanded ? 3 : 0}
-        overflowY={expanded ? "auto" : "hidden"}
-        overflowX="hidden"
-        width={expanded ? widthContent : 0}
-        opacity={expanded ? 1 : 0}
-        transition={`all 0.5s ease-in-out, width 0.3s ease-out, opacity ${
-          expanded ? "0.6s cubic-bezier(1,-0.05,.93,.69)" : "0s"
-        }`}
+      <motion.div
+        initial="collapsed"
+        animate={expanded ? "expanded" : "collapsed"}
+        variants={{
+          expanded: {
+            padding: 3,
+            width: widthContent,
+            opacity: 1,
+          },
+          collapsed: {
+            padding: 0,
+            width: 0,
+            opacity: 0,
+          },
+        }}
       >
-        <Text fontSize={config.FOREPLAN_SUMMARY_TITLE_FONT_SIZE}>
-          {config.FOREPLAN_SUMMARY_TITLE_LABEL}
-        </Text>
-        {user?.config.FOREPLAN_SUMMARY_LIST && <ForeplanContentRowList />}
-        {user?.config.FOREPLAN_SUMMARY_BADGES && <ForeplanContentBadgesList />}
-        <ForeplanTotalCredits />
-      </Stack>
+        <Stack
+          p={expanded ? 3 : 0}
+          overflowY={expanded ? "auto" : "hidden"}
+          overflowX="hidden"
+          opacity={expanded ? undefined : 0}
+        >
+          {content}
+        </Stack>
+      </motion.div>
     );
   }
 );
@@ -289,6 +318,7 @@ const ForeplanSummary: FC = () => {
     return (
       <OuterSummary>
         <SummaryTab expanded={expanded} setExpanded={setExpanded} />
+
         <ForeplanContent expanded={expanded} />
       </OuterSummary>
     );
