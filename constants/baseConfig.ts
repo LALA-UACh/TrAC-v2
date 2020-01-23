@@ -43,12 +43,12 @@ export const baseConfig = {
     {
       min: 0,
       max: 0,
-      width: "7em",
+      width: "7.8em",
     },
     {
       min: 1,
       max: 2,
-      width: "8em",
+      width: "8.5em",
     },
     {
       min: 3,

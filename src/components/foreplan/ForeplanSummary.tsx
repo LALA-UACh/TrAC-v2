@@ -175,7 +175,7 @@ const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
   const config = useContext(ConfigContext);
   const [data] = useForeplanCourseData({ code });
   const { width, dataCredits } = useMemo(() => {
-    const dataCredits = data.credits[0]?.value ?? 0;
+    const dataCredits = data?.credits[0]?.value ?? 0;
     const width =
       config.FOREPLAN_SUMMARY_BADGE_COURSE_CREDITS_WIDTH.find(
         ({ min, max }) => {
@@ -188,7 +188,7 @@ const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
       config.FOREPLAN_SUMMARY_BADGE_COURSE_CREDITS_WIDTH[0]?.width ??
       "7em";
     return { width, dataCredits };
-  }, [data.credits, config]);
+  }, [data?.credits, config]);
 
   return (
     <Badge
