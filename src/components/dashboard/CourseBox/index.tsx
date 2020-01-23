@@ -57,7 +57,7 @@ const OuterCourseBox: FC<Pick<
   ICourse,
   "code" | "taken" | "historicDistribution"
 > &
-  OpenState & {
+  Pick<OpenState, "open"> & {
     borderColor: string;
     semestersTaken: ITakenSemester[];
   }> = memo(
@@ -681,7 +681,6 @@ const HistogramHistoric: FC<Pick<
 );
 
 export const CourseBox: FC<ICourse> = ({
-  children,
   code,
   name,
   credits,
@@ -782,7 +781,7 @@ export const CourseBox: FC<ICourse> = ({
   ]);
 
   const [isPossibleToTakeForeplan] = useIsPossibleToTakeForeplan({
-    state,
+    state: taken[0]?.state,
   });
 
   return (
@@ -791,7 +790,6 @@ export const CourseBox: FC<ICourse> = ({
       taken={taken}
       historicDistribution={historicDistribution}
       open={open}
-      setOpen={setOpen}
       semestersTaken={semestersTaken}
       borderColor={borderColor}
     >
@@ -823,7 +821,10 @@ export const CourseBox: FC<ICourse> = ({
           <ReqCircleComponent key="reqCircle" code={code} />
 
           {open && (
-            <HistogramsComponent key="histogramsComponent" state={state}>
+            <HistogramsComponent
+              key="histogramsComponent"
+              state={taken[0]?.state}
+            >
               <HistogramNow
                 taken={taken}
                 bandColors={bandColors}
