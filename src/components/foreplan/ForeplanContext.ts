@@ -12,6 +12,7 @@ export interface IForeplanData {
   active: boolean;
   foreplanCourses: Record<string, boolean>;
   foreplanCoursesData: Record<string, Pick<ICourse, "credits" | "name">>;
+  totalCreditsTaken: number;
 }
 
 const rememberForeplanDataKey = "TrAC_foreplan_data";
@@ -30,6 +31,7 @@ const defaultForeplanData: IForeplanData = {
   active: false,
   foreplanCourses: {},
   foreplanCoursesData: {},
+  totalCreditsTaken: 0,
 };
 
 const ForeplanStore = createStore({
@@ -49,20 +51,36 @@ const ForeplanStore = createStore({
       course: string,
       data: IForeplanData["foreplanCoursesData"][string]
     ) => ({ setState, getState }) => {
-      const { foreplanCourses, foreplanCoursesData } = getState();
+      const {
+        foreplanCourses,
+        foreplanCoursesData,
+        totalCreditsTaken,
+      } = getState();
 
       setState({
         foreplanCourses: { ...foreplanCourses, [course]: true },
         foreplanCoursesData: { ...foreplanCoursesData, [course]: data },
+        totalCreditsTaken: foreplanCourses[course]
+          ? totalCreditsTaken
+          : totalCreditsTaken + data?.credits?.[0]?.value ?? 0,
       });
     },
     removeCourseForeplan: (course: string) => ({ setState, getState }) => {
       const {
-        [course]: _value,
-        ...foreplanCourses
-      } = getState().foreplanCourses;
+        foreplanCourses: { [course]: deletedCourse, ...foreplanCourses },
+        foreplanCoursesData: {
+          [course]: deletedCourseData,
+          ...foreplanCoursesData
+        },
+        totalCreditsTaken,
+      } = getState();
       setState({
         foreplanCourses,
+        foreplanCoursesData,
+        totalCreditsTaken:
+          deletedCourse && deletedCourseData
+            ? totalCreditsTaken - deletedCourseData.credits?.[0]?.value ?? 0
+            : totalCreditsTaken,
       });
     },
     reset: () => ({ setState }) => {
@@ -87,12 +105,8 @@ export const useForeplanCourses = createHook(ForeplanStore, {
 });
 
 export const useForeplanTotalCreditsTaken = createHook(ForeplanStore, {
-  selector: ({ foreplanCourses, foreplanCoursesData }) => {
-    let totalCredits = 0;
-    for (const course in foreplanCourses) {
-      totalCredits += foreplanCoursesData[course]?.credits[0]?.value ?? 0;
-    }
-    return totalCredits;
+  selector: ({ totalCreditsTaken }) => {
+    return totalCreditsTaken;
   },
 });
 

@@ -34,9 +34,11 @@ interface ExpandedState {
 const OuterSummary: FC = ({ children }) => {
   const { height } = useWindowSize();
 
+  const { FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT } = useContext(ConfigContext);
+
   const mobile = useMemo(() => {
-    return height < 700;
-  }, [height]);
+    return height < FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT;
+  }, [height, FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT]);
 
   return (
     <Flex
@@ -244,13 +246,19 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
   ({ expanded }) => {
     const config = useContext(ConfigContext);
     const { user } = useUser({ fetchPolicy: "cache-only" });
-
+    const { width } = useWindowSize();
+    const widthContent = useMemo(() => {
+      if (width < 535) {
+        return width - 35 + "px";
+      }
+      return "500px";
+    }, [width]);
     return (
       <Stack
         p={expanded ? 3 : 0}
         overflowY={expanded ? "auto" : "hidden"}
         overflowX="hidden"
-        width={expanded ? "35em" : "0px"}
+        width={expanded ? widthContent : "0px"}
         opacity={expanded ? 1 : 0}
         transition="all 0.5s ease-in-out"
       >
