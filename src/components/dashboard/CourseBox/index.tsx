@@ -22,7 +22,6 @@ import { ICourse, ITakenCourse, ITakenSemester } from "../../../../interfaces";
 import { useUser } from "../../../utils/useUser";
 import { ConfigContext } from "../../Config";
 import {
-  useIsForeplanActive,
   useIsForeplanCourseChecked,
   useIsPossibleToTakeForeplan,
 } from "../../foreplan/ForeplanContext";
@@ -54,7 +53,10 @@ export interface OpenState {
 
 export type CurrentTakenData = Partial<ITakenCourse>;
 
-const OuterCourseBox: FC<ICourse &
+const OuterCourseBox: FC<Pick<
+  ICourse,
+  "code" | "taken" | "historicDistribution"
+> &
   OpenState & {
     borderColor: string;
     semestersTaken: ITakenSemester[];
@@ -138,8 +140,7 @@ const OuterCourseBox: FC<ICourse &
             ? config.COURSE_BOX_BORDER_WIDTH_ACTIVE
             : config.COURSE_BOX_BORDER_WIDTH_INACTIVE
         }
-        cursor="pointer"
-        transition="all 0.2s"
+        transition={config.COURSE_BOX_ALL_TRANSITION_DURATION}
         className="unselectable courseBox"
       >
         {children}
@@ -164,6 +165,7 @@ const MainBlockOuter: FC<OpenState &
         pl={2}
         pos="relative"
         className="mainBlock"
+        cursor="pointer"
         onClick={() => {
           setOpen(open => !open);
 
@@ -191,7 +193,7 @@ const MainBlockOuter: FC<OpenState &
   }
 );
 
-const NameComponent: FC<ICourse &
+const NameComponent: FC<Pick<ICourse, "code" | "taken" | "name"> &
   Pick<OpenState, "open"> &
   Pick<CurrentTakenData, "parallelGroup">> = memo(
   ({ code, name, taken, parallelGroup }) => {
@@ -221,7 +223,7 @@ const NameComponent: FC<ICourse &
   }
 );
 
-const SecondaryBlockOuter: FC<ICourse &
+const SecondaryBlockOuter: FC<Pick<ICourse, "taken" | "bandColors"> &
   Pick<CurrentTakenData, "grade" | "state"> & {
     borderColor: string;
   }> = memo(({ children, taken, bandColors, borderColor, state, grade }) => {
@@ -295,10 +297,12 @@ const RegistrationComponent: FC<Pick<CurrentTakenData, "registration">> = memo(
         key="status"
         initial={{
           opacity: 0,
+          position: "static",
         }}
         animate={{ opacity: 1 }}
         exit={{
           opacity: 0,
+          position: "absolute",
         }}
         style={{ width: "100%" }}
       >
@@ -340,50 +344,51 @@ export const ReqCircleComponent: FC<Pick<ICourse, "code">> = memo(
     const [activeFlow] = useActiveFlow({ code });
 
     return (
-      <>
-        {(activeFlow || activeRequisites) && (
-          <motion.div
-            key="req_circle"
-            initial={{
-              opacity: 0,
-            }}
-            animate={{ opacity: 1 }}
-            exit={{
-              opacity: 0,
-            }}
-          >
-            <Box mt="-15px" pos="absolute" right="8px" top="80px">
-              <svg width={32} height={32}>
-                <circle
-                  r={15}
-                  cx={16}
-                  cy={16}
-                  stroke={
-                    activeFlow
-                      ? config.FLOW_CIRCLE_COLOR
-                      : config.REQ_CIRCLE_COLOR
-                  }
-                  fill="transparent"
-                />
-                <text
-                  x={4}
-                  y={21}
-                  fontWeight="bold"
-                  fill={
-                    activeFlow
-                      ? config.FLOW_CIRCLE_COLOR
-                      : config.REQ_CIRCLE_COLOR
-                  }
-                >
-                  {activeFlow
-                    ? config.FLOW_CIRCLE_LABEL
-                    : config.REQ_CIRCLE_LABEL}
-                </text>
-              </svg>
-            </Box>
-          </motion.div>
-        )}
-      </>
+      ((activeFlow || activeRequisites) && (
+        <motion.div
+          key="req_circle"
+          initial={{
+            opacity: 0,
+            position: "static",
+          }}
+          animate={{ opacity: 1 }}
+          exit={{
+            opacity: 0,
+            position: "absolute",
+          }}
+        >
+          <Box mt="-15px" pos="absolute" right="8px" top="80px">
+            <svg width={32} height={32}>
+              <circle
+                r={15}
+                cx={16}
+                cy={16}
+                stroke={
+                  activeFlow
+                    ? config.FLOW_CIRCLE_COLOR
+                    : config.REQ_CIRCLE_COLOR
+                }
+                fill="transparent"
+              />
+              <text
+                x={4}
+                y={21}
+                fontWeight="bold"
+                fill={
+                  activeFlow
+                    ? config.FLOW_CIRCLE_COLOR
+                    : config.REQ_CIRCLE_COLOR
+                }
+              >
+                {activeFlow
+                  ? config.FLOW_CIRCLE_LABEL
+                  : config.REQ_CIRCLE_LABEL}
+              </text>
+            </svg>
+          </Box>
+        </motion.div>
+      )) ||
+      null
     );
   }
 );
@@ -594,32 +599,36 @@ const currentDistributionLabel = ({
   return `${label} ${term} ${year}`;
 };
 
-const HistogramsComponent: FC = memo(({ children }) => {
-  const [active] = useIsForeplanActive();
-  return (
-    <motion.div
-      key="histograms"
-      initial={{
-        opacity: 0,
-        scale: 0,
-      }}
-      animate={{
-        scale: 1,
-        opacity: 1,
-      }}
-      exit={{
-        opacity: 0,
-        scale: 0.4,
-      }}
-      className={classNames({
-        [styles.histogramBox]: true,
-        [styles.foreplanActive]: active,
-      })}
-    >
-      {children}
-    </motion.div>
-  );
-});
+const HistogramsComponent: FC<Pick<CurrentTakenData, "state">> = memo(
+  ({ children, state }) => {
+    const [isPossibleToTake] = useIsPossibleToTakeForeplan({ state });
+    return (
+      <motion.div
+        key="histograms"
+        initial={{
+          opacity: 0,
+          scale: 0,
+        }}
+        animate={{
+          scale: 1,
+          opacity: 1,
+          position: "static",
+        }}
+        exit={{
+          opacity: 0,
+          scale: 0.4,
+          position: "absolute",
+        }}
+        className={classNames({
+          [styles.histogramBox]: true,
+          [styles.foreplanActive]: isPossibleToTake,
+        })}
+      >
+        {children}
+      </motion.div>
+    );
+  }
+);
 
 const HistogramNow: FC<Pick<ICourse, "taken" | "bandColors"> &
   Pick<
@@ -671,8 +680,17 @@ const HistogramHistoric: FC<Pick<
   }
 );
 
-export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
-  const { code, credits, historicDistribution, taken, bandColors } = course;
+export const CourseBox: FC<ICourse> = ({
+  children,
+  code,
+  name,
+  credits,
+  historicDistribution,
+  taken,
+  bandColors,
+  requisites,
+  flow,
+}) => {
   const config = useContext(ConfigContext);
 
   const { semestersTaken } = useMemo(() => {
@@ -769,20 +787,29 @@ export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
 
   return (
     <OuterCourseBox
-      {...course}
+      code={code}
+      taken={taken}
+      historicDistribution={historicDistribution}
       open={open}
       setOpen={setOpen}
       semestersTaken={semestersTaken}
       borderColor={borderColor}
     >
       <MainBlockOuter
-        {...course}
+        flow={flow}
+        requisites={requisites}
         code={code}
         open={open}
         setOpen={setOpen}
         semestersTaken={semestersTaken}
       >
-        <NameComponent {...course} open={open} parallelGroup={parallelGroup} />
+        <NameComponent
+          code={code}
+          taken={taken}
+          name={name}
+          open={open}
+          parallelGroup={parallelGroup}
+        />
 
         <AnimatePresence>
           {registration && open && (
@@ -796,7 +823,7 @@ export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
           <ReqCircleComponent key="reqCircle" code={code} />
 
           {open && (
-            <HistogramsComponent key="histogramsComponent">
+            <HistogramsComponent key="histogramsComponent" state={state}>
               <HistogramNow
                 taken={taken}
                 bandColors={bandColors}
@@ -818,7 +845,8 @@ export const CourseBox: FC<ICourse> = ({ children, ...course }) => {
         </AnimatePresence>
       </MainBlockOuter>
       <SecondaryBlockOuter
-        {...course}
+        taken={taken}
+        bandColors={bandColors}
         borderColor={borderColor}
         grade={grade}
         state={state}
