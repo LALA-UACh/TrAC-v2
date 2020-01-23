@@ -446,7 +446,10 @@ const ForeplanCourseStats: FC<Pick<ICourse, "code">> = memo(({ code }) => {
   );
 });
 
-const ForeplanCourseCheckbox: FC<Pick<ICourse, "code">> = memo(({ code }) => {
+const ForeplanCourseCheckbox: FC<Pick<
+  ICourse,
+  "code" | "credits" | "name"
+>> = memo(({ code, credits, name }) => {
   const [
     checked,
     { addCourseForeplan, removeCourseForeplan },
@@ -472,7 +475,10 @@ const ForeplanCourseCheckbox: FC<Pick<ICourse, "code">> = memo(({ code }) => {
           if (checked) {
             removeCourseForeplan(code);
           } else {
-            addCourseForeplan(code);
+            addCourseForeplan(code, {
+              credits,
+              name,
+            });
           }
         }}
         className={classNames({
@@ -859,7 +865,12 @@ export const CourseBox: FC<ICourse> = ({
         )}
         <AnimatePresence>
           {isPossibleToTakeForeplan && user?.config.FOREPLAN && (
-            <ForeplanCourseCheckbox key="foreplanCourseCheckbox" code={code} />
+            <ForeplanCourseCheckbox
+              key="foreplanCourseCheckbox"
+              code={code}
+              credits={credits}
+              name={name}
+            />
           )}
         </AnimatePresence>
       </SecondaryBlockOuter>

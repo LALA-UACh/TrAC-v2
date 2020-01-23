@@ -39,6 +39,42 @@ export const baseConfig = {
   FOREPLAN_MODE_SWITCH_INACTIVE_BACKGROUND_COLOR: "gray.500",
   FOREPLAN_MODE_SWITCH_INACTIVE_TEXT_COLOR: "white",
   FOREPLAN_MODE_SWITCH_LABEL: "Plan Próximo Semestre",
+  FOREPLAN_SUMMARY_BADGE_COURSE_CREDITS_WIDTH: [
+    {
+      min: 0,
+      max: 0,
+      width: "7em",
+    },
+    {
+      min: 1,
+      max: 2,
+      width: "8em",
+    },
+    {
+      min: 3,
+      max: 4,
+      width: "9em",
+    },
+    {
+      min: 5,
+      max: 6,
+      width: "9.5em",
+    },
+    {
+      min: 7,
+      max: 12,
+      width: "10em",
+    },
+    {
+      min: 13,
+      max: 999,
+      width: "10.5em",
+    },
+  ] as { min: number; max: number; width: string }[],
+  FOREPLAN_SUMMARY_BADGE_FONT_SIZE: "1em",
+  FOREPLAN_SUMMARY_TITLE_FONT_SIZE: "1.5em",
+  FOREPLAN_SUMMARY_TOTAL_CREDITS_LABEL: "Créditos totales",
+  FOREPLAN_SUMMARY_TITLE_LABEL: "Plan semestre 1 2020",
   GRADES_LABEL: "Calificaciones",
   GRADES_SCALES: "Escala de notas",
   HISTOGRAM_BAR_ACTIVE: "rgb(122,122,122)",

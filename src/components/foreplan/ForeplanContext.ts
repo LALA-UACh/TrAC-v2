@@ -1,15 +1,17 @@
 import { differenceInWeeks } from "date-fns";
-import { toInteger } from "lodash";
+import { size, toInteger } from "lodash";
 import { FC, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce, useUpdateEffect } from "react-use";
 
 import { LAST_TIME_USED, StateCourse } from "../../../constants";
+import { ICourse } from "../../../interfaces";
 import { useUser } from "../../utils/useUser";
 
 export interface IForeplanData {
   active: boolean;
   foreplanCourses: Record<string, boolean>;
+  foreplanCoursesData: Record<string, Pick<ICourse, "credits" | "name">>;
 }
 
 const rememberForeplanDataKey = "TrAC_foreplan_data";
@@ -27,6 +29,7 @@ const initForeplanData = (initialData = defaultForeplanData): IForeplanData => {
 const defaultForeplanData: IForeplanData = {
   active: false,
   foreplanCourses: {},
+  foreplanCoursesData: {},
 };
 
 const ForeplanStore = createStore({
@@ -42,9 +45,15 @@ const ForeplanStore = createStore({
         active: false,
       });
     },
-    addCourseForeplan: (course: string) => ({ setState, getState }) => {
+    addCourseForeplan: (
+      course: string,
+      data: IForeplanData["foreplanCoursesData"][string]
+    ) => ({ setState, getState }) => {
+      const { foreplanCourses, foreplanCoursesData } = getState();
+
       setState({
-        foreplanCourses: { ...getState().foreplanCourses, [course]: true },
+        foreplanCourses: { ...foreplanCourses, [course]: true },
+        foreplanCoursesData: { ...foreplanCoursesData, [course]: data },
       });
     },
     removeCourseForeplan: (course: string) => ({ setState, getState }) => {
@@ -71,9 +80,43 @@ export const useIsForeplanCourseChecked = createHook(ForeplanStore, {
   },
 });
 
+export const useForeplanCourses = createHook(ForeplanStore, {
+  selector: ({ foreplanCourses }) => {
+    return foreplanCourses;
+  },
+});
+
+export const useForeplanTotalCreditsTaken = createHook(ForeplanStore, {
+  selector: ({ foreplanCourses, foreplanCoursesData }) => {
+    let totalCredits = 0;
+    for (const course in foreplanCourses) {
+      totalCredits += foreplanCoursesData[course]?.credits[0]?.value ?? 0;
+    }
+    return totalCredits;
+  },
+});
+
+export const useForeplanCoursesSize = createHook(ForeplanStore, {
+  selector: ({ foreplanCourses }) => {
+    return size(foreplanCourses);
+  },
+});
+
+export const useAnyForeplanCourses = createHook(ForeplanStore, {
+  selector: ({ foreplanCourses }) => {
+    return size(foreplanCourses) > 0;
+  },
+});
+
 export const useIsForeplanActive = createHook(ForeplanStore, {
   selector: ({ active }) => {
     return active;
+  },
+});
+
+export const useForeplanCourseData = createHook(ForeplanStore, {
+  selector: ({ foreplanCoursesData }, { code }: { code: string }) => {
+    return foreplanCoursesData[code];
   },
 });
 

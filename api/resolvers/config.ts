@@ -1,7 +1,7 @@
 import { GraphQLJSONObject } from "graphql-type-json";
 import { toNumber } from "lodash";
 import { Query, Resolver } from "type-graphql";
-import { isNumeric } from "validator";
+import { isJSON, isNumeric } from "validator";
 
 import { baseConfig } from "../../constants/baseConfig";
 import { ConfigurationTable } from "../db/tables";
@@ -16,6 +16,8 @@ export class ConfigurationResolver {
       (acum, { name, value }) => {
         if (isNumeric(value)) {
           acum[name] = toNumber(value);
+        } else if (isJSON(value)) {
+          acum[name] = JSON.parse(value);
         } else {
           acum[name] = value;
         }

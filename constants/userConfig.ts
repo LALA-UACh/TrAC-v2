@@ -5,6 +5,8 @@ export const baseUserConfig: {
   FOREPLAN_COURSE_STATS: boolean;
   FOREPLAN_COURSE_FAIL_RATE_STATS: boolean;
   FOREPLAN_COURSE_EFFORT_STATS: boolean;
+  FOREPLAN_SUMMARY_LIST: boolean;
+  FOREPLAN_SUMMARY_BADGES: boolean;
 } & Record<string, any> = {
   SHOW_DROPOUT: false,
   SHOW_STUDENT_LIST: false,
@@ -12,6 +14,8 @@ export const baseUserConfig: {
   FOREPLAN_COURSE_STATS: true,
   FOREPLAN_COURSE_FAIL_RATE_STATS: true,
   FOREPLAN_COURSE_EFFORT_STATS: true,
+  FOREPLAN_SUMMARY_LIST: false,
+  FOREPLAN_SUMMARY_BADGES: true,
 };
 
 export type UserConfig = typeof baseUserConfig & Record<string, any>;

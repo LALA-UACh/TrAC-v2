@@ -158,7 +158,7 @@ const dataImport = async () => {
           let value: string;
           if (typeof valueRaw === "number") {
             value = valueRaw.toString();
-          } else if (Array.isArray(valueRaw)) {
+          } else if (typeof valueRaw === "object") {
             value = JSON.stringify(valueRaw, null, 4);
           } else {
             value = valueRaw;
