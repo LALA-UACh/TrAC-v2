@@ -22,8 +22,8 @@ import {
   useForeplanCourseData,
   useForeplanCourses,
   useForeplanCoursesSize,
-  useForeplanData,
   useForeplanTotalCreditsTaken,
+  useIsForeplanActive,
 } from "./ForeplanContext";
 
 interface ExpandedState {
@@ -200,7 +200,7 @@ const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
       textAlign="center"
       fontSize={config.FOREPLAN_SUMMARY_BADGE_FONT_SIZE}
     >
-      {code}({dataCredits})
+      {code} ({dataCredits})
     </Badge>
   );
 });
@@ -258,7 +258,7 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
         p={expanded ? 3 : 0}
         overflowY={expanded ? "auto" : "hidden"}
         overflowX="hidden"
-        width={expanded ? widthContent : "0px"}
+        width={expanded ? widthContent : 0}
         opacity={expanded ? 1 : 0}
         transition={`all 0.5s ease-in-out, width 0.3s ease-out, opacity ${
           expanded ? "0.6s cubic-bezier(1,-0.05,.93,.69)" : "0s"
@@ -276,17 +276,15 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
 );
 
 const ForeplanSummary: FC = () => {
-  const [{ active, foreplanCourses }] = useForeplanData();
+  const [active] = useIsForeplanActive();
 
-  const anyForeplanCourses = useAnyForeplanCourses();
+  const [anyForeplanCourses] = useAnyForeplanCourses();
 
   const [expanded, setExpanded] = useRememberState(
     "foreplanSummaryExpanded",
     false
   );
-  const foreplanCoursesArray = useMemo(() => Object.keys(foreplanCourses), [
-    foreplanCourses,
-  ]);
+
   const Summary = useMemo(() => {
     return (
       <OuterSummary>
@@ -294,28 +292,25 @@ const ForeplanSummary: FC = () => {
         <ForeplanContent expanded={expanded} />
       </OuterSummary>
     );
-  }, [foreplanCoursesArray, expanded, setExpanded]);
+  }, [expanded, setExpanded]);
 
-  return useMemo(
-    () => (
-      <AnimatePresence>
-        {active && anyForeplanCourses && (
-          <motion.div
-            key="foreplanSummary"
-            initial={{
-              opacity: 0,
-            }}
-            animate={{ opacity: 1 }}
-            exit={{
-              opacity: 0,
-            }}
-          >
-            {Summary}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    ),
-    [active, anyForeplanCourses, Summary]
+  return (
+    <AnimatePresence>
+      {active && anyForeplanCourses && (
+        <motion.div
+          key="foreplanSummary"
+          initial={{
+            opacity: 0,
+          }}
+          animate={{ opacity: 1 }}
+          exit={{
+            opacity: 0,
+          }}
+        >
+          {Summary}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
