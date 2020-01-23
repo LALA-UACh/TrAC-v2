@@ -260,7 +260,9 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
         overflowX="hidden"
         width={expanded ? widthContent : "0px"}
         opacity={expanded ? 1 : 0}
-        transition="all 0.5s ease-in-out"
+        transition={`all 0.5s ease-in-out, width 0.3s ease-out, opacity ${
+          expanded ? "0.6s cubic-bezier(1,-0.05,.93,.69)" : "0s"
+        }`}
       >
         <Text fontSize={config.FOREPLAN_SUMMARY_TITLE_FONT_SIZE}>
           {config.FOREPLAN_SUMMARY_TITLE_LABEL}
