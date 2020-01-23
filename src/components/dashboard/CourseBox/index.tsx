@@ -53,18 +53,15 @@ export interface OpenState {
 
 export type CurrentTakenData = Partial<ITakenCourse>;
 
-const OuterCourseBox: FC<Pick<
-  ICourse,
-  "code" | "taken" | "historicDistribution"
-> &
+const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> &
   Pick<OpenState, "open"> & {
     borderColor: string;
     semestersTaken: ITakenSemester[];
-  }> = memo(
+  } & Pick<CurrentTakenData, "currentDistribution">> = memo(
   ({
     children,
     code,
-    taken,
+    currentDistribution,
     historicDistribution,
     semestersTaken,
     borderColor,
@@ -92,8 +89,10 @@ const OuterCourseBox: FC<Pick<
       let height: number | undefined = undefined;
       let width: number | undefined = undefined;
       if (open) {
-        const currentDistr = taken[0]?.currentDistribution;
-        if (currentDistr && some(currentDistr, ({ value }) => value)) {
+        if (
+          currentDistribution &&
+          some(currentDistribution, ({ value }) => value)
+        ) {
           width = 350;
           if (
             historicDistribution &&
@@ -122,7 +121,7 @@ const OuterCourseBox: FC<Pick<
       }
 
       return { height, width };
-    }, [open, taken, historicDistribution]);
+    }, [open, historicDistribution, currentDistribution]);
 
     return (
       <Flex
@@ -793,7 +792,7 @@ export const CourseBox: FC<ICourse> = ({
   return (
     <OuterCourseBox
       code={code}
-      taken={taken}
+      currentDistribution={currentDistribution}
       historicDistribution={historicDistribution}
       open={open}
       semestersTaken={semestersTaken}
