@@ -15,7 +15,7 @@ import pixelWidth from "string-pixel-width";
 import { AxisLeft } from "@vx/axis";
 
 import { ConfigContext } from "../Config";
-import { useCoursesDashboardData } from "./CoursesDashboardContext";
+import { useExplicitSemester } from "./CoursesDashboardContext";
 
 const TimeLineTooltip: FC<{
   children: ReactElement;
@@ -98,7 +98,7 @@ export const TimeLine: FC<{
     semestersTaken,
   }) => {
     const config = useContext(ConfigContext);
-    const [, { checkExplicitSemester }] = useCoursesDashboardData();
+    const [explicitSemester, { checkExplicitSemester }] = useExplicitSemester();
 
     const { cumulatedGrades, semestralGrades } = useMemo(() => {
       if (
@@ -163,11 +163,11 @@ export const TimeLine: FC<{
           );
         }),
       [
+        explicitSemester,
         semestralGrades,
         cumulatedGrades,
         programGrades,
         semestersTaken,
-        checkExplicitSemester,
         config,
       ]
     );

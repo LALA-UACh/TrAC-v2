@@ -154,7 +154,7 @@ const CoursesDashboardStore = createStore({
   },
 });
 
-export const useCoursesDashboardData = createHook(CoursesDashboardStore);
+const useCoursesDashboardData = createHook(CoursesDashboardStore);
 export const useActiveCourse = createHook(CoursesDashboardStore, {
   selector: ({ activeCourse }, { code }: { code: string }) => {
     return activeCourse === code;

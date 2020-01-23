@@ -5,7 +5,6 @@ import { Badge, BadgeProps, Box, Stack } from "@chakra-ui/core";
 import { termTypeToNumber } from "../../../constants";
 import { ConfigContext } from "../Config";
 import {
-  pairTermYear,
   useActiveSemestersTaken,
   useExplicitSemester,
 } from "./CoursesDashboardContext";
@@ -19,11 +18,14 @@ export const TakenSemesterBox: FC<{
 
   const [semestersTaken] = useActiveSemestersTaken();
 
-  const [explicitSemester, { toggleExplicitSemester }] = useExplicitSemester();
+  const [
+    explicitSemester,
+    { toggleExplicitSemester, checkExplicitSemester },
+  ] = useExplicitSemester();
 
   const borderColor = useMemo(() => {
     if (
-      explicitSemester === pairTermYear(term, year) ||
+      checkExplicitSemester({ term, year }) ||
       (explicitSemester === undefined &&
         semestersTaken?.find(v => year === v.year && term == v.term))
     ) {
