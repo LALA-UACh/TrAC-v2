@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { map, truncate } from "lodash";
+import { range, truncate } from "lodash";
+import Markdown from "markdown-to-jsx";
 import React, {
   Dispatch,
   FC,
@@ -25,7 +26,6 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/core";
-import { Waffle } from "@nivo/waffle";
 
 import { ICourse } from "../../../interfaces";
 import { useUser } from "../../utils/useUser";
@@ -48,46 +48,42 @@ interface ExpandedState {
 const OuterSummary: FC = ({ children }) => {
   const { width, height } = useWindowSize();
 
-  const {
-    FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_WIDTH,
-    FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_HEIGHT,
-  } = useContext(ConfigContext);
+  const config = useContext(ConfigContext);
 
   const positionMobile = useMemo(() => {
     return (
-      width < FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_WIDTH ||
-      height < FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_HEIGHT
+      width < config.FOREPLAN_SUMMARY_MOBILE_BREAKPOINT_HEIGHT ||
+      height < config.FOREPLAN_SUMMARY_POSITION_MOBILE_BREAKPOINT_WIDTH
     );
-  }, [
-    height,
-    FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_WIDTH,
-    FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_HEIGHT,
-  ]);
+  }, [height, config]);
 
-  return (
-    <Flex
-      pos={positionMobile ? "fixed" : "absolute"}
-      top={positionMobile ? 0 : undefined}
-      right={0}
-      zIndex={100}
-      backgroundColor="#333333"
-      color="white"
-      p={0}
-      m={1}
-      height="23em"
-      width="fit-content"
-      alignSelf="flex-end"
-      justifySelf="flex-end"
-      borderRadius="10px"
-    >
-      {children}
-    </Flex>
+  return useMemo(
+    () => (
+      <Flex
+        pos={positionMobile ? "fixed" : "absolute"}
+        top={positionMobile ? 0 : undefined}
+        right={0}
+        zIndex={100}
+        backgroundColor={config.FOREPLAN_SUMMARY_BACKGROUND_COLOR}
+        color={config.FOREPLAN_SUMMARY_FONT_COLOR}
+        p={0}
+        m={1}
+        height={config.FOREPLAN_SUMMARY_HEIGHT}
+        width="fit-content"
+        alignSelf="flex-end"
+        justifySelf="flex-end"
+        borderRadius={config.FOREPLAN_SUMMARY_BORDER_RADIUS}
+      >
+        {children}
+      </Flex>
+    ),
+    [children, positionMobile, config]
   );
 };
 
 const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
   const [nCourses] = useForeplanCoursesSize();
-
+  const config = useContext(ConfigContext);
   const NText = useMemo(() => {
     return (
       <motion.div
@@ -106,7 +102,11 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
           transition="all 1s"
           width="100%"
           textAlign="center"
-          fontSize={nCourses >= 10 ? "1.2em" : "1.5em"}
+          fontSize={
+            nCourses >= 10
+              ? config.FOREPLAN_SUMMARY_TAB_NUMBER_FONT_SIZE.twoDigits
+              : config.FOREPLAN_SUMMARY_TAB_NUMBER_FONT_SIZE.oneDigit
+          }
           fontWeight="bold"
         >
           {nCourses}
@@ -126,7 +126,7 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
       onClick={() => {
         setExpanded(expanded => !expanded);
       }}
-      width="2em"
+      width={config.FOREPLAN_SUMMARY_TAB_WIDTH}
     >
       <AnimatePresence>{!expanded && nCourses > 0 && NText}</AnimatePresence>
 
@@ -135,8 +135,8 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
         height="100%"
         verticalAlign="middle"
         as={FaGripLinesVertical}
-        fontSize="1.3em"
-        color="#888"
+        fontSize={config.FOREPLAN_SUMMARY_TAB_ICON_SIZE}
+        color={config.FOREPLAN_SUMMARY_TAB_COLOR}
       />
     </Flex>
   );
@@ -276,11 +276,14 @@ const ForeplanTotalCredits: FC = memo(() => {
         trigger="hover"
       >
         <PopoverTrigger>
-          <Box
-            m={2}
-            as={IoMdHelpCircleOutline}
-            size={config.FOREPLAN_SUMMARY_TOTAL_CREDITS_NUMBER_SIZE}
-          />
+          <Box>
+            <Box
+              m={2}
+              as={IoMdHelpCircleOutline}
+              size={config.FOREPLAN_SUMMARY_TOTAL_CREDITS_NUMBER_SIZE}
+              verticalAlign="middle"
+            />
+          </Box>
         </PopoverTrigger>
         <PopoverContent color="black" width="fit-content">
           <PopoverBody>Lorem Ipsum</PopoverBody>
@@ -291,43 +294,138 @@ const ForeplanTotalCredits: FC = memo(() => {
 });
 
 const ForeplanAdvice: FC = memo(() => {
-  const [{ titleText, paragraphText }] = useForeplanAdvice();
+  const [advice] = useForeplanAdvice();
+  const config = useContext(ConfigContext);
+  if (advice) {
+    const Low: FC = () => {
+      return (
+        <span
+          style={{
+            color: config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.low,
+          }}
+        >
+          {advice.failRate.low}%
+        </span>
+      );
+    };
+    const Mid: FC = () => {
+      return (
+        <span
+          style={{
+            color: config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.mid,
+          }}
+        >
+          {advice.failRate.mid}%
+        </span>
+      );
+    };
+    const High: FC = () => {
+      return (
+        <span
+          style={{
+            color: config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.high,
+          }}
+        >
+          {advice.failRate.high}%
+        </span>
+      );
+    };
+    return (
+      <Stack>
+        <Text
+          fontWeight="bold"
+          fontSize={config.FOREPLAN_SUMMARY_ADVICE_TITLE_FONT_SIZE}
+        >
+          {advice.titleText}
+        </Text>
+        <Box fontSize={config.FOREPLAN_SUMMARY_ADVICE_PARAGRAPH_FONT_SIZE}>
+          <Markdown
+            options={{
+              overrides: {
+                Low: {
+                  component: Low,
+                },
+                Mid: {
+                  component: Mid,
+                },
+                High: {
+                  component: High,
+                },
+              },
+            }}
+          >
+            {advice.paragraphText}
+          </Markdown>
+        </Box>
+      </Stack>
+    );
+  }
+
+  return null;
+});
+
+const Waffle: FC<{
+  failRate: { low: number; mid: number; high: number };
+}> = memo(({ failRate }) => {
+  const config = useContext(ConfigContext);
+
+  const colors = config.FOREPLAN_SUMMARY_WAFFLE_COLORS_FAIL_RATE;
+  const nLow = failRate.low;
+  const nMid = nLow + failRate.mid;
+  // const nHigh = nMid + (failRate?.mid ?? 0);
+
+  const rowRange = range(0, 10);
+  const rectSize = config.FOREPLAN_SUMMARY_WAFFLE_SQUARE_SIZE;
+  const separation = config.FOREPLAN_SUMMARY_WAFFLE_RECT_SEPARATION;
 
   return (
-    <Stack>
-      <Text>{titleText}</Text>
-      <Text>{paragraphText}</Text>
-    </Stack>
+    <svg
+      width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+      height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+    >
+      <svg
+        x={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_X}
+        y={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_Y}
+      >
+        {rowRange.flatMap(key1 => {
+          return rowRange.map(key2 => {
+            const n = key1 * 10 + key2;
+            let fill: string;
+            if (n < nLow) {
+              fill = colors.low;
+            } else if (n < nMid) {
+              fill = colors.mid;
+            } else {
+              fill = colors.high;
+            }
+            return (
+              <rect
+                key={n}
+                x={rectSize * key2 * separation}
+                y={rectSize * key1 * separation}
+                width={rectSize}
+                height={rectSize}
+                fill={fill}
+              />
+            );
+          });
+        })}
+      </svg>
+    </svg>
   );
 });
 
 const ForeplanWaffleChart: FC = memo(() => {
-  const [{ failRate }] = useForeplanAdvice();
-  console.log({ failRate });
-  return (
-    <Box>
-      <Waffle
-        width={100}
-        height={100}
-        padding={1}
-        data={map(failRate, (value, id) => {
-          return {
-            id,
-            label: id,
-            value,
-            color: "#468df3",
-          };
-        })}
-        total={100}
-        rows={10}
-        columns={10}
-        margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-        animate={true}
-        motionStiffness={90}
-        motionDamping={11}
-      />
-    </Box>
-  );
+  const [advice] = useForeplanAdvice();
+  if (advice?.failRate) {
+    return (
+      <Box color="black">
+        <Waffle failRate={advice.failRate} />
+      </Box>
+    );
+  }
+
+  return null;
 });
 
 const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
@@ -356,7 +454,7 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
                 <ForeplanContentBadgesList />
               )}
               <ForeplanTotalCredits />
-              <Flex justifyContent="space-between">
+              <Flex justifyContent="space-between" alignItems="flex-end">
                 {user?.config.FOREPLAN_SUMMARY_ADVICE && <ForeplanAdvice />}
                 {user?.config.FOREPLAN_SUMMARY_WAFFLE_CHART && (
                   <ForeplanWaffleChart />

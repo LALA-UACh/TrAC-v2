@@ -209,11 +209,11 @@ export const ForeplanContextManager: FC<{ distinct?: string }> = ({
     //TODO: Use real data
     setForeplanAdvices({
       low: {
-        titleText: "¡Tu carga de estudio es baja",
+        titleText: "Tu carga de estudio es baja",
         paragraphText:
-          "Sólo un %low% de estudiantes en años anteriores que" +
+          "Sólo un <Low /> de estudiantes en años anteriores que" +
           " han tomado una carga similar han pasado todos los cursos. " +
-          "Un %mid% de ellos han reprobado 1 curso, y %high% han reprobado más de uno",
+          "Un <Mid /> de ellos han reprobado 1 curso, y <High /> han reprobado más de uno",
         failRate: {
           low: 85,
           mid: 10,
@@ -221,11 +221,11 @@ export const ForeplanContextManager: FC<{ distinct?: string }> = ({
         },
       },
       mid: {
-        titleText: "¡Tu carga de estudio es media",
+        titleText: "Tu carga de estudio es media",
         paragraphText:
-          "Sólo un %low% de estudiantes en años anteriores que" +
+          "Sólo un <Low /> de estudiantes en años anteriores que" +
           " han tomado una carga similar han pasado todos los cursos. " +
-          "Un %mid% de ellos han reprobado 1 curso, y %high% han reprobado más de uno",
+          "Un <Mid /> de ellos han reprobado 1 curso, y <High /> han reprobado más de uno",
         failRate: {
           low: 55,
           mid: 30,
@@ -233,11 +233,11 @@ export const ForeplanContextManager: FC<{ distinct?: string }> = ({
         },
       },
       high: {
-        titleText: "¡Tu carga de estudio es alta",
+        titleText: "¡Tu carga de estudio es alta!",
         paragraphText:
-          "Sólo un %low% de estudiantes en años anteriores que" +
+          "Sólo un <Low /> de estudiantes en años anteriores que" +
           " han tomado una carga similar han pasado todos los cursos. " +
-          "Un %mid% de ellos han reprobado 1 curso, y %high% han reprobado más de uno",
+          "Un <Mid /> de ellos han reprobado 1 curso, y <High /> han reprobado más de uno",
         failRate: {
           low: 5,
           mid: 20,

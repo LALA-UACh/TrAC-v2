@@ -96,7 +96,7 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
             case "object":
               return (
                 <TextArea
-                  value={JSON.stringify(state)}
+                  value={JSON.stringify(state, null, 2)}
                   placeholder={baseConfigAdmin[configKey]}
                   onChange={(_, { value }) => {
                     value = toString(value);

@@ -4,7 +4,7 @@ import { isBoolean, isJSON, isNumeric } from "validator";
 export const configValueToString = (value: any) => {
   if (typeof value === "object") {
     try {
-      return JSON.stringify(value, null, 4);
+      return JSON.stringify(value, null, 2);
     } catch (err) {}
   }
   return toString(value);

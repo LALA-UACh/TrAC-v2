@@ -15,8 +15,8 @@
     "jsx": "preserve",
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "sourceMap": true,
-    "noUnusedLocals": true
+    "sourceMap": true
+    // "noUnusedLocals": true
   },
   "exclude": ["node_modules", "api/*"],
   "include": ["**/*.ts", "**/*.tsx"]
