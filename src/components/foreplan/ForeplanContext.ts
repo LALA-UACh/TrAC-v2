@@ -13,7 +13,21 @@ export interface IForeplanData {
   foreplanCourses: Record<string, boolean>;
   foreplanCoursesData: Record<string, Pick<ICourse, "credits" | "name">>;
   totalCreditsTaken: number;
+  advices: Record<
+    string,
+    {
+      titleText: string;
+      paragraphText: string;
+      failRate: {
+        low: number;
+        mid: number;
+        high: number;
+      };
+    }
+  >;
 }
+
+const emptyObject = {};
 
 const rememberForeplanDataKey = "TrAC_foreplan_data";
 
@@ -29,9 +43,10 @@ const initForeplanData = (initialData = defaultForeplanData): IForeplanData => {
 
 const defaultForeplanData: IForeplanData = {
   active: false,
-  foreplanCourses: {},
-  foreplanCoursesData: {},
+  foreplanCourses: emptyObject,
+  foreplanCoursesData: emptyObject,
   totalCreditsTaken: 0,
+  advices: emptyObject,
 };
 
 const ForeplanStore = createStore({
@@ -88,6 +103,13 @@ const ForeplanStore = createStore({
         foreplanCourses,
         foreplanCoursesData,
         totalCreditsTaken,
+      });
+    },
+    setForeplanAdvices: (advices: IForeplanData["advices"]) => ({
+      setState,
+    }) => {
+      setState({
+        advices,
       });
     },
     reset: () => ({ setState }) => {
@@ -157,14 +179,73 @@ export const useIsPossibleToTakeForeplan = createHook(ForeplanStore, {
   },
 });
 
+export const useForeplanAdvice = createHook(ForeplanStore, {
+  selector: ({ advices, totalCreditsTaken }) => {
+    let load: "high" | "mid" | "low";
+    if (totalCreditsTaken <= 12) {
+      load = "low";
+    } else if (totalCreditsTaken <= 25) {
+      load = "mid";
+    } else {
+      load = "high";
+    }
+    return advices[load] || emptyObject;
+  },
+});
+
 export const ForeplanContextManager: FC<{ distinct?: string }> = ({
   distinct,
 }) => {
-  const [state, { reset, disableForeplan }] = useForeplanData();
+  const [
+    state,
+    { reset, disableForeplan, setForeplanAdvices },
+  ] = useForeplanData();
 
   const { user } = useUser({
     fetchPolicy: "cache-only",
   });
+
+  useEffect(() => {
+    //TODO: Use real data
+    setForeplanAdvices({
+      low: {
+        titleText: "¡Tu carga de estudio es baja",
+        paragraphText:
+          "Sólo un %low% de estudiantes en años anteriores que" +
+          " han tomado una carga similar han pasado todos los cursos. " +
+          "Un %mid% de ellos han reprobado 1 curso, y %high% han reprobado más de uno",
+        failRate: {
+          low: 85,
+          mid: 10,
+          high: 5,
+        },
+      },
+      mid: {
+        titleText: "¡Tu carga de estudio es media",
+        paragraphText:
+          "Sólo un %low% de estudiantes en años anteriores que" +
+          " han tomado una carga similar han pasado todos los cursos. " +
+          "Un %mid% de ellos han reprobado 1 curso, y %high% han reprobado más de uno",
+        failRate: {
+          low: 55,
+          mid: 30,
+          high: 15,
+        },
+      },
+      high: {
+        titleText: "¡Tu carga de estudio es alta",
+        paragraphText:
+          "Sólo un %low% de estudiantes en años anteriores que" +
+          " han tomado una carga similar han pasado todos los cursos. " +
+          "Un %mid% de ellos han reprobado 1 curso, y %high% han reprobado más de uno",
+        failRate: {
+          low: 5,
+          mid: 20,
+          high: 75,
+        },
+      },
+    });
+  }, [setForeplanAdvices]);
 
   useEffect(() => {
     if (state.active && !user?.config.FOREPLAN) {

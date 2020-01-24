@@ -30,6 +30,7 @@
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
     "@next/bundle-analyzer": "^9.2.0",
+    "@nivo/waffle": "^0.61.1",
     "@vx/axis": "^0.0.192",
     "apollo-cache-inmemory": "^1.6.5",
     "apollo-client": "^2.6.8",

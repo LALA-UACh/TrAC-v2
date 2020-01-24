@@ -3,10 +3,7 @@ import { GraphQLJSONObject } from "graphql-type-json";
 import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 
 import { baseConfig, baseConfigAdmin } from "../../constants/baseConfig";
-import {
-  configStringToValue,
-  configValueToString,
-} from "../../constants/validation";
+import { configStringToValue } from "../../constants/validation";
 import { ADMIN } from "../api_constants";
 import { ConfigurationTable } from "../db/tables";
 
@@ -28,20 +25,34 @@ export class ConfigurationResolver {
   @Mutation(() => GraphQLJSONObject)
   async editConfig(
     @Arg("name") name: string,
-    @Arg("value") valueStr: string
+    @Arg("value") value: string
   ): Promise<typeof baseConfig> {
     assert(
-      typeof baseConfigAdmin[name] === typeof configStringToValue(valueStr),
+      typeof baseConfigAdmin[name] === typeof configStringToValue(value),
       new Error("Invalid type of configuration value")
     );
 
-    await ConfigurationTable()
-      .update({
-        value: configValueToString(valueStr),
-      })
+    const exists = await ConfigurationTable()
+      .select("name")
       .where({
         name,
+      })
+      .first();
+
+    if (exists) {
+      await ConfigurationTable()
+        .update({
+          value,
+        })
+        .where({
+          name,
+        });
+    } else {
+      await ConfigurationTable().insert({
+        name,
+        value,
       });
+    }
 
     return await ConfigurationResolver.getConfigData();
   }

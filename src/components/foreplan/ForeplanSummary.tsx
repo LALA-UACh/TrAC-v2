@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { truncate } from "lodash";
+import { map, truncate } from "lodash";
 import React, {
   Dispatch,
   FC,
@@ -9,16 +9,30 @@ import React, {
   useMemo,
 } from "react";
 import { FaGripLinesVertical } from "react-icons/fa";
+import { IoMdHelpCircleOutline } from "react-icons/io";
 import { useWindowSize } from "react-use";
 import { useRememberState } from "use-remember-state";
 
-import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/core";
+import {
+  Badge,
+  Box,
+  Flex,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Stack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/core";
+import { Waffle } from "@nivo/waffle";
 
 import { ICourse } from "../../../interfaces";
 import { useUser } from "../../utils/useUser";
 import { ConfigContext } from "../Config";
 import {
   useAnyForeplanCourses,
+  useForeplanAdvice,
   useForeplanCourseData,
   useForeplanCourses,
   useForeplanCoursesSize,
@@ -245,10 +259,74 @@ const ForeplanContentBadgesList: FC = memo(() => {
 const ForeplanTotalCredits: FC = memo(() => {
   const [totalCredits] = useForeplanTotalCreditsTaken();
   const config = useContext(ConfigContext);
+  const { isOpen, onOpen, onClose } = useDisclosure(false);
+
   return (
-    <Text>
-      {config.FOREPLAN_SUMMARY_TOTAL_CREDITS_LABEL}: {totalCredits}
-    </Text>
+    <Flex wrap="wrap" alignItems="center">
+      <Text
+        m={0}
+        fontSize={config.FOREPLAN_SUMMARY_TOTAL_CREDITS_LABEL_FONT_SIZE}
+      >
+        {config.FOREPLAN_SUMMARY_TOTAL_CREDITS_LABEL}: <b>{totalCredits}</b>
+      </Text>
+      <Popover
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        trigger="hover"
+      >
+        <PopoverTrigger>
+          <Box
+            m={2}
+            as={IoMdHelpCircleOutline}
+            size={config.FOREPLAN_SUMMARY_TOTAL_CREDITS_NUMBER_SIZE}
+          />
+        </PopoverTrigger>
+        <PopoverContent color="black" width="fit-content">
+          <PopoverBody>Lorem Ipsum</PopoverBody>
+        </PopoverContent>
+      </Popover>
+    </Flex>
+  );
+});
+
+const ForeplanAdvice: FC = memo(() => {
+  const [{ titleText, paragraphText }] = useForeplanAdvice();
+
+  return (
+    <Stack>
+      <Text>{titleText}</Text>
+      <Text>{paragraphText}</Text>
+    </Stack>
+  );
+});
+
+const ForeplanWaffleChart: FC = memo(() => {
+  const [{ failRate }] = useForeplanAdvice();
+  console.log({ failRate });
+  return (
+    <Box>
+      <Waffle
+        width={100}
+        height={100}
+        padding={1}
+        data={map(failRate, (value, id) => {
+          return {
+            id,
+            label: id,
+            value,
+            color: "#468df3",
+          };
+        })}
+        total={100}
+        rows={10}
+        columns={10}
+        margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+        animate={true}
+        motionStiffness={90}
+        motionDamping={11}
+      />
+    </Box>
   );
 });
 
@@ -278,6 +356,12 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
                 <ForeplanContentBadgesList />
               )}
               <ForeplanTotalCredits />
+              <Flex justifyContent="space-between">
+                {user?.config.FOREPLAN_SUMMARY_ADVICE && <ForeplanAdvice />}
+                {user?.config.FOREPLAN_SUMMARY_WAFFLE_CHART && (
+                  <ForeplanWaffleChart />
+                )}
+              </Flex>
             </>
           )}
         </>
