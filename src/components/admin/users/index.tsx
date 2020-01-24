@@ -9,6 +9,7 @@ import { UserType } from "../../../../constants";
 import { UserConfig } from "../../../../constants/userConfig";
 import { MAIL_LOCKED_USERS_ADMIN } from "../../../graphql/adminQueries";
 import { Confirm } from "../../Confirm";
+import { usePagination } from "../Pagination";
 import { ImportUsers } from "./ImportUsers";
 import { UpdateUser } from "./UpdateUser";
 
@@ -62,6 +63,12 @@ export const Users: FC<{
       loading: loadingMailLockedUsers,
     },
   ] = useMutation(MAIL_LOCKED_USERS_ADMIN);
+
+  const { pagination, selectedData } = usePagination({
+    name: "admin_sorted_users",
+    data: sortedUsers,
+    n: 15,
+  });
 
   return (
     <Grid centered>
@@ -134,6 +141,8 @@ export const Users: FC<{
         </Grid>
       </Grid.Row>
 
+      <Grid.Row>{pagination}</Grid.Row>
+
       <Grid.Row>
         <Table
           padded
@@ -201,7 +210,7 @@ export const Users: FC<{
           </Table.Header>
 
           <Table.Body>
-            {sortedUsers.map(
+            {selectedData.map(
               (
                 { email, name, locked, tries, type, student_id, config },
                 key

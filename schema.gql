@@ -79,6 +79,7 @@ type MultipleLockedUserResult {
 type Mutation {
   addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
   deleteUser(email: EmailAddress!): [User!]!
+  editConfig(name: String!, value: String!): JSONObject!
   lockMailUser(email: EmailAddress!): LockedUserResult!
   login(email: EmailAddress!, password: String!): AuthResult!
   logout: Boolean!

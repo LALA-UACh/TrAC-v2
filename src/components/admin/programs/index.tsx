@@ -3,6 +3,7 @@ import React, { FC, useEffect } from "react";
 import { Grid, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
+import { usePagination } from "../Pagination";
 import { ImportPrograms } from "./ImportPrograms";
 import { UpdatePrograms } from "./UpdatePrograms";
 
@@ -34,13 +35,21 @@ export const Programs: FC<{
     }
   };
 
+  const { pagination, selectedData } = usePagination({
+    name: "trac_admin_sorted_programs",
+    data: sortedPrograms,
+    n: 15,
+  });
+
   return (
-    <Grid>
-      <Grid.Row centered>
+    <Grid centered>
+      <Grid.Row>
         <ImportPrograms />
       </Grid.Row>
 
-      <Grid.Row centered>
+      <Grid.Row>{pagination}</Grid.Row>
+
+      <Grid.Row>
         <Table
           padded
           selectable
@@ -67,7 +76,7 @@ export const Programs: FC<{
           </Table.Header>
 
           <Table.Body>
-            {sortedPrograms.map(({ email = "", programs = [] }, key) => (
+            {selectedData.map(({ email = "", programs = [] }, key) => (
               <UpdatePrograms key={key} program={{ email, programs }}>
                 <Table.Row style={{ cursor: "pointer" }}>
                   <Table.Cell>{email}</Table.Cell>

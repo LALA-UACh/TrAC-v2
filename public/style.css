@@ -31,3 +31,11 @@ body {
 .cursorText {
   cursor: text;
 }
+
+textarea {
+  font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+.toast {
+  font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif !important;
+}

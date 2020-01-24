@@ -1,4 +1,4 @@
-import React, { createContext, FC } from "react";
+import React, { createContext, FC, useEffect } from "react";
 import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
@@ -22,11 +22,13 @@ export const Config: FC = ({ children }) => {
     baseConfig
   );
 
-  useQuery(CONFIG_QUERY, {
-    onCompleted: ({ config }) => {
-      setConfigState({ ...baseConfig, ...config });
-    },
-  });
+  const { data, loading } = useQuery(CONFIG_QUERY);
+
+  useEffect(() => {
+    if (!loading && data) {
+      setConfigState({ ...baseConfig, ...data.config });
+    }
+  }, [data, loading]);
 
   passColorScale
     .range([configState.MIN_PASS_SCALE_COLOR, configState.MAX_PASS_SCALE_COLOR])

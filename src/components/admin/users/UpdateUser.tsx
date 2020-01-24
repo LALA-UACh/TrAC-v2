@@ -28,16 +28,18 @@ import {
 import { Confirm } from "../../Confirm";
 import { useUpdateUserConfigModal } from "./UpdateUserConfig";
 
+export interface IUserConfig {
+  email: string;
+  name: string;
+  tries: number;
+  type: UserType;
+  student_id?: string;
+  config: UserConfig;
+  locked: boolean;
+}
+
 export const UpdateUser: FC<{
-  user: {
-    email: string;
-    name: string;
-    tries: number;
-    type: UserType;
-    student_id?: string;
-    config: UserConfig;
-    locked: boolean;
-  };
+  user: IUserConfig;
   children: JSX.Element;
 }> = ({ children, user }) => {
   const [open, setOpen] = useRememberState(

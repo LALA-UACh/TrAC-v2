@@ -1,5 +1,6 @@
 import "../../public/style.css";
 import "../../public/nprogress.css";
+import "react-toastify/dist/ReactToastify.min.css";
 
 import ApolloClient from "apollo-client";
 import App from "next/app";
@@ -7,6 +8,7 @@ import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
 import React from "react";
+import { ToastContainer } from "react-toastify";
 
 import { ApolloProvider } from "@apollo/react-hooks";
 import { theme, ThemeProvider } from "@chakra-ui/core";
@@ -33,6 +35,7 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
             <Component {...pageProps} />
           </Config>
         </ThemeProvider>
+        <ToastContainer toastClassName="toast" />
       </ApolloProvider>
     );
   }

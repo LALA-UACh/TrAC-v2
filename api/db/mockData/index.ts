@@ -5,6 +5,7 @@ import { dbAuth, dbConfig, dbData, dbTracking } from "../";
 import { UserType } from "../../../constants";
 import { baseConfig } from "../../../constants/baseConfig";
 import { baseUserConfig } from "../../../constants/userConfig";
+import { configValueToString } from "../../../constants/validation";
 import {
   CONFIGURATION_TABLE,
   ConfigurationTable,
@@ -155,17 +156,9 @@ const dataImport = async () => {
 
       await ConfigurationTable().insert(
         Object.entries(baseConfig).map(([name, valueRaw]) => {
-          let value: string;
-          if (typeof valueRaw === "number") {
-            value = valueRaw.toString();
-          } else if (typeof valueRaw === "object") {
-            value = JSON.stringify(valueRaw, null, 4);
-          } else {
-            value = valueRaw;
-          }
           return {
             name,
-            value,
+            value: configValueToString(valueRaw),
           };
         })
       );

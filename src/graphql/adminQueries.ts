@@ -1,6 +1,7 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
 import { UserType } from "../../constants";
+import { baseConfig } from "../../constants/baseConfig";
 import { UserConfig } from "../../constants/userConfig";
 import { IfImplements } from "../../typings/utils";
 import { Program, User } from "./medium";
@@ -160,5 +161,19 @@ export const MAIL_LOCKED_USERS_ADMIN: DocumentNode<{
 }> = gql`
   mutation {
     mailAllLockedUsers
+  }
+`;
+
+export const EDIT_CONFIG: DocumentNode<
+  {
+    editConfig: typeof baseConfig;
+  },
+  {
+    name: string;
+    value: string;
+  }
+> = gql`
+  mutation($name: String!, $value: String!) {
+    editConfig(name: $name, value: $value)
   }
 `;

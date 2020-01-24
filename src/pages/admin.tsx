@@ -4,7 +4,7 @@ import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
 
-import { AdminConfig } from "../components/admin/Config";
+import { AdminConfig } from "../components/admin/BaseConfig";
 import { AdminMenu } from "../components/admin/Menu";
 import { Programs } from "../components/admin/programs";
 import { Users } from "../components/admin/users";
