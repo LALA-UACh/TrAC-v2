@@ -4,6 +4,7 @@ import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
 
+import { AdminConfig } from "../components/admin/Config";
 import { AdminMenu } from "../components/admin/Menu";
 import { Programs } from "../components/admin/programs";
 import { Users } from "../components/admin/users";
@@ -11,8 +12,17 @@ import { LoadingPage } from "../components/Loading";
 import { ALL_USERS_ADMIN } from "../graphql/adminQueries";
 import { useUser } from "../utils/useUser";
 
+export enum AdminMenuTypes {
+  users = "users",
+  programs = "programs",
+  baseConfig = "baseConfig",
+}
+
 const Admin: FC = () => {
-  const [active, setActive] = useRememberState("admin_menu_tab", "users");
+  const [active, setActive] = useRememberState<AdminMenuTypes>(
+    "admin_menu_tab",
+    AdminMenuTypes.users
+  );
 
   const { data, loading, error } = useQuery(ALL_USERS_ADMIN);
 
@@ -24,9 +34,9 @@ const Admin: FC = () => {
 
   const ActiveTab = useMemo(() => {
     switch (active) {
-      case "users":
+      case AdminMenuTypes.users:
         return <Users users={data?.users ?? []} />;
-      case "programs":
+      case AdminMenuTypes.programs:
         return (
           <Programs
             programs={
@@ -36,6 +46,8 @@ const Admin: FC = () => {
             }
           />
         );
+      case AdminMenuTypes.baseConfig:
+        return <AdminConfig />;
       default:
         return null;
     }

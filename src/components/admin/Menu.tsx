@@ -1,30 +1,54 @@
-import React, { FC } from "react";
+import React, { Dispatch, FC, SetStateAction } from "react";
 import { Icon, Menu, MenuItemProps } from "semantic-ui-react";
 
+import { AdminMenuTypes } from "../../pages/admin";
+
 export const AdminMenu: FC<{
-  active: string;
-  setActive: (value: string) => void;
+  active: AdminMenuTypes;
+  setActive: Dispatch<SetStateAction<AdminMenuTypes>>;
 }> = ({ active, setActive }) => {
   const handleClick: (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     data: MenuItemProps
   ) => void = (_e, { name }) => {
-    if (name) setActive(name);
+    switch (name) {
+      case AdminMenuTypes.baseConfig:
+      case AdminMenuTypes.users:
+      case AdminMenuTypes.programs: {
+        setActive(name);
+        return;
+      }
+      default: {
+        throw new Error("Invalid name!");
+      }
+    }
   };
 
   return (
     <Menu icon="labeled" pointing secondary>
-      <Menu.Item name="users" active={active === "users"} onClick={handleClick}>
+      <Menu.Item
+        name={AdminMenuTypes.users}
+        active={active === AdminMenuTypes.users}
+        onClick={handleClick}
+      >
         <Icon name="user outline" />
         Users
       </Menu.Item>
       <Menu.Item
-        name="programs"
-        active={active === "programs"}
+        name={AdminMenuTypes.programs}
+        active={active === AdminMenuTypes.programs}
         onClick={handleClick}
       >
         <Icon name="table" />
         Programs
+      </Menu.Item>
+      <Menu.Item
+        name={AdminMenuTypes.baseConfig}
+        active={active === AdminMenuTypes.baseConfig}
+        onClick={handleClick}
+      >
+        <Icon name="settings" />
+        Base Config
       </Menu.Item>
     </Menu>
   );

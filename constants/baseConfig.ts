@@ -75,7 +75,8 @@ export const baseConfig = {
   FOREPLAN_SUMMARY_TITLE_FONT_SIZE: "1.5em",
   FOREPLAN_SUMMARY_TOTAL_CREDITS_LABEL: "Créditos totales",
   FOREPLAN_SUMMARY_TITLE_LABEL: "Plan semestre 1 2020",
-  FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT: 1024,
+  FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_WIDTH: 1920,
+  FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_HEIGHT: 1080,
   GRADES_LABEL: "Calificaciones",
   GRADES_SCALES: "Escala de notas",
   HISTOGRAM_BAR_ACTIVE: "rgb(122,122,122)",
@@ -177,3 +178,6 @@ export const baseConfig = {
   UNLOCK_WRONG_INFO_MESSAGE:
     "Usuario ingresado no está bloqueado o el código ingresado es erróneo.",
 };
+
+export const baseConfigAdmin: typeof baseConfig &
+  Record<string, any> = baseConfig;

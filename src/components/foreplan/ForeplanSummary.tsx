@@ -32,18 +32,28 @@ interface ExpandedState {
 }
 
 const OuterSummary: FC = ({ children }) => {
-  const { height } = useWindowSize();
+  const { width, height } = useWindowSize();
 
-  const { FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT } = useContext(ConfigContext);
+  const {
+    FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_WIDTH,
+    FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_HEIGHT,
+  } = useContext(ConfigContext);
 
-  const mobile = useMemo(() => {
-    return height < FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT;
-  }, [height, FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT]);
+  const positionMobile = useMemo(() => {
+    return (
+      width < FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_WIDTH ||
+      height < FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_HEIGHT
+    );
+  }, [
+    height,
+    FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_WIDTH,
+    FOREPLAN_TAB_POSITION_MOBILE_BREAKPOINT_HEIGHT,
+  ]);
 
   return (
     <Flex
-      pos={mobile ? "fixed" : "absolute"}
-      top={mobile ? 0 : undefined}
+      pos={positionMobile ? "fixed" : "absolute"}
+      top={positionMobile ? 0 : undefined}
       right={0}
       zIndex={100}
       backgroundColor="#333333"
