@@ -11,6 +11,7 @@ import React, {
 } from "react";
 import { FaGripLinesVertical } from "react-icons/fa";
 import { IoMdHelpCircleOutline } from "react-icons/io";
+import ReactTooltip from "react-tooltip";
 import { useWindowSize } from "react-use";
 import { useRememberState } from "use-remember-state";
 
@@ -364,6 +365,12 @@ const ForeplanAdvice: FC = memo(() => {
   return null;
 });
 
+enum TipType {
+  lowFailRate = "low",
+  midFailRate = "mid",
+  HighFailRate = "high",
+}
+
 const Waffle: FC<{
   failRate: { low: number; mid: number; high: number };
 }> = memo(({ failRate }) => {
@@ -379,39 +386,54 @@ const Waffle: FC<{
   const separation = config.FOREPLAN_SUMMARY_WAFFLE_RECT_SEPARATION;
 
   return (
-    <svg
-      width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
-      height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
-    >
+    <>
       <svg
-        x={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_X}
-        y={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_Y}
+        width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+        height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
       >
-        {rowRange.flatMap(key1 => {
-          return rowRange.map(key2 => {
-            const n = key1 * 10 + key2;
-            let fill: string;
-            if (n < nLow) {
-              fill = colors.low;
-            } else if (n < nMid) {
-              fill = colors.mid;
-            } else {
-              fill = colors.high;
-            }
-            return (
-              <rect
-                key={n}
-                x={rectSize * key2 * separation}
-                y={rectSize * key1 * separation}
-                width={rectSize}
-                height={rectSize}
-                fill={fill}
-              />
-            );
-          });
-        })}
+        <svg
+          x={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_X}
+          y={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_Y}
+        >
+          {rowRange.flatMap(key1 => {
+            return rowRange.map(key2 => {
+              const n = key1 * 10 + key2;
+              let fill: string;
+              let data_tip: string;
+              let data_for: TipType;
+              if (n < nLow) {
+                fill = colors.low;
+                data_tip = failRate.low + "%";
+                data_for = TipType.lowFailRate;
+              } else if (n < nMid) {
+                fill = colors.mid;
+                data_tip = failRate.mid + "%";
+                data_for = TipType.midFailRate;
+              } else {
+                fill = colors.high;
+                data_tip = failRate.high + "%";
+                data_for = TipType.HighFailRate;
+              }
+              return (
+                <rect
+                  key={n}
+                  data-tip={data_tip}
+                  data-for={data_for}
+                  x={rectSize * key2 * separation}
+                  y={rectSize * key1 * separation}
+                  width={rectSize}
+                  height={rectSize}
+                  fill={fill}
+                />
+              );
+            });
+          })}
+        </svg>
       </svg>
-    </svg>
+      <ReactTooltip id={TipType.lowFailRate} delayHide={200} type="success" />
+      <ReactTooltip id={TipType.midFailRate} delayHide={200} type="warning" />
+      <ReactTooltip id={TipType.HighFailRate} delayHide={200} type="error" />
+    </>
   );
 });
 
