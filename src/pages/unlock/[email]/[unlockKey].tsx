@@ -11,8 +11,7 @@ import {
   Message,
   Segment,
 } from "semantic-ui-react";
-import isEmail from "validator/lib/isEmail";
-import matches from "validator/lib/matches";
+import { isEmail, matches } from "validator";
 
 import { useMutation } from "@apollo/react-hooks";
 
