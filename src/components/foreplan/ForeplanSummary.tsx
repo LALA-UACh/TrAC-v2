@@ -6,17 +6,19 @@ import React, {
   FC,
   memo,
   SetStateAction,
+  useCallback,
   useContext,
   useMemo,
+  useRef,
+  useState,
 } from "react";
 import { FaGripLinesVertical } from "react-icons/fa";
-import { IoMdHelpCircleOutline } from "react-icons/io";
+import { IoMdCloseCircleOutline, IoMdHelpCircleOutline } from "react-icons/io";
 import ReactTooltip from "react-tooltip";
-import { useWindowSize } from "react-use";
+import { useClickAway, useWindowSize } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import {
-  Badge,
   Box,
   Flex,
   Popover,
@@ -145,7 +147,8 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
 
 const ForeplanContentRowListItem: FC<Pick<ICourse, "code">> = memo(
   ({ code }) => {
-    const [data] = useForeplanCourseData({ code });
+    const [data, { removeCourseForeplan }] = useForeplanCourseData({ code });
+    const config = useContext(ConfigContext);
 
     return (
       <Flex
@@ -165,8 +168,10 @@ const ForeplanContentRowListItem: FC<Pick<ICourse, "code">> = memo(
           {truncate(data?.name, { length: 30 })}
         </Text>
         <Text justifySelf="flex-end" textAlign="end">
-          créd: <b>{data?.credits?.[0]?.value}</b>
+          {config.CREDITS_LABEL.toLowerCase().slice(0, 4)}:{" "}
+          <b>{data?.credits}</b>
         </Text>
+        <Box as={IoMdCloseCircleOutline} size="20px" />
       </Flex>
     );
   }
@@ -181,7 +186,7 @@ const ForeplanContentRowList: FC = memo(() => {
         return (
           <motion.div
             initial={{
-              opacity: 0,
+              height: 50,
             }}
             animate={{ opacity: 1 }}
             exit={{
@@ -200,13 +205,15 @@ const ForeplanContentRowList: FC = memo(() => {
 
 const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
   const config = useContext(ConfigContext);
-  const [data] = useForeplanCourseData({ code });
-  const { width, dataCredits } = useMemo(() => {
-    const dataCredits = data?.credits[0]?.value ?? 0;
+  const [data, { removeCourseForeplan }] = useForeplanCourseData({ code });
+  const credits = data?.credits ?? 0;
+  const name = data?.name ?? "";
+  const [expanded, setExpanded] = useState(false);
+  const width = useMemo(() => {
     const width =
       config.FOREPLAN_SUMMARY_BADGE_COURSE_CREDITS_WIDTH.find(
         ({ min, max }) => {
-          if (dataCredits >= min && dataCredits <= max) {
+          if (credits >= min && credits <= max) {
             return true;
           }
           return false;
@@ -214,20 +221,113 @@ const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
       )?.width ??
       config.FOREPLAN_SUMMARY_BADGE_COURSE_CREDITS_WIDTH[0]?.width ??
       "7em";
-    return { width, dataCredits };
-  }, [data?.credits, config]);
+    return width;
+  }, [credits, config]);
 
-  return (
-    <Badge
-      m={2}
-      p={2}
-      width={width}
-      textAlign="center"
-      fontSize={config.FOREPLAN_SUMMARY_BADGE_FONT_SIZE}
-    >
-      {code} ({dataCredits})
-    </Badge>
+  const ref = useRef(null);
+
+  const clickAway = useCallback(() => {
+    if (expanded) {
+      setExpanded(false);
+    }
+  }, [expanded, setExpanded]);
+
+  const expandBadge = useCallback(
+    (ev: React.MouseEvent<any, MouseEvent>) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (!expanded) {
+        setExpanded(true);
+      }
+    },
+    [expanded, setExpanded]
   );
+
+  useClickAway(ref, clickAway, ["click", "mousedown"]);
+
+  return data ? (
+    <div ref={ref}>
+      <Stack
+        m={2}
+        p={2}
+        pl="1em"
+        width={width}
+        height="fit-content"
+        fontSize={config.FOREPLAN_SUMMARY_BADGE_FONT_SIZE}
+        onClick={expandBadge}
+        backgroundColor="#EEEEEE"
+        color="black"
+        transition="all 1s ease-in-out"
+        borderRadius="10px"
+        cursor={expanded ? undefined : "pointer"}
+      >
+        <Text
+          key={expanded ? 1 : 0}
+          textAlign={expanded ? "initial" : "center"}
+          onClick={expandBadge}
+          fontWeight={expanded ? "bold" : undefined}
+        >
+          {expanded ? (
+            <span>{code}</span>
+          ) : (
+            <span>
+              {code} (<b>{credits}</b>)
+            </span>
+          )}
+        </Text>
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{
+                opacity: 0,
+              }}
+              animate={{ opacity: 1 }}
+              exit={{
+                opacity: 0,
+              }}
+              key="name"
+              onClick={expandBadge}
+            >
+              <Text pb={4} wordBreak="break-word">
+                {name}
+              </Text>
+            </motion.div>
+          )}
+          {expanded && (
+            <motion.div
+              initial={{
+                opacity: 0,
+              }}
+              animate={{ opacity: 1 }}
+              exit={{
+                opacity: 0,
+              }}
+              key="credits"
+            >
+              <Flex justifyContent="space-between" alignItems="center">
+                <Text
+                  m={0}
+                  fontWeight="bold"
+                  textAlign={expanded ? "initial" : "center"}
+                >
+                  {config.CREDITS_LABEL}: {credits}
+                </Text>
+                <Box
+                  as={IoMdCloseCircleOutline}
+                  size="20px"
+                  cursor="pointer"
+                  onClick={ev => {
+                    ev.stopPropagation();
+                    removeCourseForeplan(code);
+                  }}
+                />
+              </Flex>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Stack>
+    </div>
+  ) : null;
 });
 
 const ForeplanContentBadgesList: FC = memo(() => {
@@ -287,7 +387,9 @@ const ForeplanTotalCredits: FC = memo(() => {
           </Box>
         </PopoverTrigger>
         <PopoverContent color="black" width="fit-content">
-          <PopoverBody>Lorem Ipsum</PopoverBody>
+          <PopoverBody>
+            {config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP}
+          </PopoverBody>
         </PopoverContent>
       </Popover>
     </Flex>

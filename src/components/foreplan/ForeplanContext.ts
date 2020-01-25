@@ -11,7 +11,10 @@ import { useUser } from "../../utils/useUser";
 export interface IForeplanData {
   active: boolean;
   foreplanCourses: Record<string, boolean>;
-  foreplanCoursesData: Record<string, Pick<ICourse, "credits" | "name">>;
+  foreplanCoursesData: Record<
+    string,
+    Pick<ICourse, "name"> & { credits: number }
+  >;
   totalCreditsTaken: number;
   advices: Record<
     string,
@@ -73,7 +76,7 @@ const ForeplanStore = createStore({
       const totalCreditsTaken = reduce(
         newForeplanCoursesData,
         (acum, { credits }) => {
-          return acum + credits?.[0]?.value ?? 0;
+          return acum + credits;
         },
         0
       );
@@ -95,7 +98,7 @@ const ForeplanStore = createStore({
       const totalCreditsTaken = reduce(
         foreplanCoursesData,
         (acum, { credits }) => {
-          return acum + credits?.[0]?.value ?? 0;
+          return acum + credits;
         },
         0
       );

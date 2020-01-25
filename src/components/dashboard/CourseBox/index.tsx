@@ -475,7 +475,7 @@ const ForeplanCourseCheckbox: FC<Pick<
             removeCourseForeplan(code);
           } else {
             addCourseForeplan(code, {
-              credits,
+              credits: credits?.[0]?.value ?? 0,
               name,
             });
           }

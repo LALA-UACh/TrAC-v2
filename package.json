@@ -19,7 +19,7 @@
     "start-pm2-dev": "pm2 start ecosystem-dev.yaml",
     "stop": "pm2 delete ecosystem-dev.yaml",
     "test": "jest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noUnusedLocals --noEmit",
     "watch-api": "tsc-watch -P api --onSuccess \"node --inspect=27050 api/dist/api/index.js\"",
     "watch-client": "wait-on tcp:4000 && next"
   },

@@ -151,6 +151,7 @@ export const Users: FC<{
           size="large"
           textAlign="center"
           sortable
+          stackable
         >
           <Table.Header>
             <Table.Row>
