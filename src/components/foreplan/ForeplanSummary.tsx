@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { range, truncate } from "lodash";
+import { map, range, truncate } from "lodash";
 import Markdown from "markdown-to-jsx";
 import React, {
   Dispatch,
@@ -34,9 +34,10 @@ import { ICourse } from "../../../interfaces";
 import { useUser } from "../../utils/useUser";
 import { ConfigContext } from "../Config";
 import {
+  ICreditsNumber,
   useAnyForeplanCourses,
+  useForeplanActions,
   useForeplanAdvice,
-  useForeplanCourseData,
   useForeplanCourses,
   useForeplanCoursesSize,
   useForeplanTotalCreditsTaken,
@@ -145,44 +146,42 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
   );
 });
 
-const ForeplanContentRowListItem: FC<Pick<ICourse, "code">> = memo(
-  ({ code }) => {
-    const [data, { removeCourseForeplan }] = useForeplanCourseData({ code });
-    const config = useContext(ConfigContext);
+const ForeplanContentRowListItem: FC<Pick<ICourse, "code" | "name"> &
+  ICreditsNumber> = memo(({ code, name, credits }) => {
+  // const [data, { removeCourseForeplan }] = useForeplanActions();
+  const config = useContext(ConfigContext);
 
-    return (
-      <Flex
-        width="100%"
-        justifyContent="space-between"
-        alignItems="center"
-        color="white"
-        backgroundColor="#666"
-        borderRadius="10px"
-        p={1}
-        m={1}
-      >
-        <Text pl={1} pt={1} pb={1} m={0} textAlign="start" width="7em">
-          {code}
-        </Text>
-        <Text m={0} textAlign="start" width="20em">
-          {truncate(data?.name, { length: 30 })}
-        </Text>
-        <Text justifySelf="flex-end" textAlign="end">
-          {config.CREDITS_LABEL.toLowerCase().slice(0, 4)}:{" "}
-          <b>{data?.credits}</b>
-        </Text>
-        <Box as={IoMdCloseCircleOutline} size="20px" />
-      </Flex>
-    );
-  }
-);
+  return (
+    <Flex
+      width="100%"
+      justifyContent="space-between"
+      alignItems="center"
+      color="white"
+      backgroundColor="#666"
+      borderRadius="10px"
+      p={1}
+      m={1}
+    >
+      <Text pl={1} pt={1} pb={1} m={0} textAlign="start" width="7em">
+        {code}
+      </Text>
+      <Text m={0} textAlign="start" width="20em">
+        {truncate(name, { length: 30 })}
+      </Text>
+      <Text justifySelf="flex-end" textAlign="end">
+        {config.CREDITS_LABEL.toLowerCase().slice(0, 4)}: <b>{credits}</b>
+      </Text>
+      <Box as={IoMdCloseCircleOutline} size="20px" />
+    </Flex>
+  );
+});
 
 const ForeplanContentRowList: FC = memo(() => {
   const [foreplanCourses] = useForeplanCourses();
 
   return (
     <AnimatePresence>
-      {Object.keys(foreplanCourses).map(course => {
+      {map(foreplanCourses, ({ name, credits }, course) => {
         return (
           <motion.div
             initial={{
@@ -195,7 +194,11 @@ const ForeplanContentRowList: FC = memo(() => {
             key={course}
             style={{ width: "100%" }}
           >
-            <ForeplanContentRowListItem code={course} />
+            <ForeplanContentRowListItem
+              code={course}
+              name={name}
+              credits={credits}
+            />
           </motion.div>
         );
       })}
@@ -203,11 +206,10 @@ const ForeplanContentRowList: FC = memo(() => {
   );
 });
 
-const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
+const ForeplanContentBadge: FC<Pick<ICourse, "code" | "name"> &
+  ICreditsNumber> = memo(({ code, name, credits }) => {
   const config = useContext(ConfigContext);
-  const [data, { removeCourseForeplan }] = useForeplanCourseData({ code });
-  const credits = data?.credits ?? 0;
-  const name = data?.name ?? "";
+  const [, { removeCourseForeplan }] = useForeplanActions();
   const [expanded, setExpanded] = useState(false);
   const width = useMemo(() => {
     const width =
@@ -245,7 +247,7 @@ const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
 
   useClickAway(ref, clickAway, ["click", "mousedown"]);
 
-  return data ? (
+  return (
     <div ref={ref}>
       <Stack
         m={2}
@@ -255,10 +257,10 @@ const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
         height="fit-content"
         fontSize={config.FOREPLAN_SUMMARY_BADGE_FONT_SIZE}
         onClick={expandBadge}
-        backgroundColor="#EEEEEE"
+        backgroundColor={config.FOREPLAN_SUMMARY_BADGE_BACKGROUND_COLOR}
         color="black"
         transition="all 1s ease-in-out"
-        borderRadius="10px"
+        borderRadius={config.FOREPLAN_SUMMARY_BADGE_BORDER_RADIUS}
         cursor={expanded ? undefined : "pointer"}
       >
         <Text
@@ -288,7 +290,11 @@ const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
               key="name"
               onClick={expandBadge}
             >
-              <Text pb={4} wordBreak="break-word">
+              <Text
+                pb={4}
+                wordBreak="break-word"
+                fontSize={config.FOREPLAN_SUMMARY_BADGE_COURSE_NAME_FONT_SIZE}
+              >
                 {name}
               </Text>
             </motion.div>
@@ -304,7 +310,13 @@ const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
               }}
               key="credits"
             >
-              <Flex justifyContent="space-between" alignItems="center">
+              <Flex
+                justifyContent="space-between"
+                alignItems="center"
+                fontSize={
+                  config.FOREPLAN_SUMMARY_BADGE_EXPANDED_CREDITS_FONT_SIZE
+                }
+              >
                 <Text
                   m={0}
                   fontWeight="bold"
@@ -327,7 +339,7 @@ const ForeplanContentBadge: FC<Pick<ICourse, "code">> = memo(({ code }) => {
         </AnimatePresence>
       </Stack>
     </div>
-  ) : null;
+  );
 });
 
 const ForeplanContentBadgesList: FC = memo(() => {
@@ -336,7 +348,7 @@ const ForeplanContentBadgesList: FC = memo(() => {
   return (
     <Flex wrap="wrap">
       <AnimatePresence>
-        {Object.keys(foreplanCourses).map(course => {
+        {map(foreplanCourses, ({ name, credits }, course) => {
           return (
             <motion.div
               initial={{
@@ -348,7 +360,11 @@ const ForeplanContentBadgesList: FC = memo(() => {
               }}
               key={course}
             >
-              <ForeplanContentBadge code={course} />
+              <ForeplanContentBadge
+                code={course}
+                name={name}
+                credits={credits}
+              />
             </motion.div>
           );
         })}

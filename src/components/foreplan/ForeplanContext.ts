@@ -8,13 +8,11 @@ import { LAST_TIME_USED, StateCourse } from "../../../constants";
 import { ICourse } from "../../../interfaces";
 import { useUser } from "../../utils/useUser";
 
+export type ICreditsNumber = { credits: number };
+
 export interface IForeplanData {
   active: boolean;
-  foreplanCourses: Record<string, boolean>;
-  foreplanCoursesData: Record<
-    string,
-    Pick<ICourse, "name"> & { credits: number }
-  >;
+  foreplanCourses: Record<string, Pick<ICourse, "name"> & ICreditsNumber>;
   totalCreditsTaken: number;
   advices: Record<
     string,
@@ -30,9 +28,9 @@ export interface IForeplanData {
   >;
 }
 
-const emptyObject = {};
+const emptyObject = Object.freeze({});
 
-const rememberForeplanDataKey = "TrAC_foreplan_data";
+const rememberForeplanDataKey = "TrAC_foreplan_remember_data";
 
 const initForeplanData = (initialData = defaultForeplanData): IForeplanData => {
   try {
@@ -47,7 +45,6 @@ const initForeplanData = (initialData = defaultForeplanData): IForeplanData => {
 const defaultForeplanData: IForeplanData = {
   active: false,
   foreplanCourses: emptyObject,
-  foreplanCoursesData: emptyObject,
   totalCreditsTaken: 0,
   advices: emptyObject,
 };
@@ -67,14 +64,11 @@ const ForeplanStore = createStore({
     },
     addCourseForeplan: (
       course: string,
-      data: IForeplanData["foreplanCoursesData"][string]
+      data: IForeplanData["foreplanCourses"][string]
     ) => ({ setState, getState }) => {
-      const { foreplanCourses, foreplanCoursesData } = getState();
-
-      const newForeplanCourses = { ...foreplanCourses, [course]: true };
-      const newForeplanCoursesData = { ...foreplanCoursesData, [course]: data };
+      const foreplanCourses = { ...getState().foreplanCourses, [course]: data };
       const totalCreditsTaken = reduce(
-        newForeplanCoursesData,
+        foreplanCourses,
         (acum, { credits }) => {
           return acum + credits;
         },
@@ -82,21 +76,16 @@ const ForeplanStore = createStore({
       );
 
       setState({
-        foreplanCourses: newForeplanCourses,
-        foreplanCoursesData: newForeplanCoursesData,
+        foreplanCourses,
         totalCreditsTaken,
       });
     },
     removeCourseForeplan: (course: string) => ({ setState, getState }) => {
       const {
         foreplanCourses: { [course]: deletedCourse, ...foreplanCourses },
-        foreplanCoursesData: {
-          [course]: deletedCourseData,
-          ...foreplanCoursesData
-        },
       } = getState();
       const totalCreditsTaken = reduce(
-        foreplanCoursesData,
+        foreplanCourses,
         (acum, { credits }) => {
           return acum + credits;
         },
@@ -104,7 +93,6 @@ const ForeplanStore = createStore({
       );
       setState({
         foreplanCourses,
-        foreplanCoursesData,
         totalCreditsTaken,
       });
     },
@@ -124,15 +112,13 @@ const ForeplanStore = createStore({
 
 export const useForeplanData = createHook(ForeplanStore);
 
+export const useForeplanActions = createHook(ForeplanStore, {
+  selector: null,
+});
+
 export const useIsForeplanCourseChecked = createHook(ForeplanStore, {
   selector: ({ foreplanCourses }, { code }: { code: string }) => {
     return !!foreplanCourses[code];
-  },
-});
-
-export const useForeplanCourses = createHook(ForeplanStore, {
-  selector: ({ foreplanCourses }) => {
-    return foreplanCourses;
   },
 });
 
@@ -160,9 +146,9 @@ export const useIsForeplanActive = createHook(ForeplanStore, {
   },
 });
 
-export const useForeplanCourseData = createHook(ForeplanStore, {
-  selector: ({ foreplanCoursesData }, { code }: { code: string }) => {
-    return foreplanCoursesData[code];
+export const useForeplanCourses = createHook(ForeplanStore, {
+  selector: ({ foreplanCourses }) => {
+    return foreplanCourses;
   },
 });
 
