@@ -416,7 +416,7 @@ const ForeplanAdvice: FC = memo(() => {
   const [advice] = useForeplanAdvice();
   const config = useContext(ConfigContext);
   if (advice) {
-    const Low: FC = () => {
+    const LowFailRate: FC = () => {
       return (
         <span
           style={{
@@ -427,7 +427,7 @@ const ForeplanAdvice: FC = memo(() => {
         </span>
       );
     };
-    const Mid: FC = () => {
+    const MidFailRate: FC = () => {
       return (
         <span
           style={{
@@ -438,7 +438,7 @@ const ForeplanAdvice: FC = memo(() => {
         </span>
       );
     };
-    const High: FC = () => {
+    const HighFailRate: FC = () => {
       return (
         <span
           style={{
@@ -461,14 +461,14 @@ const ForeplanAdvice: FC = memo(() => {
           <Markdown
             options={{
               overrides: {
-                Low: {
-                  component: Low,
+                LowFailRate: {
+                  component: LowFailRate,
                 },
-                Mid: {
-                  component: Mid,
+                MidFailRate: {
+                  component: MidFailRate,
                 },
-                High: {
-                  component: High,
+                HighFailRate: {
+                  component: HighFailRate,
                 },
               },
             }}

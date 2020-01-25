@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "program_id": "1708",
+    "student_cluster": 0,
+    "courseload_unit": "credits",
+    "courseload_lb": 0,
+    "courseload_ub": 10,
+    "hp_value": 0.75,
+    "mp_value": 0.18,
+    "lp_value": 0.07,
+    "message_title": "¡Tu carga de estudio parece algo baja!",
+    "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno."
+  },
+  {
+    "id": 2,
+    "program_id": "1708",
+    "student_cluster": 0,
+    "courseload_unit": "credits",
+    "courseload_lb": 11,
+    "courseload_ub": 20,
+    "hp_value": 0.58,
+    "mp_value": 0.3,
+    "lp_value": 0.12,
+    "message_title": "¡Tu carga planeada parece moderada!",
+    "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno."
+  },
+  {
+    "id": 3,
+    "program_id": "1708",
+    "student_cluster": 0,
+    "courseload_unit": "credits",
+    "courseload_lb": 21,
+    "courseload_ub": 30,
+    "hp_value": 0.3,
+    "mp_value": 0.45,
+    "lp_value": 0.25,
+    "message_title": "¡Tu carga de estudio parece algo baja!",
+    "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno."
+  }
+]

@@ -98,3 +98,18 @@ export const termTypeToNumber = (type?: string): number => {
 };
 
 export const LAST_TIME_USED = "last_time_used";
+
+export enum PerformanceLoadUnit {
+  Credits = "credits",
+}
+
+export const defaultPerformanceLoadUnit = (
+  unit?: string
+): PerformanceLoadUnit => {
+  switch (unit?.toLowerCase()) {
+    case PerformanceLoadUnit.Credits:
+    default: {
+      return PerformanceLoadUnit.Credits;
+    }
+  }
+};

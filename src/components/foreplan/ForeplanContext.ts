@@ -14,21 +14,18 @@ export interface IForeplanData {
   active: boolean;
   foreplanCourses: Record<string, Pick<ICourse, "name"> & ICreditsNumber>;
   totalCreditsTaken: number;
-  advices: Record<
-    string,
-    {
-      titleText: string;
-      paragraphText: string;
-      failRate: {
-        low: number;
-        mid: number;
-        high: number;
-      };
-    }
-  >;
+  advices: {
+    lowerBoundary: number;
+    upperBoundary: number;
+    titleText: string;
+    paragraphText: string;
+    failRate: {
+      low: number;
+      mid: number;
+      high: number;
+    };
+  }[];
 }
-
-const emptyObject = Object.freeze({});
 
 const rememberForeplanDataKey = "TrAC_foreplan_remember_data";
 
@@ -44,9 +41,9 @@ const initForeplanData = (initialData = defaultForeplanData): IForeplanData => {
 
 const defaultForeplanData: IForeplanData = {
   active: false,
-  foreplanCourses: emptyObject,
+  foreplanCourses: {},
   totalCreditsTaken: 0,
-  advices: emptyObject,
+  advices: [],
 };
 
 const ForeplanStore = createStore({
@@ -170,15 +167,17 @@ export const useIsPossibleToTakeForeplan = createHook(ForeplanStore, {
 
 export const useForeplanAdvice = createHook(ForeplanStore, {
   selector: ({ advices, totalCreditsTaken }) => {
-    let load: "high" | "mid" | "low";
-    if (totalCreditsTaken <= 12) {
-      load = "low";
-    } else if (totalCreditsTaken <= 25) {
-      load = "mid";
-    } else {
-      load = "high";
-    }
-    return advices[load] || emptyObject;
+    return (
+      advices.find(({ lowerBoundary, upperBoundary }) => {
+        if (
+          totalCreditsTaken >= lowerBoundary &&
+          totalCreditsTaken <= upperBoundary
+        ) {
+          return true;
+        }
+        return false;
+      }) ?? advices[advices.length - 1]
+    );
   },
 });
 
@@ -196,44 +195,46 @@ export const ForeplanContextManager: FC<{ distinct?: string }> = ({
 
   useEffect(() => {
     //TODO: Use real data
-    setForeplanAdvices({
-      low: {
-        titleText: "Tu carga de estudio es baja",
+    setForeplanAdvices([
+      {
+        lowerBoundary: 0,
+        upperBoundary: 10,
+        titleText: "¡Tu carga de estudio parece algo baja!",
         paragraphText:
-          "Sólo un <Low /> de estudiantes en años anteriores que" +
-          " han tomado una carga similar han pasado todos los cursos. " +
-          "Un <Mid /> de ellos han reprobado 1 curso, y <High /> han reprobado más de uno",
+          "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
         failRate: {
           low: 85,
           mid: 10,
           high: 5,
         },
       },
-      mid: {
-        titleText: "Tu carga de estudio es media",
+      {
+        lowerBoundary: 11,
+        upperBoundary: 20,
+
+        titleText: "¡Tu carga planeada parece moderada!",
         paragraphText:
-          "Sólo un <Low /> de estudiantes en años anteriores que" +
-          " han tomado una carga similar han pasado todos los cursos. " +
-          "Un <Mid /> de ellos han reprobado 1 curso, y <High /> han reprobado más de uno",
+          "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
         failRate: {
           low: 55,
           mid: 30,
           high: 15,
         },
       },
-      high: {
-        titleText: "¡Tu carga de estudio es alta!",
+      {
+        lowerBoundary: 21,
+        upperBoundary: 30,
+
+        titleText: "¡Tu carga de estudio parece algo baja!",
         paragraphText:
-          "Sólo un <Low /> de estudiantes en años anteriores que" +
-          " han tomado una carga similar han pasado todos los cursos. " +
-          "Un <Mid /> de ellos han reprobado 1 curso, y <High /> han reprobado más de uno",
+          "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
         failRate: {
           low: 5,
           mid: 20,
           high: 75,
         },
       },
-    });
+    ]);
   }, [setForeplanAdvices]);
 
   useEffect(() => {

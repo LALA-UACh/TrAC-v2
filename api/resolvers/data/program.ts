@@ -59,7 +59,7 @@ export class ProgramResolver {
         })
         .orderBy("start_year", "desc");
 
-      assertIsDefined(studentProgram[0], STUDENT_NOT_FOUND);
+      assertIsDefined(studentProgram[0], PROGRAM_NOT_FOUND);
 
       id = studentProgram[0].program_id;
       const curriculums = studentProgram.map(({ curriculum }) => {

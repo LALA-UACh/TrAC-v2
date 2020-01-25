@@ -15,10 +15,13 @@ import {
   CourseTable,
   PARAMETER_TABLE,
   ParameterTable,
+  PERFORMANCE_BY_LOAD_TABLE,
+  PerformanceByLoadTable,
   PROGRAM_STRUCTURE_TABLE,
   PROGRAM_TABLE,
   ProgramStructureTable,
   ProgramTable,
+  STUDENT_CLUSTER_TABLE,
   STUDENT_COURSE_TABLE,
   STUDENT_DROPOUT_TABLE,
   STUDENT_PROGRAM_TABLE,
@@ -472,6 +475,49 @@ const dataImport = async () => {
           }
         )
       );
+    }
+  });
+
+  dbData.schema.hasTable(PERFORMANCE_BY_LOAD_TABLE).then(async exists => {
+    if (!exists) {
+      await dbData.schema.createTable(PERFORMANCE_BY_LOAD_TABLE, table => {
+        table
+          .integer("id", 8)
+          .primary()
+          .notNullable();
+        table
+          .text("program_id")
+          .notNullable()
+          .defaultTo("");
+        table.integer("student_cluster", 2).notNullable();
+        table
+          .text("courseload_unit")
+          .notNullable()
+          .defaultTo("credits");
+        table.float("courseload_lb", 4).notNullable();
+        table.float("courseload_ub", 4).notNullable();
+        table.float("hp_value", 4).notNullable();
+        table.float("mp_value", 4).notNullable();
+        table.float("lp_value", 4).notNullable();
+        table.text("message_title").notNullable();
+        table.text("message_text").notNullable();
+      });
+
+      await PerformanceByLoadTable().insert(
+        (await import("./performance_by_load.json")).default
+      );
+    }
+  });
+
+  dbData.schema.hasTable(STUDENT_CLUSTER_TABLE).then(async exists => {
+    if (!exists) {
+      await dbData.schema.createTable(STUDENT_CLUSTER_TABLE, table => {
+        table.text("student_id");
+        table.text("program_id");
+        table.integer("cluster", 2);
+
+        table.primary(["student_id", "program_id"]);
+      });
     }
   });
 };
