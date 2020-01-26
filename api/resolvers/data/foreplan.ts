@@ -1,5 +1,5 @@
 import { toInteger } from "lodash";
-import { Arg, Authorized, Ctx, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
 
 import {
   defaultPerformanceLoadUnit,
@@ -23,7 +23,7 @@ import { assertIsDefined } from "../../utils/assert";
 @Resolver()
 export class ForeplanResolver {
   @Authorized()
-  @Query(() => [PerformanceByLoad])
+  @Mutation(() => [PerformanceByLoad])
   async performanceLoadAdvices(
     @Ctx() { user }: IContext,
     @Arg("student_id", {

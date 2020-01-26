@@ -1,5 +1,6 @@
+import { PerformanceByLoad } from "../api/entities/data/foreplan";
 import { IProgramData, IStudentData } from "../src/graphql/queries";
-import { StateCourse, TermType } from "./";
+import { PerformanceLoadUnit, StateCourse, TermType } from "./";
 
 const data: {
   searchProgramData: {
@@ -8,6 +9,7 @@ const data: {
   searchStudentData: {
     student: IStudentData;
   };
+  performanceByLoad: PerformanceByLoad[];
 } = {
   searchProgramData: {
     program: {
@@ -5913,6 +5915,46 @@ const data: {
       },
     },
   },
+
+  performanceByLoad: [
+    {
+      id: 0,
+      lowerBoundary: 0,
+      upperBoundary: 10,
+      adviceTitle: "¡Tu carga de estudio parece algo baja!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
+
+      failRateLow: 5,
+      failRateMid: 20,
+      failRateHigh: 75,
+      loadUnit: PerformanceLoadUnit.Credits,
+    },
+    {
+      id: 1,
+      lowerBoundary: 11,
+      upperBoundary: 20,
+      adviceTitle: "¡Tu carga planeada parece moderada!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 55,
+      failRateMid: 30,
+      failRateHigh: 15,
+      loadUnit: PerformanceLoadUnit.Credits,
+    },
+    {
+      id: 2,
+      lowerBoundary: 21,
+      upperBoundary: 30,
+      adviceTitle: "¡Tu carga de estudio es alta!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 5,
+      failRateMid: 20,
+      failRateHigh: 75,
+      loadUnit: PerformanceLoadUnit.Credits,
+    },
+  ],
 };
 
 export default data;

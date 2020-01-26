@@ -2,8 +2,9 @@ import { differenceInWeeks } from "date-fns";
 import { reduce, size, toInteger } from "lodash";
 import { FC, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
-import { useDebounce, useUpdateEffect } from "react-use";
+import { useDebounce } from "react-use";
 
+import { PerformanceByLoad } from "../../../api/entities/data/foreplan";
 import { LAST_TIME_USED, StateCourse } from "../../../constants";
 import { ICourse } from "../../../interfaces";
 import { useUser } from "../../utils/useUser";
@@ -14,17 +15,7 @@ export interface IForeplanData {
   active: boolean;
   foreplanCourses: Record<string, Pick<ICourse, "name"> & ICreditsNumber>;
   totalCreditsTaken: number;
-  advices: {
-    lowerBoundary: number;
-    upperBoundary: number;
-    titleText: string;
-    paragraphText: string;
-    failRate: {
-      low: number;
-      mid: number;
-      high: number;
-    };
-  }[];
+  advices: PerformanceByLoad[];
 }
 
 const rememberForeplanDataKey = "TrAC_foreplan_remember_data";
@@ -176,66 +167,21 @@ export const useForeplanAdvice = createHook(ForeplanStore, {
           return true;
         }
         return false;
-      }) ?? advices[advices.length - 1]
+      }) ??
+      (() => {
+        console.warn("Advice not found for ", totalCreditsTaken);
+        return advices[advices.length - 1];
+      })()
     );
   },
 });
 
-export const ForeplanContextManager: FC<{ distinct?: string }> = ({
-  distinct,
-}) => {
-  const [
-    state,
-    { reset, disableForeplan, setForeplanAdvices },
-  ] = useForeplanData();
+export const ForeplanContextManager: FC = () => {
+  const [state, { reset, disableForeplan }] = useForeplanData();
 
   const { user } = useUser({
     fetchPolicy: "cache-only",
   });
-
-  useEffect(() => {
-    //TODO: Use real data
-    setForeplanAdvices([
-      {
-        lowerBoundary: 0,
-        upperBoundary: 10,
-        titleText: "¡Tu carga de estudio parece algo baja!",
-        paragraphText:
-          "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-        failRate: {
-          low: 85,
-          mid: 10,
-          high: 5,
-        },
-      },
-      {
-        lowerBoundary: 11,
-        upperBoundary: 20,
-
-        titleText: "¡Tu carga planeada parece moderada!",
-        paragraphText:
-          "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-        failRate: {
-          low: 55,
-          mid: 30,
-          high: 15,
-        },
-      },
-      {
-        lowerBoundary: 21,
-        upperBoundary: 30,
-
-        titleText: "¡Tu carga de estudio parece algo baja!",
-        paragraphText:
-          "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-        failRate: {
-          low: 5,
-          mid: 20,
-          high: 75,
-        },
-      },
-    ]);
-  }, [setForeplanAdvices]);
 
   useEffect(() => {
     if (state.active && !user?.config.FOREPLAN) {
@@ -254,12 +200,6 @@ export const ForeplanContextManager: FC<{ distinct?: string }> = ({
       localStorage.setItem(LAST_TIME_USED, Date.now().toString());
     } catch (err) {}
   }, [reset]);
-
-  useUpdateEffect(() => {
-    if (distinct) {
-      reset();
-    }
-  }, [distinct, reset]);
 
   useDebounce(
     () => {

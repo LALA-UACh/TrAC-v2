@@ -1,10 +1,11 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
+import { User } from "../../api/entities/auth/user";
+import { Program } from "../../api/entities/data/program";
 import { UserType } from "../../constants";
 import { baseConfig } from "../../constants/baseConfig";
 import { UserConfig } from "../../constants/userConfig";
 import { IfImplements } from "../../typings/utils";
-import { Program, User } from "./medium";
 
 type IUsersAdmin = IfImplements<
   {

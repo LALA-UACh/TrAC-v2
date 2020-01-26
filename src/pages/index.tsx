@@ -20,10 +20,17 @@ import { CoursesDashbordManager } from "../components/dashboard/CoursesDashboard
 import { Semester } from "../components/dashboard/Semester";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
-import { ForeplanContextManager } from "../components/foreplan/ForeplanContext";
+import {
+  ForeplanContextManager,
+  useForeplanActions,
+} from "../components/foreplan/ForeplanContext";
 import { LoadingPage } from "../components/Loading";
 import { TrackingManager, useTracking } from "../components/Tracking";
-import { SEARCH_PROGRAM, SEARCH_STUDENT } from "../graphql/queries";
+import {
+  PERFORMANCE_BY_LOAD_ADVICES,
+  SEARCH_PROGRAM,
+  SEARCH_STUDENT,
+} from "../graphql/queries";
 import { useUser } from "../utils/useUser";
 
 const SearchBar = dynamic(() => import("../components/dashboard/SearchBar"));
@@ -48,6 +55,7 @@ const Dashboard: FC = () => {
   const [mockData, setMockData] = useState<
     typeof import("../../constants/mockData")
   >();
+
   useEffect(() => {
     if (mock && !mockData) {
       import("../../constants/mockData").then(data => {
@@ -57,6 +65,11 @@ const Dashboard: FC = () => {
   }, [mock, mockData, setMockData]);
 
   const [, { setTrackingData, track }] = useTracking();
+
+  const [
+    searchPerformanceByLoad,
+    { data: dataPerformanceByLoad, error: errorPerformanceByLoad },
+  ] = useMutation(PERFORMANCE_BY_LOAD_ADVICES);
 
   const [
     searchProgram,
@@ -129,8 +142,37 @@ const Dashboard: FC = () => {
     if (user?.type === UserType.Student) {
       searchProgram();
       searchStudent();
+      searchPerformanceByLoad();
     }
-  }, [user, searchProgram, searchStudent]);
+  }, [user, searchProgram, searchStudent, searchPerformanceByLoad]);
+
+  const [
+    ,
+    { setForeplanAdvices, disableForeplan, reset: resetForeplan },
+  ] = useForeplanActions();
+
+  useEffect(() => {
+     if (mock) {
+      setForeplanAdvices(mockData?.default.performanceByLoad ?? []);
+    } else {
+      if (user?.type !== UserType.Student) {
+        resetForeplan();
+      }
+      if (dataPerformanceByLoad?.performanceLoadAdvices) {
+         setForeplanAdvices(dataPerformanceByLoad.performanceLoadAdvices);
+      } else {
+        disableForeplan();
+        setForeplanAdvices([]);
+      }
+    }
+  }, [
+    dataPerformanceByLoad,
+    mock,
+    user,
+    mockData,
+    setForeplanAdvices,
+    disableForeplan,
+  ]);
 
   const {
     TimeLineComponent,
@@ -344,6 +386,7 @@ const Dashboard: FC = () => {
             [
               ...(searchProgramError?.graphQLErrors ?? []),
               ...(searchStudentError?.graphQLErrors ?? []),
+              ...(errorPerformanceByLoad?.graphQLErrors ?? []),
             ].map(({ message }) => {
               switch (message) {
                 case STUDENT_NOT_FOUND:
@@ -381,6 +424,11 @@ const Dashboard: FC = () => {
                 searchStudent({
                   variables: { student_id, program_id },
                 }),
+                student_id
+                  ? searchPerformanceByLoad({
+                      variables: { student_id, program_id },
+                    })
+                  : undefined,
               ]);
 
               if (studentSearch.data?.student && programSearch.data?.program) {
@@ -431,9 +479,7 @@ const Dashboard: FC = () => {
 
       <TrackingManager />
 
-      <ForeplanContextManager
-        distinct={`${program}${chosenCurriculum}${searchStudentData?.student?.id}`}
-      />
+      <ForeplanContextManager />
       <CoursesDashbordManager
         distinct={`${chosenCurriculum}${program}${mock}`}
       />

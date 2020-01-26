@@ -35,7 +35,7 @@
     "hp_value": 0.3,
     "mp_value": 0.45,
     "lp_value": 0.25,
-    "message_title": "¡Tu carga de estudio parece algo baja!",
+    "message_title": "¡Tu carga de estudio es alta!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno."
   }
 ]

@@ -423,7 +423,7 @@ const ForeplanAdvice: FC = memo(() => {
             color: config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.low,
           }}
         >
-          {advice.failRate.low}%
+          {advice.failRateLow}%
         </span>
       );
     };
@@ -434,7 +434,7 @@ const ForeplanAdvice: FC = memo(() => {
             color: config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.mid,
           }}
         >
-          {advice.failRate.mid}%
+          {advice.failRateMid}%
         </span>
       );
     };
@@ -445,7 +445,7 @@ const ForeplanAdvice: FC = memo(() => {
             color: config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.high,
           }}
         >
-          {advice.failRate.high}%
+          {advice.failRateHigh}%
         </span>
       );
     };
@@ -455,7 +455,7 @@ const ForeplanAdvice: FC = memo(() => {
           fontWeight="bold"
           fontSize={config.FOREPLAN_SUMMARY_ADVICE_TITLE_FONT_SIZE}
         >
-          {advice.titleText}
+          {advice.adviceTitle}
         </Text>
         <Box fontSize={config.FOREPLAN_SUMMARY_ADVICE_PARAGRAPH_FONT_SIZE}>
           <Markdown
@@ -473,7 +473,7 @@ const ForeplanAdvice: FC = memo(() => {
               },
             }}
           >
-            {advice.paragraphText}
+            {advice.adviceParagraph}
           </Markdown>
         </Box>
       </Stack>
@@ -490,13 +490,15 @@ enum TipType {
 }
 
 const Waffle: FC<{
-  failRate: { low: number; mid: number; high: number };
-}> = memo(({ failRate }) => {
+  failRateLow: number;
+  failRateMid: number;
+  failRateHigh: number;
+}> = memo(({ failRateLow, failRateMid, failRateHigh }) => {
   const config = useContext(ConfigContext);
 
   const colors = config.FOREPLAN_SUMMARY_WAFFLE_COLORS_FAIL_RATE;
-  const nLow = failRate.low;
-  const nMid = nLow + failRate.mid;
+  const nLow = failRateLow;
+  const nMid = nLow + failRateMid;
   // const nHigh = nMid + (failRate?.mid ?? 0);
 
   const rowRange = range(0, 10);
@@ -521,15 +523,15 @@ const Waffle: FC<{
               let data_for: TipType;
               if (n < nLow) {
                 fill = colors.low;
-                data_tip = failRate.low + "%";
+                data_tip = failRateLow + "%";
                 data_for = TipType.lowFailRate;
               } else if (n < nMid) {
                 fill = colors.mid;
-                data_tip = failRate.mid + "%";
+                data_tip = failRateMid + "%";
                 data_for = TipType.midFailRate;
               } else {
                 fill = colors.high;
-                data_tip = failRate.high + "%";
+                data_tip = failRateHigh + "%";
                 data_for = TipType.HighFailRate;
               }
               return (
@@ -557,15 +559,15 @@ const Waffle: FC<{
 
 const ForeplanWaffleChart: FC = memo(() => {
   const [advice] = useForeplanAdvice();
-  if (advice?.failRate) {
-    return (
-      <Box color="black">
-        <Waffle failRate={advice.failRate} />
-      </Box>
-    );
-  }
-
-  return null;
+  return (
+    <Box color="black">
+      <Waffle
+        failRateLow={advice?.failRateLow ?? 33}
+        failRateMid={advice?.failRateMid ?? 66}
+        failRateHigh={advice?.failRateHigh ?? 100}
+      />
+    </Box>
+  );
 });
 
 const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(

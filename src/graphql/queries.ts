@@ -1,10 +1,12 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
+import { PerformanceByLoad } from "../../api/entities/data/foreplan";
+import { Program } from "../../api/entities/data/program";
+import { Student } from "../../api/entities/data/student";
 import { StateCourse, TermType, UserType } from "../../constants";
 import { baseConfig } from "../../constants/baseConfig";
 import { UserConfig } from "../../constants/userConfig";
 import { IfImplements } from "../../typings/utils";
-import { Program, Student } from "./medium";
 
 export type IUserData = {
   email: string;
@@ -306,14 +308,17 @@ export const CONFIG_QUERY: DocumentNode<{
 
 export const STUDENT_LIST: DocumentNode<
   {
-    students: {
-      id: string;
-      progress: number;
-      start_year: number;
-      dropout?: {
-        prob_dropout: number;
-      };
-    }[];
+    students: IfImplements<
+      {
+        id: string;
+        progress: number;
+        start_year: number;
+        dropout?: {
+          prob_dropout?: number;
+        };
+      },
+      Student
+    >[];
   },
   {
     program_id: string;
@@ -327,6 +332,41 @@ export const STUDENT_LIST: DocumentNode<
       dropout {
         prob_dropout
       }
+    }
+  }
+`;
+
+export const PERFORMANCE_BY_LOAD_ADVICES: DocumentNode<
+  {
+    performanceLoadAdvices: Pick<
+      PerformanceByLoad,
+      | "id"
+      | "loadUnit"
+      | "lowerBoundary"
+      | "upperBoundary"
+      | "failRateLow"
+      | "failRateMid"
+      | "failRateHigh"
+      | "adviceTitle"
+      | "adviceParagraph"
+    >[];
+  },
+  {
+    student_id?: string;
+    program_id?: string;
+  }
+> = gql`
+  mutation($student_id: String, $program_id: String) {
+    performanceLoadAdvices(student_id: $student_id, program_id: $program_id) {
+      id
+      loadUnit
+      lowerBoundary
+      upperBoundary
+      failRateLow
+      failRateMid
+      failRateHigh
+      adviceTitle
+      adviceParagraph
     }
   }
 `;

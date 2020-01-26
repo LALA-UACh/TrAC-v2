@@ -84,6 +84,7 @@ type Mutation {
   login(email: EmailAddress!, password: String!): AuthResult!
   logout: Boolean!
   mailAllLockedUsers: [JSONObject!]!
+  performanceLoadAdvices(program_id: String, student_id: String): [PerformanceByLoad!]!
   program(id: String, student_id: String): Program!
   student(program_id: String, student_id: String): Student
   track(data: String!, datetime_client: DateTime!): Boolean!
@@ -122,7 +123,6 @@ type Query {
   config: JSONObject!
   currentUser: AuthResult
   myPrograms: [Program!]!
-  performanceLoadAdvices(program_id: String, student_id: String): [PerformanceByLoad!]!
   programs: [Program!]!
   students(last_n_years: Int = 1, program_id: String!): [Student!]!
   users: [User!]!
