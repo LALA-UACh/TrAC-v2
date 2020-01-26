@@ -9,18 +9,100 @@ import { LAST_TIME_USED, StateCourse } from "../../../constants";
 import { ICourse } from "../../../interfaces";
 import { useUser } from "../../utils/useUser";
 
+const emptyObject = Object.freeze({});
+
 export type ICreditsNumber = { credits: number };
 
-export interface IForeplanData {
+export interface IForeplanActiveData {
   active: boolean;
   foreplanCourses: Record<string, Pick<ICourse, "name"> & ICreditsNumber>;
   totalCreditsTaken: number;
   advices: PerformanceByLoad[];
 }
 
+export interface IForeplanHelperData {
+  courseDirectTake: Record<string, boolean>;
+  courseFailRate: Record<string, number>;
+  courseEffort: Record<string, number>;
+}
+
+const defaultForeplanHelperStore: IForeplanHelperData = {
+  courseDirectTake: emptyObject,
+  courseFailRate: emptyObject,
+  courseEffort: emptyObject,
+};
+
+const ForeplanHelperStore = createStore({
+  initialState: defaultForeplanHelperStore,
+  actions: {
+    setDirectTakeData: (data: string[]) => ({ setState }) => {
+      setState({
+        courseDirectTake: data.reduce<Record<string, boolean>>(
+          (acum, value) => {
+            acum[value] = true;
+
+            return acum;
+          },
+          {}
+        ),
+      });
+    },
+    setFailRateData: (data: { code: string; failRate: number }[]) => ({
+      setState,
+    }) => {
+      setState({
+        courseFailRate: data.reduce<Record<string, number>>(
+          (acum, { code, failRate }) => {
+            acum[code] = failRate;
+            return acum;
+          },
+          {}
+        ),
+      });
+    },
+    setEffortData: (data: { code: string; effort: number }[]) => ({
+      setState,
+    }) => {
+      setState({
+        courseEffort: data.reduce<Record<string, number>>(
+          (acum, { code, effort }) => {
+            acum[code] = effort;
+            return acum;
+          },
+          {}
+        ),
+      });
+    },
+  },
+});
+
+export const useForeplanHelperActions = createHook(ForeplanHelperStore, {
+  selector: null,
+});
+
+export const useForeplanIsDirectTake = createHook(ForeplanHelperStore, {
+  selector: ({ courseDirectTake }, { code }: { code: string }) => {
+    return courseDirectTake[code] || false;
+  },
+});
+
+export const useForeplanCourseFailRate = createHook(ForeplanHelperStore, {
+  selector: ({ courseFailRate }, { code }: { code: string }) => {
+    return courseFailRate[code] || 0;
+  },
+});
+
+export const useForeplanCourseEffort = createHook(ForeplanHelperStore, {
+  selector: ({ courseEffort }, { code }: { code: string }) => {
+    return courseEffort[code] || 1;
+  },
+});
+
 const rememberForeplanDataKey = "TrAC_foreplan_remember_data";
 
-const initForeplanData = (initialData = defaultForeplanData): IForeplanData => {
+const initForeplanActiveData = (
+  initialData = defaultForeplanActiveData
+): IForeplanActiveData => {
   try {
     const rememberedData = localStorage.getItem(rememberForeplanDataKey);
     if (!rememberedData) return initialData;
@@ -30,15 +112,15 @@ const initForeplanData = (initialData = defaultForeplanData): IForeplanData => {
   }
 };
 
-const defaultForeplanData: IForeplanData = {
+const defaultForeplanActiveData: IForeplanActiveData = {
   active: false,
-  foreplanCourses: {},
+  foreplanCourses: emptyObject,
   totalCreditsTaken: 0,
   advices: [],
 };
 
-const ForeplanStore = createStore({
-  initialState: initForeplanData(),
+const ForeplanActiveStore = createStore({
+  initialState: initForeplanActiveData(),
   actions: {
     activateForeplan: () => ({ setState }) => {
       setState({
@@ -52,7 +134,7 @@ const ForeplanStore = createStore({
     },
     addCourseForeplan: (
       course: string,
-      data: IForeplanData["foreplanCourses"][string]
+      data: IForeplanActiveData["foreplanCourses"][string]
     ) => ({ setState, getState }) => {
       const foreplanCourses = { ...getState().foreplanCourses, [course]: data };
       const totalCreditsTaken = reduce(
@@ -84,7 +166,7 @@ const ForeplanStore = createStore({
         totalCreditsTaken,
       });
     },
-    setForeplanAdvices: (advices: IForeplanData["advices"]) => ({
+    setForeplanAdvices: (advices: IForeplanActiveData["advices"]) => ({
       setState,
     }) => {
       setState({
@@ -92,55 +174,55 @@ const ForeplanStore = createStore({
       });
     },
     reset: () => ({ setState }) => {
-      setState(defaultForeplanData);
+      setState(defaultForeplanActiveData);
     },
   },
   name: "ForeplanContext",
 });
 
-export const useForeplanData = createHook(ForeplanStore);
+export const useForeplanActiveData = createHook(ForeplanActiveStore);
 
-export const useForeplanActions = createHook(ForeplanStore, {
+export const useForeplanActiveActions = createHook(ForeplanActiveStore, {
   selector: null,
 });
 
-export const useIsForeplanCourseChecked = createHook(ForeplanStore, {
+export const useIsForeplanCourseChecked = createHook(ForeplanActiveStore, {
   selector: ({ foreplanCourses }, { code }: { code: string }) => {
     return !!foreplanCourses[code];
   },
 });
 
-export const useForeplanTotalCreditsTaken = createHook(ForeplanStore, {
+export const useForeplanTotalCreditsTaken = createHook(ForeplanActiveStore, {
   selector: ({ totalCreditsTaken }) => {
     return totalCreditsTaken;
   },
 });
 
-export const useForeplanCoursesSize = createHook(ForeplanStore, {
+export const useForeplanCoursesSize = createHook(ForeplanActiveStore, {
   selector: ({ foreplanCourses }) => {
     return size(foreplanCourses);
   },
 });
 
-export const useAnyForeplanCourses = createHook(ForeplanStore, {
+export const useAnyForeplanCourses = createHook(ForeplanActiveStore, {
   selector: ({ foreplanCourses }) => {
     return size(foreplanCourses) > 0;
   },
 });
 
-export const useIsForeplanActive = createHook(ForeplanStore, {
+export const useIsForeplanActive = createHook(ForeplanActiveStore, {
   selector: ({ active }) => {
     return active;
   },
 });
 
-export const useForeplanCourses = createHook(ForeplanStore, {
+export const useForeplanCourses = createHook(ForeplanActiveStore, {
   selector: ({ foreplanCourses }) => {
     return foreplanCourses;
   },
 });
 
-export const useIsPossibleToTakeForeplan = createHook(ForeplanStore, {
+export const useIsPossibleToTakeForeplan = createHook(ForeplanActiveStore, {
   selector: ({ active }, { state }: { state: StateCourse | undefined }) => {
     if (active) {
       switch (state) {
@@ -156,7 +238,7 @@ export const useIsPossibleToTakeForeplan = createHook(ForeplanStore, {
   },
 });
 
-export const useForeplanAdvice = createHook(ForeplanStore, {
+export const useForeplanAdvice = createHook(ForeplanActiveStore, {
   selector: ({ advices, totalCreditsTaken }) => {
     return (
       advices.find(({ lowerBoundary, upperBoundary }) => {
@@ -177,7 +259,7 @@ export const useForeplanAdvice = createHook(ForeplanStore, {
 });
 
 export const ForeplanContextManager: FC = () => {
-  const [state, { reset, disableForeplan }] = useForeplanData();
+  const [state, { reset, disableForeplan }] = useForeplanActiveData();
 
   const { user } = useUser({
     fetchPolicy: "cache-only",

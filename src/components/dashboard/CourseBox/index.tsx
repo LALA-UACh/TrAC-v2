@@ -1,7 +1,8 @@
 import classNames from "classnames";
 import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
-import { random, range, some, truncate } from "lodash";
+import { some, truncate } from "lodash";
+import dynamic from "next/dynamic";
 import React, {
   Dispatch,
   FC,
@@ -13,7 +14,6 @@ import React, {
 } from "react";
 import ReactTooltip from "react-tooltip";
 import { useDebounce, useUpdateEffect } from "react-use";
-import { Checkbox } from "semantic-ui-react";
 
 import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/core";
 
@@ -21,10 +21,7 @@ import { StateCourse, termTypeToNumber } from "../../../../constants";
 import { ICourse, ITakenCourse, ITakenSemester } from "../../../../interfaces";
 import { useUser } from "../../../utils/useUser";
 import { ConfigContext } from "../../Config";
-import {
-  useIsForeplanCourseChecked,
-  useIsPossibleToTakeForeplan,
-} from "../../foreplan/ForeplanContext";
+import { useIsPossibleToTakeForeplan } from "../../foreplan/ForeplanContext";
 import { useTracking } from "../../Tracking";
 import {
   pairTermYear,
@@ -36,6 +33,7 @@ import {
   useExplicitSemester,
 } from "../CoursesDashboardContext";
 import { Histogram } from "../Histogram";
+import { ForeplanCourseCheckbox, ForeplanCourseStats } from "./Foreplan";
 import styles from "./index.module.css";
 
 export const passColorScale = scaleLinear<string, number>();
@@ -391,103 +389,6 @@ export const ReqCircleComponent: FC<Pick<ICourse, "code">> = memo(
     );
   }
 );
-
-const ForeplanCourseStats: FC<Pick<ICourse, "code">> = memo(({ code }) => {
-  const randomFailRate = Math.random(); //TODO: Use real data
-
-  const fillColor =
-    randomFailRate >= 0.3
-      ? ((failRateColorScaleNegative(randomFailRate) as unknown) as string)
-      : ((failRateColorScalePositive(randomFailRate) as unknown) as string);
-
-  const { user } = useUser();
-
-  return (
-    <motion.div
-      key="foreplanCourseStats"
-      initial={{
-        opacity: 0,
-      }}
-      animate={{ opacity: 1 }}
-      exit={{
-        opacity: 0,
-      }}
-      className={styles.foreplanCourseStats}
-    >
-      {user?.config.FOREPLAN_COURSE_FAIL_RATE_STATS && (
-        <svg height="10px" width="10px">
-          <rect width="10px" height="10px" fill={fillColor} />
-        </svg>
-      )}
-
-      {user?.config.FOREPLAN_COURSE_EFFORT_STATS && (
-        <svg
-          className={styles.foreplanCourseEffortStats}
-          height="10px"
-          width="20px"
-        >
-          {range(0, random(1, 5)).map(i => {
-            //TODO: Use real data
-            return (
-              <rect
-                key={i}
-                height="10px"
-                width="1px"
-                x={i * 3}
-                y={0}
-                fill="black"
-              />
-            );
-          })}
-        </svg>
-      )}
-    </motion.div>
-  );
-});
-
-const ForeplanCourseCheckbox: FC<Pick<
-  ICourse,
-  "code" | "credits" | "name"
->> = memo(({ code, credits, name }) => {
-  const [
-    checked,
-    { addCourseForeplan, removeCourseForeplan },
-  ] = useIsForeplanCourseChecked({ code });
-
-  return (
-    <motion.div
-      key="foreplanCourseCheckbox"
-      initial={{
-        opacity: 0,
-      }}
-      animate={{ opacity: 1 }}
-      exit={{
-        opacity: 0,
-      }}
-      className={styles.foreplanCourseCheckbox}
-    >
-      <Checkbox
-        checked={checked}
-        onChange={ev => {
-          ev.preventDefault();
-          ev.stopPropagation();
-          if (checked) {
-            removeCourseForeplan(code);
-          } else {
-            addCourseForeplan(code, {
-              credits: credits?.[0]?.value ?? 0,
-              name,
-            });
-          }
-        }}
-        className={classNames({
-          [styles.foreplanCheckboxInput]: true,
-          [random(0, 1) === 0 ? styles.direct : styles.indirect]: true, //TODO: Use real data
-        })}
-      />
-    </motion.div>
-  );
-});
 
 const GradeComponent: FC<Pick<CurrentTakenData, "state" | "grade">> = memo(
   ({ grade, state }) => {

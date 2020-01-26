@@ -36,7 +36,7 @@ import { ConfigContext } from "../Config";
 import {
   ICreditsNumber,
   useAnyForeplanCourses,
-  useForeplanActions,
+  useForeplanActiveActions,
   useForeplanAdvice,
   useForeplanCourses,
   useForeplanCoursesSize,
@@ -209,7 +209,7 @@ const ForeplanContentRowList: FC = memo(() => {
 const ForeplanContentBadge: FC<Pick<ICourse, "code" | "name"> &
   ICreditsNumber> = memo(({ code, name, credits }) => {
   const config = useContext(ConfigContext);
-  const [, { removeCourseForeplan }] = useForeplanActions();
+  const [, { removeCourseForeplan }] = useForeplanActiveActions();
   const [expanded, setExpanded] = useState(false);
   const width = useMemo(() => {
     const width =

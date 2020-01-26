@@ -1,4 +1,4 @@
-import { uniq } from "lodash";
+import { flatMapDeep, random, sampleSize, uniq } from "lodash";
 import dynamic from "next/dynamic";
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
@@ -22,7 +22,8 @@ import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
 import {
   ForeplanContextManager,
-  useForeplanActions,
+  useForeplanActiveActions,
+  useForeplanHelperActions,
 } from "../components/foreplan/ForeplanContext";
 import { LoadingPage } from "../components/Loading";
 import { TrackingManager, useTracking } from "../components/Tracking";
@@ -146,23 +147,49 @@ const Dashboard: FC = () => {
     }
   }, [user, searchProgram, searchStudent, searchPerformanceByLoad]);
 
-  const [
-    ,
-    { setForeplanAdvices, disableForeplan, reset: resetForeplan },
-  ] = useForeplanActions();
+  const [, foreplanActiveActions] = useForeplanActiveActions();
+  const [, foreplanHelperActions] = useForeplanHelperActions();
 
   useEffect(() => {
-     if (mock) {
-      setForeplanAdvices(mockData?.default.performanceByLoad ?? []);
+    if (mock) {
+      foreplanActiveActions.setForeplanAdvices(
+        mockData?.default.performanceByLoad ?? []
+      );
+      const allCodes = flatMapDeep(
+        mockData?.default.searchProgramData.program.curriculums.map(
+          ({ semesters }) => {
+            return semesters.map(({ courses }) => {
+              return courses.map(({ code }) => {
+                return code;
+              });
+            });
+          }
+        )
+      );
+      foreplanHelperActions.setDirectTakeData(
+        sampleSize(allCodes, allCodes.length / 2)
+      );
+      foreplanHelperActions.setFailRateData(
+        allCodes.map(code => {
+          return { code, failRate: Math.random() };
+        })
+      );
+      foreplanHelperActions.setEffortData(
+        allCodes.map(code => {
+          return { code, effort: random(1, 5) };
+        })
+      );
     } else {
       if (user?.type !== UserType.Student) {
-        resetForeplan();
+        foreplanActiveActions.reset();
       }
       if (dataPerformanceByLoad?.performanceLoadAdvices) {
-         setForeplanAdvices(dataPerformanceByLoad.performanceLoadAdvices);
+        foreplanActiveActions.setForeplanAdvices(
+          dataPerformanceByLoad.performanceLoadAdvices
+        );
       } else {
-        disableForeplan();
-        setForeplanAdvices([]);
+        foreplanActiveActions.disableForeplan();
+        foreplanActiveActions.setForeplanAdvices([]);
       }
     }
   }, [
@@ -170,8 +197,8 @@ const Dashboard: FC = () => {
     mock,
     user,
     mockData,
-    setForeplanAdvices,
-    disableForeplan,
+    foreplanActiveActions,
+    foreplanHelperActions,
   ]);
 
   const {
