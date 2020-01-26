@@ -252,12 +252,6 @@ const ForeplanAdvice: FC = memo(() => {
   return null;
 });
 
-enum TipType {
-  lowFailRate = "low",
-  midFailRate = "mid",
-  HighFailRate = "high",
-}
-
 const Waffle: FC<{
   failRateLow: number;
   failRateMid: number;
@@ -289,25 +283,26 @@ const Waffle: FC<{
               const n = key1 * 10 + key2;
               let fill: string;
               let data_tip: string;
-              let data_for: TipType;
+              let data_type: "success" | "warning" | "error";
               if (n < nLow) {
                 fill = colors.low;
                 data_tip = failRateLow + "%";
-                data_for = TipType.lowFailRate;
+                data_type = "success";
               } else if (n < nMid) {
                 fill = colors.mid;
                 data_tip = failRateMid + "%";
-                data_for = TipType.midFailRate;
+                data_type = "warning";
               } else {
                 fill = colors.high;
                 data_tip = failRateHigh + "%";
-                data_for = TipType.HighFailRate;
+                data_type = "error";
               }
               return (
                 <rect
                   key={n}
+                  data-type={data_type}
                   data-tip={data_tip}
-                  data-for={data_for}
+                  data-for="waffle_tooltip"
                   x={rectSize * key2 * separation}
                   y={rectSize * key1 * separation}
                   width={rectSize}
@@ -319,9 +314,7 @@ const Waffle: FC<{
           })}
         </svg>
       </svg>
-      <ReactTooltip id={TipType.lowFailRate} delayHide={200} type="success" />
-      <ReactTooltip id={TipType.midFailRate} delayHide={200} type="warning" />
-      <ReactTooltip id={TipType.HighFailRate} delayHide={200} type="error" />
+      <ReactTooltip id="waffle_tooltip" delayHide={300} />
     </>
   );
 });
