@@ -52,9 +52,9 @@ export const baseConfig = {
   FOREPLAN_SUMMARY_BADGE_BORDER_RADIUS: "10px",
   FOREPLAN_SUMMARY_BADGE_COURSE_CREDITS_WIDTH: [
     { min: 0, max: 0, width: "8.2em" },
-    { min: 1, max: 2, width: "8.8em" },
-    { min: 3, max: 4, width: "9.2em" },
-    { min: 5, max: 6, width: "9.7em" },
+    { min: 1, max: 2, width: "8.9em" },
+    { min: 3, max: 4, width: "9.4em" },
+    { min: 5, max: 6, width: "9.8em" },
     { min: 7, max: 12, width: "10.5em" },
     { min: 13, max: 999, width: "11em" },
   ],
@@ -80,8 +80,8 @@ export const baseConfig = {
   FOREPLAN_SUMMARY_TAB_COLOR: "#888",
   FOREPLAN_SUMMARY_TAB_ICON_SIZE: "1.3em",
   FOREPLAN_SUMMARY_TAB_NUMBER_FONT_SIZE: {
-    oneDigit: "1.2em",
-    twoDigits: "1.5em",
+    oneDigit: "1.5em",
+    twoDigits: "1.2em",
   },
   FOREPLAN_SUMMARY_TAB_WIDTH: "2em",
   FOREPLAN_SUMMARY_TITLE_FONT_SIZE: "1.5em",

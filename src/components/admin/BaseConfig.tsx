@@ -1,4 +1,4 @@
-import { isEqual, toSafeInteger, toString } from "lodash";
+import { isEqual, sortBy, toSafeInteger, toString } from "lodash";
 import React, { FC, memo, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -100,9 +100,9 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
                   placeholder={baseConfigAdmin[configKey]}
                   onChange={(_, { value }) => {
                     value = toString(value);
-                    setState(
-                      isJSON(toString(value)) ? JSON.parse(value) : configValue
-                    );
+                    if (isJSON(value)) {
+                      setState(JSON.parse(value));
+                    }
                   }}
                   rows={6}
                   style={{ width: 300 }}
@@ -114,7 +114,9 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
         })()}
         {!isEqual(state, configValue) && (
           <Confirm
-            content={`Are you sure you want to modify "${configKey}" from "${configValue}" to "${state}"?`}
+            content={`Are you sure you want to modify "${configKey}" from "${configValueToString(
+              configValue
+            )}" to "${configValueToString(state)}"?`}
           >
             <Button
               disabled={loading}
@@ -154,7 +156,7 @@ export const AdminConfig = () => {
       width="fit-content"
       m={5}
     >
-      {baseConfigKeys.map(configKey => {
+      {sortBy(baseConfigKeys).map(configKey => {
         return (
           <ConfigInput
             key={configKey}
