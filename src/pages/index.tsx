@@ -39,9 +39,7 @@ const Dropout = dynamic(() => import("../components/dashboard/Dropout"));
 const ForeplanModeSwitch = dynamic(() =>
   import("../components/foreplan/ForeplanModeSwitch")
 );
-const ForeplanSummary = dynamic(() =>
-  import("../components/foreplan/ForeplanSummary")
-);
+const ForeplanSummary = dynamic(() => import("../components/foreplan/Summary"));
 
 const Dashboard: FC = () => {
   const [program, setProgram] = useState<string | undefined>(undefined);

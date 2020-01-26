@@ -1,21 +1,19 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { map, range, truncate } from "lodash";
+import { range } from "lodash";
 import Markdown from "markdown-to-jsx";
+import dynamic from "next/dynamic";
 import React, {
   Dispatch,
   FC,
   memo,
   SetStateAction,
-  useCallback,
   useContext,
   useMemo,
-  useRef,
-  useState,
 } from "react";
 import { FaGripLinesVertical } from "react-icons/fa";
-import { IoMdCloseCircleOutline, IoMdHelpCircleOutline } from "react-icons/io";
+import { IoMdHelpCircleOutline } from "react-icons/io";
 import ReactTooltip from "react-tooltip";
-import { useClickAway, useWindowSize } from "react-use";
+import { useWindowSize } from "react-use";
 import { useRememberState } from "use-remember-state";
 
 import {
@@ -30,20 +28,18 @@ import {
   useDisclosure,
 } from "@chakra-ui/core";
 
-import { ICourse } from "../../../interfaces";
-import { useUser } from "../../utils/useUser";
-import { ConfigContext } from "../Config";
+import { useUser } from "../../../utils/useUser";
+import { ConfigContext } from "../../Config";
 import {
-  ICreditsNumber,
   useAnyForeplanCourses,
-  useForeplanActiveActions,
   useForeplanAdvice,
-  useForeplanCourses,
   useForeplanCoursesSize,
   useForeplanTotalCreditsTaken,
   useIsForeplanActive,
-} from "./ForeplanContext";
+} from "../ForeplanContext";
 
+const ForeplanContentRowList = dynamic(() => import("./List"));
+const ForeplanContentBadgesList = dynamic(() => import("./Badges"));
 interface ExpandedState {
   expanded: boolean;
   setExpanded: Dispatch<SetStateAction<boolean>>;
@@ -142,233 +138,6 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
         fontSize={config.FOREPLAN_SUMMARY_TAB_ICON_SIZE}
         color={config.FOREPLAN_SUMMARY_TAB_COLOR}
       />
-    </Flex>
-  );
-});
-
-const ForeplanContentRowListItem: FC<Pick<ICourse, "code" | "name"> &
-  ICreditsNumber> = memo(({ code, name, credits }) => {
-  // const [data, { removeCourseForeplan }] = useForeplanActions();
-  const config = useContext(ConfigContext);
-
-  return (
-    <Flex
-      width="100%"
-      justifyContent="space-between"
-      alignItems="center"
-      color="white"
-      backgroundColor="#666"
-      borderRadius="10px"
-      p={1}
-      m={1}
-    >
-      <Text pl={1} pt={1} pb={1} m={0} textAlign="start" width="7em">
-        {code}
-      </Text>
-      <Text m={0} textAlign="start" width="20em">
-        {truncate(name, { length: 30 })}
-      </Text>
-      <Text justifySelf="flex-end" textAlign="end">
-        {config.CREDITS_LABEL.toLowerCase().slice(0, 4)}: <b>{credits}</b>
-      </Text>
-      <Box as={IoMdCloseCircleOutline} size="20px" />
-    </Flex>
-  );
-});
-
-const ForeplanContentRowList: FC = memo(() => {
-  const [foreplanCourses] = useForeplanCourses();
-
-  return (
-    <AnimatePresence>
-      {map(foreplanCourses, ({ name, credits }, course) => {
-        return (
-          <motion.div
-            initial={{
-              height: 50,
-            }}
-            animate={{ opacity: 1 }}
-            exit={{
-              opacity: 0,
-            }}
-            key={course}
-            style={{ width: "100%" }}
-          >
-            <ForeplanContentRowListItem
-              code={course}
-              name={name}
-              credits={credits}
-            />
-          </motion.div>
-        );
-      })}
-    </AnimatePresence>
-  );
-});
-
-const ForeplanContentBadge: FC<Pick<ICourse, "code" | "name"> &
-  ICreditsNumber> = memo(({ code, name, credits }) => {
-  const config = useContext(ConfigContext);
-  const [, { removeCourseForeplan }] = useForeplanActiveActions();
-  const [expanded, setExpanded] = useState(false);
-  const width = useMemo(() => {
-    const width =
-      config.FOREPLAN_SUMMARY_BADGE_COURSE_CREDITS_WIDTH.find(
-        ({ min, max }) => {
-          if (credits >= min && credits <= max) {
-            return true;
-          }
-          return false;
-        }
-      )?.width ??
-      config.FOREPLAN_SUMMARY_BADGE_COURSE_CREDITS_WIDTH[0]?.width ??
-      "7em";
-    return width;
-  }, [credits, config]);
-
-  const ref = useRef(null);
-
-  const clickAway = useCallback(() => {
-    if (expanded) {
-      setExpanded(false);
-    }
-  }, [expanded, setExpanded]);
-
-  const expandBadge = useCallback(
-    (ev: React.MouseEvent<any, MouseEvent>) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      if (!expanded) {
-        setExpanded(true);
-      }
-    },
-    [expanded, setExpanded]
-  );
-
-  useClickAway(ref, clickAway, ["click", "mousedown"]);
-
-  return (
-    <div ref={ref}>
-      <Stack
-        m={2}
-        p={2}
-        pl="1em"
-        width={width}
-        height="fit-content"
-        fontSize={config.FOREPLAN_SUMMARY_BADGE_FONT_SIZE}
-        onClick={expandBadge}
-        backgroundColor={config.FOREPLAN_SUMMARY_BADGE_BACKGROUND_COLOR}
-        color="black"
-        transition="all 1s ease-in-out"
-        borderRadius={config.FOREPLAN_SUMMARY_BADGE_BORDER_RADIUS}
-        cursor={expanded ? undefined : "pointer"}
-      >
-        <Text
-          key={expanded ? 1 : 0}
-          textAlign={expanded ? "initial" : "center"}
-          onClick={expandBadge}
-          fontWeight={expanded ? "bold" : undefined}
-        >
-          {expanded ? (
-            <span>{code}</span>
-          ) : (
-            <span>
-              {code} (<b>{credits}</b>)
-            </span>
-          )}
-        </Text>
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{
-                opacity: 0,
-              }}
-              animate={{ opacity: 1 }}
-              exit={{
-                opacity: 0,
-              }}
-              key="name"
-              onClick={expandBadge}
-            >
-              <Text
-                pb={4}
-                wordBreak="break-word"
-                fontSize={config.FOREPLAN_SUMMARY_BADGE_COURSE_NAME_FONT_SIZE}
-              >
-                {name}
-              </Text>
-            </motion.div>
-          )}
-          {expanded && (
-            <motion.div
-              initial={{
-                opacity: 0,
-              }}
-              animate={{ opacity: 1 }}
-              exit={{
-                opacity: 0,
-              }}
-              key="credits"
-            >
-              <Flex
-                justifyContent="space-between"
-                alignItems="center"
-                fontSize={
-                  config.FOREPLAN_SUMMARY_BADGE_EXPANDED_CREDITS_FONT_SIZE
-                }
-              >
-                <Text
-                  m={0}
-                  fontWeight="bold"
-                  textAlign={expanded ? "initial" : "center"}
-                >
-                  {config.CREDITS_LABEL}: {credits}
-                </Text>
-                <Box
-                  as={IoMdCloseCircleOutline}
-                  size="20px"
-                  cursor="pointer"
-                  onClick={ev => {
-                    ev.stopPropagation();
-                    removeCourseForeplan(code);
-                  }}
-                />
-              </Flex>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Stack>
-    </div>
-  );
-});
-
-const ForeplanContentBadgesList: FC = memo(() => {
-  const [foreplanCourses] = useForeplanCourses();
-
-  return (
-    <Flex wrap="wrap">
-      <AnimatePresence>
-        {map(foreplanCourses, ({ name, credits }, course) => {
-          return (
-            <motion.div
-              initial={{
-                opacity: 0,
-              }}
-              animate={{ opacity: 1 }}
-              exit={{
-                opacity: 0,
-              }}
-              key={course}
-            >
-              <ForeplanContentBadge
-                code={course}
-                name={name}
-                credits={credits}
-              />
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
     </Flex>
   );
 });

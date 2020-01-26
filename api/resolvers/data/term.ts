@@ -165,7 +165,7 @@ export class TermResolver {
       studentTermData,
       `Taken courses could not be found for ${id} term`
     );
-    // TODO: Optimize in a single SQL query
+
     const takenCoursesData = await StudentCourseTable()
       .select("id", "course_taken", "course_equiv", "elect_equiv")
       .where({

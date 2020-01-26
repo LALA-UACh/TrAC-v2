@@ -33,8 +33,11 @@ import {
   useExplicitSemester,
 } from "../CoursesDashboardContext";
 import { Histogram } from "../Histogram";
-import { ForeplanCourseCheckbox, ForeplanCourseStats } from "./Foreplan";
 import styles from "./index.module.css";
+
+const ForeplanCourseCheckbox = dynamic(() => import("./ForeplanCheckbox"));
+
+const ForeplanCourseStats = dynamic(() => import("./ForeplanStats"));
 
 export const passColorScale = scaleLinear<string, number>();
 
