@@ -40,7 +40,7 @@ const ForeplanModeSwitch = dynamic(() =>
   import("../components/foreplan/ModeSwitch")
 );
 const ForeplanSummary = dynamic(() =>
-  import("../components/foreplan/summary/MainBox")
+  import("../components/foreplan/foreplanSummary/MainBox")
 );
 
 const Dashboard: FC = () => {
