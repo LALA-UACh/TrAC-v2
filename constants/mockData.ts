@@ -5949,9 +5949,9 @@ const data: {
       adviceTitle: "¡Tu carga de estudio es alta!",
       adviceParagraph:
         "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-      failRateLow: 5,
-      failRateMid: 20,
-      failRateHigh: 75,
+      failRateLow: 30,
+      failRateMid: 45,
+      failRateHigh: 25,
       loadUnit: PerformanceLoadUnit.Credits,
     },
   ],
