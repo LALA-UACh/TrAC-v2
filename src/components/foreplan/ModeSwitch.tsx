@@ -2,8 +2,8 @@ import { FC, useContext } from "react";
 
 import { Button } from "@chakra-ui/core";
 
-import { ConfigContext } from "../Config";
-import { useIsForeplanActive } from "./ForeplanContext";
+import { ConfigContext } from "../../context/Config";
+import { useIsForeplanActive } from "../../context/ForeplanContext";
 
 const ForeplanModeSwitch: FC = () => {
   const [

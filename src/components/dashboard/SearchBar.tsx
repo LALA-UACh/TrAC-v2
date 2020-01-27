@@ -33,10 +33,10 @@ import {
   Tag,
 } from "@chakra-ui/core";
 
+import { ConfigContext } from "../../context/Config";
+import { useTracking } from "../../context/Tracking";
 import { MY_PROGRAMS } from "../../graphql/queries";
 import { useUser } from "../../utils/useUser";
-import { ConfigContext } from "../Config";
-import { useTracking } from "../Tracking";
 
 const StudentList = dynamic(() => import("./StudentList"));
 

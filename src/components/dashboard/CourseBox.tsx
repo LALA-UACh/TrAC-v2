@@ -17,12 +17,9 @@ import { useDebounce, useUpdateEffect } from "react-use";
 
 import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/core";
 
-import { StateCourse, termTypeToNumber } from "../../../../constants";
-import { ICourse, ITakenCourse, ITakenSemester } from "../../../../interfaces";
-import { useUser } from "../../../utils/useUser";
-import { ConfigContext } from "../../Config";
-import { useIsPossibleToTakeForeplan } from "../../foreplan/ForeplanContext";
-import { useTracking } from "../../Tracking";
+import { StateCourse, termTypeToNumber } from "../../../constants";
+import { ICourse, ITakenCourse, ITakenSemester } from "../../../interfaces";
+import { ConfigContext } from "../../context/Config";
 import {
   pairTermYear,
   useActiveCourse,
@@ -31,21 +28,24 @@ import {
   useCheckExplicitSemester,
   useDashboardCoursesActions,
   useExplicitSemester,
-} from "../CoursesDashboardContext";
-import { Histogram } from "../Histogram";
-import styles from "./index.module.css";
+} from "../../context/CoursesDashboardContext";
+import { useIsPossibleToTakeForeplan } from "../../context/ForeplanContext";
+import { useTracking } from "../../context/Tracking";
+import { useUser } from "../../utils/useUser";
+import styles from "./CourseBox.module.css";
+import { Histogram } from "./Histogram";
 
-const ForeplanCourseCheckbox = dynamic(() => import("./ForeplanCheckbox"));
+const ForeplanCourseCheckbox = dynamic(() =>
+  import("../foreplan/courseBox/Checkbox")
+);
 
-const ForeplanCourseStats = dynamic(() => import("./ForeplanStats"));
+const ForeplanCourseStats = dynamic(() =>
+  import("../foreplan/courseBox/Stats")
+);
 
 export const passColorScale = scaleLinear<string, number>();
 
 export const failColorScale = scaleLinear<string, number>();
-
-export const failRateColorScalePositive = scaleLinear<string, number>();
-
-export const failRateColorScaleNegative = scaleLinear<string, number>();
 
 export interface OpenState {
   open: boolean;

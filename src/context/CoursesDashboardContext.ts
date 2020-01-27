@@ -2,9 +2,9 @@ import { FC, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
 
-import { ITakenSemester } from "../../../interfaces";
-import { stringListToBooleanMap } from "../../utils";
-import { useTracking } from "../Tracking";
+import { ITakenSemester } from "../../interfaces";
+import { stringListToBooleanMap } from "../utils";
+import { useTracking } from "./Tracking";
 
 const emDash = "—";
 

@@ -28,15 +28,15 @@ import {
   useDisclosure,
 } from "@chakra-ui/core";
 
-import { useUser } from "../../../utils/useUser";
-import { ConfigContext } from "../../Config";
+import { ConfigContext } from "../../../context/Config";
 import {
   useAnyForeplanCourses,
   useForeplanAdvice,
   useForeplanCoursesSize,
   useForeplanTotalCreditsTaken,
   useIsForeplanActive,
-} from "../ForeplanContext";
+} from "../../../context/ForeplanContext";
+import { useUser } from "../../../utils/useUser";
 
 const ForeplanContentRowList = dynamic(() => import("./List"));
 const ForeplanContentBadgesList = dynamic(() => import("./Badges"));

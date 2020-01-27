@@ -1,15 +1,19 @@
+import { scaleLinear } from "d3-scale";
 import { motion } from "framer-motion";
 import { range } from "lodash";
 import React, { FC, memo } from "react";
 
 import { ICourse } from "../../../../interfaces";
-import { useUser } from "../../../utils/useUser";
 import {
   useForeplanCourseEffort,
   useForeplanCourseFailRate,
-} from "../../foreplan/ForeplanContext";
-import { failRateColorScaleNegative, failRateColorScalePositive } from "./";
-import styles from "./index.module.css";
+} from "../../../context/ForeplanContext";
+import { useUser } from "../../../utils/useUser";
+import styles from "./foreplanCourseBox.module.css";
+
+export const failRateColorScalePositive = scaleLinear<string, number>();
+
+export const failRateColorScaleNegative = scaleLinear<string, number>();
 
 const ForeplanCourseStats: FC<Pick<ICourse, "code">> = memo(({ code }) => {
   const [failRate] = useForeplanCourseFailRate({ code });
@@ -31,7 +35,7 @@ const ForeplanCourseStats: FC<Pick<ICourse, "code">> = memo(({ code }) => {
       exit={{
         opacity: 0,
       }}
-      className={styles.foreplanCourseStats}
+      className={styles.courseStats}
     >
       {user?.config.FOREPLAN_COURSE_FAIL_RATE_STATS && (
         <svg height="10px" width="10px">
@@ -40,11 +44,7 @@ const ForeplanCourseStats: FC<Pick<ICourse, "code">> = memo(({ code }) => {
       )}
 
       {user?.config.FOREPLAN_COURSE_EFFORT_STATS && (
-        <svg
-          className={styles.foreplanCourseEffortStats}
-          height="10px"
-          width="20px"
-        >
+        <svg className={styles.courseEffortStats} height="10px" width="20px">
           {range(0, effort).map(i => {
             return (
               <rect

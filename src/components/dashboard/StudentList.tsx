@@ -29,10 +29,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/core";
 
+import { ConfigContext } from "../../context/Config";
+import { useTracking } from "../../context/Tracking";
 import { STUDENT_LIST } from "../../graphql/queries";
 import { useUser } from "../../utils/useUser";
-import { ConfigContext } from "../Config";
-import { useTracking } from "../Tracking";
 
 type columnNames =
   | "student_id"

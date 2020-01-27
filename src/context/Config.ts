@@ -1,18 +1,20 @@
-import React, { createContext, FC, useEffect } from "react";
+import { createContext, createElement, FC, useEffect } from "react";
 import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
 
 import { baseConfig } from "../../constants/baseConfig";
-import { CONFIG_QUERY } from "../graphql/queries";
 import {
   failColorScale,
+  passColorScale,
+} from "../components/dashboard/CourseBox";
+import { scaleAxisX, scaleColorX } from "../components/dashboard/Histogram";
+import { GradeScale, YAxisScale } from "../components/dashboard/Timeline";
+import {
   failRateColorScaleNegative,
   failRateColorScalePositive,
-  passColorScale,
-} from "./dashboard/CourseBox";
-import { scaleAxisX, scaleColorX } from "./dashboard/Histogram";
-import { GradeScale, YAxisScale } from "./dashboard/Timeline";
+} from "../components/foreplan/courseBox/Stats";
+import { CONFIG_QUERY } from "../graphql/queries";
 
 export const ConfigContext = createContext(baseConfig);
 
@@ -65,9 +67,8 @@ export const Config: FC = ({ children }) => {
     configState.MIN_GRADE,
   ]);
 
-  return (
-    <ConfigContext.Provider value={configState}>
-      {children}
-    </ConfigContext.Provider>
-  );
+  return createElement(ConfigContext.Provider, {
+    value: configState,
+    children,
+  });
 };

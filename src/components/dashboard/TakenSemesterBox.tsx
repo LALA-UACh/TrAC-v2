@@ -3,11 +3,11 @@ import React, { FC, memo, useContext, useMemo } from "react";
 import { Badge, BadgeProps, Box, Stack } from "@chakra-ui/core";
 
 import { termTypeToNumber } from "../../../constants";
-import { ConfigContext } from "../Config";
+import { ConfigContext } from "../../context/Config";
 import {
   useActiveSemestersTaken,
   useExplicitSemester,
-} from "./CoursesDashboardContext";
+} from "../../context/CoursesDashboardContext";
 
 export const TakenSemesterBox: FC<{
   year: number;

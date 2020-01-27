@@ -15,12 +15,12 @@ import { useClickAway } from "react-use";
 import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 
 import { ICourse } from "../../../../interfaces";
-import { ConfigContext } from "../../Config";
+import { ConfigContext } from "../../../context/Config";
 import {
   ICreditsNumber,
   useForeplanActiveActions,
   useForeplanCourses,
-} from "../ForeplanContext";
+} from "../../../context/ForeplanContext";
 
 const ForeplanContentBadge: FC<Pick<ICourse, "code" | "name"> &
   ICreditsNumber> = memo(({ code, name, credits }) => {

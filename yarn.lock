@@ -2470,10 +2470,17 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
   integrity sha512-ewFXqrQHlFsgc09MK5jP5iR7vumV/BYayNC6PgJO2LPe8vrnNFyjQjSppfEngITi0qvfKtzFvgKymGheFM9UOA==
 
-"@types/react-dom@*", "@types/react-dom@^16.8.3", "@types/react-dom@^16.9.4":
+"@types/react-dom@*", "@types/react-dom@^16.8.3":
   version "16.9.4"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.4.tgz#0b58df09a60961dcb77f62d4f1832427513420df"
   integrity sha512-fya9xteU/n90tda0s+FtN5Ym4tbgxpq/hb/Af24dvs6uYnYn+fspaxw5USlw0R8apDNwxsqumdRoCoKitckQqw==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-dom@^16.9.5":
+  version "16.9.5"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.5.tgz#5de610b04a35d07ffd8f44edad93a71032d9aaa7"
+  integrity sha512-BX6RQ8s9D+2/gDhxrj8OW+YD4R+8hj7FEM/OJHGNR0KipE1h1mSsf39YeyC81qafkq+N3rU3h3RFbLSwE5VqUg==
   dependencies:
     "@types/react" "*"
 
@@ -2837,10 +2844,10 @@
   dependencies:
     tslib "^1.9.3"
 
-"@xobotyi/scrollbar-width@1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@xobotyi/scrollbar-width/-/scrollbar-width-1.5.0.tgz#488210bff634548040dc22a72f62722a85b134e1"
-  integrity sha512-BK+HR1D00F2xh7n4+5en8/dMkG13uvIXLmEbsjtc1702b7+VwXkvlBDKoRPJMbkRN5hD7VqWa3nS9fNT8JG3CA==
+"@xobotyi/scrollbar-width@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@xobotyi/scrollbar-width/-/scrollbar-width-1.6.0.tgz#efd0f9d94c2a483faee3d162c9727e4fed40d55e"
+  integrity sha512-i3rX8RomNGFiAD5yR9JplU25/vJcibWmBIvD1LPX7aXuiko9i3oiKPz4nUVTbnrCDlTt78xHxZxWYy0wDLi3nQ==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -4802,12 +4809,12 @@ cron@1.7.1:
   dependencies:
     moment-timezone "^0.5.x"
 
-cross-env@^6.0.3:
-  version "6.0.3"
-  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-6.0.3.tgz#4256b71e49b3a40637a0ce70768a6ef5c72ae941"
-  integrity sha512-+KqxF6LCvfhWvADcDPqo64yVIB31gv/jQulX2NGzKS/g3GEVz6/pt4wjHFtFWsHMddebWD/sDthJemzM4MaAag==
+cross-env@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.0.tgz#5a3b2ddce51ec713ea58f2fb79ce22e65b4f5479"
+  integrity sha512-rV6M9ldNgmwP7bx5u6rZsTbYidzwvrwIYZnT08hSGLcQCcggofgFW+sNe7IhA1SRauPS0QuLbbX+wdNtpqE5CQ==
   dependencies:
-    cross-spawn "^7.0.0"
+    cross-spawn "^7.0.1"
 
 cross-spawn@^5.1.0:
   version "5.1.0"
@@ -4829,7 +4836,7 @@ cross-spawn@^6.0.0, cross-spawn@^6.0.5:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-cross-spawn@^7.0.0:
+cross-spawn@^7.0.0, cross-spawn@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.1.tgz#0ab56286e0f7c24e153d04cc2aa027e43a9a5d14"
   integrity sha512-u7v4o84SwFpD32Z8IIcPZ6z1/ie24O6RU3RbtL5Y316l3KuHVPx9ItBgWQ6VlfAFnRnTtMUrsQ9MUUTuEZjogg==
@@ -6716,10 +6723,17 @@ graphql-voyager@^1.0.0-rc.28:
     svg-pan-zoom "^3.6.0"
     viz.js "2.1.2"
 
-graphql@^14.5.3, graphql@^14.5.8:
+graphql@^14.5.3:
   version "14.5.8"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.5.8.tgz#504f3d3114cb9a0a3f359bbbcf38d9e5bf6a6b3c"
   integrity sha512-MMwmi0zlVLQKLdGiMfWkgQD7dY/TUKt4L+zgJ/aR0Howebod3aNgP5JkgvAULiR2HPVZaP2VEElqtdidHweLkg==
+  dependencies:
+    iterall "^1.2.2"
+
+graphql@^14.6.0:
+  version "14.6.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.6.0.tgz#57822297111e874ea12f5cd4419616930cd83e49"
+  integrity sha512-VKzfvHEKybTKjQVpTFrA5yUq2S9ihcZvfJAtsDBBCuV6wauPu1xl/f9ehgVf0FcEJJs4vz6ysb/ZMkGigQZseg==
   dependencies:
     iterall "^1.2.2"
 
@@ -10925,10 +10939,10 @@ react-icons@^3.8.0:
   dependencies:
     camelcase "^5.0.0"
 
-react-indiana-drag-scroll@^1.5.4:
-  version "1.5.4"
-  resolved "https://registry.yarnpkg.com/react-indiana-drag-scroll/-/react-indiana-drag-scroll-1.5.4.tgz#4adcbf38c12b20d24be4c3b000c4c8f85758fbae"
-  integrity sha512-MKvrdDLwti6upNriFSHBVM+5UJWWOMaxEf3WhREAJ7hnAvpQYTIKM2FTyAwdmcONy19j4HfM0gp75PLCxIyXpw==
+react-indiana-drag-scroll@^1.5.5:
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/react-indiana-drag-scroll/-/react-indiana-drag-scroll-1.5.5.tgz#0ec103da6b4e77e9c59fc407a68a0549b15b4204"
+  integrity sha512-XIAW+ggk+OtrGgSTbbgz9GyIKxq3Fh7KKc62BjZ/CZfmfZ25o89rHVDlkI0F2w1Va1fltr0pJqJcUMgQAMwp4A==
   dependencies:
     classnames "^2.2.6"
     debounce "^1.2.0"
@@ -11050,13 +11064,13 @@ react-transition-group@^4:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-use@^13.22.0:
-  version "13.22.0"
-  resolved "https://registry.yarnpkg.com/react-use/-/react-use-13.22.0.tgz#92e5c29648cd7a86ac6bb208e4c79393e0b21153"
-  integrity sha512-6VpS/0x2fmiF60ZpLdXimy6wJZMgDg4O/QlyP6E6prOXKSrQfM7E9tMmBkiwu4oI1WjrrVp0N3W2bTbpRY9bbA==
+react-use@^13.22.1:
+  version "13.22.1"
+  resolved "https://registry.yarnpkg.com/react-use/-/react-use-13.22.1.tgz#cc0a5200255f7cdc14c1435ed8fd1c37b1e27b64"
+  integrity sha512-n4DHJfbkyT3gsaJVHhtQ3mPvRBis7q18yQtuqQTtnYPKXAYQ0JGCd++PvWlSxnvG7QbEjNahcA50jLwCnWWOmQ==
   dependencies:
     "@types/js-cookie" "2.2.4"
-    "@xobotyi/scrollbar-width" "1.5.0"
+    "@xobotyi/scrollbar-width" "1.6.0"
     copy-to-clipboard "^3.2.0"
     fast-shallow-equal "^1.0.0"
     js-cookie "^2.2.1"

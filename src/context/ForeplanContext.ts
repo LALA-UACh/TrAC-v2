@@ -4,10 +4,10 @@ import { FC, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce } from "react-use";
 
-import { PerformanceByLoad } from "../../../api/entities/data/foreplan";
-import { LAST_TIME_USED, StateCourse } from "../../../constants";
-import { ICourse } from "../../../interfaces";
-import { useUser } from "../../utils/useUser";
+import { PerformanceByLoad } from "../../api/entities/data/foreplan";
+import { LAST_TIME_USED, StateCourse } from "../../constants";
+import { ICourse } from "../../interfaces";
+import { useUser } from "../utils/useUser";
 
 const emptyObject = Object.freeze({});
 

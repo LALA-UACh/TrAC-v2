@@ -3,7 +3,7 @@ import React, { FC, memo, useContext } from "react";
 import { Stack, Text } from "@chakra-ui/core";
 
 import { ICourse } from "../../../interfaces";
-import { ConfigContext } from "../Config";
+import { ConfigContext } from "../../context/Config";
 import { CourseBox } from "./CourseBox";
 
 const toRoman = (num: number, first = false): string => {

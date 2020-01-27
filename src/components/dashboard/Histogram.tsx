@@ -6,7 +6,7 @@ import React, { FC, memo, useCallback, useContext, useMemo } from "react";
 import { AxisBottom, AxisLeft } from "@vx/axis";
 
 import { IDistribution } from "../../../interfaces";
-import { ConfigContext } from "../Config";
+import { ConfigContext } from "../../context/Config";
 
 const SingleBar: FC<{
   grey?: boolean;

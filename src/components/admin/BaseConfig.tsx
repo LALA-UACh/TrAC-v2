@@ -16,9 +16,9 @@ import { Flex, Stack } from "@chakra-ui/core";
 
 import { baseConfigAdmin } from "../../../constants/baseConfig";
 import { configValueToString } from "../../../constants/validation";
+import { ConfigContext } from "../../context/Config";
 import { EDIT_CONFIG } from "../../graphql/adminQueries";
 import { CONFIG_QUERY } from "../../graphql/queries";
-import { ConfigContext } from "../Config";
 import { Confirm } from "../Confirm";
 
 const baseConfigKeys = Object.keys(baseConfigAdmin);

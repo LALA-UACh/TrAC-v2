@@ -7,8 +7,8 @@ import { ICourse } from "../../../../interfaces";
 import {
   useForeplanIsDirectTake,
   useIsForeplanCourseChecked,
-} from "../../foreplan/ForeplanContext";
-import styles from "./index.module.css";
+} from "../../../context/ForeplanContext";
+import styles from "./foreplanCourseBox.module.css";
 
 const ForeplanCourseCheckbox: FC<Pick<
   ICourse,
@@ -29,7 +29,7 @@ const ForeplanCourseCheckbox: FC<Pick<
       exit={{
         opacity: 0,
       }}
-      className={styles.foreplanCourseCheckbox}
+      className={styles.courseCheckbox}
     >
       <Checkbox
         checked={checked}
@@ -46,7 +46,7 @@ const ForeplanCourseCheckbox: FC<Pick<
           }
         }}
         className={classNames({
-          [styles.foreplanCheckboxInput]: true,
+          [styles.checkboxInput]: true,
           [directTake ? styles.direct : styles.indirect]: true,
         })}
       />

@@ -18,7 +18,7 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import { theme, ThemeProvider } from "@chakra-ui/core";
 
 import { GRAPHQL_URL } from "../../constants";
-import { Config } from "../components/Config";
+import { Config } from "../context/Config";
 
 Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());

@@ -3,8 +3,8 @@ import React, { FC, memo, useContext, useEffect, useState } from "react";
 
 import { Flex, Stack, Text } from "@chakra-ui/core";
 
-import { ConfigContext } from "../Config";
-import { useTracking } from "../Tracking";
+import { ConfigContext } from "../../context/Config";
+import { useTracking } from "../../context/Tracking";
 
 export const Dropout: FC<{ probability?: number; accuracy?: number }> = memo(
   ({ probability, accuracy }) => {

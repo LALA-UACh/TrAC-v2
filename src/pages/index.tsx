@@ -15,18 +15,18 @@ import {
   UserType,
 } from "../../constants";
 import { ITakenCourse } from "../../interfaces";
-import { ConfigContext } from "../components/Config";
-import { CoursesDashbordManager } from "../components/dashboard/CoursesDashboardContext";
 import { Semester } from "../components/dashboard/Semester";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
+import { LoadingPage } from "../components/Loading";
+import { ConfigContext } from "../context/Config";
+import { CoursesDashbordManager } from "../context/CoursesDashboardContext";
 import {
   ForeplanContextManager,
   useForeplanActiveActions,
   useForeplanHelperActions,
-} from "../components/foreplan/ForeplanContext";
-import { LoadingPage } from "../components/Loading";
-import { TrackingManager, useTracking } from "../components/Tracking";
+} from "../context/ForeplanContext";
+import { TrackingManager, useTracking } from "../context/Tracking";
 import {
   PERFORMANCE_BY_LOAD_ADVICES,
   SEARCH_PROGRAM,
@@ -37,9 +37,11 @@ import { useUser } from "../utils/useUser";
 const SearchBar = dynamic(() => import("../components/dashboard/SearchBar"));
 const Dropout = dynamic(() => import("../components/dashboard/Dropout"));
 const ForeplanModeSwitch = dynamic(() =>
-  import("../components/foreplan/ForeplanModeSwitch")
+  import("../components/foreplan/ModeSwitch")
 );
-const ForeplanSummary = dynamic(() => import("../components/foreplan/Summary"));
+const ForeplanSummary = dynamic(() =>
+  import("../components/foreplan/summary/MainBox")
+);
 
 const Dashboard: FC = () => {
   const [program, setProgram] = useState<string | undefined>(undefined);

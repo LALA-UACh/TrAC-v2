@@ -21,8 +21,8 @@ import { useMutation } from "@apollo/react-hooks";
 import { Image } from "@chakra-ui/core";
 
 import { LOCKED_USER, WRONG_INFO } from "../../constants";
-import { ConfigContext } from "../components/Config";
 import { LoadingPage } from "../components/Loading";
+import { ConfigContext } from "../context/Config";
 import { CURRENT_USER, LOGIN } from "../graphql/queries";
 import { useUser } from "../utils/useUser";
 
