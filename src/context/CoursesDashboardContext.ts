@@ -49,7 +49,7 @@ const checkExplicitSemesterCallback = (explicitSemester?: string) => (
   return undefined;
 };
 
-const rememberCourseDashboardDataKey = "TrAC_dashboard_data";
+const rememberCourseDashboardDataKey = "TrAC_course_dashboard_data";
 
 const initCourseDashboardData = (
   initialData = defaultCourseDashboardData

@@ -98,7 +98,7 @@ export const useForeplanCourseEffort = createHook(ForeplanHelperStore, {
   },
 });
 
-const rememberForeplanDataKey = "TrAC_foreplan_remember_data";
+const rememberForeplanDataKey = "TrAC_foreplan_remember_local_data";
 
 const initForeplanActiveData = (
   initialData = defaultForeplanActiveData
