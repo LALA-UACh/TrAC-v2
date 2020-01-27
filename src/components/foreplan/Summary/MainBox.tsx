@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { range } from "lodash";
+import { flatMap, range } from "lodash";
 import Markdown from "markdown-to-jsx";
 import dynamic from "next/dynamic";
 import React, {
@@ -278,7 +278,7 @@ const Waffle: FC<{
           x={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_X}
           y={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_Y}
         >
-          {rowRange.flatMap(key1 => {
+          {flatMap(rowRange, key1 => {
             return rowRange.map(key2 => {
               const n = key1 * 10 + key2;
               let fill: string;
