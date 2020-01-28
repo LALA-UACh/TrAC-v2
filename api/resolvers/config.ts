@@ -1,5 +1,6 @@
 import assert from "assert";
 import { GraphQLJSONObject } from "graphql-type-json";
+import { reduce } from "lodash";
 import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 
 import { baseConfig, baseConfigAdmin } from "../../constants/baseConfig";
@@ -12,12 +13,19 @@ export class ConfigurationResolver {
   static async getConfigData() {
     const data = await ConfigurationTable().select("*");
 
-    return data.reduce<Record<string, any> & typeof baseConfig>(
-      (acum, { name, value }) => {
-        acum[name] = configStringToValue(value);
+    const dataDb = data.reduce<Record<string, any>>((acum, { name, value }) => {
+      acum[name] = configStringToValue(value);
+      return acum;
+    }, {});
+
+    return reduce(
+      baseConfigAdmin,
+      (acum, value, key) => {
+        acum[key] = dataDb[key] ?? value;
+
         return acum;
       },
-      baseConfig
+      baseConfigAdmin
     );
   }
 
