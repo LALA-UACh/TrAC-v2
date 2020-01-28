@@ -258,6 +258,12 @@ export const useForeplanAdvice = createHook(ForeplanActiveStore, {
   },
 });
 
+export const useForeplanAdvices = createHook(ForeplanActiveStore, {
+  selector: ({ advices }) => {
+    return advices;
+  },
+});
+
 export const ForeplanContextManager: FC = () => {
   const [state, { reset, disableForeplan }] = useForeplanActiveData();
 

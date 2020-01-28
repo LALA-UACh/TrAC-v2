@@ -32,6 +32,7 @@ import { ConfigContext } from "../../../context/Config";
 import {
   useAnyForeplanCourses,
   useForeplanAdvice,
+  useForeplanAdvices,
   useForeplanCoursesSize,
   useForeplanTotalCreditsTaken,
   useIsForeplanActive,
@@ -256,7 +257,8 @@ const Waffle: FC<{
   failRateLow: number;
   failRateMid: number;
   failRateHigh: number;
-}> = memo(({ failRateLow, failRateMid, failRateHigh }) => {
+  current?: boolean;
+}> = memo(({ failRateLow, failRateMid, failRateHigh, current }) => {
   const config = useContext(ConfigContext);
 
   const colors = config.FOREPLAN_SUMMARY_WAFFLE_COLORS_FAIL_RATE;
@@ -270,65 +272,95 @@ const Waffle: FC<{
 
   return (
     <>
-      <svg
-        width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
-        height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+      <Box
+        padding={config.FOREPLAN_SUMMARY_WAFFLE_PADDING}
+        border={
+          current ? config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_BORDER : undefined
+        }
+        marginTop={config.FOREPLAN_SUMMARY_WAFFLE_MARGIN_TOP}
       >
         <svg
-          x={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_X}
-          y={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_Y}
+          width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+          height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
         >
-          {flatMap(rowRange, key1 => {
-            return rowRange.map(key2 => {
-              const n = key1 * 10 + key2;
-              let fill: string;
-              let data_tip: string;
-              let data_type: "success" | "warning" | "error";
-              if (n < nLow) {
-                fill = colors.low;
-                data_tip = failRateLow + "%";
-                data_type = "success";
-              } else if (n < nMid) {
-                fill = colors.mid;
-                data_tip = failRateMid + "%";
-                data_type = "warning";
-              } else {
-                fill = colors.high;
-                data_tip = failRateHigh + "%";
-                data_type = "error";
-              }
-              return (
-                <rect
-                  key={n}
-                  data-type={data_type}
-                  data-tip={data_tip}
-                  data-for="waffle_tooltip"
-                  x={rectSize * key2 * separation}
-                  y={rectSize * key1 * separation}
-                  width={rectSize}
-                  height={rectSize}
-                  fill={fill}
-                />
-              );
-            });
-          })}
+          <svg
+            x={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_X}
+            y={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_Y}
+          >
+            {flatMap(rowRange, key1 => {
+              return rowRange.map(key2 => {
+                const n = key1 * 10 + key2;
+                let fill: string;
+                let data_tip: string;
+                let data_type: "success" | "warning" | "error";
+                if (n < nLow) {
+                  fill = colors.low;
+                  data_tip = failRateLow + "%";
+                  data_type = "success";
+                } else if (n < nMid) {
+                  fill = colors.mid;
+                  data_tip = failRateMid + "%";
+                  data_type = "warning";
+                } else {
+                  fill = colors.high;
+                  data_tip = failRateHigh + "%";
+                  data_type = "error";
+                }
+                return (
+                  <rect
+                    key={n}
+                    data-type={data_type}
+                    data-tip={data_tip}
+                    data-for="waffle_tooltip"
+                    x={rectSize * key2 * separation}
+                    y={rectSize * key1 * separation}
+                    width={rectSize}
+                    height={rectSize}
+                    fill={fill}
+                  />
+                );
+              });
+            })}
+          </svg>
         </svg>
-      </svg>
+      </Box>
       <ReactTooltip id="waffle_tooltip" delayHide={300} />
     </>
   );
 });
 
-const ForeplanWaffleChart: FC = memo(() => {
-  const [advice] = useForeplanAdvice();
+const ForeplanWaffleCharts: FC = memo(() => {
+  const [advices] = useForeplanAdvices();
+  const [totalCreditsTaken] = useForeplanTotalCreditsTaken();
+
   return (
-    <Box color="black">
-      <Waffle
-        failRateLow={advice?.failRateLow ?? 33}
-        failRateMid={advice?.failRateMid ?? 66}
-        failRateHigh={advice?.failRateHigh ?? 100}
-      />
-    </Box>
+    <Flex color="black" justifyContent="space-between">
+      {advices.map(
+        (
+          {
+            failRateLow,
+            failRateMid,
+            failRateHigh,
+            lowerBoundary,
+            upperBoundary,
+          },
+          key
+        ) => {
+          return (
+            <Waffle
+              key={key}
+              failRateLow={failRateLow ?? 33}
+              failRateMid={failRateMid ?? 66}
+              failRateHigh={failRateHigh ?? 100}
+              current={
+                totalCreditsTaken >= lowerBoundary &&
+                totalCreditsTaken <= upperBoundary
+              }
+            />
+          );
+        }
+      )}
+    </Flex>
   );
 });
 
@@ -361,12 +393,10 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
                 <ForeplanContentBadgesList />
               )}
               <ForeplanTotalCredits />
-              <Flex justifyContent="space-between" alignItems="flex-end">
-                {user?.config.FOREPLAN_SUMMARY_ADVICE && <ForeplanAdvice />}
-                {user?.config.FOREPLAN_SUMMARY_WAFFLE_CHART && (
-                  <ForeplanWaffleChart />
-                )}
-              </Flex>
+              {user?.config.FOREPLAN_SUMMARY_ADVICE && <ForeplanAdvice />}
+              {user?.config.FOREPLAN_SUMMARY_WAFFLE_CHART && (
+                <ForeplanWaffleCharts />
+              )}
             </>
           )}
         </>

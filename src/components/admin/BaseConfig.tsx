@@ -1,4 +1,11 @@
-import { isEqual, sortBy, toSafeInteger, toString } from "lodash";
+import {
+  fromPairs,
+  isEqual,
+  sortBy,
+  toPairs,
+  toSafeInteger,
+  toString,
+} from "lodash";
 import React, {
   FC,
   memo,
@@ -156,10 +163,6 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
 export const AdminConfig = () => {
   const config: typeof baseConfigAdmin = useContext(ConfigContext);
 
-  useEffect(() => {
-    console.log(JSON.stringify(config, null, 2));
-  }, [config]);
-
   const [filterInput, setFilterInput] = useState("");
   const [filteredKeys, setFilteredKeys] = useState(baseConfigKeys);
   const [] = useDebounce(
@@ -187,6 +190,15 @@ export const AdminConfig = () => {
       );
     });
   }, [filteredKeys, config]);
+
+  useEffect(() => {
+    console.log(
+      "export const baseConfig = " +
+        JSON.stringify(fromPairs(sortBy(toPairs(config), 0)), null, 2) +
+        ";"
+    );
+  }, [config]);
+
   return (
     <Stack
       alignItems="flex-start"
