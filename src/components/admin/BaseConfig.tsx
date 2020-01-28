@@ -2,8 +2,8 @@ import {
   fromPairs,
   isEqual,
   sortBy,
+  toNumber,
   toPairs,
-  toSafeInteger,
   toString,
 } from "lodash";
 import React, {
@@ -104,7 +104,7 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
                 <Input
                   value={state}
                   onChange={(_, { value }) => {
-                    setState(toSafeInteger(value));
+                    setState(toNumber(value) || 0);
                   }}
                 />
               );
