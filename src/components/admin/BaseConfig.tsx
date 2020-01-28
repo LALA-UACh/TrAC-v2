@@ -156,6 +156,10 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
 export const AdminConfig = () => {
   const config: typeof baseConfigAdmin = useContext(ConfigContext);
 
+  useEffect(() => {
+    console.log(JSON.stringify(config, null, 2));
+  }, [config]);
+
   const [filterInput, setFilterInput] = useState("");
   const [filteredKeys, setFilteredKeys] = useState(baseConfigKeys);
   const [] = useDebounce(
