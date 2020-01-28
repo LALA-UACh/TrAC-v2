@@ -1,4 +1,3 @@
-import stringify from "json-stringify-safe";
 import nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/sendmail-transport";
 
@@ -30,12 +29,7 @@ const mailOptions = {
   html: "",
 };
 
-export const sendMail = async (
-  opts: MailOptions,
-  success = (info: any) =>
-    console.log("Email sent successfully: " + stringify(info)),
-  failure = (err: any) => console.error("Error sending mail: " + stringify(err))
-) => {
+export const sendMail = async (opts: MailOptions) => {
   return await transporter.sendMail({
     ...mailOptions,
     ...opts,
