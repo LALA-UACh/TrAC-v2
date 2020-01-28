@@ -1,6 +1,14 @@
 import { isEqual, sortBy, toSafeInteger, toString } from "lodash";
-import React, { FC, memo, useContext, useEffect, useState } from "react";
+import React, {
+  FC,
+  memo,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { toast } from "react-toastify";
+import { useDebounce } from "react-use";
 import {
   Button,
   Checkbox,
@@ -12,7 +20,7 @@ import {
 import { isJSON } from "validator";
 
 import { useMutation } from "@apollo/react-hooks";
-import { Flex, Stack } from "@chakra-ui/core";
+import { Box, Flex, Stack } from "@chakra-ui/core";
 
 import { baseConfigAdmin } from "../../../constants/baseConfig";
 import { configValueToString } from "../../../constants/validation";
@@ -148,6 +156,33 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
 export const AdminConfig = () => {
   const config: typeof baseConfigAdmin = useContext(ConfigContext);
 
+  const [filterInput, setFilterInput] = useState("");
+  const [filteredKeys, setFilteredKeys] = useState(baseConfigKeys);
+  const [] = useDebounce(
+    () => {
+      setFilteredKeys(
+        baseConfigKeys.filter(keyName => {
+          if (filterInput) {
+            return keyName.includes(filterInput);
+          }
+          return true;
+        })
+      );
+    },
+    500,
+    [filterInput]
+  );
+  const configList = useMemo(() => {
+    return sortBy(filteredKeys).map(configKey => {
+      return (
+        <ConfigInput
+          key={configKey}
+          configKey={configKey}
+          configValue={config[configKey]}
+        />
+      );
+    });
+  }, [filteredKeys, config]);
   return (
     <Stack
       alignItems="flex-start"
@@ -156,15 +191,18 @@ export const AdminConfig = () => {
       width="fit-content"
       m={5}
     >
-      {sortBy(baseConfigKeys).map(configKey => {
-        return (
-          <ConfigInput
-            key={configKey}
-            configKey={configKey}
-            configValue={config[configKey]}
-          />
-        );
-      })}
+      <Box border="2px solid black" p={4}>
+        <Input
+          label="Filter config keys"
+          value={filterInput}
+          onChange={(_, { value }) => {
+            setFilterInput(value.toUpperCase());
+          }}
+          placeholder="No filter"
+        />
+      </Box>
+
+      {configList}
     </Stack>
   );
 };

@@ -1,4 +1,4 @@
-import { addMilliseconds } from "date-fns";
+import { addMilliseconds, addWeeks } from "date-fns";
 import { Request, Response } from "express";
 import { sign } from "jsonwebtoken";
 import { generate } from "randomstring";
@@ -37,10 +37,13 @@ export class AuthResolver {
     res.cookie("authorization", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      expires: addMilliseconds(
-        Date.now(),
-        req.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
-      ),
+      expires:
+        process.env.NODE_ENV === "development"
+          ? addWeeks(Date.now(), 12)
+          : addMilliseconds(
+              Date.now(),
+              req.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
+            ),
     });
 
     return token;

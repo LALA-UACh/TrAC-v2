@@ -348,7 +348,10 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
     const content = useMemo(() => {
       return (
         <>
-          <Text fontSize={config.FOREPLAN_SUMMARY_TITLE_FONT_SIZE}>
+          <Text
+            marginBottom={config.FOREPLAN_SUMMARY_TITLE_MARGIN_BOTTOM}
+            fontSize={config.FOREPLAN_SUMMARY_TITLE_FONT_SIZE}
+          >
             {config.FOREPLAN_SUMMARY_TITLE_LABEL}
           </Text>
           {anyForeplanCourse && (
