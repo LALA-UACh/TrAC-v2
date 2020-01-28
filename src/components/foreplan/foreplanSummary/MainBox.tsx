@@ -272,58 +272,60 @@ const Waffle: FC<{
 
   return (
     <>
-      <Box
+      <Flex
         padding={config.FOREPLAN_SUMMARY_WAFFLE_PADDING}
         border={
           current ? config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_BORDER : undefined
         }
         marginTop={config.FOREPLAN_SUMMARY_WAFFLE_MARGIN_TOP}
+        borderWidth={
+          current
+            ? config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_BORDER_WIDTH
+            : undefined
+        }
+        alignItems="center"
+        justifyContent="center"
       >
         <svg
           width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
           height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
         >
-          <svg
-            x={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_X}
-            y={config.FOREPLAN_SUMMARY_WAFFLE_TRANSLATE_Y}
-          >
-            {flatMap(rowRange, key1 => {
-              return rowRange.map(key2 => {
-                const n = key1 * 10 + key2;
-                let fill: string;
-                let data_tip: string;
-                let data_type: "success" | "warning" | "error";
-                if (n < nLow) {
-                  fill = colors.low;
-                  data_tip = failRateLow + "%";
-                  data_type = "success";
-                } else if (n < nMid) {
-                  fill = colors.mid;
-                  data_tip = failRateMid + "%";
-                  data_type = "warning";
-                } else {
-                  fill = colors.high;
-                  data_tip = failRateHigh + "%";
-                  data_type = "error";
-                }
-                return (
-                  <rect
-                    key={n}
-                    data-type={data_type}
-                    data-tip={data_tip}
-                    data-for="waffle_tooltip"
-                    x={rectSize * key2 * separation}
-                    y={rectSize * key1 * separation}
-                    width={rectSize}
-                    height={rectSize}
-                    fill={fill}
-                  />
-                );
-              });
-            })}
-          </svg>
+          {flatMap(rowRange, key1 => {
+            return rowRange.map(key2 => {
+              const n = key1 * 10 + key2;
+              let fill: string;
+              let data_tip: string;
+              let data_type: "success" | "warning" | "error";
+              if (n < nLow) {
+                fill = colors.low;
+                data_tip = failRateLow + "%";
+                data_type = "success";
+              } else if (n < nMid) {
+                fill = colors.mid;
+                data_tip = failRateMid + "%";
+                data_type = "warning";
+              } else {
+                fill = colors.high;
+                data_tip = failRateHigh + "%";
+                data_type = "error";
+              }
+              return (
+                <rect
+                  key={n}
+                  data-type={data_type}
+                  data-tip={data_tip}
+                  data-for="waffle_tooltip"
+                  x={rectSize * key2 * separation}
+                  y={rectSize * key1 * separation}
+                  width={rectSize}
+                  height={rectSize}
+                  fill={fill}
+                />
+              );
+            });
+          })}
         </svg>
-      </Box>
+      </Flex>
       <ReactTooltip id="waffle_tooltip" delayHide={300} />
     </>
   );
