@@ -44,4 +44,8 @@ export class PerformanceByLoad {
   // performance_by_load => message_text
   @Field()
   adviceParagraph: string;
+
+  // performance_by_load => label
+  @Field()
+  label: string;
 }

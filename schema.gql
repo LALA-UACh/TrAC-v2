@@ -100,6 +100,7 @@ type PerformanceByLoad {
   failRateLow: Int!
   failRateMid: Int!
   id: Float!
+  label: String!
   loadUnit: PerformanceLoadUnit!
   lowerBoundary: Float!
   upperBoundary: Float!

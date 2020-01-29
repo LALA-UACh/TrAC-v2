@@ -108,6 +108,7 @@ export class ForeplanResolver {
         lp_value,
         message_title,
         message_text,
+        label,
       }) => {
         return {
           id,
@@ -119,6 +120,7 @@ export class ForeplanResolver {
           failRateHigh: toInteger(lp_value * 100),
           adviceTitle: message_title,
           adviceParagraph: message_text,
+          label,
         };
       }
     );

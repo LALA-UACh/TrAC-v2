@@ -1,4 +1,4 @@
-import { createContext, createElement, FC, useEffect } from "react";
+import { createContext, createElement, FC, useEffect, useState } from "react";
 import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
@@ -19,15 +19,15 @@ import { CONFIG_QUERY } from "../graphql/queries";
 export const ConfigContext = createContext(baseConfig);
 
 export const Config: FC = ({ children }) => {
-  const [configState, setConfigState] = useRememberState(
-    "baseConfig",
-    baseConfig
-  );
+  const [configState, setConfigState] =
+    process.env.NODE_ENV === "development"
+      ? useState(baseConfig)
+      : useRememberState("baseConfig", baseConfig);
 
   const { data, loading } = useQuery(CONFIG_QUERY);
 
   useEffect(() => {
-    if (!loading && data) {
+    if (process.env.NODE_ENV === "production" && !loading && data) {
       setConfigState({ ...baseConfig, ...data.config });
     }
   }, [data, loading]);

@@ -5929,6 +5929,7 @@ const data: {
       failRateMid: 20,
       failRateHigh: 75,
       loadUnit: PerformanceLoadUnit.Credits,
+      label: "bajo",
     },
     {
       id: 1,
@@ -5941,6 +5942,7 @@ const data: {
       failRateMid: 30,
       failRateHigh: 15,
       loadUnit: PerformanceLoadUnit.Credits,
+      label: "medio",
     },
     {
       id: 2,
@@ -5953,6 +5955,7 @@ const data: {
       failRateMid: 45,
       failRateHigh: 25,
       loadUnit: PerformanceLoadUnit.Credits,
+      label: "alto",
     },
   ],
 };

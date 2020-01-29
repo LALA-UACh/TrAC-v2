@@ -58,6 +58,13 @@ const OuterSummary: FC = ({ children }) => {
     );
   }, [height, config]);
 
+  const responsiveHeight = useMemo(() => {
+    if (height < config.FOREPLAN_SUMMARY_HEIGHT) {
+      return height;
+    }
+    return config.FOREPLAN_SUMMARY_HEIGHT;
+  }, [height, config]);
+
   return useMemo(
     () => (
       <Flex
@@ -69,7 +76,7 @@ const OuterSummary: FC = ({ children }) => {
         color={config.FOREPLAN_SUMMARY_FONT_COLOR}
         p={0}
         m={1}
-        height={config.FOREPLAN_SUMMARY_HEIGHT}
+        height={responsiveHeight}
         width="fit-content"
         alignSelf="flex-end"
         justifySelf="flex-end"
@@ -258,7 +265,8 @@ const Waffle: FC<{
   failRateMid: number;
   failRateHigh: number;
   current?: boolean;
-}> = memo(({ failRateLow, failRateMid, failRateHigh, current }) => {
+  label: string;
+}> = memo(({ failRateLow, failRateMid, failRateHigh, current, label }) => {
   const config = useContext(ConfigContext);
 
   const colors = config.FOREPLAN_SUMMARY_WAFFLE_COLORS_FAIL_RATE;
@@ -271,20 +279,26 @@ const Waffle: FC<{
   const separation = config.FOREPLAN_SUMMARY_WAFFLE_RECT_SEPARATION;
 
   return (
-    <>
+    <Stack alignItems="center">
       <Flex
         padding={config.FOREPLAN_SUMMARY_WAFFLE_PADDING}
         border={
           current ? config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_BORDER : undefined
         }
-        marginTop={config.FOREPLAN_SUMMARY_WAFFLE_MARGIN_TOP}
+        marginTop={`${config.FOREPLAN_SUMMARY_WAFFLE_MARGIN_TOP} !important`}
+        marginBottom={0}
+        margin={0}
         borderWidth={
           current
             ? config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_BORDER_WIDTH
             : undefined
         }
+        direction="column"
         alignItems="center"
         justifyContent="center"
+        className="waffleContainer"
+        width="fit-content"
+        height="fit-content"
       >
         <svg
           width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
@@ -326,8 +340,25 @@ const Waffle: FC<{
           })}
         </svg>
       </Flex>
+      <Text
+        marginBottom={0}
+        textAlign="center"
+        m={0}
+        color={config.FOREPLAN_SUMMARY_WAFFLE_LABEL_COLOR}
+      >
+        {label}
+      </Text>
+      {current && (
+        <Text
+          textAlign="center"
+          color={config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_LABEL_COLOR}
+          m={0}
+        >
+          {config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_LABEL}
+        </Text>
+      )}
       <ReactTooltip id="waffle_tooltip" delayHide={300} />
-    </>
+    </Stack>
   );
 });
 
@@ -345,6 +376,7 @@ const ForeplanWaffleCharts: FC = memo(() => {
             failRateHigh,
             lowerBoundary,
             upperBoundary,
+            label,
           },
           key
         ) => {
@@ -358,6 +390,7 @@ const ForeplanWaffleCharts: FC = memo(() => {
                 totalCreditsTaken >= lowerBoundary &&
                 totalCreditsTaken <= upperBoundary
               }
+              label={label}
             />
           );
         }
@@ -425,9 +458,9 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
         }}
       >
         <Stack
-          p={expanded ? 3 : 0}
+          p={expanded ? config.FOREPLAN_SUMMARY_CONTENT_EXPANDED_PADDING : 0}
           overflowX="hidden"
-          opacity={expanded ? undefined : 0}
+          opacity={expanded ? 1 : 0}
         >
           {content}
         </Stack>

@@ -1,6 +1,7 @@
 import {
   fromPairs,
   isEqual,
+  isNaN,
   sortBy,
   toNumber,
   toPairs,
@@ -103,8 +104,13 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
               return (
                 <Input
                   value={state}
+                  type="number"
+                  step="0.01"
                   onChange={(_, { value }) => {
-                    setState(toNumber(value) || 0);
+                    const valueNumber = toNumber(value);
+                    if (!isNaN(valueNumber)) {
+                      setState(valueNumber);
+                    }
                   }}
                 />
               );

@@ -501,6 +501,7 @@ const dataImport = async () => {
         table.float("lp_value", 4).notNullable();
         table.text("message_title").notNullable();
         table.text("message_text").notNullable();
+        table.text("label").notNullable();
       });
 
       await PerformanceByLoadTable().insert(
