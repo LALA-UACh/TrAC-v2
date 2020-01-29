@@ -58,7 +58,7 @@ export const StudentProgramsDataLoader = new DataLoader(
     return await Promise.all(
       student_ids.map(student_id => {
         return StudentProgramTable()
-          .distinct("program_id", "student_id")
+          .distinct("program_id")
           .where({
             student_id,
           });

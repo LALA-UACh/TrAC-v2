@@ -3,13 +3,15 @@ import { FieldResolver, Resolver, Root } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
 import { defaultStateCourse } from "../../../constants";
+import { CourseDataLoader } from "../../dataloaders/course";
 import {
-  CourseStatsTable,
-  CourseTable,
-  StudentCourseTable,
-} from "../../db/tables";
+  CourseStatsByCourseTakenDataLoader,
+  CourseStatsByStateDataLoader,
+  StudentCourseDataLoader,
+} from "../../dataloaders/takenCourse";
 import { TakenCourse } from "../../entities/data/takenCourse";
 import { assertIsDefined } from "../../utils/assert";
+import { clearErrorArray } from "../../utils/clearErrorArray";
 
 export type PartialTakenCourse = Pick<TakenCourse, "id" | "code" | "equiv">;
 
@@ -24,19 +26,13 @@ export class TakenCourseResolver {
       code,
       `code needs to be available for Taken Course field resolvers`
     );
-    const nameData = await CourseTable()
-      .select("name")
-      .where({ id: code })
-      .first();
+    const nameData = await CourseDataLoader.load(code);
 
     if (nameData === undefined) {
       return code;
     }
-    assertIsDefined(
-      nameData,
-      `Name could not be found for ${code} taken course`
-    );
-    return nameData.name;
+
+    return nameData.name ?? nameData.id;
   }
   @FieldResolver()
   async registration(
@@ -47,10 +43,7 @@ export class TakenCourseResolver {
       id,
       `id needs to be available for Taken Course field resolvers`
     );
-    const registrationData = await StudentCourseTable()
-      .select("registration")
-      .where({ id })
-      .first();
+    const registrationData = await StudentCourseDataLoader.load(id);
     assertIsDefined(
       registrationData,
       `Registration could not be found for ${id} taken course`
@@ -66,10 +59,7 @@ export class TakenCourseResolver {
       id,
       `id and code needs to be available for Taken Course field resolvers`
     );
-    const gradeData = await StudentCourseTable()
-      .select("grade")
-      .where({ id })
-      .first();
+    const gradeData = await StudentCourseDataLoader.load(id);
     assertIsDefined(
       gradeData,
       `Grade could not be found for ${id} taken course`
@@ -85,10 +75,7 @@ export class TakenCourseResolver {
       id,
       `id needs to be available for Taken Course field resolvers`
     );
-    const stateData = await StudentCourseTable()
-      .select("state")
-      .where({ id })
-      .first();
+    const stateData = await StudentCourseDataLoader.load(id);
     assertIsDefined(
       stateData,
       `State could not be found for ${id} taken course`
@@ -104,10 +91,7 @@ export class TakenCourseResolver {
       id,
       `id needs to be available for Taken Course field resolvers`
     );
-    const parallelGroupData = await StudentCourseTable()
-      .select("p_group")
-      .where({ id })
-      .first();
+    const parallelGroupData = await StudentCourseDataLoader.load(id);
     assertIsDefined(
       parallelGroupData,
       `Parallel group could not be found for ${id} taken course`
@@ -128,25 +112,19 @@ export class TakenCourseResolver {
       `code needs to be available for Taken Course field resolvers`
     );
 
-    const dataTakenCourse = await StudentCourseTable()
-      .select("year", "term", "p_group")
-      .where({ id })
-      .first();
+    const dataTakenCourse = await StudentCourseDataLoader.load(id);
 
     assertIsDefined(
       dataTakenCourse,
       `Data of the taken course ${id} ${code} could not be found!`
     );
 
-    const histogramData = await CourseStatsTable()
-      .select("histogram", "histogram_labels", "color_bands")
-      .where({
-        course_taken: code,
-        year: dataTakenCourse.year,
-        term: dataTakenCourse.term,
-        p_group: dataTakenCourse.p_group,
-      })
-      .first();
+    const histogramData = await CourseStatsByStateDataLoader.load({
+      course_taken: code,
+      year: dataTakenCourse.year,
+      term: dataTakenCourse.term,
+      p_group: dataTakenCourse.p_group,
+    });
 
     if (histogramData === undefined) {
       return [];
@@ -172,10 +150,13 @@ export class TakenCourseResolver {
   async bandColors(
     @Root() { code, equiv }: PartialTakenCourse
   ): Promise<$PropertyType<TakenCourse, "bandColors">> {
-    const bandColorsData = await CourseStatsTable()
-      .select("color_bands")
-      .whereIn("course_taken", compact([code, equiv]))
-      .first();
+    const bandColorsData = compact(
+      clearErrorArray(
+        await CourseStatsByCourseTakenDataLoader.loadMany(
+          compact([equiv, code])
+        )
+      )
+    )[0];
 
     if (bandColorsData === undefined) {
       return [];

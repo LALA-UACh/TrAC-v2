@@ -4,7 +4,7 @@ import { $PropertyType } from "utility-types";
 
 import { baseConfig } from "../../../constants/baseConfig";
 import {
-  CourseDataLoader,
+  CourseAndStructureDataLoader,
   CourseFlowDataLoader,
   CourseRequisitesLoader,
   CourseStatsDataLoader,
@@ -45,7 +45,10 @@ export class CourseResolver {
     @Root()
     { id, code }: PartialCourse
   ): Promise<$PropertyType<Course, "name">> {
-    return (await CourseDataLoader.load({ id, code }))?.courseTable?.name ?? "";
+    return (
+      (await CourseAndStructureDataLoader.load({ id, code }))?.courseTable
+        ?.name ?? ""
+    );
   }
 
   @FieldResolver()
@@ -53,7 +56,7 @@ export class CourseResolver {
     @Root() { id, code }: PartialCourse
   ): Promise<$PropertyType<Course, "credits">> {
     const courseData = (
-      await CourseDataLoader.load({
+      await CourseAndStructureDataLoader.load({
         id,
         code,
       })
@@ -71,7 +74,7 @@ export class CourseResolver {
   ): Promise<$PropertyType<Course, "mention">> {
     return (
       (
-        await CourseDataLoader.load({
+        await CourseAndStructureDataLoader.load({
           id,
           code,
         })

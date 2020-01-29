@@ -7,6 +7,7 @@ import {
   CourseTable,
   ProgramStructureTable,
 } from "../db/tables";
+import { clearErrorArray } from "../utils/clearErrorArray";
 
 export const CourseRequisitesLoader = new DataLoader(
   async (program_structure_ids: readonly number[]) => {
@@ -74,14 +75,28 @@ export const CourseFlowDataLoader = new DataLoader(
 );
 
 export const CourseDataLoader = new DataLoader(
+  async (ids: readonly string[]) => {
+    return await Promise.all(
+      ids.map(id => {
+        return CourseTable()
+          .select("*")
+          .where({
+            id,
+          })
+          .first();
+      })
+    );
+  },
+  {
+    cacheMap: new LRUMap(1000),
+  }
+);
+
+export const CourseAndStructureDataLoader = new DataLoader(
   async (keys: readonly { id: number; code: string }[]) => {
     const [courseTableData, programStructureData] = await Promise.all([
-      CourseTable()
-        .select("*")
-        .whereIn(
-          "id",
-          keys.map(({ code }) => code)
-        ),
+      CourseDataLoader.loadMany(keys.map(({ code }) => code)),
+
       ProgramStructureTable()
         .select("*")
         .whereIn(
@@ -90,7 +105,7 @@ export const CourseDataLoader = new DataLoader(
         ),
     ]);
 
-    const hashCourseTableData = keyBy(courseTableData, "id");
+    const hashCourseTableData = keyBy(clearErrorArray(courseTableData), "id");
     const hashProgramStructureData = keyBy(programStructureData, "id");
 
     return keys.map(key => {
