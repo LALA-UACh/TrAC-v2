@@ -20,15 +20,14 @@ import {
 } from "../../../constants";
 import { IContext } from "../../../interfaces";
 import {
-  IStudent,
-  STUDENT_PROGRAM_TABLE,
-  STUDENT_TABLE,
-  StudentDropoutTable,
-  StudentProgramTable,
-  StudentTable,
-  StudentTermTable,
-  UserProgramsTable,
-} from "../../db/tables";
+  StudentDataDataLoader,
+  StudentDropoutDataLoader,
+  StudentLastProgramData,
+  StudentListDataLoader,
+  StudentProgramsDataLoader,
+  StudentTermsDataLoader,
+} from "../../dataloaders/student";
+import { StudentProgramTable, UserProgramsTable } from "../../db/tables";
 import { Dropout } from "../../entities/data/dropout";
 import { Student } from "../../entities/data/student";
 import { anonService } from "../../utils/anonymization";
@@ -57,16 +56,7 @@ export class StudentResolver {
         user.student_id
       );
 
-      const studentData = await StudentProgramTable()
-        .select("program_id", "name", "state")
-        .innerJoin<IStudent>(
-          STUDENT_TABLE,
-          `${STUDENT_TABLE}.id`,
-          `${STUDENT_PROGRAM_TABLE}.student_id`
-        )
-        .orderBy("start_year", "desc")
-        .where({ student_id: student_id })
-        .first();
+      const studentData = await StudentDataDataLoader.load(student_id);
 
       assertIsDefined(studentData, STUDENT_NOT_FOUND);
 
@@ -104,12 +94,7 @@ export class StudentResolver {
 
       assertIsDefined(IsAuthorized, STUDENT_NOT_FOUND);
 
-      const studentData = await StudentTable()
-        .select("name", "state")
-        .where({
-          id: student_id,
-        })
-        .first();
+      const studentData = await StudentDataDataLoader.load(student_id);
 
       assertIsDefined(studentData, STUDENT_NOT_FOUND);
 
@@ -141,16 +126,7 @@ export class StudentResolver {
 
     assertIsDefined(IsAuthorized, STUDENT_LIST_UNAUTHORIZED);
 
-    const studentList = await StudentProgramTable()
-      .select("id", "name", "state", "last_term")
-      .rightJoin<IStudent>(
-        STUDENT_TABLE,
-        `${STUDENT_PROGRAM_TABLE}.student_id`,
-        `${STUDENT_TABLE}.id`
-      )
-      .where({
-        program_id,
-      });
+    const studentList = await StudentListDataLoader.load(program_id);
 
     const sinceNYear = new Date().getFullYear() - last_n_years;
     const filteredStudentList = studentList.filter(({ last_term }) => {
@@ -168,11 +144,7 @@ export class StudentResolver {
       return programs;
     }
 
-    return (
-      await StudentProgramTable()
-        .distinct("program_id")
-        .where({ student_id: id })
-    ).map(({ program_id }) => {
+    return (await StudentProgramsDataLoader.load(id)).map(({ program_id }) => {
       return {
         id: program_id,
       };
@@ -181,14 +153,10 @@ export class StudentResolver {
 
   @FieldResolver()
   async curriculums(
-    @Root() { id }: PartialStudent
+    @Root() { id, programs }: PartialStudent
   ): Promise<$PropertyType<Student, "curriculums">> {
     return (
-      await StudentTermTable()
-        .distinct("curriculum")
-        .where({
-          student_id: id,
-        })
+      await StudentTermsDataLoader.load({ student_id: id, programs })
     ).map(({ curriculum }) => curriculum);
   }
 
@@ -196,45 +164,21 @@ export class StudentResolver {
   async start_year(
     @Root() { id }: PartialStudent
   ): Promise<$PropertyType<Student, "start_year">> {
-    return (
-      (
-        await StudentProgramTable()
-          .select("start_year")
-          .orderBy("start_year", "desc")
-          .where({ student_id: id })
-          .first()
-      )?.start_year ?? 0
-    );
+    return (await StudentLastProgramData.load(id))?.start_year ?? 0;
   }
 
   @FieldResolver()
   async mention(
     @Root() { id }: PartialStudent
   ): Promise<$PropertyType<Student, "mention">> {
-    return (
-      (
-        await StudentProgramTable()
-          .select("mention")
-          .orderBy("start_year", "desc")
-          .where({ student_id: id })
-          .first()
-      )?.mention ?? ""
-    );
+    return (await StudentLastProgramData.load(id))?.mention ?? "";
   }
 
   @FieldResolver()
   async progress(
     @Root() { id }: PartialStudent
   ): Promise<$PropertyType<Student, "progress">> {
-    return (
-      (
-        await StudentProgramTable()
-          .select("completion")
-          .where({ student_id: id })
-          .orderBy("start_year", "desc")
-          .first()
-      )?.completion ?? -1
-    );
+    return (await StudentLastProgramData.load(id))?.completion ?? -1;
   }
 
   @FieldResolver()
@@ -246,27 +190,7 @@ export class StudentResolver {
       `student id needs to be available for Student field resolvers`
     );
 
-    if (!programs) {
-      programs = (
-        await StudentTermTable()
-          .distinct("program_id")
-          .where({ student_id: id })
-      ).map(({ program_id }) => {
-        return { id: program_id };
-      });
-    }
-
-    return await StudentTermTable()
-      .select("id")
-      .where({ student_id: id })
-      .whereIn(
-        "program_id",
-        programs.map(({ id }) => id)
-      )
-      .orderBy([
-        { column: "year", order: "desc" },
-        { column: "term", order: "desc" },
-      ]);
+    return await StudentTermsDataLoader.load({ student_id: id, programs });
   }
 
   @FieldResolver()
@@ -276,9 +200,6 @@ export class StudentResolver {
       `student id needs to be available for Student field resolvers`
     );
 
-    return await StudentDropoutTable()
-      .select("*")
-      .where({ student_id: id })
-      .first();
+    return await StudentDropoutDataLoader.load(id);
   }
 }

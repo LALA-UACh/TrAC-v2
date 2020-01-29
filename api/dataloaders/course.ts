@@ -1,10 +1,10 @@
 import DataLoader from "dataloader";
 import { keyBy, trim } from "lodash";
+import { LRUMap } from "lru_map";
 
 import {
   CourseStatsTable,
   CourseTable,
-  ICourseStats,
   ProgramStructureTable,
 } from "../db/tables";
 
@@ -36,45 +36,40 @@ export const CourseRequisitesLoader = new DataLoader(
     return program_structure_ids.map(key => {
       return data[key]?.courses;
     });
+  },
+  {
+    cacheMap: new LRUMap(1000),
   }
 );
 
 export const CourseFlowDataLoader = new DataLoader(
   async (keys: readonly { id: number; code: string }[]) => {
-    const data = keyBy(
-      await Promise.all(
-        keys.map(async key => {
-          const flowData = (
-            await ProgramStructureTable()
-              .select("id", "course_id", "requisites")
-              .whereIn(
-                "curriculum",
-                ProgramStructureTable()
-                  .select("curriculum")
-                  .where({ id: key.id })
-              )
-          ).map(({ course_id, ...rest }) => ({ ...rest, code: course_id }));
+    return await Promise.all(
+      keys.map(async key => {
+        const flowData = (
+          await ProgramStructureTable()
+            .select("id", "course_id", "requisites")
+            .whereIn(
+              "curriculum",
+              ProgramStructureTable()
+                .select("curriculum")
+                .where({ id: key.id })
+            )
+        ).map(({ course_id, ...rest }) => ({ ...rest, code: course_id }));
 
-          return {
-            data: flowData
-              .filter(({ requisites }) => {
-                return requisites.includes(key.code);
-              })
-              .map(({ id, code }) => ({ id, code })),
-            key,
-          };
-        })
-      ),
-      ({ key }) => key.id + key.code
+        return flowData
+          .filter(({ requisites }) => {
+            return requisites.includes(key.code);
+          })
+          .map(({ id, code }) => ({ id, code }));
+      })
     );
-    return keys.map(key => {
-      return data[key.id + key.code]?.data;
-    });
   },
   {
     cacheKeyFn: key => {
       return key.id + key.code;
     },
+    cacheMap: new LRUMap(1000),
   }
 );
 
@@ -109,30 +104,23 @@ export const CourseDataLoader = new DataLoader(
     cacheKeyFn: key => {
       return key.id + key.code;
     },
+    cacheMap: new LRUMap(5000),
   }
 );
 
 export const CourseStatsDataLoader = new DataLoader(
   async (keys: readonly string[]) => {
-    const data = keyBy(
-      await Promise.all<{ key: string; stats: ICourseStats[] }>(
-        keys.map(async key => {
-          const stats = await CourseStatsTable()
-            .select("*")
-            .where({
-              course_taken: key,
-            });
-
-          return {
-            key,
-            stats,
-          };
-        })
-      ),
-      "key"
+    return await Promise.all(
+      keys.map(key => {
+        return CourseStatsTable()
+          .select("*")
+          .where({
+            course_taken: key,
+          });
+      })
     );
-    return keys.map(key => {
-      return data[key]?.stats;
-    });
+  },
+  {
+    cacheMap: new LRUMap(1000),
   }
 );
