@@ -10,8 +10,9 @@ import {
   StudentProgramTable,
   StudentTermTable,
 } from "../db/tables";
+import { TermDataLoader } from "./term";
 
-export const StudentDataDataLoader = new DataLoader(
+export const StudentDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
     return await Promise.all(
       student_ids.map(student_id => {
@@ -33,7 +34,7 @@ export const StudentDataDataLoader = new DataLoader(
   }
 );
 
-export const StudentLastProgramData = new DataLoader(
+export const StudentLastProgramDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
     return await Promise.all(
       student_ids.map(student_id => {
@@ -97,7 +98,10 @@ export const StudentTermsDataLoader = new DataLoader(
             { column: "year", order: "desc" },
             { column: "term", order: "desc" },
           ]);
-        // TODO: prime term dataloader
+        for (const studentTerm of studentTermData) {
+          TermDataLoader.prime(studentTerm.id, studentTerm);
+        }
+
         return studentTermData;
       })
     );

@@ -20,9 +20,9 @@ import {
 } from "../../../constants";
 import { IContext } from "../../../interfaces";
 import {
-  StudentDataDataLoader,
+  StudentDataLoader,
   StudentDropoutDataLoader,
-  StudentLastProgramData,
+  StudentLastProgramDataLoader,
   StudentListDataLoader,
   StudentProgramsDataLoader,
   StudentTermsDataLoader,
@@ -56,7 +56,7 @@ export class StudentResolver {
         user.student_id
       );
 
-      const studentData = await StudentDataDataLoader.load(student_id);
+      const studentData = await StudentDataLoader.load(student_id);
 
       assertIsDefined(studentData, STUDENT_NOT_FOUND);
 
@@ -94,7 +94,7 @@ export class StudentResolver {
 
       assertIsDefined(IsAuthorized, STUDENT_NOT_FOUND);
 
-      const studentData = await StudentDataDataLoader.load(student_id);
+      const studentData = await StudentDataLoader.load(student_id);
 
       assertIsDefined(studentData, STUDENT_NOT_FOUND);
 
@@ -164,21 +164,21 @@ export class StudentResolver {
   async start_year(
     @Root() { id }: PartialStudent
   ): Promise<$PropertyType<Student, "start_year">> {
-    return (await StudentLastProgramData.load(id))?.start_year ?? 0;
+    return (await StudentLastProgramDataLoader.load(id))?.start_year ?? 0;
   }
 
   @FieldResolver()
   async mention(
     @Root() { id }: PartialStudent
   ): Promise<$PropertyType<Student, "mention">> {
-    return (await StudentLastProgramData.load(id))?.mention ?? "";
+    return (await StudentLastProgramDataLoader.load(id))?.mention ?? "";
   }
 
   @FieldResolver()
   async progress(
     @Root() { id }: PartialStudent
   ): Promise<$PropertyType<Student, "progress">> {
-    return (await StudentLastProgramData.load(id))?.completion ?? -1;
+    return (await StudentLastProgramDataLoader.load(id))?.completion ?? -1;
   }
 
   @FieldResolver()
