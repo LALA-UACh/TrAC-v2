@@ -70,7 +70,6 @@ export const TakenCoursesDataLoader = new DataLoader(
               order: "asc",
             },
           ]);
-        // TODO: Prime studentCourseTable data loader
 
         return uniqBy(takenCoursesData, ({ course_taken }) => course_taken);
       })

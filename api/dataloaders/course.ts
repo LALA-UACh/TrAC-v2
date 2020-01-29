@@ -124,13 +124,13 @@ export const CourseAndStructureDataLoader = new DataLoader(
 );
 
 export const CourseStatsDataLoader = new DataLoader(
-  async (keys: readonly string[]) => {
+  async (codes: readonly string[]) => {
     return await Promise.all(
-      keys.map(key => {
+      codes.map(code => {
         return CourseStatsTable()
           .select("*")
           .where({
-            course_taken: key,
+            course_taken: code,
           });
       })
     );
