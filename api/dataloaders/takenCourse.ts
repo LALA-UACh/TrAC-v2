@@ -53,11 +53,11 @@ export const CourseStatsByStateDataLoader = new DataLoader(
 export const CourseStatsByCourseTakenDataLoader = new DataLoader(
   async (codes: readonly string[]) => {
     return await Promise.all(
-      codes.map(code => {
+      codes.map(course_taken => {
         return CourseStatsTable()
           .select("color_bands")
           .where({
-            code,
+            course_taken,
           })
           .first();
       })
