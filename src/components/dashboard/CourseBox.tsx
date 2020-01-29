@@ -267,7 +267,7 @@ const SecondaryBlockOuter: FC<Pick<ICourse, "taken" | "bandColors"> &
         return "transparent";
       }
     }
-  }, [grade, bandColors, taken, config]);
+  }, [state, grade, bandColors, taken, config]);
 
   return (
     <Flex
