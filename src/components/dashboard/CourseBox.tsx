@@ -640,7 +640,10 @@ export const CourseBox: FC<ICourse> = ({
 
   const [open, setOpen] = useState(() => {
     try {
-      if (localStorage.getItem(`${code}_active`)) {
+      if (
+        process.env.NODE_ENV === "development" &&
+        localStorage.getItem(`${code}_active`)
+      ) {
         return true;
       }
     } catch (err) {}
@@ -648,19 +651,21 @@ export const CourseBox: FC<ICourse> = ({
     return false;
   });
 
-  useDebounce(
-    () => {
-      try {
-        if (open) {
-          localStorage.setItem(`${code}_active`, "1");
-        } else {
-          localStorage.removeItem(`${code}_active`);
-        }
-      } catch (err) {}
-    },
-    3000,
-    [open]
-  );
+  if (process.env.NODE_ENV === "development") {
+    useDebounce(
+      () => {
+        try {
+          if (open) {
+            localStorage.setItem(`${code}_active`, "1");
+          } else {
+            localStorage.removeItem(`${code}_active`);
+          }
+        } catch (err) {}
+      },
+      3000,
+      [open]
+    );
+  }
 
   useUpdateEffect(() => {
     setOpen(false);

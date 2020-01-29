@@ -81,7 +81,10 @@ export const StudentList: FC<{
   const { user } = useUser();
 
   const { isOpen, onOpen, onClose } = useDisclosure(
-    localStorage.getItem("student_list_open") ? true : false
+    process.env.NODE_ENV === "development" &&
+      localStorage.getItem("student_list_open")
+      ? true
+      : false
   );
 
   useUpdateEffect(() => {
@@ -92,13 +95,15 @@ export const StudentList: FC<{
     });
   }, [isOpen]);
 
-  useUpdateEffect(() => {
-    if (isOpen) {
-      localStorage.setItem("student_list_open", "1");
-    } else {
-      localStorage.removeItem("student_list_open");
-    }
-  }, [isOpen]);
+  if (process.env.NODE_ENV === "development") {
+    useUpdateEffect(() => {
+      if (isOpen) {
+        localStorage.setItem("student_list_open", "1");
+      } else {
+        localStorage.removeItem("student_list_open");
+      }
+    }, [isOpen]);
+  }
 
   const btnRef = useRef<HTMLElement>(null);
 

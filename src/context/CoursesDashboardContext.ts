@@ -56,7 +56,10 @@ const initCourseDashboardData = (
 ): ICoursesDashboardData => {
   try {
     const rememberedData = localStorage.getItem(rememberCourseDashboardDataKey);
-    if (!rememberedData) return initialData;
+    if (process.env.NODE_ENV !== "development" || !rememberedData) {
+      return initialData;
+    }
+
     return { ...initialData, ...JSON.parse(rememberedData) };
   } catch (err) {
     return initialData;
@@ -202,18 +205,20 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
 
   const [state, { reset }] = useCoursesDashboardData();
 
-  useDebounce(
-    () => {
-      try {
-        localStorage.setItem(
-          rememberCourseDashboardDataKey,
-          JSON.stringify(state)
-        );
-      } catch (err) {}
-    },
-    3000,
-    [state]
-  );
+  if (process.env.NODE_ENV === "development") {
+    useDebounce(
+      () => {
+        try {
+          localStorage.setItem(
+            rememberCourseDashboardDataKey,
+            JSON.stringify(state)
+          );
+        } catch (err) {}
+      },
+      3000,
+      [state]
+    );
+  }
 
   const previousExplicitSemester = usePreviousDistinct(state.explicitSemester);
 
