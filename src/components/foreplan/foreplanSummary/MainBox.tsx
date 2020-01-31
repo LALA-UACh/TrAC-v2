@@ -494,6 +494,7 @@ const ForeplanSummary: FC = () => {
       {active && anyForeplanCourses && (
         <motion.div
           key="foreplanSummary"
+          style={{ zIndex: 1000 }}
           initial={{
             opacity: 0,
           }}

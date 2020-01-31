@@ -187,7 +187,7 @@ export class ForeplanResolver {
           acum[course_equiv] = true;
         }
         if (course_taken) {
-          acum[course_taken];
+          acum[course_taken] = true;
         }
         return acum;
       },
