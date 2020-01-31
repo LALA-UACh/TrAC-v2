@@ -25,10 +25,16 @@ export const CourseRequisitesLoader = new DataLoader(
       }>(
         programStructures.map(async ({ requisites, id }) => {
           const courses = await ProgramStructureTable()
-            .select("id", "course_id as code")
+            .select("id", "course_id")
             .whereIn("course_id", requisites?.split(",").map(trim) ?? []);
 
-          return { courses, id };
+          return {
+            courses: courses.map(({ id, course_id }) => ({
+              id,
+              code: course_id,
+            })),
+            id,
+          };
         })
       ),
       "id"

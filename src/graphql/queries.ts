@@ -372,3 +372,14 @@ export const PERFORMANCE_BY_LOAD_ADVICES: DocumentNode<
     }
   }
 `;
+
+export const DIRECT_TAKE_COURSES: DocumentNode<{
+  directTakeCourses: { id: number; code: string }[];
+}> = gql`
+  mutation($student_id: String, $program_id: String) {
+    directTakeCourses(student_id: $student_id, program_id: $program_id) {
+      id
+      code
+    }
+  }
+`;

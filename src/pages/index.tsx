@@ -28,6 +28,7 @@ import {
 } from "../context/ForeplanContext";
 import { TrackingManager, useTracking } from "../context/Tracking";
 import {
+  DIRECT_TAKE_COURSES,
   PERFORMANCE_BY_LOAD_ADVICES,
   SEARCH_PROGRAM,
   SEARCH_STUDENT,
@@ -71,6 +72,19 @@ const Dashboard: FC = () => {
     searchPerformanceByLoad,
     { data: dataPerformanceByLoad, error: errorPerformanceByLoad },
   ] = useMutation(PERFORMANCE_BY_LOAD_ADVICES);
+  const [
+    searchDirectTakeCourses,
+    { data: dataDirectTakeCourses, error: errorDirectTakeCourses },
+  ] = useMutation(DIRECT_TAKE_COURSES);
+
+  useEffect(() => {
+    if (errorDirectTakeCourses) {
+      console.error(JSON.stringify(errorDirectTakeCourses, null, 2));
+    }
+    if (errorPerformanceByLoad) {
+      console.error(JSON.stringify(errorPerformanceByLoad, null, 2));
+    }
+  }, [errorDirectTakeCourses, errorPerformanceByLoad]);
 
   const [
     searchProgram,
@@ -144,6 +158,7 @@ const Dashboard: FC = () => {
       searchProgram();
       searchStudent();
       searchPerformanceByLoad();
+      searchDirectTakeCourses();
     }
   }, [user, searchProgram, searchStudent, searchPerformanceByLoad]);
 
@@ -183,9 +198,18 @@ const Dashboard: FC = () => {
       if (user?.type !== UserType.Student) {
         foreplanActiveActions.reset();
       }
-      if (dataPerformanceByLoad?.performanceLoadAdvices) {
+      console.log({
+        directTake: dataDirectTakeCourses?.directTakeCourses,
+      });
+      if (
+        dataPerformanceByLoad?.performanceLoadAdvices &&
+        dataDirectTakeCourses?.directTakeCourses
+      ) {
         foreplanActiveActions.setForeplanAdvices(
           dataPerformanceByLoad.performanceLoadAdvices
+        );
+        foreplanHelperActions.setDirectTakeData(
+          dataDirectTakeCourses.directTakeCourses.map(({ code }) => code)
         );
       } else {
         foreplanActiveActions.disableForeplan();
@@ -194,6 +218,7 @@ const Dashboard: FC = () => {
     }
   }, [
     dataPerformanceByLoad,
+    dataDirectTakeCourses,
     mock,
     user,
     mockData,
@@ -414,6 +439,7 @@ const Dashboard: FC = () => {
               ...(searchProgramError?.graphQLErrors ?? []),
               ...(searchStudentError?.graphQLErrors ?? []),
               ...(errorPerformanceByLoad?.graphQLErrors ?? []),
+              ...(errorDirectTakeCourses?.graphQLErrors ?? []),
             ].map(({ message }) => {
               switch (message) {
                 case STUDENT_NOT_FOUND:
@@ -441,6 +467,14 @@ const Dashboard: FC = () => {
           setProgram={setProgram}
           onSearch={async ({ student_id, program_id }) => {
             try {
+              if (student_id) {
+                searchPerformanceByLoad({
+                  variables: { student_id, program_id },
+                });
+                searchDirectTakeCourses({
+                  variables: { student_id, program_id },
+                });
+              }
               const [programSearch, studentSearch] = await Promise.all([
                 searchProgram({
                   variables: {
@@ -451,11 +485,6 @@ const Dashboard: FC = () => {
                 searchStudent({
                   variables: { student_id, program_id },
                 }),
-                student_id
-                  ? searchPerformanceByLoad({
-                      variables: { student_id, program_id },
-                    })
-                  : undefined,
               ]);
 
               if (studentSearch.data?.student && programSearch.data?.program) {

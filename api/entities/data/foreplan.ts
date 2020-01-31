@@ -1,4 +1,10 @@
-import { Field, Int, ObjectType, registerEnumType } from "type-graphql";
+import {
+  ArgsType,
+  Field,
+  Int,
+  ObjectType,
+  registerEnumType,
+} from "type-graphql";
 
 import { PerformanceLoadUnit } from "../../../constants";
 
@@ -48,4 +54,13 @@ export class PerformanceByLoad {
   // performance_by_load => label
   @Field()
   label: string;
+}
+
+@ArgsType()
+export class ForeplanInput {
+  @Field({ nullable: true })
+  student_id?: string;
+
+  @Field({ nullable: true })
+  program_id?: string;
 }

@@ -1,5 +1,5 @@
-import { toInteger } from "lodash";
-import { Arg, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
+import { toInteger, trim } from "lodash";
+import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
 
 import {
   defaultPerformanceLoadUnit,
@@ -10,74 +10,90 @@ import {
   UserType,
 } from "../../../constants";
 import { IContext } from "../../../interfaces";
+import { StudentLastProgramDataLoader } from "../../dataloaders/student";
 import {
+  IUser,
   PerformanceByLoadTable,
+  ProgramStructureTable,
   StudentClusterTable,
+  StudentCourseTable,
   StudentProgramTable,
   UserProgramsTable,
 } from "../../db/tables";
-import { PerformanceByLoad } from "../../entities/data/foreplan";
+import { Course } from "../../entities/data/course";
+import { ForeplanInput, PerformanceByLoad } from "../../entities/data/foreplan";
 import { anonService } from "../../utils/anonymization";
 import { assertIsDefined } from "../../utils/assert";
+import { PartialCourse } from "./course";
 
 @Resolver()
 export class ForeplanResolver {
-  @Authorized()
-  @Mutation(() => [PerformanceByLoad])
-  async performanceLoadAdvices(
-    @Ctx() { user }: IContext,
-    @Arg("student_id", {
-      nullable: true,
-    })
-    student_id?: string,
-    @Arg("program_id", {
-      nullable: true,
-    })
-    program_id?: string
-  ): Promise<PerformanceByLoad[]> {
-    assertIsDefined(user, "Authorization in context is broken");
+  static async authorizationProcess(
+    user: IUser,
+    dataArgs: { student_id?: string; program_id?: string } = {}
+  ): Promise<{ program_id: string; student_id: string; curriculum: string }> {
+    let student_id: string;
+    let program_id: string;
+    let curriculum: string;
     if (defaultUserType(user.type) === UserType.Student) {
       student_id = await anonService.getAnonymousIdOrGetItBack(user.student_id);
 
-      const studentProgram = await StudentProgramTable()
-        .distinct("program_id", "curriculum", "start_year")
-        .where({
-          student_id,
-        })
-        .orderBy("start_year", "desc")
-        .first();
+      const studentProgram = await StudentLastProgramDataLoader.load(
+        student_id
+      );
 
       assertIsDefined(studentProgram, PROGRAM_NOT_FOUND);
 
       program_id = studentProgram.program_id;
+      curriculum = studentProgram.curriculum;
     } else {
-      assertIsDefined(student_id, STUDENT_NOT_FOUND);
-      assertIsDefined(program_id, PROGRAM_NOT_FOUND);
+      assertIsDefined(dataArgs.student_id, STUDENT_NOT_FOUND);
+      assertIsDefined(dataArgs.program_id, PROGRAM_NOT_FOUND);
 
       assertIsDefined(
         await UserProgramsTable()
           .select("program")
           .where({
-            program: program_id,
+            program: dataArgs.program_id,
             email: user.email,
           })
           .first(),
         PROGRAM_UNAUTHORIZED
       );
 
-      student_id = await anonService.getAnonymousIdOrGetItBack(student_id);
-
-      assertIsDefined(
-        await StudentProgramTable()
-          .select("program_id", "student_id")
-          .where({
-            student_id,
-            program_id,
-          })
-          .first(),
-        STUDENT_NOT_FOUND
+      student_id = await anonService.getAnonymousIdOrGetItBack(
+        dataArgs.student_id
       );
+
+      const studentProgram = await StudentProgramTable()
+        .select("program_id", "curriculum")
+        .where({
+          student_id,
+          program_id: dataArgs.program_id,
+        })
+        .orderBy("start_year", "desc")
+        .first();
+      assertIsDefined(studentProgram, STUDENT_NOT_FOUND);
+
+      program_id = studentProgram.program_id;
+      curriculum = studentProgram.curriculum;
     }
+
+    return { student_id, program_id, curriculum };
+  }
+
+  @Authorized()
+  @Mutation(() => [PerformanceByLoad])
+  async performanceLoadAdvices(
+    @Ctx() { user }: IContext,
+    @Args() input: ForeplanInput
+  ): Promise<PerformanceByLoad[]> {
+    assertIsDefined(user, "Authorization in context is broken");
+
+    const {
+      student_id,
+      program_id,
+    } = await ForeplanResolver.authorizationProcess(user, input);
 
     const student_cluster =
       (
@@ -123,6 +139,76 @@ export class ForeplanResolver {
           label,
         };
       }
+    );
+  }
+
+  @Authorized()
+  @Mutation(() => [Course])
+  async directTakeCourses(
+    @Ctx() { user }: IContext,
+    @Args() input: ForeplanInput
+  ): Promise<PartialCourse[]> {
+    assertIsDefined(user, "User context is not working properly");
+
+    const {
+      student_id,
+      program_id,
+      curriculum,
+    } = await ForeplanResolver.authorizationProcess(user, input);
+
+    const allCoursesOfProgramCurriculum = (
+      await ProgramStructureTable()
+        .select("id", "course_id", "requisites")
+        .where({
+          program_id,
+          curriculum,
+        })
+    ).map(({ id, course_id, requisites }) => {
+      return {
+        code: course_id,
+        requisites: requisites?.split(",").map(trim),
+        id,
+      };
+    });
+
+    const allApprovedCourses = (
+      await StudentCourseTable()
+        .select("course_taken", "course_equiv", "elect_equiv")
+        .where({
+          student_id,
+          state: "A",
+        })
+    ).reduce<Record<string, boolean>>(
+      (acum, { course_equiv, course_taken, elect_equiv }) => {
+        if (elect_equiv) {
+          acum[elect_equiv] = true;
+        }
+        if (course_equiv) {
+          acum[course_equiv] = true;
+        }
+        if (course_taken) {
+          acum[course_taken];
+        }
+        return acum;
+      },
+      {}
+    );
+
+    return allCoursesOfProgramCurriculum.reduce<PartialCourse[]>(
+      (acum, { id, code, requisites }) => {
+        if (
+          requisites.every(requisiteCourseCode => {
+            return allApprovedCourses[requisiteCourseCode] || false;
+          })
+        ) {
+          acum.push({
+            id,
+            code,
+          });
+        }
+        return acum;
+      },
+      []
     );
   }
 }
