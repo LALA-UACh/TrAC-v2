@@ -7,6 +7,7 @@ import { useDebounce } from "react-use";
 import { PerformanceByLoad } from "../../api/entities/data/foreplan";
 import { LAST_TIME_USED, StateCourse } from "../../constants";
 import { ICourse } from "../../interfaces";
+import { stringListToBooleanMap } from "../utils";
 import { useUser } from "../utils/useUser";
 
 const emptyObject = Object.freeze({});
@@ -37,14 +38,7 @@ const ForeplanHelperStore = createStore({
   actions: {
     setDirectTakeData: (data: string[]) => ({ setState }) => {
       setState({
-        courseDirectTake: data.reduce<Record<string, boolean>>(
-          (acum, value) => {
-            acum[value] = true;
-
-            return acum;
-          },
-          {}
-        ),
+        courseDirectTake: stringListToBooleanMap(data),
       });
     },
     setFailRateData: (data: { code: string; failRate: number }[]) => ({

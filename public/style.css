@@ -20,10 +20,6 @@
   transform: rotate(180deg);
 }
 
-body {
-  overflow-y: scroll !important;
-}
-
 .cursorPointer {
   cursor: pointer;
 }

@@ -212,6 +212,7 @@ export const StudentList: FC<{
         size="lg"
         scrollBehavior="inside"
         isFullHeight
+        preserveScrollBarGap
       >
         <DrawerOverlay />
         <DrawerContent>
