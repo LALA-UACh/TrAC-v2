@@ -264,103 +264,109 @@ const Waffle: FC<{
   failRateLow: number;
   failRateMid: number;
   failRateHigh: number;
-  current?: boolean;
+  isStudentCluster?: boolean;
   label: string;
-}> = memo(({ failRateLow, failRateMid, failRateHigh, current, label }) => {
-  const config = useContext(ConfigContext);
+}> = memo(
+  ({ failRateLow, failRateMid, failRateHigh, isStudentCluster, label }) => {
+    const config = useContext(ConfigContext);
 
-  const colors = config.FOREPLAN_SUMMARY_WAFFLE_COLORS_FAIL_RATE;
-  const nLow = failRateLow;
-  const nMid = nLow + failRateMid;
-  // const nHigh = nMid + (failRate?.mid ?? 0);
+    const colors = config.FOREPLAN_SUMMARY_WAFFLE_COLORS_FAIL_RATE;
+    const nLow = failRateLow;
+    const nMid = nLow + failRateMid;
+    // const nHigh = nMid + (failRate?.mid ?? 0);
 
-  const rowRange = range(0, 10);
-  const rectSize = config.FOREPLAN_SUMMARY_WAFFLE_SQUARE_SIZE;
-  const separation = config.FOREPLAN_SUMMARY_WAFFLE_RECT_SEPARATION;
+    const rowRange = range(0, 10);
+    const rectSize = config.FOREPLAN_SUMMARY_WAFFLE_SQUARE_SIZE;
+    const separation = config.FOREPLAN_SUMMARY_WAFFLE_RECT_SEPARATION;
 
-  return (
-    <Stack alignItems="center">
-      <Flex
-        padding={config.FOREPLAN_SUMMARY_WAFFLE_PADDING}
-        border={
-          current ? config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_BORDER : undefined
-        }
-        marginTop={`${config.FOREPLAN_SUMMARY_WAFFLE_MARGIN_TOP} !important`}
-        marginBottom={0}
-        margin={0}
-        borderWidth={
-          current
-            ? config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_BORDER_WIDTH
-            : undefined
-        }
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        className="waffleContainer"
-        width="fit-content"
-        height="fit-content"
-      >
-        <svg
-          width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
-          height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+    return (
+      <Stack alignItems="center">
+        <Flex
+          padding={config.FOREPLAN_SUMMARY_WAFFLE_PADDING}
+          border={
+            isStudentCluster
+              ? config.FOREPLAN_SUMMARY_WAFFLE_IS_STUDENT_CLUSTER_BORDER
+              : undefined
+          }
+          marginTop={`${config.FOREPLAN_SUMMARY_WAFFLE_MARGIN_TOP} !important`}
+          marginBottom={0}
+          margin={0}
+          borderWidth={
+            isStudentCluster
+              ? config.FOREPLAN_SUMMARY_WAFFLE_IS_STUDENT_CLUSTER_BORDER_WIDTH
+              : undefined
+          }
+          direction="column"
+          alignItems="center"
+          justifyContent="center"
+          className="waffleContainer"
+          width="fit-content"
+          height="fit-content"
         >
-          {flatMap(rowRange, key1 => {
-            return rowRange.map(key2 => {
-              const n = key1 * 10 + key2;
-              let fill: string;
-              let data_tip: string;
-              let data_type: "success" | "warning" | "error";
-              if (n < nLow) {
-                fill = colors.low;
-                data_tip = failRateLow + "%";
-                data_type = "success";
-              } else if (n < nMid) {
-                fill = colors.mid;
-                data_tip = failRateMid + "%";
-                data_type = "warning";
-              } else {
-                fill = colors.high;
-                data_tip = failRateHigh + "%";
-                data_type = "error";
-              }
-              return (
-                <rect
-                  key={n}
-                  data-type={data_type}
-                  data-tip={data_tip}
-                  data-for="waffle_tooltip"
-                  x={rectSize * key2 * separation}
-                  y={rectSize * key1 * separation}
-                  width={rectSize}
-                  height={rectSize}
-                  fill={fill}
-                />
-              );
-            });
-          })}
-        </svg>
-      </Flex>
-      <Text
-        marginBottom={0}
-        textAlign="center"
-        m={0}
-        color={config.FOREPLAN_SUMMARY_WAFFLE_LABEL_COLOR}
-      >
-        {label}
-      </Text>
-      {current && (
+          <svg
+            width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+            height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+          >
+            {flatMap(rowRange, key1 => {
+              return rowRange.map(key2 => {
+                const n = key1 * 10 + key2;
+                let fill: string;
+                let data_tip: string;
+                let data_type: "success" | "warning" | "error";
+                if (n < nLow) {
+                  fill = colors.low;
+                  data_tip = failRateLow + "%";
+                  data_type = "success";
+                } else if (n < nMid) {
+                  fill = colors.mid;
+                  data_tip = failRateMid + "%";
+                  data_type = "warning";
+                } else {
+                  fill = colors.high;
+                  data_tip = failRateHigh + "%";
+                  data_type = "error";
+                }
+                return (
+                  <rect
+                    key={n}
+                    data-type={data_type}
+                    data-tip={data_tip}
+                    data-for="waffle_tooltip"
+                    x={rectSize * key2 * separation}
+                    y={rectSize * key1 * separation}
+                    width={rectSize}
+                    height={rectSize}
+                    fill={fill}
+                  />
+                );
+              });
+            })}
+          </svg>
+        </Flex>
         <Text
+          marginBottom={0}
           textAlign="center"
-          color={config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_LABEL_COLOR}
           m={0}
+          color={config.FOREPLAN_SUMMARY_WAFFLE_LABEL_COLOR}
         >
-          {config.FOREPLAN_SUMMARY_WAFFLE_CURRENT_LABEL}
+          {label}
         </Text>
-      )}
-      <ReactTooltip id="waffle_tooltip" delayHide={300} />
-    </Stack>
-  );
-});
+        {isStudentCluster && (
+          <Text
+            textAlign="center"
+            color={
+              config.FOREPLAN_SUMMARY_WAFFLE_IS_STUDENT_CLUSTER_LABEL_COLOR
+            }
+            m={0}
+          >
+            {config.FOREPLAN_SUMMARY_WAFFLE_IS_STUDENT_CLUSTER_LABEL}
+          </Text>
+        )}
+        <ReactTooltip id="waffle_tooltip" delayHide={300} />
+      </Stack>
+    );
+  }
+);
 
 const ForeplanWaffleCharts: FC = memo(() => {
   const [advices] = useForeplanAdvices();
@@ -368,33 +374,30 @@ const ForeplanWaffleCharts: FC = memo(() => {
 
   return (
     <Flex color="black" justifyContent="space-between">
-      {advices.map(
-        (
-          {
-            failRateLow,
-            failRateMid,
-            failRateHigh,
-            lowerBoundary,
-            upperBoundary,
-            label,
-          },
-          key
-        ) => {
+      {advices
+        .filter(({ lowerBoundary, upperBoundary }) => {
           return (
-            <Waffle
-              key={key}
-              failRateLow={failRateLow ?? 33}
-              failRateMid={failRateMid ?? 66}
-              failRateHigh={failRateHigh ?? 100}
-              current={
-                totalCreditsTaken >= lowerBoundary &&
-                totalCreditsTaken <= upperBoundary
-              }
-              label={label}
-            />
+            totalCreditsTaken >= lowerBoundary &&
+            totalCreditsTaken <= upperBoundary
           );
-        }
-      )}
+        })
+        .map(
+          (
+            { failRateLow, failRateMid, failRateHigh, label, isStudentCluster },
+            key
+          ) => {
+            return (
+              <Waffle
+                key={key}
+                failRateLow={failRateLow ?? 33}
+                failRateMid={failRateMid ?? 66}
+                failRateHigh={failRateHigh ?? 100}
+                isStudentCluster={isStudentCluster}
+                label={label}
+              />
+            );
+          }
+        )}
     </Flex>
   );
 });

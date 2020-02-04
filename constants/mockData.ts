@@ -5918,6 +5918,7 @@ const data: {
 
   performanceByLoad: [
     {
+      // LOW CREDITS - LOW PERFORMANCE
       id: 0,
       lowerBoundary: 0,
       upperBoundary: 10,
@@ -5925,37 +5926,135 @@ const data: {
       adviceParagraph:
         "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
 
-      failRateLow: 5,
-      failRateMid: 20,
-      failRateHigh: 75,
+      failRateLow: 60,
+      failRateMid: 25,
+      failRateHigh: 15,
       loadUnit: PerformanceLoadUnit.Credits,
       label: "bajo",
+      isStudentCluster: false,
     },
     {
+      // MID CREDITS - LOW PERFORMANCE
       id: 1,
       lowerBoundary: 11,
       upperBoundary: 20,
       adviceTitle: "¡Tu carga planeada parece moderada!",
       adviceParagraph:
         "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-      failRateLow: 55,
-      failRateMid: 30,
-      failRateHigh: 15,
+      failRateLow: 45,
+      failRateMid: 35,
+      failRateHigh: 20,
       loadUnit: PerformanceLoadUnit.Credits,
-      label: "medio",
+      label: "bajo",
+      isStudentCluster: false,
     },
     {
+      // HIGH CREDITS - LOW PERFORMANCE
       id: 2,
       lowerBoundary: 21,
       upperBoundary: 30,
       adviceTitle: "¡Tu carga de estudio es alta!",
       adviceParagraph:
         "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-      failRateLow: 30,
-      failRateMid: 45,
-      failRateHigh: 25,
+      failRateLow: 20,
+      failRateMid: 30,
+      failRateHigh: 50,
+      loadUnit: PerformanceLoadUnit.Credits,
+      label: "bajo",
+      isStudentCluster: false,
+    },
+    
+    {
+      // LOW CREDITS - MID PERFORMANCE
+      id: 3,
+      lowerBoundary: 0,
+      upperBoundary: 10,
+      adviceTitle: "¡Tu carga de estudio parece algo baja!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
+
+      failRateLow: 75,
+      failRateMid: 15,
+      failRateHigh: 10,
+      loadUnit: PerformanceLoadUnit.Credits,
+      label: "medio",
+      isStudentCluster: false,
+    },
+    {
+      // MID CREDITS - MID PERFORMANCE
+      id: 4,
+      lowerBoundary: 11,
+      upperBoundary: 20,
+      adviceTitle: "¡Tu carga planeada parece moderada!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 60,
+      failRateMid: 27,
+      failRateHigh: 13,
+      loadUnit: PerformanceLoadUnit.Credits,
+      label: "medio",
+      isStudentCluster: false,
+    },
+    {
+      // HIGH CREDITS - MID PERFORMANCE
+      id: 5,
+      lowerBoundary: 21,
+      upperBoundary: 30,
+      adviceTitle: "¡Tu carga de estudio es alta!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 20,
+      failRateMid: 35,
+      failRateHigh: 45,
+      loadUnit: PerformanceLoadUnit.Credits,
+      label: "medio",
+      isStudentCluster: false,
+    },
+    {
+      // LOW CREDITS - GOOD PERFORMANCE
+      id: 6,
+      lowerBoundary: 0,
+      upperBoundary: 10,
+      adviceTitle: "¡Tu carga de estudio parece algo baja!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
+
+      failRateLow: 85,
+      failRateMid: 10,
+      failRateHigh: 5,
       loadUnit: PerformanceLoadUnit.Credits,
       label: "alto",
+      isStudentCluster: true,
+    },
+    {
+      // MID CREDITS - GOOD PERFORMANCE
+      id: 7,
+      lowerBoundary: 11,
+      upperBoundary: 20,
+      adviceTitle: "¡Tu carga planeada parece moderada!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 70,
+      failRateMid: 20,
+      failRateHigh: 10,
+      loadUnit: PerformanceLoadUnit.Credits,
+      label: "alto",
+      isStudentCluster: true,
+    },
+    {
+      // HIGH CREDITS - GOOD PERFORMANCE
+      id: 8,
+      lowerBoundary: 21,
+      upperBoundary: 30,
+      adviceTitle: "¡Tu carga de estudio es alta!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 30,
+      failRateMid: 35,
+      failRateHigh: 35,
+      loadUnit: PerformanceLoadUnit.Credits,
+      label: "alto",
+      isStudentCluster: true,
     },
   ],
 };

@@ -108,10 +108,7 @@ export class ForeplanResolver {
 
     const performancesByLoad = await PerformanceByLoadTable()
       .select("*")
-      .where({
-        program_id,
-        student_cluster,
-      });
+      .where({ program_id });
 
     return performancesByLoad.map(
       ({
@@ -125,6 +122,7 @@ export class ForeplanResolver {
         message_title,
         message_text,
         label,
+        student_cluster: rowStudentCluster,
       }) => {
         return {
           id,
@@ -137,6 +135,7 @@ export class ForeplanResolver {
           adviceTitle: message_title,
           adviceParagraph: message_text,
           label,
+          isStudentCluster: rowStudentCluster === student_cluster,
         };
       }
     );

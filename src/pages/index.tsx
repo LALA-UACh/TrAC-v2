@@ -109,9 +109,11 @@ const Dashboard: FC = () => {
       console.log({
         searchProgramData,
         searchStudentData,
+        dataPerformanceByLoad,
+        dataDirectTakeCourses,
       });
     }
-  }, [searchProgramData, searchStudentData]);
+  }, [searchProgramData, searchStudentData, dataPerformanceByLoad]);
 
   useEffect(() => {
     if (!user?.admin && mock) {
@@ -198,9 +200,7 @@ const Dashboard: FC = () => {
       if (user?.type !== UserType.Student) {
         foreplanActiveActions.reset();
       }
-      console.log({
-        directTake: dataDirectTakeCourses?.directTakeCourses,
-      });
+
       if (
         dataPerformanceByLoad?.performanceLoadAdvices &&
         dataDirectTakeCourses?.directTakeCourses

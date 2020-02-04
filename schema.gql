@@ -101,6 +101,7 @@ type PerformanceByLoad {
   failRateLow: Int!
   failRateMid: Int!
   id: Float!
+  isStudentCluster: Boolean!
   label: String!
   loadUnit: PerformanceLoadUnit!
   lowerBoundary: Float!

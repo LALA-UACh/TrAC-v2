@@ -350,6 +350,7 @@ export const PERFORMANCE_BY_LOAD_ADVICES: DocumentNode<
       | "adviceTitle"
       | "adviceParagraph"
       | "label"
+      | "isStudentCluster"
     >[];
   },
   {
@@ -369,6 +370,7 @@ export const PERFORMANCE_BY_LOAD_ADVICES: DocumentNode<
       adviceTitle
       adviceParagraph
       label
+      isStudentCluster
     }
   }
 `;

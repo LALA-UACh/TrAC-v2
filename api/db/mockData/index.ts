@@ -27,6 +27,7 @@ import {
   STUDENT_PROGRAM_TABLE,
   STUDENT_TABLE,
   STUDENT_TERM_TABLE,
+  StudentClusterTable,
   StudentCourseTable,
   StudentDropoutTable,
   StudentProgramTable,
@@ -519,6 +520,18 @@ const dataImport = async () => {
 
         table.primary(["student_id", "program_id"]);
       });
+
+      await StudentClusterTable().insert(
+        (await import("./student_program.json")).default.map(
+          ({ student_id, program_id }, index) => {
+            return {
+              student_id,
+              program_id: program_id.toString(),
+              cluster: index % 3,
+            };
+          }
+        )
+      );
     }
   });
 };
