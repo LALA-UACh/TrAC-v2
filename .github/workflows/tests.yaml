@@ -15,5 +15,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
-      - run: yarn
-      - run: yarn test --coverage
+      - run: npm add -g pnpm
+      - run: pnpm install
+      - run: pnpm test -- --coverage
