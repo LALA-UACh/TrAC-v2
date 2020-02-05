@@ -108,6 +108,7 @@ const useWarningModel = ({
             <Button
               variantColor="blue"
               mr={3}
+              cursor="pointer"
               onClick={() => {
                 setManuallyClosed(true);
                 onClose();

@@ -150,44 +150,100 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
   );
 });
 
-const ForeplanTotalCredits: FC = memo(() => {
-  const [totalCredits] = useForeplanTotalCreditsTaken();
-  const config = useContext(ConfigContext);
-  const { isOpen, onOpen, onClose } = useDisclosure(false);
+const ForeplanTotalCredits: FC<{ isSummaryOpen?: boolean }> = memo(
+  ({ isSummaryOpen }) => {
+    const [totalCredits] = useForeplanTotalCreditsTaken();
+    const config = useContext(ConfigContext);
+    const { isOpen, onOpen, onClose } = useDisclosure(false);
 
-  return (
-    <Flex wrap="wrap" alignItems="center">
-      <Text
-        m={0}
-        fontSize={config.FOREPLAN_SUMMARY_TOTAL_CREDITS_LABEL_FONT_SIZE}
-      >
-        {config.FOREPLAN_SUMMARY_TOTAL_CREDITS_LABEL}: <b>{totalCredits}</b>
-      </Text>
-      <Popover
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onClose={onClose}
-        trigger="hover"
-      >
-        <PopoverTrigger>
-          <Box>
-            <Box
-              m={2}
-              as={IoMdHelpCircleOutline}
-              size={config.FOREPLAN_SUMMARY_TOTAL_CREDITS_NUMBER_SIZE}
-              verticalAlign="middle"
-            />
-          </Box>
-        </PopoverTrigger>
-        <PopoverContent color="black" width="fit-content">
-          <PopoverBody>
-            {config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP}
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
-    </Flex>
-  );
-});
+    const isOverCredits = useMemo(() => {
+      if (
+        totalCredits > config.FOREPLAN_SUMMARY_TOTAL_CREDITS_NO_WARNING_LIMIT
+      ) {
+        if (isSummaryOpen) {
+          setTimeout(() => {
+            onOpen();
+          }, 1000);
+        } else {
+          onClose();
+        }
+        return true;
+      }
+      onClose();
+      return false;
+    }, [
+      isSummaryOpen,
+      totalCredits > config.FOREPLAN_SUMMARY_TOTAL_CREDITS_NO_WARNING_LIMIT,
+      onOpen,
+      onClose,
+    ]);
+
+    return (
+      <Flex wrap="wrap" alignItems="center">
+        <Text
+          m={0}
+          fontSize={config.FOREPLAN_SUMMARY_TOTAL_CREDITS_LABEL_FONT_SIZE}
+          alignItems="center"
+          display="flex"
+        >
+          {config.FOREPLAN_SUMMARY_TOTAL_CREDITS_LABEL}:{" "}
+          <Text
+            as="b"
+            color={
+              isOverCredits
+                ? config.FOREPLAN_SUMMARY_TOTAL_CREDITS_NUMBER_WARNING_COLOR
+                : config.FOREPLAN_SUMMARY_TOTAL_CREDITS_NUMBER_NORMAL_COLOR
+            }
+            fontSize={
+              isOverCredits
+                ? config.FOREPLAN_SUMMARY_TOTAL_CREDITS_NUMBER_WARNING_FONT_SIZE
+                : config.FOREPLAN_SUMMARY_TOTAL_CREDITS_NUMBER_NORMAL_FONT_SIZE
+            }
+            pl={1}
+          >
+            {totalCredits}
+          </Text>
+        </Text>
+        <Popover
+          isOpen={isOpen}
+          onOpen={onOpen}
+          onClose={onClose}
+          trigger="hover"
+        >
+          <PopoverTrigger>
+            <Box>
+              <Box
+                m={2}
+                as={IoMdHelpCircleOutline}
+                size={config.FOREPLAN_SUMMARY_TOTAL_CREDITS_HELP_ICON_SIZE}
+                verticalAlign="middle"
+              />
+            </Box>
+          </PopoverTrigger>
+          <PopoverContent
+            color={
+              isOverCredits
+                ? config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_WARNING_LABEL_FONT_COLOR
+                : config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_LABEL_FONT_COLOR
+            }
+            bg={
+              isOverCredits
+                ? config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_WARNING_LABEL_BACKGROUND_COLOR
+                : config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_LABEL_BACKGROUND_COLOR
+            }
+            width="fit-content"
+          >
+            <PopoverBody>
+              {isOverCredits
+                ? config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_WARNING_LABEL
+                : config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_LABEL}
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
+      </Flex>
+    );
+  }
+);
 
 const ForeplanAdvice: FC = memo(() => {
   const [advice] = useForeplanAdvice();
@@ -430,7 +486,7 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
               {user?.config.FOREPLAN_SUMMARY_BADGES && (
                 <ForeplanContentBadgesList />
               )}
-              <ForeplanTotalCredits />
+              <ForeplanTotalCredits isSummaryOpen={expanded} />
               {user?.config.FOREPLAN_SUMMARY_ADVICE && <ForeplanAdvice />}
               {user?.config.FOREPLAN_SUMMARY_WAFFLE_CHART && (
                 <ForeplanWaffleCharts />
@@ -439,7 +495,7 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
           )}
         </>
       );
-    }, [anyForeplanCourse, user, config]);
+    }, [expanded, anyForeplanCourse, user, config]);
 
     return (
       <motion.div

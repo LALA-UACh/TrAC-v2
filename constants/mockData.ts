@@ -5952,7 +5952,7 @@ const data: {
       // HIGH CREDITS - LOW PERFORMANCE
       id: 2,
       lowerBoundary: 21,
-      upperBoundary: 30,
+      upperBoundary: 999,
       adviceTitle: "¡Tu carga de estudio es alta!",
       adviceParagraph:
         "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
@@ -5963,7 +5963,7 @@ const data: {
       label: "bajo",
       isStudentCluster: false,
     },
-    
+
     {
       // LOW CREDITS - MID PERFORMANCE
       id: 3,
@@ -5999,7 +5999,7 @@ const data: {
       // HIGH CREDITS - MID PERFORMANCE
       id: 5,
       lowerBoundary: 21,
-      upperBoundary: 30,
+      upperBoundary: 999,
       adviceTitle: "¡Tu carga de estudio es alta!",
       adviceParagraph:
         "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
@@ -6045,7 +6045,7 @@ const data: {
       // HIGH CREDITS - GOOD PERFORMANCE
       id: 8,
       lowerBoundary: 21,
-      upperBoundary: 30,
+      upperBoundary: 999,
       adviceTitle: "¡Tu carga de estudio es alta!",
       adviceParagraph:
         "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
