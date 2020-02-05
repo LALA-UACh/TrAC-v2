@@ -217,26 +217,31 @@ const ForeplanTotalCredits: FC<{ isSummaryOpen?: boolean }> = memo(
                 as={IoMdHelpCircleOutline}
                 size={config.FOREPLAN_SUMMARY_TOTAL_CREDITS_HELP_ICON_SIZE}
                 verticalAlign="middle"
+                cursor="help"
               />
             </Box>
           </PopoverTrigger>
           <PopoverContent
             color={
               isOverCredits
-                ? config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_WARNING_LABEL_FONT_COLOR
-                : config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_LABEL_FONT_COLOR
+                ? config.FOREPLAN_SUMMARY_TOTAL_CREDITS_ADVICE_HELP_WARNING_LABEL_FONT_COLOR
+                : config.FOREPLAN_SUMMARY_TOTAL_CREDITS_ADVICE_HELP_LABEL_FONT_COLOR
             }
             bg={
               isOverCredits
-                ? config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_WARNING_LABEL_BACKGROUND_COLOR
-                : config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_LABEL_BACKGROUND_COLOR
+                ? config.FOREPLAN_SUMMARY_TOTAL_CREDITS_ADVICE_HELP_WARNING_LABEL_BACKGROUND_COLOR
+                : config.FOREPLAN_SUMMARY_TOTAL_CREDITS_ADVICE_HELP_LABEL_BACKGROUND_COLOR
             }
             width="fit-content"
           >
-            <PopoverBody>
+            <PopoverBody
+              padding={
+                config.FOREPLAN_SUMMARY_TOTAL_CREDITS_ADVICE_HELP_BODY_PADDING
+              }
+            >
               {isOverCredits
-                ? config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_WARNING_LABEL
-                : config.FOREPLAN_SUMMARY_ADVICE_CREDITS_HELP_LABEL}
+                ? config.FOREPLAN_SUMMARY_TOTAL_CREDITS_ADVICE_HELP_WARNING_LABEL
+                : config.FOREPLAN_SUMMARY_TOTAL_CREDITS_ADVICE_HELP_LABEL}
             </PopoverBody>
           </PopoverContent>
         </Popover>
