@@ -1,3 +1,4 @@
+import { uniq } from "lodash";
 import {
   Arg,
   Authorized,
@@ -155,9 +156,11 @@ export class StudentResolver {
   async curriculums(
     @Root() { id, programs }: PartialStudent
   ): Promise<$PropertyType<Student, "curriculums">> {
-    return (
-      await StudentTermsDataLoader.load({ student_id: id, programs })
-    ).map(({ curriculum }) => curriculum);
+    return uniq(
+      (await StudentTermsDataLoader.load({ student_id: id, programs })).map(
+        ({ curriculum }) => curriculum
+      )
+    );
   }
 
   @FieldResolver()

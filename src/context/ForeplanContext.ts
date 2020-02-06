@@ -198,11 +198,7 @@ const ForeplanActiveStore = createStore({
       state: boolean
     ) => ({ setState, getState }) => {
       const futureCourseRequisites = getState().futureCourseRequisites;
-      console.log(
-        getState().futureCourseRequisites === futureCourseRequisites
-          ? "equal"
-          : "different"
-      );
+
       if (futureCourseRequisites) {
         for (const courseToOpen in futureCourseRequisites) {
           if (
@@ -344,10 +340,6 @@ export const ForeplanContextManager: FC = () => {
       localStorage.setItem(LAST_TIME_USED, Date.now().toString());
     } catch (err) {}
   }, [reset]);
-
-  useEffect(() => {
-    console.log("futureCourseRequisites", state.futureCourseRequisites);
-  }, [state.futureCourseRequisites]);
 
   useDebounce(
     () => {

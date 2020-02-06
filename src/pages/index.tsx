@@ -118,7 +118,7 @@ const Dashboard: FC = () => {
   ] = useMutation(SEARCH_STUDENT);
 
   useUpdateEffect(() => {
-    if (process.env.NODE_ENV !== "test") {
+    if (process.env.NODE_ENV !== "test" && user?.admin) {
       console.log({
         searchProgramData,
         searchStudentData,
@@ -133,6 +133,7 @@ const Dashboard: FC = () => {
     dataPerformanceByLoad,
     dataDirectTakeCourses,
     dataIndirectTakeCourses,
+    user,
   ]);
 
   useEffect(() => {
