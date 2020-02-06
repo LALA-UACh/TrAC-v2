@@ -9,6 +9,7 @@ export const baseUserConfig: {
   FOREPLAN_SUMMARY_BADGES: boolean;
   FOREPLAN_SUMMARY_WAFFLE_CHART: boolean;
   FOREPLAN_SUMMARY_ADVICE: boolean;
+  FOREPLAN_FUTURE_COURSE_PLANIFICATION: boolean;
 } & Record<string, any> = {
   SHOW_DROPOUT: false,
   SHOW_STUDENT_LIST: false,
@@ -20,6 +21,7 @@ export const baseUserConfig: {
   FOREPLAN_SUMMARY_BADGES: true,
   FOREPLAN_SUMMARY_WAFFLE_CHART: true,
   FOREPLAN_SUMMARY_ADVICE: true,
+  FOREPLAN_FUTURE_COURSE_PLANIFICATION: true,
 };
 
 export type UserConfig = typeof baseUserConfig & Record<string, any>;

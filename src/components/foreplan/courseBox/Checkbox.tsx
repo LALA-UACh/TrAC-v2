@@ -145,7 +145,7 @@ const ForeplanCourseCheckbox: FC<Pick<
 >> = memo(({ code, credits, name }) => {
   const [
     checked,
-    { addCourseForeplan, removeCourseForeplan },
+    { addCourseForeplan, removeCourseForeplan, setFutureCourseRequisitesState },
   ] = useIsForeplanCourseChecked({ code });
   const [directTake] = useForeplanIsDirectTake({ code });
   const { onOpen, manuallyClosed, modalComponent } = useWarningModel({
@@ -172,11 +172,13 @@ const ForeplanCourseCheckbox: FC<Pick<
             ev.preventDefault();
             ev.stopPropagation();
             if (checked) {
+              setFutureCourseRequisitesState(code, false);
               removeCourseForeplan(code);
             } else {
               if (!directTake && !manuallyClosed) {
                 onOpen();
               }
+              setFutureCourseRequisitesState(code, true);
               addCourseForeplan(code, {
                 credits: credits?.[0]?.value ?? 0,
                 name,

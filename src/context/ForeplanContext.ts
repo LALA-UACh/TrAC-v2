@@ -1,5 +1,5 @@
 import { differenceInWeeks } from "date-fns";
-import { reduce, size, toInteger } from "lodash";
+import { every, reduce, size, toInteger } from "lodash";
 import { FC, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce } from "react-use";
@@ -311,6 +311,15 @@ export const useForeplanAdvices = createHook(ForeplanActiveStore, {
     return advices;
   },
 });
+
+export const useForeplanIsFutureCourseRequisitesFulfilled = createHook(
+  ForeplanActiveStore,
+  {
+    selector: ({ futureCourseRequisites }, { code }: { code: string }) => {
+      return every(futureCourseRequisites[code]);
+    },
+  }
+);
 
 export const ForeplanContextManager: FC = () => {
   const [state, { reset, disableForeplan }] = useForeplanActiveData();

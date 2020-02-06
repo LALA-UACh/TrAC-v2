@@ -29,7 +29,12 @@ import {
   useDashboardCoursesActions,
   useExplicitSemester,
 } from "../../context/CoursesDashboardContext";
-import { useIsPossibleToTakeForeplan } from "../../context/ForeplanContext";
+import {
+  useForeplanIsDirectTake,
+  useForeplanIsFutureCourseRequisitesFulfilled,
+  useIsForeplanActive,
+  useIsPossibleToTakeForeplan,
+} from "../../context/ForeplanContext";
 import { useTracking } from "../../context/Tracking";
 import { useUser } from "../../utils/useUser";
 import styles from "./CourseBox.module.css";
@@ -54,11 +59,43 @@ export interface OpenState {
 
 export type CurrentTakenData = Partial<ITakenCourse>;
 
+const useIsCourseFuturePlanificationFulfilled = ({
+  state,
+  code,
+}: {
+  state?: StateCourse;
+  code: string;
+}) => {
+  const { user } = useUser({
+    fetchPolicy: "cache-only",
+  });
+  const [isForeplanActive] = useIsForeplanActive();
+  const [isPossibleToTakeForeplan] = useIsPossibleToTakeForeplan({
+    state,
+  });
+  const [isDirectTake] = useForeplanIsDirectTake({ code });
+  const [
+    isFutureCourseRequisitesFulfilled,
+  ] = useForeplanIsFutureCourseRequisitesFulfilled({
+    code,
+  });
+
+  return (
+    (user?.config.FOREPLAN_FUTURE_COURSE_PLANIFICATION ?? false) &&
+    isForeplanActive &&
+    isPossibleToTakeForeplan &&
+    !isDirectTake &&
+    isFutureCourseRequisitesFulfilled
+  );
+};
+
 const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> &
   Pick<OpenState, "open"> & {
     borderColor: string;
     semestersTaken: ITakenSemester[];
-  } & Pick<CurrentTakenData, "currentDistribution">> = memo(
+  } & Pick<CurrentTakenData, "currentDistribution"> & {
+    isFutureCourseFulfilled: boolean;
+  }> = memo(
   ({
     children,
     code,
@@ -67,6 +104,7 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> &
     semestersTaken,
     borderColor,
     open,
+    isFutureCourseFulfilled,
   }) => {
     const config = useContext(ConfigContext);
 
@@ -136,7 +174,7 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> &
         border={config.COURSE_BOX_BORDER_WIDTH_INACTIVE}
         borderColor={borderColor}
         borderWidth={
-          activeCourse
+          activeCourse || isFutureCourseFulfilled
             ? config.COURSE_BOX_BORDER_WIDTH_ACTIVE
             : config.COURSE_BOX_BORDER_WIDTH_INACTIVE
         }
@@ -671,10 +709,24 @@ export const CourseBox: FC<ICourse> = ({
     setOpen(false);
   }, [code]);
 
+  const isFutureCourseFulfilled = useIsCourseFuturePlanificationFulfilled({
+    state: taken[0]?.state,
+    code,
+  });
+
+  const [isPossibleToTakeForeplan] = useIsPossibleToTakeForeplan({
+    state: taken[0]?.state,
+  });
+
   const borderColor = useMemo(() => {
     if (activeCourse) {
       return config.ACTIVE_COURSE_BOX_COLOR;
     }
+
+    if (isFutureCourseFulfilled) {
+      return config.FOREPLAN_COURSE_FUTURE_PLANIFICATION_FULFILLED_BORDER_COLOR;
+    }
+
     if (activeFlow) {
       return config.FLOW_COURSE_BOX_COLOR;
     }
@@ -692,11 +744,9 @@ export const CourseBox: FC<ICourse> = ({
     explicitSemester,
     config,
     code,
+    isFutureCourseFulfilled,
+    user,
   ]);
-
-  const [isPossibleToTakeForeplan] = useIsPossibleToTakeForeplan({
-    state: taken[0]?.state,
-  });
 
   return (
     <OuterCourseBox
@@ -706,6 +756,7 @@ export const CourseBox: FC<ICourse> = ({
       open={open}
       semestersTaken={semestersTaken}
       borderColor={borderColor}
+      isFutureCourseFulfilled={isFutureCourseFulfilled}
     >
       <MainBlockOuter
         flow={flow}
