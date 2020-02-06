@@ -9,6 +9,7 @@ import React, {
   memo,
   SetStateAction,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -29,7 +30,13 @@ import {
   useDashboardCoursesActions,
   useExplicitSemester,
 } from "../../context/CoursesDashboardContext";
-import { useIsPossibleToTakeForeplan } from "../../context/ForeplanContext";
+import {
+  useForeplanAllFutureCourseRequisites,
+  useForeplanFutureCourseRequisites,
+  useForeplanHelperActions,
+  useForeplanIsDirectTake,
+  useIsPossibleToTakeForeplan,
+} from "../../context/ForeplanContext";
 import { useTracking } from "../../context/Tracking";
 import { useUser } from "../../utils/useUser";
 import styles from "./CourseBox.module.css";
@@ -697,6 +704,48 @@ export const CourseBox: FC<ICourse> = ({
   const [isPossibleToTakeForeplan] = useIsPossibleToTakeForeplan({
     state: taken[0]?.state,
   });
+
+  const [isDirectTake] = useForeplanIsDirectTake({ code });
+
+  const [
+    thisCourseRequisites,
+    { setNewFutureCourseRequisites, setFutureCourseRequisitesState },
+  ] = useForeplanFutureCourseRequisites({ code });
+
+  useEffect(() => {
+    if (isDirectTake === false && isPossibleToTakeForeplan) {
+      setNewFutureCourseRequisites(code, requisites);
+    }
+  }, [
+    isPossibleToTakeForeplan,
+    isDirectTake,
+    code,
+    requisites,
+    setNewFutureCourseRequisites,
+  ]);
+
+  const [allForeplanCourseRequisites] = useForeplanAllFutureCourseRequisites();
+
+  useDebounce(
+    () => {
+      console.log({ allForeplanCourseRequisites });
+      switch (taken[0]?.state) {
+        case StateCourse.Passed: {
+          setFutureCourseRequisitesState(code, true);
+          return;
+        }
+        default:
+      }
+    },
+    1000,
+    [
+      thisCourseRequisites,
+      taken[0]?.state,
+      setFutureCourseRequisitesState,
+      code,
+      allForeplanCourseRequisites,
+    ]
+  );
 
   return (
     <OuterCourseBox

@@ -11,6 +11,7 @@ import { Box, Flex, Stack } from "@chakra-ui/core";
 import {
   PROGRAM_NOT_FOUND,
   PROGRAM_UNAUTHORIZED,
+  StateCourse,
   STUDENT_NOT_FOUND,
   UserType,
 } from "../../constants";
@@ -169,33 +170,74 @@ const Dashboard: FC = () => {
 
   useEffect(() => {
     if (mock) {
-      foreplanActiveActions.setForeplanAdvices(
-        mockData?.default.performanceByLoad ?? []
-      );
-      const allCodes = flatMapDeep(
-        mockData?.default.searchProgramData.program.curriculums.map(
-          ({ semesters }) => {
-            return semesters.map(({ courses }) => {
-              return courses.map(({ code }) => {
-                return code;
+      if (mockData) {
+        foreplanActiveActions.setForeplanAdvices(
+          mockData.default.performanceByLoad ?? []
+        );
+        const allCodes = flatMapDeep(
+          mockData.default.searchProgramData.program.curriculums.map(
+            ({ semesters }) => {
+              return semesters.map(({ courses }) => {
+                return courses.map(({ code }) => {
+                  return code;
+                });
               });
-            });
+            }
+          )
+        );
+        const allApprovedCourses: Record<string, boolean> = {};
+        mockData.default.searchStudentData.student.terms.forEach(
+          ({ takenCourses }) => {
+            for (const { state, code, equiv } of takenCourses) {
+              if (state === StateCourse.Passed) {
+                allApprovedCourses[code] = true;
+                if (equiv) {
+                  allApprovedCourses[equiv] = true;
+                }
+              }
+            }
           }
-        )
-      );
-      foreplanHelperActions.setDirectTakeData(
-        sampleSize(allCodes, allCodes.length / 2)
-      );
-      foreplanHelperActions.setFailRateData(
-        allCodes.map(code => {
-          return { code, failRate: Math.random() };
-        })
-      );
-      foreplanHelperActions.setEffortData(
-        allCodes.map(code => {
-          return { code, effort: random(1, 5) };
-        })
-      );
+        );
+        const allCoursesOfProgram: {
+          code: string;
+          requisites: string[];
+        }[] = [];
+        mockData.default.searchProgramData.program.curriculums.forEach(
+          ({ semesters }) => {
+            for (const { courses } of semesters) {
+              for (const { code, requisites } of courses) {
+                allCoursesOfProgram.push({
+                  code,
+                  requisites: requisites.map(({ code }) => code),
+                });
+              }
+            }
+          }
+        );
+        foreplanHelperActions.setDirectTakeData(
+          allCoursesOfProgram.reduce<string[]>((acum, { code, requisites }) => {
+            if (
+              requisites.every(requisiteCourseCode => {
+                return allApprovedCourses[requisiteCourseCode] || false;
+              })
+            ) {
+              acum.push(code);
+            }
+            return acum;
+          }, [])
+        );
+
+        foreplanHelperActions.setFailRateData(
+          allCodes.map(code => {
+            return { code, failRate: Math.random() };
+          })
+        );
+        foreplanHelperActions.setEffortData(
+          allCodes.map(code => {
+            return { code, effort: random(1, 5) };
+          })
+        );
+      }
     } else {
       if (user?.type !== UserType.Student) {
         foreplanActiveActions.reset();

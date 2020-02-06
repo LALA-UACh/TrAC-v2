@@ -1,5 +1,6 @@
 import { differenceInWeeks } from "date-fns";
 import { reduce, size, toInteger } from "lodash";
+import merge from "lodash/fp/merge";
 import { FC, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce } from "react-use";
@@ -22,15 +23,21 @@ export interface IForeplanActiveData {
 }
 
 export interface IForeplanHelperData {
-  courseDirectTake: Record<string, boolean>;
+  courseDirectTake: Record<string, boolean | undefined>;
   courseFailRate: Record<string, number>;
   courseEffort: Record<string, number>;
+  futureCourseRequisites: {
+    [coursesToOpen: string]:
+      | { [requisite: string]: boolean | undefined }
+      | undefined;
+  };
 }
 
 const defaultForeplanHelperStore: IForeplanHelperData = {
   courseDirectTake: emptyObject,
   courseFailRate: emptyObject,
   courseEffort: emptyObject,
+  futureCourseRequisites: emptyObject,
 };
 
 const ForeplanHelperStore = createStore({
@@ -67,8 +74,50 @@ const ForeplanHelperStore = createStore({
         ),
       });
     },
+    setNewFutureCourseRequisites: (course: string, requisites: string[]) => ({
+      setState,
+      getState,
+    }) => {
+      setState({
+        futureCourseRequisites: {
+          ...getState().futureCourseRequisites,
+          [course]: requisites.reduce<Record<string, boolean>>(
+            (acum, requisite) => {
+              acum[requisite] = false;
+              return acum;
+            },
+            {}
+          ),
+        },
+      });
+    },
+    setFutureCourseRequisitesState: (
+      courseToSetState: string,
+      state: boolean
+    ) => ({ setState, getState }) => {
+      const futureCourseRequisites = getState().futureCourseRequisites;
+      if (futureCourseRequisites) {
+        for (const courseToOpen in futureCourseRequisites) {
+          if (
+            futureCourseRequisites[courseToOpen]?.[courseToSetState] !==
+            undefined
+          ) {
+            futureCourseRequisites[courseToOpen] = {
+              ...futureCourseRequisites[courseToOpen],
+              [courseToSetState]: state,
+            };
+          }
+        }
+      }
+
+      setState({
+        futureCourseRequisites,
+      });
+    },
   },
 });
+
+export const useForeplanHelperData = createHook(ForeplanHelperStore);
 
 export const useForeplanHelperActions = createHook(ForeplanHelperStore, {
   selector: null,
@@ -76,7 +125,10 @@ export const useForeplanHelperActions = createHook(ForeplanHelperStore, {
 
 export const useForeplanIsDirectTake = createHook(ForeplanHelperStore, {
   selector: ({ courseDirectTake }, { code }: { code: string }) => {
-    return courseDirectTake[code] || false;
+    return (
+      courseDirectTake[code] ||
+      (courseDirectTake === emptyObject ? undefined : false)
+    );
   },
 });
 
@@ -91,6 +143,24 @@ export const useForeplanCourseEffort = createHook(ForeplanHelperStore, {
     return courseEffort[code] || 1;
   },
 });
+
+export const useForeplanAllFutureCourseRequisites = createHook(
+  ForeplanHelperStore,
+  {
+    selector: ({ futureCourseRequisites }) => {
+      return futureCourseRequisites;
+    },
+  }
+);
+
+export const useForeplanFutureCourseRequisites = createHook(
+  ForeplanHelperStore,
+  {
+    selector: ({ futureCourseRequisites }, { code }: { code: string }) => {
+      return futureCourseRequisites[code];
+    },
+  }
+);
 
 const rememberForeplanDataKey = "TrAC_foreplan_remember_local_data";
 
@@ -260,7 +330,7 @@ export const useForeplanAdvices = createHook(ForeplanActiveStore, {
 
 export const ForeplanContextManager: FC = () => {
   const [state, { reset, disableForeplan }] = useForeplanActiveData();
-
+  const [helperData] = useForeplanHelperData();
   const { user } = useUser({
     fetchPolicy: "cache-only",
   });
@@ -282,6 +352,10 @@ export const ForeplanContextManager: FC = () => {
       localStorage.setItem(LAST_TIME_USED, Date.now().toString());
     } catch (err) {}
   }, [reset]);
+
+  useEffect(() => {
+    console.log("futureCourseRequisites", helperData.futureCourseRequisites);
+  }, [helperData.futureCourseRequisites]);
 
   useDebounce(
     () => {
