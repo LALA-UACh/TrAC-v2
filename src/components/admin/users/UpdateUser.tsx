@@ -1,5 +1,5 @@
 import { isEqual, toInteger } from "lodash";
-import React, { cloneElement, FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {
   Button,
@@ -40,7 +40,9 @@ export interface IUserConfig {
 
 export const UpdateUser: FC<{
   user: IUserConfig;
-  children: JSX.Element;
+  children: FC<{
+    setOpen: (open: boolean, defaultOpenUserConfig?: boolean) => void;
+  }>;
 }> = ({ children, user }) => {
   const [open, setOpen] = useRememberState(
     `AdminUpdateUser.${user.email}`,
@@ -119,15 +121,22 @@ export const UpdateUser: FC<{
     }
   );
 
-  const { userConfigModal, config } = useUpdateUserConfigModal({
+  const { userConfigModal, config, onOpen } = useUpdateUserConfigModal({
     email: user.email,
     config: user.config,
   });
 
   return (
     <Modal
-      trigger={cloneElement(children, {
-        onClick: () => setOpen(true),
+      trigger={children({
+        setOpen: (open, defaultOpenUserConfig) => {
+          if (defaultOpenUserConfig) {
+            setTimeout(() => {
+              onOpen();
+            }, 0);
+          }
+          setOpen(open);
+        },
       })}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}

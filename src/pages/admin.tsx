@@ -1,8 +1,9 @@
 import React, { FC, useEffect, useMemo } from "react";
-import { Grid, Message } from "semantic-ui-react";
+import { Message } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
+import { Flex, Stack } from "@chakra-ui/core";
 
 import { AdminConfig } from "../components/admin/BaseConfig";
 import { AdminMenu } from "../components/admin/Menu";
@@ -63,12 +64,14 @@ const Admin: FC = () => {
   }
 
   return (
-    <Grid centered>
-      <Grid.Row>
+    <Stack alignItems="center" height="100vh" spacing="1em">
+      <Flex>
         <AdminMenu active={active} setActive={setActive} />
-      </Grid.Row>
-      <Grid.Row>{ActiveTab}</Grid.Row>
-    </Grid>
+      </Flex>
+      <Stack height="100%" overflowY="auto">
+        {ActiveTab}
+      </Stack>
+    </Stack>
   );
 };
 

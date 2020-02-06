@@ -1,7 +1,9 @@
 import { sortBy, truncate } from "lodash";
 import React, { FC, useEffect } from "react";
-import { Grid, Table } from "semantic-ui-react";
+import { Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
+
+import { Flex, Stack } from "@chakra-ui/core";
 
 import { usePagination } from "../Pagination";
 import { ImportPrograms } from "./ImportPrograms";
@@ -42,14 +44,14 @@ export const Programs: FC<{
   });
 
   return (
-    <Grid centered>
-      <Grid.Row>
+    <Stack alignItems="center" spacing="1em">
+      <Flex>
         <ImportPrograms />
-      </Grid.Row>
+      </Flex>
 
-      <Grid.Row>{pagination}</Grid.Row>
+      <Flex>{pagination}</Flex>
 
-      <Grid.Row>
+      <Flex>
         <Table
           padded
           selectable
@@ -88,7 +90,7 @@ export const Programs: FC<{
             ))}
           </Table.Body>
         </Table>
-      </Grid.Row>
-    </Grid>
+      </Flex>
+    </Stack>
   );
 };

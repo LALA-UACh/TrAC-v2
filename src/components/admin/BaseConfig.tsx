@@ -28,7 +28,7 @@ import {
 import { isJSON } from "validator";
 
 import { useMutation } from "@apollo/react-hooks";
-import { Box, Flex, Stack } from "@chakra-ui/core";
+import { Flex, Stack } from "@chakra-ui/core";
 
 import { baseConfigAdmin } from "../../../constants/baseConfig";
 import { configValueToString } from "../../../constants/validation";
@@ -64,7 +64,12 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
     }, [error]);
     return (
       <Flex alignItems="center" m={1} wrap="wrap" alignContent="space-between">
-        <Label size="large" style={{ wordBreak: " break-all" }}>
+        <Label
+          basic
+          color="black"
+          size="large"
+          style={{ wordBreak: " break-all" }}
+        >
           {configKey}
         </Label>
 
@@ -213,16 +218,25 @@ export const AdminConfig = () => {
       width="fit-content"
       m={5}
     >
-      <Box border="2px solid black" p={4}>
+      <Flex
+        alignItems="center"
+        m={1}
+        wrap="wrap"
+        alignContent="space-between"
+        border="2px solid black"
+        p={4}
+      >
+        <Label color="green" size="large" style={{ wordBreak: " break-all" }}>
+          Filter config keys
+        </Label>
         <Input
-          label="Filter config keys"
           value={filterInput}
           onChange={(_, { value }) => {
             setFilterInput(value.toUpperCase());
           }}
           placeholder="No filter"
         />
-      </Box>
+      </Flex>
 
       {configList}
     </Stack>
