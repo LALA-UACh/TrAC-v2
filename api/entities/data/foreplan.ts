@@ -7,6 +7,7 @@ import {
 } from "type-graphql";
 
 import { PerformanceLoadUnit } from "../../../constants";
+import { Course } from "./course";
 
 registerEnumType(PerformanceLoadUnit, {
   name: "PerformanceLoadUnit",
@@ -67,4 +68,13 @@ export class ForeplanInput {
 
   @Field({ nullable: true })
   program_id?: string;
+}
+
+@ObjectType()
+export class IndirectTakeCourse {
+  @Field(() => Course)
+  course: Course;
+
+  @Field(() => [String])
+  requisitesUnmet: string[];
 }

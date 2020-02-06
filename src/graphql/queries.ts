@@ -375,13 +375,42 @@ export const PERFORMANCE_BY_LOAD_ADVICES: DocumentNode<
   }
 `;
 
-export const DIRECT_TAKE_COURSES: DocumentNode<{
-  directTakeCourses: { id: number; code: string }[];
-}> = gql`
+export const DIRECT_TAKE_COURSES: DocumentNode<
+  {
+    directTakeCourses: { id: number; code: string }[];
+  },
+  {
+    student_id?: string;
+    program_id?: string;
+  }
+> = gql`
   mutation($student_id: String, $program_id: String) {
     directTakeCourses(student_id: $student_id, program_id: $program_id) {
       id
       code
+    }
+  }
+`;
+
+export const INDIRECT_TAKE_COURSES: DocumentNode<
+  {
+    indirectTakeCourses: {
+      course: { id: number; code: string };
+      requisitesUnmet: string[];
+    }[];
+  },
+  {
+    student_id?: string;
+    program_id?: string;
+  }
+> = gql`
+  mutation($student_id: String, $program_id: String) {
+    indirectTakeCourses(student_id: $student_id, program_id: $program_id) {
+      course {
+        id
+        code
+      }
+      requisitesUnmet
     }
   }
 `;

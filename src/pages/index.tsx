@@ -1,4 +1,4 @@
-import { flatMapDeep, random, sampleSize, uniq } from "lodash";
+import { flatMapDeep, random, uniq } from "lodash";
 import dynamic from "next/dynamic";
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
@@ -30,6 +30,7 @@ import {
 import { TrackingManager, useTracking } from "../context/Tracking";
 import {
   DIRECT_TAKE_COURSES,
+  INDIRECT_TAKE_COURSES,
   PERFORMANCE_BY_LOAD_ADVICES,
   SEARCH_PROGRAM,
   SEARCH_STUDENT,
@@ -77,15 +78,26 @@ const Dashboard: FC = () => {
     searchDirectTakeCourses,
     { data: dataDirectTakeCourses, error: errorDirectTakeCourses },
   ] = useMutation(DIRECT_TAKE_COURSES);
+  const [
+    searchIndirectTakeCourses,
+    { data: dataIndirectTakeCourses, error: errorIndirectTakeCourses },
+  ] = useMutation(INDIRECT_TAKE_COURSES);
 
   useEffect(() => {
     if (errorDirectTakeCourses) {
       console.error(JSON.stringify(errorDirectTakeCourses, null, 2));
     }
+    if (errorIndirectTakeCourses) {
+      console.error(JSON.stringify(errorIndirectTakeCourses, null, 2));
+    }
     if (errorPerformanceByLoad) {
       console.error(JSON.stringify(errorPerformanceByLoad, null, 2));
     }
-  }, [errorDirectTakeCourses, errorPerformanceByLoad]);
+  }, [
+    errorDirectTakeCourses,
+    errorPerformanceByLoad,
+    errorIndirectTakeCourses,
+  ]);
 
   const [
     searchProgram,
@@ -112,9 +124,16 @@ const Dashboard: FC = () => {
         searchStudentData,
         dataPerformanceByLoad,
         dataDirectTakeCourses,
+        dataIndirectTakeCourses,
       });
     }
-  }, [searchProgramData, searchStudentData, dataPerformanceByLoad]);
+  }, [
+    searchProgramData,
+    searchStudentData,
+    dataPerformanceByLoad,
+    dataDirectTakeCourses,
+    dataIndirectTakeCourses,
+  ]);
 
   useEffect(() => {
     if (!user?.admin && mock) {
@@ -162,6 +181,7 @@ const Dashboard: FC = () => {
       searchStudent();
       searchPerformanceByLoad();
       searchDirectTakeCourses();
+      searchIndirectTakeCourses();
     }
   }, [user, searchProgram, searchStudent, searchPerformanceByLoad]);
 
@@ -173,30 +193,6 @@ const Dashboard: FC = () => {
       if (mockData) {
         foreplanActiveActions.setForeplanAdvices(
           mockData.default.performanceByLoad ?? []
-        );
-        const allCodes = flatMapDeep(
-          mockData.default.searchProgramData.program.curriculums.map(
-            ({ semesters }) => {
-              return semesters.map(({ courses }) => {
-                return courses.map(({ code }) => {
-                  return code;
-                });
-              });
-            }
-          )
-        );
-        const allApprovedCourses: Record<string, boolean> = {};
-        mockData.default.searchStudentData.student.terms.forEach(
-          ({ takenCourses }) => {
-            for (const { state, code, equiv } of takenCourses) {
-              if (state === StateCourse.Passed) {
-                allApprovedCourses[code] = true;
-                if (equiv) {
-                  allApprovedCourses[equiv] = true;
-                }
-              }
-            }
-          }
         );
         const allCoursesOfProgram: {
           code: string;
@@ -214,6 +210,20 @@ const Dashboard: FC = () => {
             }
           }
         );
+        const allApprovedCourses: Record<string, boolean> = {};
+        mockData.default.searchStudentData.student.terms.forEach(
+          ({ takenCourses }) => {
+            for (const { state, code, equiv } of takenCourses) {
+              if (state === StateCourse.Passed) {
+                allApprovedCourses[code] = true;
+                if (equiv) {
+                  allApprovedCourses[equiv] = true;
+                }
+              }
+            }
+          }
+        );
+
         foreplanHelperActions.setDirectTakeData(
           allCoursesOfProgram.reduce<string[]>((acum, { code, requisites }) => {
             if (
@@ -226,7 +236,46 @@ const Dashboard: FC = () => {
             return acum;
           }, [])
         );
+        foreplanActiveActions.setNewFutureCourseRequisites(
+          allCoursesOfProgram.reduce<
+            {
+              course: string;
+              requisitesUnmet: string[];
+            }[]
+          >((acum, { code, requisites }) => {
+            if (
+              requisites.some(requisiteCourseCode => {
+                return !allApprovedCourses[requisiteCourseCode];
+              })
+            ) {
+              acum.push({
+                course: code,
+                requisitesUnmet: requisites.reduce<string[]>(
+                  (acum, requisiteCourseCode) => {
+                    if (!allApprovedCourses[requisiteCourseCode]) {
+                      acum.push(requisiteCourseCode);
+                    }
+                    return acum;
+                  },
+                  []
+                ),
+              });
+            }
+            return acum;
+          }, [])
+        );
 
+        const allCodes = flatMapDeep(
+          mockData.default.searchProgramData.program.curriculums.map(
+            ({ semesters }) => {
+              return semesters.map(({ courses }) => {
+                return courses.map(({ code }) => {
+                  return code;
+                });
+              });
+            }
+          )
+        );
         foreplanHelperActions.setFailRateData(
           allCodes.map(code => {
             return { code, failRate: Math.random() };
@@ -245,13 +294,24 @@ const Dashboard: FC = () => {
 
       if (
         dataPerformanceByLoad?.performanceLoadAdvices &&
-        dataDirectTakeCourses?.directTakeCourses
+        dataDirectTakeCourses?.directTakeCourses &&
+        dataIndirectTakeCourses?.indirectTakeCourses
       ) {
         foreplanActiveActions.setForeplanAdvices(
           dataPerformanceByLoad.performanceLoadAdvices
         );
         foreplanHelperActions.setDirectTakeData(
           dataDirectTakeCourses.directTakeCourses.map(({ code }) => code)
+        );
+        foreplanActiveActions.setNewFutureCourseRequisites(
+          dataIndirectTakeCourses.indirectTakeCourses.map(
+            ({ course: { code }, requisitesUnmet }) => {
+              return {
+                course: code,
+                requisitesUnmet,
+              };
+            }
+          )
         );
       } else {
         foreplanActiveActions.disableForeplan();
@@ -261,6 +321,7 @@ const Dashboard: FC = () => {
   }, [
     dataPerformanceByLoad,
     dataDirectTakeCourses,
+    dataIndirectTakeCourses,
     mock,
     user,
     mockData,
@@ -514,6 +575,9 @@ const Dashboard: FC = () => {
                   variables: { student_id, program_id },
                 });
                 searchDirectTakeCourses({
+                  variables: { student_id, program_id },
+                });
+                searchIndirectTakeCourses({
                   variables: { student_id, program_id },
                 });
               }

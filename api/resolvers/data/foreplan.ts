@@ -1,4 +1,4 @@
-import { toInteger, trim } from "lodash";
+import { compact, toInteger, trim } from "lodash";
 import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
 
 import {
@@ -9,7 +9,7 @@ import {
   STUDENT_NOT_FOUND,
   UserType,
 } from "../../../constants";
-import { IContext } from "../../../interfaces";
+import { IContext, IfImplements } from "../../../interfaces";
 import { StudentLastProgramDataLoader } from "../../dataloaders/student";
 import {
   IUser,
@@ -21,7 +21,11 @@ import {
   UserProgramsTable,
 } from "../../db/tables";
 import { Course } from "../../entities/data/course";
-import { ForeplanInput, PerformanceByLoad } from "../../entities/data/foreplan";
+import {
+  ForeplanInput,
+  IndirectTakeCourse,
+  PerformanceByLoad,
+} from "../../entities/data/foreplan";
 import { anonService } from "../../utils/anonymization";
 import { assertIsDefined } from "../../utils/assert";
 import { PartialCourse } from "./course";
@@ -165,7 +169,7 @@ export class ForeplanResolver {
     ).map(({ id, course_id, requisites }) => {
       return {
         code: course_id,
-        requisites: requisites?.split(",").map(trim),
+        requisites: compact(requisites?.split(",").map(trim)),
         id,
       };
     });
@@ -209,5 +213,92 @@ export class ForeplanResolver {
       },
       []
     );
+  }
+
+  @Authorized()
+  @Mutation(() => [IndirectTakeCourse])
+  async indirectTakeCourses(
+    @Ctx() { user }: IContext,
+    @Args() input: ForeplanInput
+  ): Promise<
+    IfImplements<
+      { course: PartialCourse; requisitesUnmet: string[] },
+      IndirectTakeCourse
+    >[]
+  > {
+    assertIsDefined(user, "User context is not working properly");
+
+    const {
+      student_id,
+      program_id,
+      curriculum,
+    } = await ForeplanResolver.authorizationProcess(user, input);
+
+    const allCoursesOfProgramCurriculum = (
+      await ProgramStructureTable()
+        .select("id", "course_id", "requisites")
+        .where({
+          program_id,
+          curriculum,
+        })
+    ).map(({ id, course_id, requisites }) => {
+      return {
+        code: course_id,
+        requisites: compact(requisites?.split(",").map(trim)),
+        id,
+      };
+    });
+
+    const allApprovedCourses = (
+      await StudentCourseTable()
+        .select("course_taken", "course_equiv", "elect_equiv")
+        .where({
+          student_id,
+          state: "A",
+        })
+    ).reduce<Record<string, boolean>>(
+      (acum, { course_equiv, course_taken, elect_equiv }) => {
+        if (elect_equiv) {
+          acum[elect_equiv] = true;
+        }
+        if (course_equiv) {
+          acum[course_equiv] = true;
+        }
+        if (course_taken) {
+          acum[course_taken] = true;
+        }
+        return acum;
+      },
+      {}
+    );
+
+    const indirectTakeCourses = allCoursesOfProgramCurriculum.reduce<
+      {
+        course: PartialCourse;
+        requisitesUnmet: string[];
+      }[]
+    >((acum, { id, code, requisites }) => {
+      if (
+        requisites.some(requisiteCourseCode => {
+          return !allApprovedCourses[requisiteCourseCode];
+        })
+      ) {
+        acum.push({
+          course: { id, code },
+          requisitesUnmet: requisites.reduce<string[]>(
+            (acum, requisiteCourseCode) => {
+              if (!allApprovedCourses[requisiteCourseCode]) {
+                acum.push(requisiteCourseCode);
+              }
+              return acum;
+            },
+            []
+          ),
+        });
+      }
+      return acum;
+    }, []);
+
+    return indirectTakeCourses;
   }
 }
