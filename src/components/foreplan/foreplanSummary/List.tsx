@@ -13,6 +13,7 @@ import {
   useForeplanActiveActions,
   useForeplanCourses,
 } from "../../../context/ForeplanContext";
+import { useTracking } from "../../../context/Tracking";
 
 const ForeplanContentRowListItem: FC<Pick<ICourse, "code" | "name"> &
   ICreditsNumber> = memo(({ code, name, credits }) => {
@@ -20,6 +21,8 @@ const ForeplanContentRowListItem: FC<Pick<ICourse, "code" | "name"> &
   const config = useContext(ConfigContext);
   const shouldTruncate =
     name.length > config.FOREPLAN_SUMMARY_LIST_NAME_TRUNCATE_LENGTH;
+  const [, { track }] = useTracking();
+
   return (
     <>
       <Flex
@@ -63,6 +66,11 @@ const ForeplanContentRowListItem: FC<Pick<ICourse, "code" | "name"> &
           verticalAlign="middle"
           cursor="pointer"
           onClick={() => {
+            track({
+              action: "click",
+              effect: "remove_course_foreplan",
+              target: `foreplan_${code}_remove_icon_list_row`,
+            });
             removeCourseForeplan(code);
           }}
         />

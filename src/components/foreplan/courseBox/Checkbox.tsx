@@ -25,6 +25,7 @@ import {
   useForeplanIsDirectTake,
   useIsForeplanCourseChecked,
 } from "../../../context/ForeplanContext";
+import { useTracking } from "../../../context/Tracking";
 import styles from "./foreplanCourseBox.module.css";
 
 const useWarningModel = ({
@@ -153,6 +154,7 @@ const ForeplanCourseCheckbox: FC<Pick<
     name,
     isPossible: !directTake,
   });
+  const [, { track }] = useTracking();
   return (
     <>
       <motion.div
@@ -174,6 +176,11 @@ const ForeplanCourseCheckbox: FC<Pick<
             if (checked) {
               setFutureCourseRequisitesState(code, false);
               removeCourseForeplan(code);
+              track({
+                action: "click",
+                effect: "remove_course_foreplan",
+                target: `foreplan_${code}_course_checkbox`,
+              });
             } else {
               if (!directTake && !manuallyClosed) {
                 onOpen();
@@ -182,6 +189,11 @@ const ForeplanCourseCheckbox: FC<Pick<
               addCourseForeplan(code, {
                 credits: credits?.[0]?.value ?? 0,
                 name,
+              });
+              track({
+                action: "click",
+                effect: "add_course_foreplan",
+                target: `foreplan_${code}_course_checkbox`,
               });
             }
           }}

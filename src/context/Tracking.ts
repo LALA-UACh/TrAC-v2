@@ -15,6 +15,10 @@ type TrackingTemplateData = {
   showingProgress?: boolean;
   showingPrediction?: boolean;
   coursesOpen?: string;
+  foreplanActive?: boolean;
+  foreplanCourses?: string;
+  foreplanCredits?: number;
+  foreplanSummaryExpanded?: boolean;
   action?: string;
   effect?: string;
   target?: string;
@@ -60,6 +64,10 @@ export const TrackingManager: FC = () => {
       action,
       effect,
       target,
+      foreplanActive,
+      foreplanCourses,
+      foreplanCredits,
+      foreplanSummaryExpanded,
     }: TrackingTemplateData) => {
       return `program=${program || null},program-menu=${program_menu ||
         null},curriculum=${curriculum || null},student=${student ||
@@ -69,12 +77,18 @@ export const TrackingManager: FC = () => {
         user?.config ?? {},
         (acum, value, key) => {
           if (value) {
-            acum = acum + "|" + key;
+            acum = acum + (acum !== "" ? "|" : "") + key;
           }
           return acum;
         },
         ""
-      ) ?? ""},action=${action},effect=${effect},target=${target}`;
+      ) ?? ""},foreplanActive=${
+        foreplanActive ? 1 : 0
+      },foreplanCourses=${foreplanCourses ||
+        "null"},foreplanCredits=${foreplanCredits ??
+        "null"},foreplanSummaryExpanded=${
+        foreplanSummaryExpanded ? 1 : 0
+      },action=${action},effect=${effect},target=${target}`;
     },
     [user]
   );
@@ -88,15 +102,17 @@ export const TrackingManager: FC = () => {
 
   useEffect(() => {
     if (trackAction) {
-      const data = trackingTemplate(state);
-      trackMutate({
-        variables: {
-          data,
-          datetime_client: new Date(),
-        },
-      }).catch(err => {
-        console.error(JSON.stringify(err, null, 2));
-      });
+      setTimeout(() => {
+        const data = trackingTemplate(state);
+        trackMutate({
+          variables: {
+            data,
+            datetime_client: new Date(),
+          },
+        }).catch(err => {
+          console.error(JSON.stringify(err, null, 2));
+        });
+      }, 50);
     }
   }, [trackAction]);
   return null;

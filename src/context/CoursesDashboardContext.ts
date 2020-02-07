@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
 
@@ -9,6 +9,7 @@ import {
   GET_CONSISTENCY_VALUE,
   SET_CONSISTENCY_VALUE,
 } from "../graphql/queries";
+import { useDashboardInputState } from "../pages";
 import { stringListToBooleanMap } from "../utils";
 import { useTracking } from "./Tracking";
 
@@ -19,24 +20,33 @@ export const pairTermYear = (term: string, year: number) => {
 };
 
 export interface ICoursesDashboardData {
-  activeCourse?: string;
-  activeHistory: string[];
-  flow?: Record<string, boolean>;
-  flowHistory: Record<string, boolean>[];
-  requisites?: Record<string, boolean>;
-  requisitesHistory: Record<string, boolean>[];
-  semestersTaken: ITakenSemester[] | undefined;
-  semestersTakenHistory: (ITakenSemester[] | undefined)[];
-  explicitSemester?: string;
+  activeCourse: string | undefined;
+  activeHistory: readonly string[];
+  flow: Record<string, boolean>;
+  flowHistory: readonly Record<string, boolean>[];
+  requisites: Record<string, boolean>;
+  requisitesHistory: readonly Record<string, boolean>[];
+  semestersTaken: readonly ITakenSemester[] | undefined;
+  semestersTakenHistory: readonly (ITakenSemester[] | undefined)[];
+  explicitSemester: string | undefined;
+  coursesOpen: Record<string, boolean>;
 }
 
-const defaultCourseDashboardData: ICoursesDashboardData = {
-  semestersTaken: [],
-  semestersTakenHistory: [],
-  activeHistory: [],
-  flowHistory: [],
-  requisitesHistory: [],
-};
+const emptyArray = Object.freeze([]);
+const emptyObject = Object.freeze({});
+
+const defaultCourseDashboardData: ICoursesDashboardData = Object.freeze({
+  activeCourse: undefined,
+  semestersTaken: emptyArray,
+  semestersTakenHistory: emptyArray,
+  activeHistory: emptyArray,
+  flowHistory: emptyArray,
+  requisitesHistory: emptyArray,
+  coursesOpen: emptyObject,
+  flow: emptyObject,
+  requisites: emptyObject,
+  explicitSemester: undefined,
+});
 
 const checkExplicitSemesterCallback = (explicitSemester?: string) => (
   semestersTaken: ITakenSemester | ITakenSemester[]
@@ -144,7 +154,7 @@ const CoursesDashboardStore = createStore({
     reset: (data: ICoursesDashboardData = defaultCourseDashboardData) => ({
       setState,
     }) => {
-      setState(data);
+      setState({ ...data });
     },
     checkExplicitSemester: (
       semestersTaken: ITakenSemester | ITakenSemester[]
@@ -152,6 +162,17 @@ const CoursesDashboardStore = createStore({
       const explicitSemester = getState().explicitSemester;
 
       return checkExplicitSemesterCallback(explicitSemester)(semestersTaken);
+    },
+    toggleOpenCourse: (course: string) => ({ setState, getState }) => {
+      const coursesOpen = { ...getState().coursesOpen };
+      if (coursesOpen[course]) {
+        delete coursesOpen[course];
+      } else {
+        coursesOpen[course] = true;
+      }
+      setState({
+        coursesOpen,
+      });
     },
   },
 });
@@ -193,6 +214,11 @@ export const useCheckExplicitSemester = createHook(CoursesDashboardStore, {
     return pair ? pairTermYear(pair.term, pair.year) : pair;
   },
 });
+export const useDashboardIsCourseOpen = createHook(CoursesDashboardStore, {
+  selector: ({ coursesOpen }, { code }: { code: string }) => {
+    return !!coursesOpen[code];
+  },
+});
 export const useDashboardCoursesActions = createHook(CoursesDashboardStore, {
   selector: null,
 });
@@ -200,24 +226,53 @@ export const useDashboardCoursesActions = createHook(CoursesDashboardStore, {
 export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
   distinct,
 }) => {
+  const { program, student, mock, chosenCurriculum } = useDashboardInputState();
+
   const [, { track, setTrackingData }] = useTracking();
 
   const [state, { reset }] = useCoursesDashboardData();
 
-  const { data: dataRememberDashboard } = useQuery(GET_CONSISTENCY_VALUE, {
-    variables: {
-      key: rememberCourseDashboardDataKey,
+  const [key, setKey] = useState(
+    rememberCourseDashboardDataKey +
+      `${chosenCurriculum || ""}${program || ""}${student || ""}${mock ? 1 : 0}`
+  );
+
+  useDebounce(
+    () => {
+      setKey(
+        rememberCourseDashboardDataKey +
+          `${chosenCurriculum || ""}${program || ""}${student || ""}${
+            mock ? 1 : 0
+          }`
+      );
     },
+    500,
+    [chosenCurriculum, program, student, mock, setKey]
+  );
+
+  const {
+    data: dataRememberDashboard,
+    loading: loadingDataRememberDashboard,
+  } = useQuery(GET_CONSISTENCY_VALUE, {
+    variables: {
+      key,
+    },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "network-only",
   });
 
   useEffect(() => {
-    if (dataRememberDashboard?.getConsistencyValue) {
-      reset({
-        ...defaultCourseDashboardData,
-        ...dataRememberDashboard.getConsistencyValue.data,
-      });
+    if (!loadingDataRememberDashboard) {
+      if (dataRememberDashboard?.getConsistencyValue) {
+        reset({
+          ...defaultCourseDashboardData,
+          ...dataRememberDashboard.getConsistencyValue.data,
+        });
+      } else {
+        reset();
+      }
     }
-  }, [dataRememberDashboard, reset]);
+  }, [dataRememberDashboard, loadingDataRememberDashboard, reset]);
 
   const [setRememberDashboard] = useMutation(SET_CONSISTENCY_VALUE, {
     ignoreResults: true,
@@ -225,15 +280,17 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
 
   useDebounce(
     () => {
-      setRememberDashboard({
-        variables: {
-          key: rememberCourseDashboardDataKey,
-          data: state,
-        },
-      });
+      if (!loadingDataRememberDashboard) {
+        setRememberDashboard({
+          variables: {
+            key,
+            data: state,
+          },
+        });
+      }
     },
     3000,
-    [state, setRememberDashboard]
+    [key, state, setRememberDashboard, loadingDataRememberDashboard]
   );
 
   const previousExplicitSemester = usePreviousDistinct(state.explicitSemester);

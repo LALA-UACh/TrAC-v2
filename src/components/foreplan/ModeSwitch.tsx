@@ -4,6 +4,7 @@ import { Button } from "@chakra-ui/core";
 
 import { ConfigContext } from "../../context/Config";
 import { useIsForeplanActive } from "../../context/ForeplanContext";
+import { useTracking } from "../../context/Tracking";
 
 const ForeplanModeSwitch: FC = () => {
   const [
@@ -20,6 +21,7 @@ const ForeplanModeSwitch: FC = () => {
     FOREPLAN_MODE_SWITCH_FONT_FAMILY,
     FOREPLAN_MODE_SWITCH_FONT_SIZE,
   } = useContext(ConfigContext);
+  const [, { track }] = useTracking();
 
   return (
     <Button
@@ -42,8 +44,18 @@ const ForeplanModeSwitch: FC = () => {
       onClick={() => {
         if (isForeplanActive) {
           disableForeplan();
+          track({
+            action: "click",
+            effect: "disable_foreplan",
+            target: "foreplan_mode_switch_button",
+          });
         } else {
           activateForeplan();
+          track({
+            action: "click",
+            effect: "activate_foreplan",
+            target: "foreplan_mode_switch_button",
+          });
         }
       }}
     >

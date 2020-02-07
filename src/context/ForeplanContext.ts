@@ -1,5 +1,5 @@
 import { every, reduce, size } from "lodash";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce } from "react-use";
 
@@ -12,8 +12,10 @@ import {
   GET_CONSISTENCY_VALUE,
   SET_CONSISTENCY_VALUE,
 } from "../graphql/queries";
+import { useDashboardInputState } from "../pages";
 import { stringListToBooleanMap } from "../utils";
 import { useUser } from "../utils/useUser";
+import { useTracking } from "./Tracking";
 
 const emptyObject = Object.freeze({});
 const emptyArray = Object.freeze([]);
@@ -36,12 +38,12 @@ export interface IForeplanHelperData {
   advices: readonly PerformanceByLoad[];
 }
 
-const defaultForeplanHelperStore: IForeplanHelperData = {
+const defaultForeplanHelperStore: IForeplanHelperData = Object.freeze({
   courseDirectTake: emptyObject,
   courseFailRate: emptyObject,
   courseEffort: emptyObject,
   advices: emptyArray,
-};
+});
 
 const ForeplanHelperStore = createStore({
   initialState: defaultForeplanHelperStore,
@@ -151,12 +153,12 @@ const initForeplanActiveData = (
   return initialData;
 };
 
-const defaultForeplanActiveData: IForeplanActiveData = {
+const defaultForeplanActiveData: IForeplanActiveData = Object.freeze({
   active: false,
   foreplanCourses: emptyObject,
   totalCreditsTaken: 0,
   futureCourseRequisites: emptyObject,
-};
+});
 
 const ForeplanActiveStore = createStore({
   initialState: initForeplanActiveData(),
@@ -201,7 +203,7 @@ const ForeplanActiveStore = createStore({
         0
       );
       setState({
-        foreplanCourses,
+        foreplanCourses: { ...foreplanCourses },
         totalCreditsTaken,
       });
     },
@@ -227,7 +229,7 @@ const ForeplanActiveStore = createStore({
       courseToSetState: string,
       state: boolean
     ) => ({ setState, getState }) => {
-      const futureCourseRequisites = getState().futureCourseRequisites;
+      const futureCourseRequisites = { ...getState().futureCourseRequisites };
 
       if (futureCourseRequisites) {
         for (const courseToOpen in futureCourseRequisites) {
@@ -250,7 +252,7 @@ const ForeplanActiveStore = createStore({
     reset: (data: IForeplanActiveData = defaultForeplanActiveData) => ({
       setState,
     }) => {
-      setState(data);
+      setState({ ...data });
     },
   },
   name: "ForeplanContext",
@@ -318,12 +320,15 @@ export const useForeplanIsFutureCourseRequisitesFulfilled = createHook(
   ForeplanActiveStore,
   {
     selector: ({ futureCourseRequisites }, { code }: { code: string }) => {
-      return every(futureCourseRequisites[code]);
+      return (
+        !!futureCourseRequisites[code] && every(futureCourseRequisites[code])
+      );
     },
   }
 );
 
 export const ForeplanContextManager: FC = () => {
+  const { program, student, mock, chosenCurriculum } = useDashboardInputState();
   const [state, { reset, disableForeplan }] = useForeplanActiveData();
   const { user } = useUser({
     fetchPolicy: "cache-only",
@@ -333,20 +338,61 @@ export const ForeplanContextManager: FC = () => {
     ignoreResults: true,
   });
 
-  const { data: dataRememberForeplan } = useQuery(GET_CONSISTENCY_VALUE, {
-    variables: {
-      key: rememberForeplanDataKey,
+  const [key, setKey] = useState(
+    rememberForeplanDataKey +
+      `${chosenCurriculum || ""}${program || ""}${student || ""}${mock ? 1 : 0}`
+  );
+
+  useDebounce(
+    () => {
+      setKey(
+        rememberForeplanDataKey +
+          `${chosenCurriculum || ""}${program || ""}${student || ""}${
+            mock ? 1 : 0
+          }`
+      );
     },
+    500,
+    [chosenCurriculum, program, student, mock, setKey]
+  );
+
+  const {
+    data: dataRememberForeplan,
+    loading: loadingRememberForeplan,
+  } = useQuery(GET_CONSISTENCY_VALUE, {
+    variables: {
+      key,
+    },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "network-only",
   });
 
   useEffect(() => {
-    if (dataRememberForeplan?.getConsistencyValue) {
-      reset({
-        ...defaultForeplanActiveData,
-        ...dataRememberForeplan.getConsistencyValue.data,
+    if (!loadingRememberForeplan) {
+      if (dataRememberForeplan?.getConsistencyValue) {
+        reset({
+          ...defaultForeplanActiveData,
+          ...dataRememberForeplan.getConsistencyValue.data,
+        });
+      }
+    } else {
+      reset();
+    }
+  }, [dataRememberForeplan, loadingRememberForeplan, reset]);
+
+  const [, { setTrackingData }] = useTracking();
+
+  useEffect(() => {
+    if (!loadingRememberForeplan) {
+      const coursesArray = Object.keys(state.foreplanCourses);
+      setTrackingData({
+        foreplanActive: state.active,
+        foreplanCredits: state.active ? state.totalCreditsTaken : undefined,
+        foreplanCourses:
+          coursesArray.length > 0 ? coursesArray.join("|") : undefined,
       });
     }
-  }, [dataRememberForeplan, reset]);
+  }, [state, setTrackingData, loadingRememberForeplan]);
 
   useEffect(() => {
     if (state.active && !user?.config.FOREPLAN) {
@@ -359,14 +405,14 @@ export const ForeplanContextManager: FC = () => {
       if (user?.config.FOREPLAN) {
         setRememberForeplan({
           variables: {
-            key: rememberForeplanDataKey,
+            key,
             data: state,
           },
         });
       }
     },
     3000,
-    [state, user, setRememberForeplan]
+    [key, state, user, setRememberForeplan]
   );
 
   return null;

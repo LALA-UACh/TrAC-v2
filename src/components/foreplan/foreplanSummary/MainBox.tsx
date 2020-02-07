@@ -8,6 +8,7 @@ import React, {
   memo,
   SetStateAction,
   useContext,
+  useEffect,
   useMemo,
 } from "react";
 import { FaGripLinesVertical } from "react-icons/fa";
@@ -37,6 +38,7 @@ import {
   useForeplanTotalCreditsTaken,
   useIsForeplanActive,
 } from "../../../context/ForeplanContext";
+import { useTracking } from "../../../context/Tracking";
 import { useUser } from "../../../utils/useUser";
 
 const ForeplanContentRowList = dynamic(() => import("./List"));
@@ -123,6 +125,8 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
     );
   }, [nCourses]);
 
+  const [, { track, setTrackingData }] = useTracking();
+
   return (
     <Flex
       dir="column"
@@ -133,6 +137,14 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
       cursor="pointer"
       onClick={() => {
         setExpanded(expanded => !expanded);
+        setTrackingData({
+          foreplanSummaryExpanded: !expanded,
+        });
+        track({
+          action: "click",
+          effect: expanded ? "close" : "open",
+          target: "foreplan_summary_tab",
+        });
       }}
       width={config.FOREPLAN_SUMMARY_TAB_WIDTH}
     >

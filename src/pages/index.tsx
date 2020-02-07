@@ -1,3 +1,4 @@
+import constate from "constate";
 import { flatMapDeep, random, uniq } from "lodash";
 import dynamic from "next/dynamic";
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
@@ -46,15 +47,45 @@ const ForeplanSummary = dynamic(() =>
   import("../components/foreplan/foreplanSummary/MainBox")
 );
 
-const Dashboard: FC = () => {
-  const [program, setProgram] = useState<string | undefined>(undefined);
+export const [DashboardInputStateProvider, useDashboardInputState] = constate(
+  () => {
+    const [chosenCurriculum, setChosenCurriculum] = useState<
+      string | undefined
+    >(undefined);
 
-  const [chosenCurriculum, setChosenCurriculum] = useState<string | undefined>(
-    undefined
-  );
+    const { user } = useUser();
+
+    const [mock, setMock] = useRememberState("mockMode", !!user?.admin);
+
+    const [program, setProgram] = useState<string | undefined>(undefined);
+
+    const [student, setStudent] = useState<string | undefined>(undefined);
+
+    return {
+      chosenCurriculum,
+      setChosenCurriculum,
+      program,
+      setProgram,
+      student,
+      setStudent,
+      mock,
+      setMock,
+    };
+  }
+);
+
+const Dashboard: FC = () => {
+  const {
+    chosenCurriculum,
+    setChosenCurriculum,
+    program,
+    setProgram,
+    setStudent,
+    mock,
+    setMock,
+  } = useDashboardInputState();
 
   const { user } = useUser();
-  const [mock, setMock] = useRememberState("mockMode", !!user?.admin);
 
   const [mockData, setMockData] = useState<
     typeof import("../../constants/mockData")
@@ -154,27 +185,31 @@ const Dashboard: FC = () => {
       setTrackingData({
         student: searchStudentData.student.id,
       });
+      setStudent(searchStudentData.student.id);
     } else {
       setTrackingData({
         student: undefined,
       });
+      setStudent(undefined);
     }
-  }, [searchStudentData, setTrackingData]);
+  }, [searchStudentData, setTrackingData, setStudent]);
 
   useEffect(() => {
     if (searchProgramData?.program) {
+      setProgram(searchProgramData.program.id);
       setTrackingData({
         showingProgress: true,
         program: searchProgramData.program.id,
       });
       setMock(false);
     } else {
+      setProgram(undefined);
       setTrackingData({
         showingProgress: false,
         program: undefined,
       });
     }
-  }, [searchProgramData, setTrackingData]);
+  }, [searchProgramData, setTrackingData, setMock, setProgram]);
 
   useEffect(() => {
     if (user?.type === UserType.Student) {
@@ -184,7 +219,7 @@ const Dashboard: FC = () => {
       searchDirectTakeCourses();
       searchIndirectTakeCourses();
     }
-  }, [user, searchProgram, searchStudent, searchPerformanceByLoad]);
+  }, [user, searchProgram, searchStudent, searchPerformanceByLoad, setStudent]);
 
   const [, foreplanActiveActions] = useForeplanActiveActions();
   const [, foreplanHelperActions] = useForeplanHelperActions();
@@ -569,19 +604,22 @@ const Dashboard: FC = () => {
             program_id: searchProgramData?.program?.id,
           }}
           isSearchLoading={searchProgramLoading || searchStudentLoading}
-          setProgram={setProgram}
           onSearch={async ({ student_id, program_id }) => {
             try {
               if (student_id) {
-                searchPerformanceByLoad({
-                  variables: { student_id, program_id },
-                });
-                searchDirectTakeCourses({
-                  variables: { student_id, program_id },
-                });
-                searchIndirectTakeCourses({
-                  variables: { student_id, program_id },
-                });
+                if (user.config.FOREPLAN) {
+                  searchPerformanceByLoad({
+                    variables: { student_id, program_id },
+                  });
+                  searchDirectTakeCourses({
+                    variables: { student_id, program_id },
+                  });
+                  if (user.config.FOREPLAN_FUTURE_COURSE_PLANIFICATION) {
+                    searchIndirectTakeCourses({
+                      variables: { student_id, program_id },
+                    });
+                  }
+                }
               }
               const [programSearch, studentSearch] = await Promise.all([
                 searchProgram({
@@ -606,10 +644,6 @@ const Dashboard: FC = () => {
 
             return undefined;
           }}
-          mock={mock}
-          setMock={setMock}
-          curriculum={chosenCurriculum}
-          setCurriculum={setChosenCurriculum}
         />
       ) : (
         <>
@@ -660,5 +694,9 @@ export default () => {
     return <LoadingPage />;
   }
 
-  return <Dashboard />;
+  return (
+    <DashboardInputStateProvider>
+      <Dashboard />
+    </DashboardInputStateProvider>
+  );
 };

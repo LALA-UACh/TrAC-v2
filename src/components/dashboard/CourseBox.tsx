@@ -27,6 +27,7 @@ import {
   useActiveRequisites,
   useCheckExplicitSemester,
   useDashboardCoursesActions,
+  useDashboardIsCourseOpen,
   useExplicitSemester,
 } from "../../context/CoursesDashboardContext";
 import {
@@ -51,11 +52,6 @@ const ForeplanCourseStats = dynamic(() =>
 export const passColorScale = scaleLinear<string, number>();
 
 export const failColorScale = scaleLinear<string, number>();
-
-export interface OpenState {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-}
 
 export type CurrentTakenData = Partial<ITakenCourse>;
 
@@ -89,11 +85,11 @@ const useIsCourseFuturePlanificationFulfilled = ({
   );
 };
 
-const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> &
-  Pick<OpenState, "open"> & {
-    borderColor: string;
-    semestersTaken: ITakenSemester[];
-  } & Pick<CurrentTakenData, "currentDistribution"> & {
+const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
+  isOpen: boolean;
+  borderColor: string;
+  semestersTaken: ITakenSemester[];
+} & Pick<CurrentTakenData, "currentDistribution"> & {
     isFutureCourseFulfilled: boolean;
   }> = memo(
   ({
@@ -103,7 +99,7 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> &
     historicDistribution,
     semestersTaken,
     borderColor,
-    open,
+    isOpen,
     isFutureCourseFulfilled,
   }) => {
     const config = useContext(ConfigContext);
@@ -127,7 +123,7 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> &
     const { height, width } = useMemo(() => {
       let height: number | undefined = undefined;
       let width: number | undefined = undefined;
-      if (open) {
+      if (isOpen) {
         if (
           currentDistribution &&
           some(currentDistribution, ({ value }) => value)
@@ -160,7 +156,7 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> &
       }
 
       return { height, width };
-    }, [open, historicDistribution, currentDistribution]);
+    }, [isOpen, historicDistribution, currentDistribution]);
 
     return (
       <Flex
@@ -187,54 +183,51 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> &
   }
 );
 
-const MainBlockOuter: FC<OpenState &
-  Pick<ICourse, "code" | "flow" | "requisites"> & {
-    semestersTaken: ITakenSemester[];
-  }> = memo(
-  ({ children, open, setOpen, code, flow, requisites, semestersTaken }) => {
-    const [, { track }] = useTracking();
-    const [, { addCourse, removeCourse }] = useDashboardCoursesActions();
+const MainBlockOuter: FC<Pick<ICourse, "code" | "flow" | "requisites"> & {
+  semestersTaken: ITakenSemester[];
+}> = memo(({ children, code, flow, requisites, semestersTaken }) => {
+  const [, { track }] = useTracking();
+  const [, { addCourse, removeCourse }] = useDashboardCoursesActions();
+  const [isOpen, { toggleOpenCourse }] = useDashboardIsCourseOpen({ code });
+  return (
+    <Flex
+      w="100%"
+      h="100%"
+      pt={2}
+      pl={2}
+      pos="relative"
+      className="mainBlock"
+      cursor="pointer"
+      onClick={() => {
+        toggleOpenCourse(code);
 
-    return (
-      <Flex
-        w="100%"
-        h="100%"
-        pt={2}
-        pl={2}
-        pos="relative"
-        className="mainBlock"
-        cursor="pointer"
-        onClick={() => {
-          setOpen(open => !open);
-
-          if (!open) {
-            addCourse({
-              course: code,
-              flow,
-              requisites,
-              semestersTaken,
-            });
-          } else {
-            removeCourse(code);
-          }
-
-          track({
-            action: "click",
-            target: `course-box-${code}`,
-            effect: `${open ? "close" : "open"}-course-box`,
+        if (!isOpen) {
+          addCourse({
+            course: code,
+            flow,
+            requisites,
+            semestersTaken,
           });
-        }}
-      >
-        {children}
-      </Flex>
-    );
-  }
-);
+        } else {
+          removeCourse(code);
+        }
 
-const NameComponent: FC<Pick<ICourse, "code" | "taken" | "name"> &
-  Pick<OpenState, "open"> &
-  Pick<CurrentTakenData, "parallelGroup">> = memo(
-  ({ code, name, taken, parallelGroup }) => {
+        track({
+          action: "click",
+          target: `course-box-${code}`,
+          effect: `${isOpen ? "close" : "open"}-course-box`,
+        });
+      }}
+    >
+      {children}
+    </Flex>
+  );
+});
+
+const NameComponent: FC<Pick<ICourse, "code" | "taken" | "name"> & {
+  isOpen: boolean;
+} & Pick<CurrentTakenData, "parallelGroup">> = memo(
+  ({ code, name, taken, parallelGroup, isOpen }) => {
     const config = useContext(ConfigContext);
     return (
       <Stack spacing={1}>
@@ -254,7 +247,7 @@ const NameComponent: FC<Pick<ICourse, "code" | "taken" | "name"> &
         </Flex>
 
         <Text fontSize={9} maxWidth="150px">
-          {truncate(name, { length: open ? 60 : 35 })}
+          {truncate(name, { length: isOpen ? 60 : 35 })}
         </Text>
       </Stack>
     );
@@ -676,38 +669,9 @@ export const CourseBox: FC<ICourse> = ({
     return taken[0] || {};
   }, [semestersTaken, explicitSemester, taken]);
 
-  const [open, setOpen] = useState(() => {
-    try {
-      if (
-        process.env.NODE_ENV === "development" &&
-        localStorage.getItem(`${code}_active`)
-      ) {
-        return true;
-      }
-    } catch (err) {}
-
-    return false;
+  const [isOpen, { toggleOpenCourse }] = useDashboardIsCourseOpen({
+    code,
   });
-
-  if (process.env.NODE_ENV === "development") {
-    useDebounce(
-      () => {
-        try {
-          if (open) {
-            localStorage.setItem(`${code}_active`, "1");
-          } else {
-            localStorage.removeItem(`${code}_active`);
-          }
-        } catch (err) {}
-      },
-      3000,
-      [open]
-    );
-  }
-
-  useUpdateEffect(() => {
-    setOpen(false);
-  }, [code]);
 
   const isFutureCourseFulfilled = useIsCourseFuturePlanificationFulfilled({
     state: taken[0]?.state,
@@ -753,7 +717,7 @@ export const CourseBox: FC<ICourse> = ({
       code={code}
       currentDistribution={currentDistribution}
       historicDistribution={historicDistribution}
-      open={open}
+      isOpen={isOpen}
       semestersTaken={semestersTaken}
       borderColor={borderColor}
       isFutureCourseFulfilled={isFutureCourseFulfilled}
@@ -762,30 +726,28 @@ export const CourseBox: FC<ICourse> = ({
         flow={flow}
         requisites={requisites}
         code={code}
-        open={open}
-        setOpen={setOpen}
         semestersTaken={semestersTaken}
       >
         <NameComponent
           code={code}
           taken={taken}
           name={name}
-          open={open}
+          isOpen={isOpen}
           parallelGroup={parallelGroup}
         />
 
         <AnimatePresence>
-          {registration && open && (
+          {registration && isOpen && (
             <RegistrationComponent
               key="registration"
               registration={registration}
             />
           )}
-          {!open && <CreditsComponent key="credits" credits={credits} />}
+          {!isOpen && <CreditsComponent key="credits" credits={credits} />}
 
           <ReqCircleComponent key="reqCircle" code={code} />
 
-          {open && (
+          {isOpen && (
             <HistogramsComponent
               key="histogramsComponent"
               state={taken[0]?.state}

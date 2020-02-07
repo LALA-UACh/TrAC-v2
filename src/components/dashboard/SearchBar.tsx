@@ -7,6 +7,7 @@ import React, {
   ChangeEvent,
   Dispatch,
   FC,
+  memo,
   SetStateAction,
   useCallback,
   useContext,
@@ -36,14 +37,13 @@ import {
 import { ConfigContext } from "../../context/Config";
 import { useTracking } from "../../context/Tracking";
 import { MY_PROGRAMS } from "../../graphql/queries";
+import { useDashboardInputState } from "../../pages";
 import { useUser } from "../../utils/useUser";
 
 const StudentList = dynamic(() => import("./StudentList"));
 
-const MockingMode: FC<{
-  mock: boolean;
-  setMock: Dispatch<SetStateAction<boolean>>;
-}> = ({ mock, setMock }) => {
+const MockingMode: FC = memo(() => {
+  const { mock, setMock } = useDashboardInputState();
   return (
     <Button
       basic
@@ -53,7 +53,7 @@ const MockingMode: FC<{
       {mock ? "Mocking ON" : "Mocking OFF"}
     </Button>
   );
-};
+});
 
 export const SearchBar: FC<{
   isSearchLoading: boolean;
@@ -67,36 +67,27 @@ export const SearchBar: FC<{
     program_id?: string;
   };
   error?: string;
-  mock: boolean;
-  setMock: Dispatch<SetStateAction<boolean>>;
-  curriculum: string | undefined;
-  setCurriculum: Dispatch<SetStateAction<string | undefined>>;
-  setProgram: Dispatch<SetStateAction<string | undefined>>;
-}> = ({
-  isSearchLoading,
-  onSearch,
-  searchResult,
-  error,
-  mock,
-  setMock,
-  curriculum,
-  setCurriculum,
-  setProgram: setProgramProp,
-}) => {
+}> = ({ isSearchLoading, onSearch, searchResult, error }) => {
+  const {
+    mock,
+    setMock,
+    chosenCurriculum,
+    setChosenCurriculum,
+  } = useDashboardInputState();
   useEffect(() => {
     if (
-      (curriculum === undefined &&
+      (chosenCurriculum === undefined &&
         (searchResult?.curriculums.length ?? 0) > 0) ||
-      !searchResult?.curriculums.includes(curriculum ?? "")
+      !searchResult?.curriculums.includes(chosenCurriculum ?? "")
     ) {
-      setCurriculum(
+      setChosenCurriculum(
         searchResult?.curriculums
           .sort()
           .slice()
           .reverse()[0]
       );
     }
-  }, [curriculum, setCurriculum, searchResult?.curriculums]);
+  }, [chosenCurriculum, setChosenCurriculum, searchResult?.curriculums]);
 
   const { user } = useUser();
 
@@ -171,7 +162,7 @@ export const SearchBar: FC<{
     ) {
       setProgram(programsOptions[0]);
     }
-  }, [program, setProgram, programsOptions, setProgramProp, myProgramsData]);
+  }, [program, setProgram, programsOptions, myProgramsData]);
 
   useEffect(() => {
     setTrackingData({
@@ -230,8 +221,8 @@ export const SearchBar: FC<{
                     }) ?? []
                 }
                 value={
-                  curriculum
-                    ? { value: curriculum, label: curriculum }
+                  chosenCurriculum
+                    ? { value: chosenCurriculum, label: chosenCurriculum }
                     : undefined
                 }
                 onChange={selected => {
@@ -240,7 +231,7 @@ export const SearchBar: FC<{
                     target: "curriculum-menu",
                     effect: "change-curriculum",
                   });
-                  setCurriculum(
+                  setChosenCurriculum(
                     (selected as { label: string; value: string }).value
                   );
                 }}
@@ -328,7 +319,6 @@ export const SearchBar: FC<{
               type="submit"
               disabled={isSearchLoading || !program?.value}
               onClick={async ev => {
-                setProgramProp(program?.value);
                 if (program) {
                   ev.preventDefault();
                   const onSearchResult = await onSearch({
@@ -359,6 +349,7 @@ export const SearchBar: FC<{
                         effect: "load-program",
                         target: "search-button",
                       });
+
                       break;
                     }
                     default: {
@@ -408,7 +399,7 @@ export const SearchBar: FC<{
       </Flex>
 
       <Flex wrap="wrap" justifyContent="flex-end" className="stack">
-        {user?.admin && <MockingMode mock={mock} setMock={setMock} />}
+        {user?.admin && <MockingMode />}
         {user?.config?.SHOW_STUDENT_LIST && (
           <StudentList
             program_id={program?.value}

@@ -21,12 +21,15 @@ import {
   useForeplanActiveActions,
   useForeplanCourses,
 } from "../../../context/ForeplanContext";
+import { useTracking } from "../../../context/Tracking";
 
 const CourseBadge: FC<Pick<ICourse, "code" | "name"> & ICreditsNumber> = memo(
   ({ code, name, credits }) => {
     const config = useContext(ConfigContext);
     const [, { removeCourseForeplan }] = useForeplanActiveActions();
     const [expanded, setExpanded] = useState(false);
+    const [, { track }] = useTracking();
+
     const width = useMemo(() => {
       const width =
         config.FOREPLAN_SUMMARY_BADGE_COURSE_CREDITS_WIDTH.find(
@@ -47,8 +50,13 @@ const CourseBadge: FC<Pick<ICourse, "code" | "name"> & ICreditsNumber> = memo(
     const clickAway = useCallback(() => {
       if (expanded) {
         setExpanded(false);
+        track({
+          action: "click",
+          effect: "close_course_badge",
+          target: `foreplan_outside_${code}_badge`,
+        });
       }
-    }, [expanded, setExpanded]);
+    }, [expanded, setExpanded, track, code]);
 
     const expandBadge = useCallback(
       (ev: React.MouseEvent<any, MouseEvent>) => {
@@ -56,9 +64,14 @@ const CourseBadge: FC<Pick<ICourse, "code" | "name"> & ICreditsNumber> = memo(
         ev.stopPropagation();
         if (!expanded) {
           setExpanded(true);
+          track({
+            action: "click",
+            effect: "open_course_badge",
+            target: `foreplan_${code}_badge`,
+          });
         }
       },
-      [expanded, setExpanded]
+      [expanded, setExpanded, track, code]
     );
 
     useClickAway(ref, clickAway, ["click", "mousedown"]);
@@ -146,6 +159,11 @@ const CourseBadge: FC<Pick<ICourse, "code" | "name"> & ICreditsNumber> = memo(
                     onClick={ev => {
                       ev.stopPropagation();
                       removeCourseForeplan(code);
+                      track({
+                        action: "click",
+                        effect: "remove_course_foreplan",
+                        target: `foreplan_${code}_remove_icon_badge`,
+                      });
                     }}
                   />
                 </Flex>
