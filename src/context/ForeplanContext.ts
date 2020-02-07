@@ -9,8 +9,8 @@ import { PerformanceByLoad } from "../../api/entities/data/foreplan";
 import { StateCourse } from "../../constants";
 import { ICourse } from "../../interfaces";
 import {
-  GET_CONSISTENCY_VALUE,
-  SET_CONSISTENCY_VALUE,
+  GET_PERSISTENCE_VALUE,
+  SET_PERSISTENCE_VALUE,
 } from "../graphql/queries";
 import { useDashboardInputState } from "../pages";
 import { stringListToBooleanMap } from "../utils";
@@ -334,7 +334,7 @@ export const ForeplanContextManager: FC = () => {
     fetchPolicy: "cache-only",
   });
 
-  const [setRememberForeplan] = useMutation(SET_CONSISTENCY_VALUE, {
+  const [setRememberForeplan] = useMutation(SET_PERSISTENCE_VALUE, {
     ignoreResults: true,
   });
 
@@ -359,7 +359,7 @@ export const ForeplanContextManager: FC = () => {
   const {
     data: dataRememberForeplan,
     loading: loadingRememberForeplan,
-  } = useQuery(GET_CONSISTENCY_VALUE, {
+  } = useQuery(GET_PERSISTENCE_VALUE, {
     variables: {
       key,
     },
@@ -369,10 +369,10 @@ export const ForeplanContextManager: FC = () => {
 
   useEffect(() => {
     if (!loadingRememberForeplan) {
-      if (dataRememberForeplan?.getConsistencyValue) {
+      if (dataRememberForeplan?.getPersistenceValue) {
         reset({
           ...defaultForeplanActiveData,
-          ...dataRememberForeplan.getConsistencyValue.data,
+          ...dataRememberForeplan.getPersistenceValue.data,
         });
       }
     } else {

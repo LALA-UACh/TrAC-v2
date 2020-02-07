@@ -6,8 +6,8 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 
 import { ITakenSemester } from "../../interfaces";
 import {
-  GET_CONSISTENCY_VALUE,
-  SET_CONSISTENCY_VALUE,
+  GET_PERSISTENCE_VALUE,
+  SET_PERSISTENCE_VALUE,
 } from "../graphql/queries";
 import { useDashboardInputState } from "../pages";
 import { stringListToBooleanMap } from "../utils";
@@ -253,7 +253,7 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
   const {
     data: dataRememberDashboard,
     loading: loadingDataRememberDashboard,
-  } = useQuery(GET_CONSISTENCY_VALUE, {
+  } = useQuery(GET_PERSISTENCE_VALUE, {
     variables: {
       key,
     },
@@ -263,10 +263,10 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
 
   useEffect(() => {
     if (!loadingDataRememberDashboard) {
-      if (dataRememberDashboard?.getConsistencyValue) {
+      if (dataRememberDashboard?.getPersistenceValue) {
         reset({
           ...defaultCourseDashboardData,
-          ...dataRememberDashboard.getConsistencyValue.data,
+          ...dataRememberDashboard.getPersistenceValue.data,
         });
       } else {
         reset();
@@ -274,7 +274,7 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
     }
   }, [dataRememberDashboard, loadingDataRememberDashboard, reset]);
 
-  const [setRememberDashboard] = useMutation(SET_CONSISTENCY_VALUE, {
+  const [setRememberDashboard] = useMutation(SET_PERSISTENCE_VALUE, {
     ignoreResults: true,
   });
 

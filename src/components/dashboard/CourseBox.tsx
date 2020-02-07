@@ -3,17 +3,8 @@ import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
 import { some, truncate } from "lodash";
 import dynamic from "next/dynamic";
-import React, {
-  Dispatch,
-  FC,
-  memo,
-  SetStateAction,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import React, { FC, memo, useContext, useMemo } from "react";
 import ReactTooltip from "react-tooltip";
-import { useDebounce, useUpdateEffect } from "react-use";
 
 import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/core";
 
@@ -669,7 +660,7 @@ export const CourseBox: FC<ICourse> = ({
     return taken[0] || {};
   }, [semestersTaken, explicitSemester, taken]);
 
-  const [isOpen, { toggleOpenCourse }] = useDashboardIsCourseOpen({
+  const [isOpen] = useDashboardIsCourseOpen({
     code,
   });
 

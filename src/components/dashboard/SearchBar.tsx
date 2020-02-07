@@ -5,10 +5,8 @@ import { useRouter } from "next/router";
 import { generate } from "randomstring";
 import React, {
   ChangeEvent,
-  Dispatch,
   FC,
   memo,
-  SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -70,7 +68,6 @@ export const SearchBar: FC<{
 }> = ({ isSearchLoading, onSearch, searchResult, error }) => {
   const {
     mock,
-    setMock,
     chosenCurriculum,
     setChosenCurriculum,
   } = useDashboardInputState();

@@ -1,6 +1,6 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
-import { Consistency } from "../../api/entities/auth/consistency";
+import { Persistence } from "../../api/entities/auth/persistence";
 import { PerformanceByLoad } from "../../api/entities/data/foreplan";
 import { Program } from "../../api/entities/data/program";
 import { Student } from "../../api/entities/data/student";
@@ -416,25 +416,25 @@ export const INDIRECT_TAKE_COURSES: DocumentNode<
   }
 `;
 
-export const GET_CONSISTENCY_VALUE: DocumentNode<
+export const GET_PERSISTENCE_VALUE: DocumentNode<
   {
-    getConsistencyValue: Pick<Consistency, "key" | "data"> | null;
+    getPersistenceValue: Pick<Persistence, "key" | "data"> | null;
   },
   {
     key: string;
   }
 > = gql`
   query($key: String!) {
-    getConsistencyValue(key: $key) {
+    getPersistenceValue(key: $key) {
       key
       data
     }
   }
 `;
 
-export const SET_CONSISTENCY_VALUE: DocumentNode<
+export const SET_PERSISTENCE_VALUE: DocumentNode<
   {
-    setConsistencyValue: never;
+    setPersistenceValue: never;
   },
   {
     key: string;
@@ -442,7 +442,7 @@ export const SET_CONSISTENCY_VALUE: DocumentNode<
   }
 > = gql`
   mutation($key: String!, $data: JSONObject!) {
-    setConsistencyValue(key: $key, data: $data) {
+    setPersistenceValue(key: $key, data: $data) {
       __typename
     }
   }

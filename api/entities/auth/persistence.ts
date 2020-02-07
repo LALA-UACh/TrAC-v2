@@ -2,7 +2,7 @@ import { GraphQLJSONObject } from "graphql-type-json";
 import { Field, ObjectType } from "type-graphql";
 
 @ObjectType()
-export class Consistency {
+export class Persistence {
   @Field()
   user: string;
 

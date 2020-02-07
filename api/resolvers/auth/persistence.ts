@@ -2,21 +2,21 @@ import { GraphQLJSONObject } from "graphql-type-json";
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { IContext } from "../../../interfaces";
-import { ConsistencyTable } from "../../db/tables";
-import { Consistency } from "../../entities/auth/consistency";
+import { PersistenceTable } from "../../db/tables";
+import { Persistence } from "../../entities/auth/persistence";
 import { assertIsDefined } from "../../utils/assert";
 
-@Resolver(() => Consistency)
-export class ConsistencyResolver {
+@Resolver(() => Persistence)
+export class PersistenceResolver {
   @Authorized()
-  @Query(() => Consistency, { nullable: true })
-  async getConsistencyValue(
+  @Query(() => Persistence, { nullable: true })
+  async getPersistenceValue(
     @Ctx() { user }: IContext,
     @Arg("key") key: string
-  ): Promise<Consistency | undefined> {
+  ): Promise<Persistence | undefined> {
     assertIsDefined(user, "User context is not working properly");
 
-    const consistencyValue = await ConsistencyTable()
+    const persistenceValue = await PersistenceTable()
       .select("*")
       .where({
         user: user.email,
@@ -24,19 +24,19 @@ export class ConsistencyResolver {
       })
       .first();
 
-    return consistencyValue;
+    return persistenceValue;
   }
 
   @Authorized()
-  @Mutation(() => Consistency)
-  async setConsistencyValue(
+  @Mutation(() => Persistence)
+  async setPersistenceValue(
     @Ctx() { user }: IContext,
     @Arg("key") key: string,
     @Arg("data", () => GraphQLJSONObject) data: Record<string, any>
-  ): Promise<Consistency> {
+  ): Promise<Persistence> {
     assertIsDefined(user, "User context is not working properly");
 
-    const existsValue = await ConsistencyTable()
+    const existsValue = await PersistenceTable()
       .select("key")
       .where({
         user: user.email,
@@ -44,14 +44,14 @@ export class ConsistencyResolver {
       })
       .first();
 
-    let consistencyValue = {
+    let persistenceValue = {
       user: user.email,
       key,
       data,
     };
     try {
       if (existsValue) {
-        await ConsistencyTable()
+        await PersistenceTable()
           .update({
             data,
           })
@@ -60,7 +60,7 @@ export class ConsistencyResolver {
             key,
           });
       } else {
-        await ConsistencyTable().insert({
+        await PersistenceTable().insert({
           user: user.email,
           key,
           data,
@@ -72,8 +72,8 @@ export class ConsistencyResolver {
     }
 
     assertIsDefined(
-      consistencyValue,
-      "Error on consistency creation! " +
+      persistenceValue,
+      "Error on persistence creation! " +
         user +
         " " +
         key +
@@ -81,6 +81,6 @@ export class ConsistencyResolver {
         JSON.stringify(data)
     );
 
-    return consistencyValue;
+    return persistenceValue;
   }
 }

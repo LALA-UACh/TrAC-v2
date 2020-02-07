@@ -9,7 +9,6 @@ import { configValueToString } from "../../../constants/validation";
 import {
   CONFIGURATION_TABLE,
   ConfigurationTable,
-  CONSISTENCY_TABLE,
   COURSE_STATS_TABLE,
   COURSE_TABLE,
   CourseStatsTable,
@@ -18,6 +17,7 @@ import {
   ParameterTable,
   PERFORMANCE_BY_LOAD_TABLE,
   PerformanceByLoadTable,
+  PERSISTENCE_TABLE,
   PROGRAM_STRUCTURE_TABLE,
   PROGRAM_TABLE,
   ProgramStructureTable,
@@ -536,9 +536,9 @@ const dataImport = async () => {
     }
   });
 
-  dbAuth.schema.hasTable(CONSISTENCY_TABLE).then(async exists => {
+  dbAuth.schema.hasTable(PERSISTENCE_TABLE).then(async exists => {
     if (!exists) {
-      await dbAuth.schema.createTable(CONSISTENCY_TABLE, table => {
+      await dbAuth.schema.createTable(PERSISTENCE_TABLE, table => {
         table.text("user").notNullable();
         table.text("key").notNullable();
         table.json("data").notNullable();

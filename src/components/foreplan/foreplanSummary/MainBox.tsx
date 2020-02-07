@@ -8,7 +8,6 @@ import React, {
   memo,
   SetStateAction,
   useContext,
-  useEffect,
   useMemo,
 } from "react";
 import { FaGripLinesVertical } from "react-icons/fa";

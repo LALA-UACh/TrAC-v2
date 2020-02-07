@@ -1,5 +1,5 @@
 export * from "./auth/auth";
-export * from "./auth/consistency";
+export * from "./auth/persistence";
 export * from "./config";
 export * from "./data/course";
 export * from "./data/program";

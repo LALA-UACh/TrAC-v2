@@ -77,7 +77,6 @@ export const [DashboardInputStateProvider, useDashboardInputState] = constate(
 const Dashboard: FC = () => {
   const {
     chosenCurriculum,
-    setChosenCurriculum,
     program,
     setProgram,
     setStudent,
