@@ -418,7 +418,7 @@ export const INDIRECT_TAKE_COURSES: DocumentNode<
 
 export const GET_CONSISTENCY_VALUE: DocumentNode<
   {
-    getConsistencyValue: Consistency | null;
+    getConsistencyValue: Pick<Consistency, "key" | "data"> | null;
   },
   {
     key: string;
@@ -434,7 +434,7 @@ export const GET_CONSISTENCY_VALUE: DocumentNode<
 
 export const SET_CONSISTENCY_VALUE: DocumentNode<
   {
-    setConsistencyValue: Consistency;
+    setConsistencyValue: never;
   },
   {
     key: string;
@@ -443,8 +443,7 @@ export const SET_CONSISTENCY_VALUE: DocumentNode<
 > = gql`
   mutation($key: String!, $data: JSONObject!) {
     setConsistencyValue(key: $key, data: $data) {
-      key
-      data
+      __typename
     }
   }
 `;

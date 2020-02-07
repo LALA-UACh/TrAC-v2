@@ -41,7 +41,7 @@ export const apolloServer = new Promise<ApolloServer>((resolve, reject) => {
             !!process.env.SHOW_GRAPHQL_API ||
             process.env.NODE_ENV !== "production",
           debug: process.env.NODE_ENV !== "production",
-          tracing: process.env.NODE_ENV === "development",
+          tracing: false && process.env.NODE_ENV === "development",
         })
       );
     })

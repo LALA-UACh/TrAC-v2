@@ -10,7 +10,6 @@ import {
   CONFIGURATION_TABLE,
   ConfigurationTable,
   CONSISTENCY_TABLE,
-  ConsistencyTable,
   COURSE_STATS_TABLE,
   COURSE_TABLE,
   CourseStatsTable,
@@ -543,6 +542,8 @@ const dataImport = async () => {
         table.text("user").notNullable();
         table.text("key").notNullable();
         table.json("data").notNullable();
+
+        table.unique(["user", "key"]);
       });
     }
   });

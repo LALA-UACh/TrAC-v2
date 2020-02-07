@@ -16,6 +16,7 @@ import { stringListToBooleanMap } from "../utils";
 import { useUser } from "../utils/useUser";
 
 const emptyObject = Object.freeze({});
+const emptyArray = Object.freeze([]);
 
 export type ICreditsNumber = { credits: number };
 
@@ -23,7 +24,6 @@ export interface IForeplanActiveData {
   active: boolean;
   foreplanCourses: Record<string, Pick<ICourse, "name"> & ICreditsNumber>;
   totalCreditsTaken: number;
-  advices: PerformanceByLoad[];
   futureCourseRequisites: {
     [coursesToOpen: string]: { [requisite: string]: boolean | undefined };
   };
@@ -33,12 +33,14 @@ export interface IForeplanHelperData {
   courseDirectTake: Record<string, boolean | undefined>;
   courseFailRate: Record<string, number>;
   courseEffort: Record<string, number>;
+  advices: readonly PerformanceByLoad[];
 }
 
 const defaultForeplanHelperStore: IForeplanHelperData = {
   courseDirectTake: emptyObject,
   courseFailRate: emptyObject,
   courseEffort: emptyObject,
+  advices: emptyArray,
 };
 
 const ForeplanHelperStore = createStore({
@@ -75,6 +77,13 @@ const ForeplanHelperStore = createStore({
         ),
       });
     },
+    setForeplanAdvices: (advices: IForeplanHelperData["advices"]) => ({
+      setState,
+    }) => {
+      setState({
+        advices,
+      });
+    },
   },
 });
 
@@ -105,7 +114,36 @@ export const useForeplanCourseEffort = createHook(ForeplanHelperStore, {
   },
 });
 
-const rememberForeplanDataKey = "TrAC_foreplan_remember_local_data";
+export const useForeplanAdvice = createHook(ForeplanHelperStore, {
+  selector: (
+    { advices },
+    { totalCreditsTaken }: { totalCreditsTaken: number }
+  ) => {
+    return (
+      advices.find(({ lowerBoundary, upperBoundary }) => {
+        if (
+          totalCreditsTaken >= lowerBoundary &&
+          totalCreditsTaken <= upperBoundary
+        ) {
+          return true;
+        }
+        return false;
+      }) ??
+      (() => {
+        console.warn("Advice not found for ", totalCreditsTaken);
+        return advices[advices.length - 1];
+      })()
+    );
+  },
+});
+
+export const useForeplanAdvices = createHook(ForeplanHelperStore, {
+  selector: ({ advices }) => {
+    return advices;
+  },
+});
+
+const rememberForeplanDataKey = "TrAC_foreplan_data";
 
 const initForeplanActiveData = (
   initialData = defaultForeplanActiveData
@@ -117,7 +155,6 @@ const defaultForeplanActiveData: IForeplanActiveData = {
   active: false,
   foreplanCourses: emptyObject,
   totalCreditsTaken: 0,
-  advices: [],
   futureCourseRequisites: emptyObject,
 };
 
@@ -168,13 +205,7 @@ const ForeplanActiveStore = createStore({
         totalCreditsTaken,
       });
     },
-    setForeplanAdvices: (advices: IForeplanActiveData["advices"]) => ({
-      setState,
-    }) => {
-      setState({
-        advices,
-      });
-    },
+
     setNewFutureCourseRequisites: (
       indirectTakeCourses: { course: string; requisitesUnmet: string[] }[]
     ) => ({ setState }) => {
@@ -283,32 +314,6 @@ export const useIsPossibleToTakeForeplan = createHook(ForeplanActiveStore, {
   },
 });
 
-export const useForeplanAdvice = createHook(ForeplanActiveStore, {
-  selector: ({ advices, totalCreditsTaken }) => {
-    return (
-      advices.find(({ lowerBoundary, upperBoundary }) => {
-        if (
-          totalCreditsTaken >= lowerBoundary &&
-          totalCreditsTaken <= upperBoundary
-        ) {
-          return true;
-        }
-        return false;
-      }) ??
-      (() => {
-        console.warn("Advice not found for ", totalCreditsTaken);
-        return advices[advices.length - 1];
-      })()
-    );
-  },
-});
-
-export const useForeplanAdvices = createHook(ForeplanActiveStore, {
-  selector: ({ advices }) => {
-    return advices;
-  },
-});
-
 export const useForeplanIsFutureCourseRequisitesFulfilled = createHook(
   ForeplanActiveStore,
   {
@@ -360,7 +365,7 @@ export const ForeplanContextManager: FC = () => {
         });
       }
     },
-    5000,
+    3000,
     [state, user, setRememberForeplan]
   );
 

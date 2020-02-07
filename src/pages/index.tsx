@@ -192,7 +192,7 @@ const Dashboard: FC = () => {
   useEffect(() => {
     if (mock) {
       if (mockData) {
-        foreplanActiveActions.setForeplanAdvices(
+        foreplanHelperActions.setForeplanAdvices(
           mockData.default.performanceByLoad ?? []
         );
         const allCoursesOfProgram: {
@@ -293,17 +293,18 @@ const Dashboard: FC = () => {
         foreplanActiveActions.reset();
       }
 
-      if (
-        dataPerformanceByLoad?.performanceLoadAdvices &&
-        dataDirectTakeCourses?.directTakeCourses &&
-        dataIndirectTakeCourses?.indirectTakeCourses
-      ) {
-        foreplanActiveActions.setForeplanAdvices(
+      if (dataPerformanceByLoad?.performanceLoadAdvices) {
+        foreplanHelperActions.setForeplanAdvices(
           dataPerformanceByLoad.performanceLoadAdvices
         );
+      }
+
+      if (dataDirectTakeCourses?.directTakeCourses) {
         foreplanHelperActions.setDirectTakeData(
           dataDirectTakeCourses.directTakeCourses.map(({ code }) => code)
         );
+      }
+      if (dataIndirectTakeCourses?.indirectTakeCourses) {
         foreplanActiveActions.setNewFutureCourseRequisites(
           dataIndirectTakeCourses.indirectTakeCourses.map(
             ({ course: { code }, requisitesUnmet }) => {
@@ -316,7 +317,7 @@ const Dashboard: FC = () => {
         );
       } else {
         foreplanActiveActions.disableForeplan();
-        foreplanActiveActions.setForeplanAdvices([]);
+        foreplanHelperActions.setForeplanAdvices([]);
       }
     }
   }, [

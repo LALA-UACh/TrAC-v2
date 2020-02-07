@@ -2,7 +2,7 @@ import { GraphQLJSONObject } from "graphql-type-json";
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { IContext } from "../../../interfaces";
-import { ConsistencyTable, IConsistency } from "../../db/tables";
+import { ConsistencyTable } from "../../db/tables";
 import { Consistency } from "../../entities/auth/consistency";
 import { assertIsDefined } from "../../utils/assert";
 
@@ -36,7 +36,7 @@ export class ConsistencyResolver {
   ): Promise<Consistency> {
     assertIsDefined(user, "User context is not working properly");
 
-    let existsValue = await ConsistencyTable()
+    const existsValue = await ConsistencyTable()
       .select("key")
       .where({
         user: user.email,
@@ -44,29 +44,31 @@ export class ConsistencyResolver {
       })
       .first();
 
-    let consistencyValue: IConsistency | undefined;
-    if (existsValue) {
-      consistencyValue = await ConsistencyTable()
-        .update({
+    let consistencyValue = {
+      user: user.email,
+      key,
+      data,
+    };
+    try {
+      if (existsValue) {
+        await ConsistencyTable()
+          .update({
+            data,
+          })
+          .where({
+            user: user.email,
+            key,
+          });
+      } else {
+        await ConsistencyTable().insert({
           user: user.email,
           key,
           data,
-        })
-        .returning("*")
-        .first();
-    } else {
-      await ConsistencyTable()
-        .insert({
-          user: user.email,
-          key,
-          data,
-        })
-        .returning("*");
-      consistencyValue = {
-        user: user.email,
-        key,
-        data,
-      };
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      throw err;
     }
 
     assertIsDefined(

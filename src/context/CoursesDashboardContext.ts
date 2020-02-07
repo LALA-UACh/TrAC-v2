@@ -232,7 +232,7 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
         },
       });
     },
-    5000,
+    3000,
     [state, setRememberDashboard]
   );
 
