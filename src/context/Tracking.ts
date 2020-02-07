@@ -1,9 +1,11 @@
-import { FC, useEffect } from "react";
+import { reduce } from "lodash";
+import { FC, useCallback, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
 
 import { useMutation } from "@apollo/react-hooks";
 
 import { TRACK } from "../graphql/queries";
+import { useUser } from "../utils/useUser";
 
 type TrackingTemplateData = {
   program?: string;
@@ -16,26 +18,6 @@ type TrackingTemplateData = {
   action?: string;
   effect?: string;
   target?: string;
-};
-
-const trackingTemplate = ({
-  program,
-  program_menu,
-  curriculum,
-  student,
-  showingProgress,
-  showingPrediction,
-  coursesOpen,
-  action,
-  effect,
-  target,
-}: TrackingTemplateData) => {
-  return `program=${program || null},program-menu=${program_menu ||
-    null},curriculum=${curriculum || null},student=${student ||
-    null},showing-progress=${showingProgress ? 1 : 0},showing-prediction=${
-    showingPrediction ? 1 : 0
-  },courses-open=${coursesOpen ||
-    null},action=${action},effect=${effect},target=${target}`;
 };
 
 const TrackingStore = createStore({
@@ -61,6 +43,41 @@ export const useTracking = createHook(TrackingStore, {
 
 export const TrackingManager: FC = () => {
   const [state] = useTrackingStore();
+
+  const { user } = useUser({
+    fetchPolicy: "cache-only",
+  });
+
+  const trackingTemplate = useCallback(
+    ({
+      program,
+      program_menu,
+      curriculum,
+      student,
+      showingProgress,
+      showingPrediction,
+      coursesOpen,
+      action,
+      effect,
+      target,
+    }: TrackingTemplateData) => {
+      return `program=${program || null},program-menu=${program_menu ||
+        null},curriculum=${curriculum || null},student=${student ||
+        null},showing-progress=${showingProgress ? 1 : 0},showing-prediction=${
+        showingPrediction ? 1 : 0
+      },courses-open=${coursesOpen || null},user-config=${reduce(
+        user?.config ?? {},
+        (acum, value, key) => {
+          if (value) {
+            acum = acum + "|" + key;
+          }
+          return acum;
+        },
+        ""
+      ) ?? ""},action=${action},effect=${effect},target=${target}`;
+    },
+    [user]
+  );
 
   const [trackMutate] = useMutation(TRACK, {
     ignoreResults: true,

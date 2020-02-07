@@ -2,7 +2,13 @@ import { FC, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
 
+import { useMutation, useQuery } from "@apollo/react-hooks";
+
 import { ITakenSemester } from "../../interfaces";
+import {
+  GET_CONSISTENCY_VALUE,
+  SET_CONSISTENCY_VALUE,
+} from "../graphql/queries";
 import { stringListToBooleanMap } from "../utils";
 import { useTracking } from "./Tracking";
 
@@ -54,16 +60,7 @@ const rememberCourseDashboardDataKey = "TrAC_course_dashboard_data";
 const initCourseDashboardData = (
   initialData = defaultCourseDashboardData
 ): ICoursesDashboardData => {
-  try {
-    const rememberedData = localStorage.getItem(rememberCourseDashboardDataKey);
-    if (process.env.NODE_ENV !== "development" || !rememberedData) {
-      return initialData;
-    }
-
-    return { ...initialData, ...JSON.parse(rememberedData) };
-  } catch (err) {
-    return initialData;
-  }
+  return initialData;
 };
 
 const CoursesDashboardStore = createStore({
@@ -144,8 +141,10 @@ const CoursesDashboardStore = createStore({
           getState().explicitSemester === pair ? undefined : pair,
       });
     },
-    reset: () => ({ setState }) => {
-      setState(defaultCourseDashboardData);
+    reset: (data: ICoursesDashboardData = defaultCourseDashboardData) => ({
+      setState,
+    }) => {
+      setState(data);
     },
     checkExplicitSemester: (
       semestersTaken: ITakenSemester | ITakenSemester[]
@@ -205,20 +204,37 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
 
   const [state, { reset }] = useCoursesDashboardData();
 
-  if (process.env.NODE_ENV === "development") {
-    useDebounce(
-      () => {
-        try {
-          localStorage.setItem(
-            rememberCourseDashboardDataKey,
-            JSON.stringify(state)
-          );
-        } catch (err) {}
-      },
-      3000,
-      [state]
-    );
-  }
+  const { data: dataRememberDashboard } = useQuery(GET_CONSISTENCY_VALUE, {
+    variables: {
+      key: rememberCourseDashboardDataKey,
+    },
+  });
+
+  useEffect(() => {
+    if (dataRememberDashboard?.getConsistencyValue) {
+      reset({
+        ...defaultCourseDashboardData,
+        ...dataRememberDashboard.getConsistencyValue.data,
+      });
+    }
+  }, [dataRememberDashboard, reset]);
+
+  const [setRememberDashboard] = useMutation(SET_CONSISTENCY_VALUE, {
+    ignoreResults: true,
+  });
+
+  useDebounce(
+    () => {
+      setRememberDashboard({
+        variables: {
+          key: rememberCourseDashboardDataKey,
+          data: state,
+        },
+      });
+    },
+    5000,
+    [state, setRememberDashboard]
+  );
 
   const previousExplicitSemester = usePreviousDistinct(state.explicitSemester);
 

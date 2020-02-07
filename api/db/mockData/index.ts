@@ -9,6 +9,8 @@ import { configValueToString } from "../../../constants/validation";
 import {
   CONFIGURATION_TABLE,
   ConfigurationTable,
+  CONSISTENCY_TABLE,
+  ConsistencyTable,
   COURSE_STATS_TABLE,
   COURSE_TABLE,
   CourseStatsTable,
@@ -532,6 +534,16 @@ const dataImport = async () => {
           }
         )
       );
+    }
+  });
+
+  dbAuth.schema.hasTable(CONSISTENCY_TABLE).then(async exists => {
+    if (!exists) {
+      await dbAuth.schema.createTable(CONSISTENCY_TABLE, table => {
+        table.text("user").notNullable();
+        table.text("key").notNullable();
+        table.json("data").notNullable();
+      });
     }
   });
 };

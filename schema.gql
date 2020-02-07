@@ -15,6 +15,12 @@ type BandColor {
   min: Float!
 }
 
+type Consistency {
+  data: JSONObject!
+  key: String!
+  user: String!
+}
+
 type Course {
   bandColors: [BandColor!]!
   code: String!
@@ -93,6 +99,7 @@ type Mutation {
   mailAllLockedUsers: [JSONObject!]!
   performanceLoadAdvices(program_id: String, student_id: String): [PerformanceByLoad!]!
   program(id: String, student_id: String): Program!
+  setConsistencyValue(data: JSONObject!, key: String!): Consistency!
   student(program_id: String, student_id: String): Student
   track(data: String!, datetime_client: DateTime!): Boolean!
   unlock(email: EmailAddress!, password: String!, unlockKey: String!): AuthResult!
@@ -131,6 +138,7 @@ type Program {
 type Query {
   config: JSONObject!
   currentUser: AuthResult
+  getConsistencyValue(key: String!): Consistency
   myPrograms: [Program!]!
   programs: [Program!]!
   students(last_n_years: Int = 1, program_id: String!): [Student!]!

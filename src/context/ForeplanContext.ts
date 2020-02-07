@@ -1,12 +1,17 @@
-import { differenceInWeeks } from "date-fns";
-import { every, reduce, size, toInteger } from "lodash";
+import { every, reduce, size } from "lodash";
 import { FC, useEffect } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce } from "react-use";
 
+import { useMutation, useQuery } from "@apollo/react-hooks";
+
 import { PerformanceByLoad } from "../../api/entities/data/foreplan";
-import { LAST_TIME_USED, StateCourse } from "../../constants";
+import { StateCourse } from "../../constants";
 import { ICourse } from "../../interfaces";
+import {
+  GET_CONSISTENCY_VALUE,
+  SET_CONSISTENCY_VALUE,
+} from "../graphql/queries";
 import { stringListToBooleanMap } from "../utils";
 import { useUser } from "../utils/useUser";
 
@@ -105,13 +110,7 @@ const rememberForeplanDataKey = "TrAC_foreplan_remember_local_data";
 const initForeplanActiveData = (
   initialData = defaultForeplanActiveData
 ): IForeplanActiveData => {
-  try {
-    const rememberedData = localStorage.getItem(rememberForeplanDataKey);
-    if (!rememberedData) return initialData;
-    return { ...initialData, ...JSON.parse(rememberedData) };
-  } catch (err) {
-    return initialData;
-  }
+  return initialData;
 };
 
 const defaultForeplanActiveData: IForeplanActiveData = {
@@ -217,8 +216,10 @@ const ForeplanActiveStore = createStore({
         futureCourseRequisites,
       });
     },
-    reset: () => ({ setState }) => {
-      setState(defaultForeplanActiveData);
+    reset: (data: IForeplanActiveData = defaultForeplanActiveData) => ({
+      setState,
+    }) => {
+      setState(data);
     },
   },
   name: "ForeplanContext",
@@ -323,33 +324,44 @@ export const ForeplanContextManager: FC = () => {
     fetchPolicy: "cache-only",
   });
 
+  const [setRememberForeplan] = useMutation(SET_CONSISTENCY_VALUE, {
+    ignoreResults: true,
+  });
+
+  const { data: dataRememberForeplan } = useQuery(GET_CONSISTENCY_VALUE, {
+    variables: {
+      key: rememberForeplanDataKey,
+    },
+  });
+
+  useEffect(() => {
+    if (dataRememberForeplan?.getConsistencyValue) {
+      reset({
+        ...defaultForeplanActiveData,
+        ...dataRememberForeplan.getConsistencyValue.data,
+      });
+    }
+  }, [dataRememberForeplan, reset]);
+
   useEffect(() => {
     if (state.active && !user?.config.FOREPLAN) {
       disableForeplan();
     }
   }, [user, state.active, disableForeplan]);
 
-  useEffect(() => {
-    try {
-      const lastTimeUsed = localStorage.getItem(LAST_TIME_USED);
-      if (lastTimeUsed) {
-        if (differenceInWeeks(toInteger(lastTimeUsed), Date.now()) >= 2) {
-          reset();
-        }
-      }
-      localStorage.setItem(LAST_TIME_USED, Date.now().toString());
-    } catch (err) {}
-  }, [reset]);
-
   useDebounce(
     () => {
-      try {
-        if (user?.config.FOREPLAN)
-          localStorage.setItem(rememberForeplanDataKey, JSON.stringify(state));
-      } catch (err) {}
+      if (user?.config.FOREPLAN) {
+        setRememberForeplan({
+          variables: {
+            key: rememberForeplanDataKey,
+            data: state,
+          },
+        });
+      }
     },
     5000,
-    [state]
+    [state, user, setRememberForeplan]
   );
 
   return null;
