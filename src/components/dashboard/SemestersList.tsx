@@ -34,11 +34,11 @@ export const SemestersList: FC<{
     };
     return (
       <AutoSizer>
-        {({ height, width }) => {
+        {({ width }) => {
           return (
             <ListWindow
               layout="horizontal"
-              height={height}
+              height="100vh"
               width={width}
               itemSize={190}
               itemCount={semesters.length}
