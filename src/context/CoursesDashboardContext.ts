@@ -1,3 +1,4 @@
+import { isEqual, uniqWith } from "lodash";
 import { FC, useEffect, useState } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
@@ -73,6 +74,10 @@ const initCourseDashboardData = (
   return initialData;
 };
 
+const uniqWithEqual = <A>(a: A[]) => {
+  return uniqWith(a, isEqual);
+};
+
 const CoursesDashboardStore = createStore({
   initialState: initCourseDashboardData(),
   actions: {
@@ -89,18 +94,22 @@ const CoursesDashboardStore = createStore({
     }) => ({ setState, getState }) => {
       const state = getState();
 
-      const flowHistory = [stringListToBooleanMap(flow), ...state.flowHistory];
-      const requisitesHistory = [
+      const activeHistory = uniqWithEqual([course, ...state.activeHistory]);
+      const flowHistory = uniqWithEqual([
+        stringListToBooleanMap(flow),
+        ...state.flowHistory,
+      ]);
+      const requisitesHistory = uniqWithEqual([
         stringListToBooleanMap(requisites),
         ...state.requisitesHistory,
-      ];
+      ]);
 
       setState({
-        activeHistory: [course, ...state.activeHistory],
+        activeHistory,
         flowHistory,
         requisitesHistory,
         semestersTakenHistory: [semestersTaken, ...state.semestersTakenHistory],
-        activeCourse: course,
+        activeCourse: activeHistory[0],
         flow: flowHistory[0],
         requisites: requisitesHistory[0],
         semestersTaken: semestersTaken,
@@ -139,6 +148,7 @@ const CoursesDashboardStore = createStore({
           requisites: stateRequisitesHistory[0],
           semestersTaken: stateSemestersTakenHistory[0],
         });
+      } else {
       }
     },
     toggleExplicitSemester: ({ term, year }: ITakenSemester) => ({
@@ -178,6 +188,7 @@ const CoursesDashboardStore = createStore({
 });
 
 const useCoursesDashboardData = createHook(CoursesDashboardStore);
+
 export const useActiveCourse = createHook(CoursesDashboardStore, {
   selector: ({ activeCourse }, { code }: { code: string }) => {
     return activeCourse === code;
