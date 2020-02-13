@@ -1,5 +1,7 @@
 import { toNumber, toString } from "lodash";
-import { isBoolean, isJSON, isNumeric } from "validator";
+import isBoolean from "validator/lib/isBoolean";
+import isJSON from "validator/lib/isJSON";
+import isNumeric from "validator/lib/isNumeric";
 
 export const configValueToString = (value: any) => {
   if (typeof value === "object") {

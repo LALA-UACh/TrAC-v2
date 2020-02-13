@@ -15,7 +15,8 @@ import {
   Message,
   Segment,
 } from "semantic-ui-react";
-import { isEmail, isLength } from "validator";
+import isEmail from "validator/lib/isEmail";
+import isLength from "validator/lib/isLength";
 
 import { useMutation } from "@apollo/react-hooks";
 import { Image } from "@chakra-ui/core";

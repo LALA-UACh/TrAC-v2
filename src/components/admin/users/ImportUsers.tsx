@@ -13,7 +13,8 @@ import {
   TextArea,
 } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
-import { isEmail, isJSON } from "validator";
+import isEmail from "validator/lib/isEmail";
+import isJSON from "validator/lib/isJSON";
 
 import { useMutation } from "@apollo/react-hooks";
 

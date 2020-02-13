@@ -12,7 +12,8 @@ import {
   Modal,
 } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
-import { isEmail, isInt } from "validator";
+import isEmail from "validator/lib/isEmail";
+import isInt from "validator/lib/isInt";
 
 import { useMutation } from "@apollo/react-hooks";
 import { Box, Flex } from "@chakra-ui/core";

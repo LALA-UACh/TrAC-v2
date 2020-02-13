@@ -25,7 +25,7 @@ import {
   Label,
   TextArea,
 } from "semantic-ui-react";
-import { isJSON } from "validator";
+import isJSON from "validator/lib/isJSON";
 
 import { useMutation } from "@apollo/react-hooks";
 import { Flex, Stack } from "@chakra-ui/core";
