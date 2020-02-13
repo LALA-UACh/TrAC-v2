@@ -1,4 +1,4 @@
-import React, { FC, memo, useContext } from "react";
+import React, { CSSProperties, FC, memo, useContext } from "react";
 
 import { Stack, Text } from "@chakra-ui/core";
 
@@ -34,25 +34,26 @@ const toRoman = (num: number, first = false): string => {
   return "";
 };
 
-export const Semester: FC<{ courses: ICourse[]; n: number }> = memo(
-  ({ courses: semester, n }) => {
-    const {
-      SEMESTER_HEADER_TEXT_COLOR,
-      SEMESTER_HEADER_FONT_SIZE,
-    } = useContext(ConfigContext);
-    return (
-      <Stack>
-        <Text
-          color={SEMESTER_HEADER_TEXT_COLOR}
-          textAlign="center"
-          fontSize={SEMESTER_HEADER_FONT_SIZE}
-        >
-          <b>{toRoman(n, true)}</b>
-        </Text>
-        {semester.map((course, key) => (
-          <CourseBox key={key} {...course} />
-        ))}
-      </Stack>
-    );
-  }
-);
+export const Semester: FC<{
+  courses: ICourse[];
+  n: number;
+  style?: CSSProperties;
+}> = memo(({ courses: semester, n, style }) => {
+  const { SEMESTER_HEADER_TEXT_COLOR, SEMESTER_HEADER_FONT_SIZE } = useContext(
+    ConfigContext
+  );
+  return (
+    <Stack style={style}>
+      <Text
+        color={SEMESTER_HEADER_TEXT_COLOR}
+        textAlign="center"
+        fontSize={SEMESTER_HEADER_FONT_SIZE}
+      >
+        <b>{toRoman(n, true)}</b>
+      </Text>
+      {semester.map((course, key) => (
+        <CourseBox key={key} {...course} />
+      ))}
+    </Stack>
+  );
+});

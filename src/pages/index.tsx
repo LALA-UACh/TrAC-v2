@@ -17,7 +17,7 @@ import {
   UserType,
 } from "../../constants";
 import { ITakenCourse } from "../../interfaces";
-import { Semester } from "../components/dashboard/Semester";
+import { SemestersList } from "../components/dashboard/SemestersList";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
 import { LoadingPage } from "../components/Loading";
@@ -534,11 +534,9 @@ const Dashboard: FC = () => {
       });
       if (data) {
         SemestersComponent = (
-          <>
-            {data.semesters.map(({ semester: { courses, n } }, key) => {
-              return <Semester key={key} courses={courses} n={n} />;
-            })}
-          </>
+          <SemestersList
+            semesters={data.semesters.map(({ semester }) => semester)}
+          />
         );
       }
     }
@@ -664,15 +662,7 @@ const Dashboard: FC = () => {
         </Stack>
       </ScrollContainer>
 
-      <ScrollContainer
-        hideScrollbars={false}
-        vertical={false}
-        activationDistance={5}
-      >
-        <Stack isInline spacing={8}>
-          {SemestersComponent}
-        </Stack>
-      </ScrollContainer>
+      {SemestersComponent}
 
       <TrackingManager />
 
