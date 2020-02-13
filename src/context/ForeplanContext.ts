@@ -14,6 +14,7 @@ import {
 } from "../graphql/queries";
 import { useDashboardInputState } from "../pages";
 import { stringListToBooleanMap } from "../utils";
+import { useIsPersistenceLoading } from "../utils/usePersistenceLoading";
 import { useUser } from "../utils/useUser";
 import { useTracking } from "./Tracking";
 
@@ -356,6 +357,7 @@ export const ForeplanContextManager: FC = () => {
     [chosenCurriculum, program, student, mock, setKey]
   );
 
+  const { setIsForeplanLoading } = useIsPersistenceLoading();
   const {
     data: dataRememberForeplan,
     loading: loadingRememberForeplan,
@@ -366,6 +368,10 @@ export const ForeplanContextManager: FC = () => {
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "network-only",
   });
+
+  useEffect(() => {
+    setIsForeplanLoading(loadingRememberForeplan);
+  }, [setIsForeplanLoading, loadingRememberForeplan]);
 
   useEffect(() => {
     if (!loadingRememberForeplan) {

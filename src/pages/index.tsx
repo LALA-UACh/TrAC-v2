@@ -36,6 +36,10 @@ import {
   SEARCH_PROGRAM,
   SEARCH_STUDENT,
 } from "../graphql/queries";
+import {
+  PersistenceLoadingProvider,
+  useIsPersistenceLoading,
+} from "../utils/usePersistenceLoading";
 import { useUser } from "../utils/useUser";
 
 const SearchBar = dynamic(() => import("../components/dashboard/SearchBar"));
@@ -223,6 +227,8 @@ const Dashboard: FC = () => {
   const [, foreplanActiveActions] = useForeplanActiveActions();
   const [, foreplanHelperActions] = useForeplanHelperActions();
 
+  const { isPersistenceLoading } = useIsPersistenceLoading();
+
   useEffect(() => {
     if (mock) {
       if (mockData) {
@@ -323,10 +329,6 @@ const Dashboard: FC = () => {
         );
       }
     } else {
-      if (user?.type !== UserType.Student) {
-        foreplanActiveActions.reset();
-      }
-
       if (dataPerformanceByLoad?.performanceLoadAdvices) {
         foreplanHelperActions.setForeplanAdvices(
           dataPerformanceByLoad.performanceLoadAdvices
@@ -338,7 +340,10 @@ const Dashboard: FC = () => {
           dataDirectTakeCourses.directTakeCourses.map(({ code }) => code)
         );
       }
-      if (dataIndirectTakeCourses?.indirectTakeCourses) {
+      if (
+        !isPersistenceLoading &&
+        dataIndirectTakeCourses?.indirectTakeCourses
+      ) {
         foreplanActiveActions.setNewFutureCourseRequisites(
           dataIndirectTakeCourses.indirectTakeCourses.map(
             ({ course: { code }, requisitesUnmet }) => {
@@ -349,12 +354,20 @@ const Dashboard: FC = () => {
             }
           )
         );
-      } else {
+      }
+
+      if (
+        !isPersistenceLoading &&
+        !dataPerformanceByLoad &&
+        !dataDirectTakeCourses &&
+        !dataIndirectTakeCourses
+      ) {
         foreplanActiveActions.disableForeplan();
         foreplanHelperActions.setForeplanAdvices([]);
       }
     }
   }, [
+    isPersistenceLoading,
     dataPerformanceByLoad,
     dataDirectTakeCourses,
     dataIndirectTakeCourses,
@@ -685,7 +698,9 @@ export default () => {
 
   return (
     <DashboardInputStateProvider>
-      <Dashboard />
+      <PersistenceLoadingProvider>
+        <Dashboard />
+      </PersistenceLoadingProvider>
     </DashboardInputStateProvider>
   );
 };

@@ -1,8 +1,6 @@
-import { compact, toInteger, trim } from "lodash";
 import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
 
 import {
-  defaultPerformanceLoadUnit,
   defaultUserType,
   PROGRAM_NOT_FOUND,
   PROGRAM_UNAUTHORIZED,
@@ -10,16 +8,13 @@ import {
   UserType,
 } from "../../../constants";
 import { IContext, IfImplements } from "../../../interfaces";
-import { StudentLastProgramDataLoader } from "../../dataloaders/student";
 import {
-  IUser,
-  PerformanceByLoadTable,
-  ProgramStructureTable,
-  StudentClusterTable,
-  StudentCourseTable,
-  StudentProgramTable,
-  UserProgramsTable,
-} from "../../db/tables";
+  AllApprovedCoursesDataLoader,
+  AllCoursesOfProgramCurriculumDataLoader,
+  PerformanceLoadAdvicesDataLoader,
+} from "../../dataloaders/foreplan";
+import { StudentLastProgramDataLoader } from "../../dataloaders/student";
+import { IUser, StudentProgramTable, UserProgramsTable } from "../../db/tables";
 import { Course } from "../../entities/data/course";
 import {
   ForeplanInput,
@@ -99,50 +94,10 @@ export class ForeplanResolver {
       program_id,
     } = await ForeplanResolver.authorizationProcess(user, input);
 
-    const student_cluster =
-      (
-        await StudentClusterTable()
-          .select("cluster")
-          .where({
-            student_id,
-            program_id,
-          })
-          .first()
-      )?.cluster ?? 0;
-
-    const performancesByLoad = await PerformanceByLoadTable()
-      .select("*")
-      .where({ program_id });
-
-    return performancesByLoad.map(
-      ({
-        id,
-        courseload_lb,
-        courseload_ub,
-        courseload_unit,
-        hp_value,
-        mp_value,
-        lp_value,
-        message_title,
-        message_text,
-        label,
-        student_cluster: rowStudentCluster,
-      }) => {
-        return {
-          id,
-          loadUnit: defaultPerformanceLoadUnit(courseload_unit),
-          lowerBoundary: courseload_lb,
-          upperBoundary: courseload_ub,
-          failRateLow: toInteger(hp_value * 100),
-          failRateMid: toInteger(mp_value * 100),
-          failRateHigh: toInteger(lp_value * 100),
-          adviceTitle: message_title,
-          adviceParagraph: message_text,
-          label,
-          isStudentCluster: rowStudentCluster === student_cluster,
-        };
-      }
-    );
+    return await PerformanceLoadAdvicesDataLoader.load({
+      student_id,
+      program_id,
+    });
   }
 
   @Authorized()
@@ -159,42 +114,12 @@ export class ForeplanResolver {
       curriculum,
     } = await ForeplanResolver.authorizationProcess(user, input);
 
-    const allCoursesOfProgramCurriculum = (
-      await ProgramStructureTable()
-        .select("id", "course_id", "requisites")
-        .where({
-          program_id,
-          curriculum,
-        })
-    ).map(({ id, course_id, requisites }) => {
-      return {
-        code: course_id,
-        requisites: compact(requisites?.split(",").map(trim)),
-        id,
-      };
-    });
+    const allCoursesOfProgramCurriculum = await AllCoursesOfProgramCurriculumDataLoader.load(
+      { curriculum, program_id }
+    );
 
-    const allApprovedCourses = (
-      await StudentCourseTable()
-        .select("course_taken", "course_equiv", "elect_equiv")
-        .where({
-          student_id,
-          state: "A",
-        })
-    ).reduce<Record<string, boolean>>(
-      (acum, { course_equiv, course_taken, elect_equiv }) => {
-        if (elect_equiv) {
-          acum[elect_equiv] = true;
-        }
-        if (course_equiv) {
-          acum[course_equiv] = true;
-        }
-        if (course_taken) {
-          acum[course_taken] = true;
-        }
-        return acum;
-      },
-      {}
+    const allApprovedCourses = await AllApprovedCoursesDataLoader.load(
+      student_id
     );
 
     return allCoursesOfProgramCurriculum.reduce<PartialCourse[]>(
@@ -234,42 +159,12 @@ export class ForeplanResolver {
       curriculum,
     } = await ForeplanResolver.authorizationProcess(user, input);
 
-    const allCoursesOfProgramCurriculum = (
-      await ProgramStructureTable()
-        .select("id", "course_id", "requisites")
-        .where({
-          program_id,
-          curriculum,
-        })
-    ).map(({ id, course_id, requisites }) => {
-      return {
-        code: course_id,
-        requisites: compact(requisites?.split(",").map(trim)),
-        id,
-      };
-    });
+    const allCoursesOfProgramCurriculum = await AllCoursesOfProgramCurriculumDataLoader.load(
+      { curriculum, program_id }
+    );
 
-    const allApprovedCourses = (
-      await StudentCourseTable()
-        .select("course_taken", "course_equiv", "elect_equiv")
-        .where({
-          student_id,
-          state: "A",
-        })
-    ).reduce<Record<string, boolean>>(
-      (acum, { course_equiv, course_taken, elect_equiv }) => {
-        if (elect_equiv) {
-          acum[elect_equiv] = true;
-        }
-        if (course_equiv) {
-          acum[course_equiv] = true;
-        }
-        if (course_taken) {
-          acum[course_taken] = true;
-        }
-        return acum;
-      },
-      {}
+    const allApprovedCourses = await AllApprovedCoursesDataLoader.load(
+      student_id
     );
 
     const indirectTakeCourses = allCoursesOfProgramCurriculum.reduce<

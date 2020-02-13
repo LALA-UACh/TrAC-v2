@@ -12,6 +12,7 @@ import {
 } from "../graphql/queries";
 import { useDashboardInputState } from "../pages";
 import { stringListToBooleanMap } from "../utils";
+import { useIsPersistenceLoading } from "../utils/usePersistenceLoading";
 import { useTracking } from "./Tracking";
 
 const emDash = "—";
@@ -261,6 +262,8 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
     [chosenCurriculum, program, student, mock, setKey]
   );
 
+  const { setIsDashboardLoading } = useIsPersistenceLoading();
+
   const {
     data: dataRememberDashboard,
     loading: loadingDataRememberDashboard,
@@ -271,6 +274,10 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "network-only",
   });
+
+  useEffect(() => {
+    setIsDashboardLoading(loadingDataRememberDashboard);
+  }, [loadingDataRememberDashboard, setIsDashboardLoading]);
 
   useEffect(() => {
     if (!loadingDataRememberDashboard) {
