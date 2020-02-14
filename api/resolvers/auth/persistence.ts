@@ -44,27 +44,26 @@ export class PersistenceResolver {
       })
       .first();
 
-    let persistenceValue = {
+    const persistenceValue = {
       user: user.email,
       key,
       data,
-    };
+      timestamp: new Date(),
+    } as const;
+
     try {
       if (existsValue) {
         await PersistenceTable()
           .update({
-            data,
+            data: persistenceValue.data,
+            timestamp: persistenceValue.timestamp,
           })
           .where({
             user: user.email,
             key,
           });
       } else {
-        await PersistenceTable().insert({
-          user: user.email,
-          key,
-          data,
-        });
+        await PersistenceTable().insert(persistenceValue);
       }
     } catch (err) {
       console.error(err);

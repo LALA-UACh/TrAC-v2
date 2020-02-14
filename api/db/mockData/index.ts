@@ -542,6 +542,7 @@ const dataImport = async () => {
         table.text("user").notNullable();
         table.text("key").notNullable();
         table.json("data").notNullable();
+        table.timestamp("timestamp", { useTz: true }).notNullable();
 
         table.unique(["user", "key"]);
       });
