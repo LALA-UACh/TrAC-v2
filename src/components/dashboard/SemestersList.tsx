@@ -26,7 +26,11 @@ export const SemestersList: FC<{
     const Column: FC<ListChildComponentProps> = ({ index, style }) => {
       return (
         <Semester
-          style={{ ...style, zIndex: semesters.length - index }}
+          style={{
+            ...style,
+            zIndex: semesters.length - index,
+            height: "fit-content",
+          }}
           courses={semesters[index].courses}
           n={semesters[index].n}
         />
