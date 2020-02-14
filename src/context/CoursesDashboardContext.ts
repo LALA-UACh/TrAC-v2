@@ -307,7 +307,7 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
         });
       }
     },
-    3000,
+    1000,
     [key, state, setRememberDashboard, loadingDataRememberDashboard]
   );
 

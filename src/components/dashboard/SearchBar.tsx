@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { range } from "lodash";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
+import Router from "next/router";
 import { generate } from "randomstring";
 import React, {
   ChangeEvent,
@@ -148,8 +148,6 @@ export const SearchBar: FC<{
     $ElementType<typeof programsOptions, number> | undefined
   >("program_input", undefined);
 
-  const { push } = useRouter();
-
   useEffect(() => {
     if (
       myProgramsData?.myPrograms &&
@@ -186,6 +184,7 @@ export const SearchBar: FC<{
             isLoading={isSearchLoading}
             isDisabled={isSearchLoading}
             placeholder={PROGRAM_NOT_SPECIFIED_PLACEHOLDER}
+            classNamePrefix="react-select"
             onChange={(selected: any) => {
               track({
                 action: "click",
@@ -195,6 +194,11 @@ export const SearchBar: FC<{
               setProgram(
                 selected as $ElementType<typeof programsOptions, number>
               );
+            }}
+            onMenuOpen={() => {
+              setTimeout(() => {
+                // window.alert();
+              }, 1000);
             }}
           />
         </Box>
@@ -472,7 +476,7 @@ export const SearchBar: FC<{
               target: "logoutButton",
             });
             setTimeout(() => {
-              push("/logout");
+              Router.push("/logout");
             }, 1000);
           }}
           icon

@@ -1,7 +1,8 @@
 import sha1 from "crypto-js/sha1";
 import { compact, map, some } from "lodash";
-import { useRouter } from "next/router";
-import React, { useContext, useEffect } from "react";
+import { NextPage } from "next";
+import Router from "next/router";
+import React, { useContext } from "react";
 import { Field, Form } from "react-final-form";
 import {
   Divider,
@@ -15,18 +16,17 @@ import isEmail from "validator/lib/isEmail";
 import matches from "validator/lib/matches";
 
 import { useMutation } from "@apollo/react-hooks";
+import { Image } from "@chakra-ui/core";
 
 import { USED_OLD_PASSWORD, WRONG_INFO } from "../../../../constants";
 import { ConfigContext } from "../../../context/Config";
 import { CURRENT_USER, UNLOCK } from "../../../graphql/queries";
+import { DarkMode } from "../../../utils/dynamicDarkMode";
 
-export default () => {
-  const {
-    query: { email, unlockKey },
-    replace,
-    push,
-  } = useRouter();
-
+const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
+  email,
+  unlockKey,
+}) => {
   const [
     unlock,
     { error: errorUnlock, loading: loadingUnlock, data: dataUnlock },
@@ -39,20 +39,10 @@ export default () => {
             currentUser: data.unlock,
           },
         });
-        push("/");
+        Router.push("/");
       }
     },
   });
-
-  useEffect(() => {
-    if (
-      typeof email !== "string" ||
-      typeof unlockKey !== "string" ||
-      !isEmail(email)
-    ) {
-      replace("/");
-    }
-  }, []);
 
   const {
     UNLOCK_LENGTH_VALIDATION,
@@ -125,7 +115,16 @@ export default () => {
     return null;
   }
   return (
-    <Grid centered>
+    <Grid centered padded>
+      <Grid.Row>
+        <Image
+          alt="LALA"
+          src="/lalalink.png"
+          height="20vh"
+          objectFit="contain"
+          objectPosition="center"
+        />
+      </Grid.Row>
       <Divider hidden />
       <Grid.Row>
         <Message info>{email}</Message>
@@ -245,6 +244,33 @@ export default () => {
           </Message>
         </Grid.Row>
       )}
+      <Grid.Row>
+        <DarkMode />
+      </Grid.Row>
     </Grid>
   );
 };
+
+UnlockPage.getInitialProps = ctx => {
+  const { email, unlockKey } = ctx.query;
+
+  if (
+    typeof email !== "string" ||
+    typeof unlockKey !== "string" ||
+    !isEmail(email)
+  ) {
+    if (ctx.res) {
+      ctx.res.writeHead(302, {
+        Location: "/",
+        "Content-Type": "text/html; charset=utf-8",
+      });
+      ctx.res.end();
+    } else {
+      Router.replace("/");
+    }
+    return { email: "", unlockKey: "" };
+  }
+  return { email, unlockKey };
+};
+
+export default UnlockPage;

@@ -5,6 +5,7 @@ import React, { FC, memo, useCallback, useContext, useMemo } from "react";
 
 import { AxisBottom, AxisLeft } from "@vx/axis";
 
+import { SVG_TEXT } from "../../../constants";
 import { IDistribution } from "../../../interfaces";
 import { ConfigContext } from "../../context/Config";
 
@@ -147,7 +148,7 @@ export const Histogram: FC<{
       </svg>
 
       <svg x={0}>
-        <text y={20} x={30} fontWeight="bold">
+        <text y={20} x={30} fontWeight="bold" className={SVG_TEXT}>
           {label ?? "Undefined"}
         </text>
         <svg x={-5} y={20}>

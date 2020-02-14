@@ -11,6 +11,7 @@ import { Programs } from "../components/admin/programs";
 import { Users } from "../components/admin/users";
 import { LoadingPage } from "../components/Loading";
 import { ALL_USERS_ADMIN } from "../graphql/adminQueries";
+import { DarkMode } from "../utils/dynamicDarkMode";
 import { useUser } from "../utils/useUser";
 
 export enum AdminMenuTypes {
@@ -65,6 +66,9 @@ const Admin: FC = () => {
 
   return (
     <Stack alignItems="center" height="100vh" spacing="1em">
+      <Flex position="absolute" justifyContent="flex-end" width="100%">
+        <DarkMode p={3} />
+      </Flex>
       <Flex>
         <AdminMenu active={active} setActive={setActive} />
       </Flex>

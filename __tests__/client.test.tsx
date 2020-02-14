@@ -15,18 +15,19 @@ import AdminPage from "../src/pages/admin";
 import LoginPage from "../src/pages/login";
 import UnlockPage from "../src/pages/unlock/[email]/[unlockKey]";
 
-jest.mock("next/router", () => ({
-  useRouter() {
-    return {
-      query: {
-        email: "asd@gmail.com",
-        unlockKey: "asd",
-      },
-      replace: () => {},
-      push: () => {},
-    };
-  },
-}));
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
 
 describe("unlock", () => {
   test("renders correctly", async () => {
@@ -49,7 +50,7 @@ describe("unlock", () => {
           ]}
           addTypename={false}
         >
-          <UnlockPage />
+          <UnlockPage email="asd@gmail.com" unlockKey="asd" />
         </MockedProvider>
       );
 

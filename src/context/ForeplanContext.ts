@@ -417,7 +417,7 @@ export const ForeplanContextManager: FC = () => {
         });
       }
     },
-    3000,
+    1000,
     [key, state, user, setRememberForeplan]
   );
 

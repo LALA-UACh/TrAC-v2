@@ -4828,6 +4828,13 @@ d@1, d@^1.0.1:
     es5-ext "^0.10.50"
     type "^1.0.1"
 
+darkreader@^4.7.15:
+  version "4.7.15"
+  resolved "https://registry.yarnpkg.com/darkreader/-/darkreader-4.7.15.tgz#f40b78379fb48db88d385bafb658c4dd3d8524d6"
+  integrity sha512-i9OzIGJqmbghZ42MI0pHD9hIlEu5LDfOP5TWAg+OyZoO0XsW0D2HoFdCebS4OLRrEr3/TflzDYvUMVnosWR4uA==
+  dependencies:
+    malevic "0.16.3"
+
 dashdash@^1.12.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/dashdash/-/dashdash-1.14.1.tgz#853cfa0f7cbe2fed5de20326b8dd581035f6e2f0"
@@ -8165,6 +8172,11 @@ makeerror@1.0.x:
   dependencies:
     tmpl "1.0.x"
 
+malevic@0.16.3:
+  version "0.16.3"
+  resolved "https://registry.yarnpkg.com/malevic/-/malevic-0.16.3.tgz#acf1bfef2dbcca4789295cf1f33629794f3fb95c"
+  integrity sha512-/ekZOKILDitU6igF0zxkuTNLQgNTTs+NafyQ19RXwT+VKN9K3qTngQ+TdqcaZJbhSzRqVIXBw6iso6WV56QlhQ==
+
 mamacro@^0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/mamacro/-/mamacro-0.0.3.tgz#ad2c9576197c9f1abf308d0787865bd975a3f3e4"
@@ -10490,6 +10502,11 @@ react-toastify@^5.5.0:
     classnames "^2.2.6"
     prop-types "^15.7.2"
     react-transition-group "^4"
+
+react-toggle-theme@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-toggle-theme/-/react-toggle-theme-1.0.0.tgz#5f7beb3c87ae0d64d085b444fd998aabd1801273"
+  integrity sha512-dnCDNDngnQ465AR40hp+alw0X55hEAmYMGru46/wB8Knm6Ub/uWrzGfg7wrebi8cET6rpwlSj7Z9rxMTHhYNNA==
 
 react-tooltip@^4.0.3:
   version "4.0.3"

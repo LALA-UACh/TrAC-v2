@@ -36,6 +36,7 @@ import {
   SEARCH_PROGRAM,
   SEARCH_STUDENT,
 } from "../graphql/queries";
+import { DarkMode } from "../utils/dynamicDarkMode";
 import {
   PersistenceLoadingProvider,
   useIsPersistenceLoading,
@@ -580,6 +581,9 @@ const Dashboard: FC = () => {
     }
   }, [user, track]);
 
+  const onlyProgramSearch =
+    !!searchProgramData?.program && !searchStudentData?.student;
+
   return (
     <>
       {user?.type === UserType.Director ? (
@@ -662,6 +666,14 @@ const Dashboard: FC = () => {
           ) : null}
         </>
       )}
+
+      <Flex
+        pos={onlyProgramSearch ? "relative" : "absolute"}
+        width="100%"
+        justifyContent="flex-end"
+      >
+        <DarkMode p={2} />
+      </Flex>
 
       <ScrollContainer activationDistance={5} hideScrollbars={false}>
         <Flex>

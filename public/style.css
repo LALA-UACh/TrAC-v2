@@ -35,3 +35,6 @@ textarea {
 .toast {
   font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif !important;
 }
+body {
+  background: initial;
+}

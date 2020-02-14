@@ -14,6 +14,7 @@ import pixelWidth from "string-pixel-width";
 
 import { AxisLeft } from "@vx/axis";
 
+import { SVG_TEXT } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import { useExplicitSemester } from "../../context/CoursesDashboardContext";
 
@@ -63,6 +64,7 @@ const TimeLineTooltip: FC<{
               x={(children.props?.cx ?? children.props?.x ?? 0) + 11}
               y={(children.props?.cy ?? children.props?.y ?? 0) - 5}
               fill={TIMELINE_TOOLTIP_TEXT_COLOR}
+              className={SVG_TEXT}
             >
               {grade}
             </text>
@@ -214,7 +216,13 @@ export const TimeLine: FC<{
     const LabelAxisComponent = useMemo(
       () => (
         <>
-          <text y={20} x={10} fontSize="1em" fontWeight="bold">
+          <text
+            y={20}
+            x={10}
+            fontSize="1em"
+            fontWeight="bold"
+            className={SVG_TEXT}
+          >
             {config.GRADES_SCALES}
           </text>
           <AxisLeft
@@ -252,15 +260,15 @@ export const TimeLine: FC<{
 
           <circle cx={150} cy={12} r={5} fill={config.SEMESTRAL_GRADE_COLOR} />
 
-          <text x={160} y={20}>
+          <text x={160} y={20} className={SVG_TEXT}>
             {config.SEMESTRAL_GRADE_LABEL}
           </text>
           <circle cx={250} cy={12} r={5} fill={config.CUMULATED_GRADE_COLOR} />
-          <text x={260} y={20}>
+          <text x={260} y={20} className={SVG_TEXT}>
             {config.CUMULATED_GRADE_LABEL}
           </text>
           <circle cx={350} cy={12} r={5} fill={config.PROGRAM_GRADE_COLOR} />
-          <text x={360} y={20}>
+          <text x={360} y={20} className={SVG_TEXT}>
             {config.PROGRAM_GRADE_LABEL}
           </text>
         </>

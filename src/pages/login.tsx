@@ -25,6 +25,7 @@ import { LOCKED_USER, WRONG_INFO } from "../../constants";
 import { LoadingPage } from "../components/Loading";
 import { ConfigContext } from "../context/Config";
 import { CURRENT_USER, LOGIN } from "../graphql/queries";
+import { DarkMode } from "../utils/dynamicDarkMode";
 import { useUser } from "../utils/useUser";
 
 const Login: FC = () => {
@@ -195,6 +196,9 @@ const Login: FC = () => {
           );
         }}
       </Form>
+      <Grid.Row>
+        <DarkMode />
+      </Grid.Row>
     </Grid>
   );
 };
