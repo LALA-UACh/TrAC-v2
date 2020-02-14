@@ -97,7 +97,9 @@ export class ForeplanResolver {
   ): Promise<PerformanceByLoad[]> {
     assertIsDefined(user, "Authorization in context is broken");
 
-    if (!(await UserConfigDataLoader.load(user.email))?.config.FOREPLAN) {
+    const userConfig = (await UserConfigDataLoader.load(user.email))?.config;
+
+    if (!userConfig?.FOREPLAN) {
       return [];
     }
 
@@ -120,7 +122,9 @@ export class ForeplanResolver {
   ): Promise<PartialCourse[]> {
     assertIsDefined(user, "User context is not working properly");
 
-    if (!(await UserConfigDataLoader.load(user.email))?.config.FOREPLAN) {
+    const userConfig = (await UserConfigDataLoader.load(user.email))?.config;
+
+    if (!userConfig?.FOREPLAN) {
       return [];
     }
 
@@ -169,7 +173,11 @@ export class ForeplanResolver {
   > {
     assertIsDefined(user, "User context is not working properly");
 
-    if (!(await UserConfigDataLoader.load(user.email))?.config.FOREPLAN) {
+    const userConfig = (await UserConfigDataLoader.load(user.email))?.config;
+    if (
+      !userConfig?.FOREPLAN ||
+      !userConfig.FOREPLAN_FUTURE_COURSE_PLANIFICATION
+    ) {
       return [];
     }
 
