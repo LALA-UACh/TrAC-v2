@@ -49,7 +49,7 @@ const DarkMode: FC<BoxProps> = memo(({ ...props }) => {
           color: white !important;
         }
   
-        th, td, header, section, .courseBox {
+        th, td, header, section, .courseBox, .ui.modal > * {
           background-color: #181A1B !important;
           color: white !important;
         }

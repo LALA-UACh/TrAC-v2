@@ -1,5 +1,5 @@
 import { reduce } from "lodash";
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useEffect, useMemo } from "react";
 import { createHook, createStore } from "react-sweet-state";
 
 import { useMutation } from "@apollo/react-hooks";
@@ -52,6 +52,23 @@ export const TrackingManager: FC = () => {
     fetchPolicy: "cache-only",
   });
 
+  const userConfig = useMemo(() => {
+    if (!user?.config) return "";
+    return reduce(
+      user.config,
+      (acum, value, key) => {
+        if (value) {
+          if (key.includes("FOREPLAN") && !user.config.FOREPLAN) {
+            return acum;
+          }
+          acum = acum + (acum !== "" ? "|" : "") + key;
+        }
+        return acum;
+      },
+      ""
+    );
+  }, [user?.config]);
+
   const trackingTemplate = useCallback(
     ({
       program,
@@ -73,16 +90,8 @@ export const TrackingManager: FC = () => {
         null},curriculum=${curriculum || null},student=${student ||
         null},showing-progress=${showingProgress ? 1 : 0},showing-prediction=${
         showingPrediction ? 1 : 0
-      },courses-open=${coursesOpen || null},user-config=${reduce(
-        user?.config ?? {},
-        (acum, value, key) => {
-          if (value) {
-            acum = acum + (acum !== "" ? "|" : "") + key;
-          }
-          return acum;
-        },
-        ""
-      ) ?? ""},foreplanActive=${
+      },courses-open=${coursesOpen || null},user-config=${userConfig ||
+        "null"},foreplanActive=${
         foreplanActive ? 1 : 0
       },foreplanCourses=${foreplanCourses ||
         "null"},foreplanCredits=${foreplanCredits ??
@@ -90,7 +99,7 @@ export const TrackingManager: FC = () => {
         foreplanSummaryExpanded ? 1 : 0
       },action=${action},effect=${effect},target=${target}`;
     },
-    [user]
+    [userConfig]
   );
 
   const [trackMutate] = useMutation(TRACK, {

@@ -1,4 +1,4 @@
-import { toSafeInteger, toString } from "lodash";
+import { map, toSafeInteger, toString } from "lodash";
 import React, { useEffect, useMemo } from "react";
 import { useSetState } from "react-use";
 import { Button, Checkbox, Icon, Input, Modal } from "semantic-ui-react";
@@ -32,13 +32,13 @@ export const useUpdateUserConfigModal = ({
         <Modal.Header>{`User ${email} Personal Configuration`}</Modal.Header>
         <Modal.Content>
           <Stack>
-            {Object.keys(baseUserConfig).map(key => {
+            {map(baseUserConfig, (value, key) => {
               const ConfigInput = () => {
-                switch (typeof baseUserConfig[key]) {
+                switch (typeof value) {
                   case "boolean":
                     return (
                       <Checkbox
-                        checked={config[key]}
+                        checked={!!config[key]}
                         label={key}
                         onChange={() => {
                           setConfig({
@@ -53,7 +53,9 @@ export const useUpdateUserConfigModal = ({
                       <Input
                         value={config[key]}
                         label={key}
-                        placeholder={baseUserConfig[key]}
+                        placeholder={
+                          baseUserConfig[key as keyof typeof baseUserConfig]
+                        }
                         onChange={(_, { value }) => {
                           setConfig({
                             [key]: toString(value),

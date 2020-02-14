@@ -1,16 +1,4 @@
-export const baseUserConfig: {
-  SHOW_DROPOUT: boolean;
-  SHOW_STUDENT_LIST: boolean;
-  FOREPLAN: boolean;
-  FOREPLAN_COURSE_STATS: boolean;
-  FOREPLAN_COURSE_FAIL_RATE_STATS: boolean;
-  FOREPLAN_COURSE_EFFORT_STATS: boolean;
-  FOREPLAN_SUMMARY_LIST: boolean;
-  FOREPLAN_SUMMARY_BADGES: boolean;
-  FOREPLAN_SUMMARY_WAFFLE_CHART: boolean;
-  FOREPLAN_SUMMARY_ADVICE: boolean;
-  FOREPLAN_FUTURE_COURSE_PLANIFICATION: boolean;
-} & Record<string, any> = {
+export const baseUserConfig = {
   SHOW_DROPOUT: false,
   SHOW_STUDENT_LIST: false,
   FOREPLAN: false,
@@ -24,4 +12,5 @@ export const baseUserConfig: {
   FOREPLAN_FUTURE_COURSE_PLANIFICATION: true,
 };
 
-export type UserConfig = typeof baseUserConfig & Record<string, any>;
+export type UserConfig = typeof baseUserConfig &
+  Record<string, boolean | string | number>;
