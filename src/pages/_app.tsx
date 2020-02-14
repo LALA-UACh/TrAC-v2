@@ -19,6 +19,7 @@ import { theme, ThemeProvider } from "@chakra-ui/core";
 
 import { GRAPHQL_URL } from "../../constants";
 import { Config } from "../context/Config";
+import { DarkMode } from "../utils/dynamicDarkMode";
 
 Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
@@ -46,6 +47,7 @@ const App: NextPage<AppProps & WithApolloProps<NormalizedCacheObject>> = ({
           <Component {...pageProps} />
         </Config>
       </ThemeProvider>
+      <DarkMode render={false} />
       <ToastContainer toastClassName="toast" />
     </ApolloProvider>
   );

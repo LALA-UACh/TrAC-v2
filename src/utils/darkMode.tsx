@@ -10,28 +10,29 @@ import { Box, BoxProps } from "@chakra-ui/core";
 
 import { SVG_TEXT } from "../../constants";
 
-const DarkMode: FC<BoxProps> = memo(({ ...props }) => {
-  const [theme, setTheme] = useRememberState("TrAC-theme", Theme.LIGHT);
+const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
+  ({ render = true, ...props }) => {
+    const [theme, setTheme] = useRememberState("TrAC-theme", Theme.LIGHT);
 
-  useEffect(() => {
-    if (window?.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setTheme(Theme.DARK);
-    }
-  }, [setTheme]);
+    useEffect(() => {
+      if (window?.matchMedia("(prefers-color-scheme: dark)").matches) {
+        setTheme(Theme.DARK);
+      }
+    }, [setTheme]);
 
-  useEffect(() => {
-    if (theme === Theme.DARK) {
-      enableDarkMode(
-        {
-          mode: 1,
-          contrast: 100,
-          brightness: 100,
-          grayscale: 0,
-          sepia: 0,
-        },
-        {
-          invert: [SVG_TEXT],
-          css: `
+    useEffect(() => {
+      if (theme === Theme.DARK) {
+        enableDarkMode(
+          {
+            mode: 1,
+            contrast: 100,
+            brightness: 100,
+            grayscale: 0,
+            sepia: 0,
+          },
+          {
+            invert: [SVG_TEXT],
+            css: `
         .${SVG_TEXT} {
           fill: white;
         }
@@ -84,18 +85,23 @@ const DarkMode: FC<BoxProps> = memo(({ ...props }) => {
         }
         
         `,
-        }
-      );
-    } else {
-      disableDarkMode();
-    }
-  }, [theme]);
+          }
+        );
+      } else {
+        disableDarkMode();
+      }
+    }, [theme]);
 
-  return (
-    <Box {...props}>
-      <ToggleTheme id="toggleTheme" selectedTheme={theme} onChange={setTheme} />
-    </Box>
-  );
-});
+    return render ? (
+      <Box {...props}>
+        <ToggleTheme
+          id="toggleTheme"
+          selectedTheme={theme}
+          onChange={setTheme}
+        />
+      </Box>
+    ) : null;
+  }
+);
 
 export default DarkMode;
