@@ -1,5 +1,5 @@
 import { isEqual, uniqWith } from "lodash";
-import { FC, useEffect, useState } from "react";
+import { FC, memo, useEffect, useState } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
 
@@ -235,113 +235,122 @@ export const useDashboardCoursesActions = createHook(CoursesDashboardStore, {
   selector: null,
 });
 
-export const CoursesDashbordManager: FC<{ distinct?: string }> = ({
-  distinct,
-}) => {
-  const { program, student, mock, chosenCurriculum } = useDashboardInputState();
+export const CoursesDashbordManager: FC<{ distinct?: string }> = memo(
+  ({ distinct }) => {
+    const {
+      program,
+      student,
+      mock,
+      chosenCurriculum,
+    } = useDashboardInputState();
 
-  const [, { track, setTrackingData }] = useTracking();
+    const [, { track, setTrackingData }] = useTracking();
 
-  const [state, { reset }] = useCoursesDashboardData();
+    const [state, { reset }] = useCoursesDashboardData();
 
-  const [key, setKey] = useState(
-    rememberCourseDashboardDataKey +
-      `${chosenCurriculum || ""}${program || ""}${student || ""}${mock ? 1 : 0}`
-  );
+    const [key, setKey] = useState(
+      rememberCourseDashboardDataKey +
+        `${chosenCurriculum || ""}${program || ""}${student || ""}${
+          mock ? 1 : 0
+        }`
+    );
 
-  useDebounce(
-    () => {
-      setKey(
-        rememberCourseDashboardDataKey +
-          `${chosenCurriculum || ""}${program || ""}${student || ""}${
-            mock ? 1 : 0
-          }`
-      );
-    },
-    500,
-    [chosenCurriculum, program, student, mock, setKey]
-  );
+    useDebounce(
+      () => {
+        setKey(
+          rememberCourseDashboardDataKey +
+            `${chosenCurriculum || ""}${program || ""}${student || ""}${
+              mock ? 1 : 0
+            }`
+        );
+      },
+      500,
+      [chosenCurriculum, program, student, mock, setKey]
+    );
 
-  const { setIsDashboardLoading } = useIsPersistenceLoading();
+    const { setIsDashboardLoading } = useIsPersistenceLoading();
 
-  const {
-    data: dataRememberDashboard,
-    loading: loadingDataRememberDashboard,
-  } = useQuery(GET_PERSISTENCE_VALUE, {
-    variables: {
-      key,
-    },
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: "network-only",
-  });
-
-  useEffect(() => {
-    setIsDashboardLoading(loadingDataRememberDashboard);
-  }, [loadingDataRememberDashboard, setIsDashboardLoading]);
-
-  useEffect(() => {
-    if (!loadingDataRememberDashboard) {
-      if (dataRememberDashboard?.getPersistenceValue) {
-        reset({
-          ...defaultCourseDashboardData,
-          ...dataRememberDashboard.getPersistenceValue.data,
-        });
-      } else {
-        reset();
-      }
-    }
-  }, [dataRememberDashboard, loadingDataRememberDashboard, reset]);
-
-  const [setRememberDashboard] = useMutation(SET_PERSISTENCE_VALUE, {
-    ignoreResults: true,
-  });
-
-  useDebounce(
-    () => {
-      if (!loadingDataRememberDashboard) {
-        setRememberDashboard({
-          variables: {
-            key,
-            data: state,
-          },
-        });
-      }
-    },
-    1000,
-    [key, state, setRememberDashboard, loadingDataRememberDashboard]
-  );
-
-  const previousExplicitSemester = usePreviousDistinct(state.explicitSemester);
-
-  useUpdateEffect(() => {
-    const [term, year] = state.explicitSemester?.split(emDash) ?? [];
-    const [previousTerm, previousYear] =
-      previousExplicitSemester?.split(emDash) ?? [];
-
-    if (year && term) {
-      track({
-        action: "click",
-        target: `semester-box-${year}-${term}`,
-        effect: "load-semester",
-      });
-    } else if (previousTerm && previousYear) {
-      track({
-        action: "click",
-        target: `semester-box-${previousYear}-${previousTerm}`,
-        effect: "unload-semester",
-      });
-    }
-  }, [state.explicitSemester, previousExplicitSemester]);
-
-  useUpdateEffect(() => {
-    reset();
-  }, [distinct, reset]);
-
-  useEffect(() => {
-    setTrackingData({
-      coursesOpen: state.activeHistory.join("|"),
+    const {
+      data: dataRememberDashboard,
+      loading: loadingDataRememberDashboard,
+    } = useQuery(GET_PERSISTENCE_VALUE, {
+      variables: {
+        key,
+      },
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "network-only",
     });
-  }, [state.activeHistory, setTrackingData]);
 
-  return null;
-};
+    useEffect(() => {
+      setIsDashboardLoading(loadingDataRememberDashboard);
+    }, [loadingDataRememberDashboard, setIsDashboardLoading]);
+
+    useEffect(() => {
+      if (!loadingDataRememberDashboard) {
+        if (dataRememberDashboard?.getPersistenceValue) {
+          reset({
+            ...defaultCourseDashboardData,
+            ...dataRememberDashboard.getPersistenceValue.data,
+          });
+        } else {
+          reset();
+        }
+      }
+    }, [dataRememberDashboard, loadingDataRememberDashboard, reset]);
+
+    const [setRememberDashboard] = useMutation(SET_PERSISTENCE_VALUE, {
+      ignoreResults: true,
+    });
+
+    useDebounce(
+      () => {
+        if (!loadingDataRememberDashboard) {
+          setRememberDashboard({
+            variables: {
+              key,
+              data: state,
+            },
+          });
+        }
+      },
+      1000,
+      [key, state, setRememberDashboard, loadingDataRememberDashboard]
+    );
+
+    const previousExplicitSemester = usePreviousDistinct(
+      state.explicitSemester
+    );
+
+    useUpdateEffect(() => {
+      const [term, year] = state.explicitSemester?.split(emDash) ?? [];
+      const [previousTerm, previousYear] =
+        previousExplicitSemester?.split(emDash) ?? [];
+
+      if (year && term) {
+        track({
+          action: "click",
+          target: `semester-box-${year}-${term}`,
+          effect: "load-semester",
+        });
+      } else if (previousTerm && previousYear) {
+        track({
+          action: "click",
+          target: `semester-box-${previousYear}-${previousTerm}`,
+          effect: "unload-semester",
+        });
+      }
+    }, [state.explicitSemester, previousExplicitSemester]);
+
+    useUpdateEffect(() => {
+      reset();
+    }, [distinct, reset]);
+
+    useEffect(() => {
+      setTrackingData({
+        coursesOpen: state.activeHistory.join("|"),
+      });
+    }, [state.activeHistory, setTrackingData]);
+
+    return null;
+  }
+);

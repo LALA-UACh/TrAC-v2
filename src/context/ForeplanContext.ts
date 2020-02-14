@@ -1,5 +1,5 @@
 import { every, reduce, size } from "lodash";
-import { FC, useEffect, useState } from "react";
+import { FC, memo, useEffect, useState } from "react";
 import { createHook, createStore } from "react-sweet-state";
 import { useDebounce } from "react-use";
 
@@ -328,7 +328,7 @@ export const useForeplanIsFutureCourseRequisitesFulfilled = createHook(
   }
 );
 
-export const ForeplanContextManager: FC = () => {
+export const ForeplanContextManager: FC = memo(() => {
   const { program, student, mock, chosenCurriculum } = useDashboardInputState();
   const [state, { reset, disableForeplan }] = useForeplanActiveData();
   const { user } = useUser({
@@ -422,4 +422,4 @@ export const ForeplanContextManager: FC = () => {
   );
 
   return null;
-};
+});

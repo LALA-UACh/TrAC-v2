@@ -4,6 +4,7 @@ import { generate } from "randomstring";
 import {
   Arg,
   Authorized,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -14,6 +15,7 @@ import { $PropertyType } from "utility-types";
 
 import { defaultUserType } from "../../../constants";
 import { baseUserConfig } from "../../../constants/userConfig";
+import { IContext } from "../../../interfaces";
 import { ArrayPropertyType } from "../../../interfaces/utils";
 import { ADMIN } from "../../api_constants";
 import { dbAuth } from "../../db";
@@ -135,6 +137,7 @@ export class UserResolver {
   @Authorized([ADMIN])
   @Mutation(() => [User])
   async upsertUsers(
+    @Ctx() { UserConfigDataLoader }: IContext,
     @Arg("users", () => [UpsertedUser])
     users: UpsertedUser[]
   ): Promise<User[]> {
@@ -156,10 +159,9 @@ export class UserResolver {
                 return resolve();
               }
               try {
-                const userConfig = await UserConfigurationTable()
-                  .select("config")
-                  .where({ email: oldEmail ?? email })
-                  .first();
+                const userConfig = await UserConfigDataLoader.load(
+                  oldEmail ?? email
+                );
                 if (!userConfig) {
                   await UserConfigurationTable().insert({
                     email,
@@ -344,13 +346,12 @@ export class UserResolver {
 
   @FieldResolver()
   async config(
+    @Ctx() { UserConfigDataLoader }: IContext,
     @Root() { email }: Pick<User, "email">
   ): Promise<Pick<User, "config">["config"]> {
-    const configRow = await UserConfigurationTable()
-      .select("config")
-      .where({ email })
-      .first();
-
-    return { ...baseUserConfig, ...(configRow?.config ?? {}) };
+    return {
+      ...baseUserConfig,
+      ...((await UserConfigDataLoader.load(email))?.config ?? {}),
+    };
   }
 }

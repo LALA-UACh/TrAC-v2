@@ -1,8 +1,9 @@
+import DataLoader from "dataloader";
 import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 
 import { SECRET } from "../api_constants";
-import { IUser, UserTable } from "../db/tables";
+import { IUser, UserConfigurationTable, UserTable } from "../db/tables";
 import { AuthResolver } from "../resolvers/auth/auth";
 
 export const buildContext = async ({
@@ -43,5 +44,17 @@ export const buildContext = async ({
     res,
     user,
     token,
+    UserConfigDataLoader: new DataLoader(
+      async (usersEmails: readonly string[]) => {
+        return await Promise.all(
+          usersEmails.map(email => {
+            return UserConfigurationTable()
+              .select("config")
+              .where({ email })
+              .first();
+          })
+        );
+      }
+    ),
   };
 };

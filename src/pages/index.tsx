@@ -691,7 +691,8 @@ const Dashboard: FC = () => {
 
       <TrackingManager />
 
-      <ForeplanContextManager />
+      {user?.config.FOREPLAN && <ForeplanContextManager />}
+
       <CoursesDashbordManager
         distinct={`${chosenCurriculum}${program}${mock}`}
       />

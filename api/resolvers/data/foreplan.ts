@@ -30,7 +30,11 @@ export class ForeplanResolver {
   static async authorizationProcess(
     user: IUser,
     dataArgs: { student_id?: string; program_id?: string } = {}
-  ): Promise<{ program_id: string; student_id: string; curriculum: string }> {
+  ): Promise<{
+    program_id: string;
+    student_id: string;
+    curriculum: string;
+  }> {
     let student_id: string;
     let program_id: string;
     let curriculum: string;
@@ -78,16 +82,24 @@ export class ForeplanResolver {
       curriculum = studentProgram.curriculum;
     }
 
-    return { student_id, program_id, curriculum };
+    return {
+      student_id,
+      program_id,
+      curriculum,
+    };
   }
 
   @Authorized()
   @Mutation(() => [PerformanceByLoad])
   async performanceLoadAdvices(
-    @Ctx() { user }: IContext,
+    @Ctx() { user, UserConfigDataLoader }: IContext,
     @Args() input: ForeplanInput
   ): Promise<PerformanceByLoad[]> {
     assertIsDefined(user, "Authorization in context is broken");
+
+    if (!(await UserConfigDataLoader.load(user.email))?.config.FOREPLAN) {
+      return [];
+    }
 
     const {
       student_id,
@@ -103,10 +115,14 @@ export class ForeplanResolver {
   @Authorized()
   @Mutation(() => [Course])
   async directTakeCourses(
-    @Ctx() { user }: IContext,
+    @Ctx() { user, UserConfigDataLoader }: IContext,
     @Args() input: ForeplanInput
   ): Promise<PartialCourse[]> {
     assertIsDefined(user, "User context is not working properly");
+
+    if (!(await UserConfigDataLoader.load(user.email))?.config.FOREPLAN) {
+      return [];
+    }
 
     const {
       student_id,
@@ -143,7 +159,7 @@ export class ForeplanResolver {
   @Authorized()
   @Mutation(() => [IndirectTakeCourse])
   async indirectTakeCourses(
-    @Ctx() { user }: IContext,
+    @Ctx() { user, UserConfigDataLoader }: IContext,
     @Args() input: ForeplanInput
   ): Promise<
     IfImplements<
@@ -152,6 +168,10 @@ export class ForeplanResolver {
     >[]
   > {
     assertIsDefined(user, "User context is not working properly");
+
+    if (!(await UserConfigDataLoader.load(user.email))?.config.FOREPLAN) {
+      return [];
+    }
 
     const {
       student_id,
