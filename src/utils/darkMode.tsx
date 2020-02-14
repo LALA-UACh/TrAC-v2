@@ -79,6 +79,10 @@ const DarkMode: FC<BoxProps> = memo(({ ...props }) => {
         label {
           color: #fff !important;
         }
+        .foreplanCourseCheckboxIndirect > label:before {
+          opacity: 0.5;
+        }
+        
         `,
         }
       );

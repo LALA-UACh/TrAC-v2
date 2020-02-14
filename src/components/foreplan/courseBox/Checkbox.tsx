@@ -200,6 +200,7 @@ const ForeplanCourseCheckbox: FC<Pick<
           className={classNames({
             [styles.checkboxInput]: true,
             [directTake ? styles.direct : styles.indirect]: true,
+            foreplanCourseCheckboxIndirect: !directTake,
           })}
         />
       </motion.div>
