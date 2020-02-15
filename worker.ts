@@ -33,9 +33,7 @@ const gitPolling = setInterval(async () => {
     clearInterval(gitPolling);
     Shell.exec("git fetch");
     Shell.exec(`git reset --hard origin/${branch}`);
-    Shell.exec(
-      "pnpm install --prefer-frozen-lockfile --prod=false && pnpm run build"
-    );
+    Shell.exec("yarn --frozen-lockfile --prod=false && yarn build");
     Shell.exec("pm2 start ecosystem-dev.yaml", { async: true });
   }
 }, ms("30 seconds"));

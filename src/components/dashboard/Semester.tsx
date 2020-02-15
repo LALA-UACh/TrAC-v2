@@ -1,6 +1,6 @@
-import React, { CSSProperties, FC, memo, useContext } from "react";
+import React, { FC, memo, useContext } from "react";
 
-import { Stack, Text } from "@chakra-ui/core";
+import { Stack, StackProps, Text } from "@chakra-ui/core";
 
 import { ICourse } from "../../../interfaces";
 import { ConfigContext } from "../../context/Config";
@@ -37,13 +37,13 @@ const toRoman = (num: number, first = false): string => {
 export const Semester: FC<{
   courses: ICourse[];
   n: number;
-  style?: CSSProperties;
-}> = memo(({ courses: semester, n, style }) => {
+} & StackProps> = memo(({ courses: semester, n, mr, ...stackProps }) => {
   const { SEMESTER_HEADER_TEXT_COLOR, SEMESTER_HEADER_FONT_SIZE } = useContext(
     ConfigContext
   );
+
   return (
-    <Stack style={style}>
+    <Stack {...stackProps} height="fit-content">
       <Text
         color={SEMESTER_HEADER_TEXT_COLOR}
         textAlign="center"

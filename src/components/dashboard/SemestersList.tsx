@@ -1,4 +1,4 @@
-import React, { FC, memo, useContext } from "react";
+import React, { FC, memo, useCallback, useContext, useMemo } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useWindowSize } from "react-use";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -22,30 +22,40 @@ export const SemestersList: FC<{
   );
   const isMobile = width < DASHBOARD_SEMESTERS_LIST_MOBILE_BREAKPOINT;
 
+  const SemestersComponent = useMemo(() => {
+    return semesters.map(({ n, courses }) => (
+      <Semester
+        position="absolute"
+        left={190 * (n - 1)}
+        top={0}
+        width={190}
+        courses={courses}
+        key={n}
+        n={n}
+        zIndex={semesters.length - n}
+      />
+    ));
+  }, [semesters]);
+
+  const Column = useCallback<FC<ListChildComponentProps>>(
+    memo(({ index }) => {
+      return SemestersComponent[index];
+    }),
+    [semesters]
+  );
+
   if (isMobile) {
-    const Column: FC<ListChildComponentProps> = ({ index, style }) => {
-      return (
-        <Semester
-          style={{
-            ...style,
-            zIndex: semesters.length - index,
-            height: "fit-content",
-          }}
-          courses={semesters[index].courses}
-          n={semesters[index].n}
-        />
-      );
-    };
     return (
       <AutoSizer>
         {({ width }) => {
           return (
             <ListWindow
               layout="horizontal"
-              height="100vh"
+              height="90vh"
               width={width}
               itemSize={190}
               itemCount={semesters.length}
+              overscanCount={1}
             >
               {Column}
             </ListWindow>
