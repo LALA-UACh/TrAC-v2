@@ -57,7 +57,7 @@ const OuterSummary: FC = ({ children }) => {
       width < config.FOREPLAN_SUMMARY_MOBILE_BREAKPOINT_HEIGHT ||
       height < config.FOREPLAN_SUMMARY_POSITION_MOBILE_BREAKPOINT_WIDTH
     );
-  }, [height, config]);
+  }, [width, height, config]);
 
   const responsiveHeight = useMemo(() => {
     if (height < config.FOREPLAN_SUMMARY_HEIGHT) {
@@ -72,7 +72,8 @@ const OuterSummary: FC = ({ children }) => {
         pos={positionMobile ? "fixed" : "absolute"}
         top={positionMobile ? 0 : undefined}
         right={0}
-        zIndex={100}
+        zIndex={600}
+        style={{ zIndex: 600 }}
         backgroundColor={config.FOREPLAN_SUMMARY_BACKGROUND_COLOR}
         color={config.FOREPLAN_SUMMARY_FONT_COLOR}
         p={0}
@@ -572,7 +573,7 @@ const ForeplanSummary: FC = () => {
       {active && anyForeplanCourses && (
         <motion.div
           key="foreplanSummary"
-          style={{ zIndex: 1000 }}
+          style={{ zIndex: 700 }}
           initial={{
             opacity: 0,
           }}
