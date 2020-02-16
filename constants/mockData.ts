@@ -1,5 +1,5 @@
-import { PerformanceByLoad } from "../api/entities/data/foreplan";
 import { IProgramData, IStudentData } from "../src/graphql/queries";
+import { PerformanceByLoad } from "../typings/graphql";
 import { PerformanceLoadUnit, StateCourse, TermType } from "./";
 
 const data: {

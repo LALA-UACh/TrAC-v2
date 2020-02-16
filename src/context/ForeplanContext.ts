@@ -5,9 +5,9 @@ import { useDebounce } from "react-use";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 
-import { PerformanceByLoad } from "../../api/entities/data/foreplan";
 import { StateCourse } from "../../constants";
 import { ICourse } from "../../interfaces";
+import { PerformanceByLoad } from "../../typings/graphql";
 import {
   GET_PERSISTENCE_VALUE,
   SET_PERSISTENCE_VALUE,

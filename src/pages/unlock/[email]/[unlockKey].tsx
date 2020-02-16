@@ -32,7 +32,7 @@ const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
     { error: errorUnlock, loading: loadingUnlock, data: dataUnlock },
   ] = useMutation(UNLOCK, {
     update: (cache, { data }) => {
-      if (data?.unlock.user) {
+      if (data?.unlock?.user) {
         cache.writeQuery({
           query: CURRENT_USER,
           data: {
@@ -222,13 +222,13 @@ const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
           );
         }}
       </Form>
-      {(errorUnlock || dataUnlock?.unlock.error) && (
+      {(errorUnlock || dataUnlock?.unlock?.error) && (
         <Grid.Row>
           <Message error>
             <Message.Header>{UNLOCK_ERROR_TITLE}</Message.Header>
             <p>
               {(() => {
-                if (dataUnlock?.unlock.error) {
+                if (dataUnlock?.unlock?.error) {
                   switch (dataUnlock.unlock.error) {
                     case WRONG_INFO:
                       return UNLOCK_WRONG_INFO_MESSAGE;

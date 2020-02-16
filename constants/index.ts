@@ -102,7 +102,7 @@ export const LAST_TIME_USED = "last_time_used";
 export const SVG_TEXT = "svg_text";
 
 export enum PerformanceLoadUnit {
-  Credits = "credits",
+  Credits = "Credits",
 }
 
 export const defaultPerformanceLoadUnit = (

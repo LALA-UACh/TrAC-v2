@@ -1,4 +1,4 @@
-import connect from "connect";
+import connect, { SimpleHandleFunction } from "connect";
 import proxy from "http-proxy-middleware";
 import { toInteger } from "lodash";
 
@@ -16,7 +16,7 @@ console.warn = silentWarn;
 
 const port = process?.env?.API_PORT ? toInteger(process.env.API_PORT) : 4000;
 
-app.use(proxy(`http://localhost:${port}`));
+app.use((proxy(`http://localhost:${port}`) as unknown) as SimpleHandleFunction);
 
 export const config = {
   api: {

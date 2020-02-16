@@ -638,7 +638,7 @@ const Dashboard: FC = () => {
               const [programSearch, studentSearch] = await Promise.all([
                 searchProgram({
                   variables: {
-                    program_id,
+                    id: program_id,
                     student_id: student_id || undefined,
                   },
                 }),

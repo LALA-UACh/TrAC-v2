@@ -1,21 +1,34 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
-import { Persistence } from "../../api/entities/auth/persistence";
-import { PerformanceByLoad } from "../../api/entities/data/foreplan";
-import { Program } from "../../api/entities/data/program";
-import { Student } from "../../api/entities/data/student";
-import { StateCourse, TermType, UserType } from "../../constants";
-import { baseConfig } from "../../constants/baseConfig";
-import { UserConfig } from "../../constants/userConfig";
+import { StateCourse, TermType } from "../../constants";
+import {
+  Maybe,
+  Mutation,
+  MutationDirectTakeCoursesArgs,
+  MutationIndirectTakeCoursesArgs,
+  MutationLoginArgs,
+  MutationPerformanceLoadAdvicesArgs,
+  MutationProgramArgs,
+  MutationSetPersistenceValueArgs,
+  MutationStudentArgs,
+  MutationTrackArgs,
+  MutationUnlockArgs,
+  PerformanceByLoad,
+  Persistence,
+  Program,
+  Query,
+  QueryGetPersistenceValueArgs,
+  QueryStudentsArgs,
+  Student,
+  User,
+} from "../../typings/graphql";
 import { IfImplements } from "../../typings/utils";
 
-export type IUserData = {
-  email: string;
-  name: string;
-  admin: boolean;
-  type: UserType;
-  config: UserConfig;
-};
+export type IUserFragment = Pick<
+  User,
+  "email" | "name" | "admin" | "type" | "config"
+>;
+
 export const UserFragment = gql`
   fragment UserFragment on User {
     email
@@ -27,16 +40,11 @@ export const UserFragment = gql`
 `;
 
 export const LOGIN: DocumentNode<
-  {
-    login: {
-      user?: IUserData;
-      error?: string;
-    };
-  },
-  {
-    email: string;
-    password: string;
-  }
+  IfImplements<
+    { login: { user?: Maybe<IUserFragment>; error?: Maybe<string> } },
+    Mutation
+  >,
+  MutationLoginArgs
 > = gql`
   mutation($email: EmailAddress!, $password: String!) {
     login(email: $email, password: $password) {
@@ -49,11 +57,14 @@ export const LOGIN: DocumentNode<
   ${UserFragment}
 `;
 
-export const CURRENT_USER: DocumentNode<{
-  currentUser?: {
-    user?: IUserData;
-  };
-}> = gql`
+export const CURRENT_USER: DocumentNode<IfImplements<
+  {
+    currentUser?: Maybe<{
+      user?: Maybe<IUserFragment>;
+    }>;
+  },
+  Query
+>> = gql`
   query {
     currentUser {
       user {
@@ -65,17 +76,16 @@ export const CURRENT_USER: DocumentNode<{
 `;
 
 export const UNLOCK: DocumentNode<
-  {
-    unlock: {
-      user?: IUserData;
-      error?: string;
-    };
-  },
-  {
-    email: string;
-    password: string;
-    unlockKey: string;
-  }
+  IfImplements<
+    {
+      unlock?: Maybe<{
+        user?: Maybe<IUserFragment>;
+        error?: Maybe<string>;
+      }>;
+    },
+    Mutation
+  >,
+  MutationUnlockArgs
 > = gql`
   mutation($email: EmailAddress!, $password: String!, $unlockKey: String!) {
     unlock(email: $email, password: $password, unlockKey: $unlockKey) {
@@ -88,9 +98,12 @@ export const UNLOCK: DocumentNode<
   ${UserFragment}
 `;
 
-export const LOGOUT: DocumentNode<{
-  logout: boolean;
-}> = gql`
+export const LOGOUT: DocumentNode<IfImplements<
+  {
+    logout: boolean;
+  },
+  Mutation
+>> = gql`
   mutation {
     logout
   }
@@ -128,13 +141,16 @@ export type IProgramData = IfImplements<
 >;
 
 export const SEARCH_PROGRAM: DocumentNode<
-  {
-    program: IProgramData | null;
-  },
-  { program_id?: string; student_id?: string }
+  IfImplements<
+    {
+      program: IProgramData;
+    },
+    Mutation
+  >,
+  MutationProgramArgs
 > = gql`
-  mutation($program_id: String, $student_id: String) {
-    program(id: $program_id, student_id: $student_id) {
+  mutation($id: String, $student_id: String) {
+    program(id: $id, student_id: $student_id) {
       id
       name
       desc
@@ -209,23 +225,23 @@ export type IStudentData = IfImplements<
         bandColors: { min: number; max: number; color: string }[];
       }>;
     }>;
-    dropout?: {
+    dropout?: Maybe<{
       prob_dropout?: number;
       model_accuracy?: number;
       active: boolean;
-    };
+    }>;
   },
   Student
 >;
 
 export const SEARCH_STUDENT: DocumentNode<
-  {
-    student?: IStudentData;
-  },
-  {
-    student_id?: string;
-    program_id?: string;
-  }
+  IfImplements<
+    {
+      student?: Maybe<IStudentData>;
+    },
+    Mutation
+  >,
+  MutationStudentArgs
 > = gql`
   mutation($student_id: String, $program_id: String) {
     student(student_id: $student_id, program_id: $program_id) {
@@ -276,9 +292,12 @@ export const SEARCH_STUDENT: DocumentNode<
   }
 `;
 
-export const MY_PROGRAMS: DocumentNode<{
-  myPrograms: IfImplements<{ id: string; name: string }, Program>[];
-}> = gql`
+export const MY_PROGRAMS: DocumentNode<IfImplements<
+  {
+    myPrograms: { id: string; name: string }[];
+  },
+  Query
+>> = gql`
   query {
     myPrograms {
       id
@@ -288,42 +307,38 @@ export const MY_PROGRAMS: DocumentNode<{
 `;
 
 export const TRACK: DocumentNode<
-  never,
-  {
-    datetime_client: Date;
-    data: string;
-  }
+  IfImplements<{ track: boolean }, Mutation>,
+  MutationTrackArgs
 > = gql`
   mutation($data: String!, $datetime_client: DateTime!) {
     track(data: $data, datetime_client: $datetime_client)
   }
 `;
 
-export const CONFIG_QUERY: DocumentNode<{
-  config: typeof baseConfig;
-}> = gql`
+export const CONFIG_QUERY: DocumentNode<IfImplements<
+  { config: Record<string, any> },
+  Query
+>> = gql`
   query {
     config
   }
 `;
 
 export const STUDENT_LIST: DocumentNode<
-  {
-    students: IfImplements<
-      {
+  IfImplements<
+    {
+      students: {
         id: string;
         progress: number;
         start_year: number;
-        dropout?: {
+        dropout?: Maybe<{
           prob_dropout?: number;
-        };
-      },
-      Student
-    >[];
-  },
-  {
-    program_id: string;
-  }
+        }>;
+      }[];
+    },
+    Query
+  >,
+  QueryStudentsArgs
 > = gql`
   query($program_id: String!) {
     students(program_id: $program_id) {
@@ -338,26 +353,26 @@ export const STUDENT_LIST: DocumentNode<
 `;
 
 export const PERFORMANCE_BY_LOAD_ADVICES: DocumentNode<
-  {
-    performanceLoadAdvices: Pick<
-      PerformanceByLoad,
-      | "id"
-      | "loadUnit"
-      | "lowerBoundary"
-      | "upperBoundary"
-      | "failRateLow"
-      | "failRateMid"
-      | "failRateHigh"
-      | "adviceTitle"
-      | "adviceParagraph"
-      | "label"
-      | "isStudentCluster"
-    >[];
-  },
-  {
-    student_id?: string;
-    program_id?: string;
-  }
+  IfImplements<
+    {
+      performanceLoadAdvices: Pick<
+        PerformanceByLoad,
+        | "id"
+        | "loadUnit"
+        | "lowerBoundary"
+        | "upperBoundary"
+        | "failRateLow"
+        | "failRateMid"
+        | "failRateHigh"
+        | "adviceTitle"
+        | "adviceParagraph"
+        | "label"
+        | "isStudentCluster"
+      >[];
+    },
+    Mutation
+  >,
+  MutationPerformanceLoadAdvicesArgs
 > = gql`
   mutation($student_id: String, $program_id: String) {
     performanceLoadAdvices(student_id: $student_id, program_id: $program_id) {
@@ -377,13 +392,13 @@ export const PERFORMANCE_BY_LOAD_ADVICES: DocumentNode<
 `;
 
 export const DIRECT_TAKE_COURSES: DocumentNode<
-  {
-    directTakeCourses: { id: number; code: string }[];
-  },
-  {
-    student_id?: string;
-    program_id?: string;
-  }
+  IfImplements<
+    {
+      directTakeCourses: { id: number; code: string }[];
+    },
+    Mutation
+  >,
+  MutationDirectTakeCoursesArgs
 > = gql`
   mutation($student_id: String, $program_id: String) {
     directTakeCourses(student_id: $student_id, program_id: $program_id) {
@@ -394,16 +409,16 @@ export const DIRECT_TAKE_COURSES: DocumentNode<
 `;
 
 export const INDIRECT_TAKE_COURSES: DocumentNode<
-  {
-    indirectTakeCourses: {
-      course: { id: number; code: string };
-      requisitesUnmet: string[];
-    }[];
-  },
-  {
-    student_id?: string;
-    program_id?: string;
-  }
+  IfImplements<
+    {
+      indirectTakeCourses: {
+        course: { id: number; code: string };
+        requisitesUnmet: string[];
+      }[];
+    },
+    Mutation
+  >,
+  MutationIndirectTakeCoursesArgs
 > = gql`
   mutation($student_id: String, $program_id: String) {
     indirectTakeCourses(student_id: $student_id, program_id: $program_id) {
@@ -417,12 +432,13 @@ export const INDIRECT_TAKE_COURSES: DocumentNode<
 `;
 
 export const GET_PERSISTENCE_VALUE: DocumentNode<
-  {
-    getPersistenceValue: Pick<Persistence, "key" | "data"> | null;
-  },
-  {
-    key: string;
-  }
+  IfImplements<
+    {
+      getPersistenceValue?: Pick<Persistence, "key" | "data"> | null;
+    },
+    Query
+  >,
+  QueryGetPersistenceValueArgs
 > = gql`
   query($key: String!) {
     getPersistenceValue(key: $key) {
@@ -433,13 +449,15 @@ export const GET_PERSISTENCE_VALUE: DocumentNode<
 `;
 
 export const SET_PERSISTENCE_VALUE: DocumentNode<
-  {
-    setPersistenceValue: never;
-  },
-  {
-    key: string;
-    data: Record<string, any>;
-  }
+  IfImplements<
+    {
+      setPersistenceValue: {
+        __typename?: "Persistence";
+      };
+    },
+    Mutation
+  >,
+  MutationSetPersistenceValueArgs
 > = gql`
   mutation($key: String!, $data: JSONObject!) {
     setPersistenceValue(key: $key, data: $data) {

@@ -3,7 +3,7 @@ import Router from "next/router";
 
 import { useQuery } from "@apollo/react-hooks";
 
-import { CURRENT_USER, IUserData } from "../graphql/queries";
+import { CURRENT_USER, IUserFragment } from "../graphql/queries";
 
 export function useUser(
   {
@@ -19,7 +19,7 @@ export function useUser(
     requireAdmin: false,
     requireAuth: false,
   }
-): { user?: IUserData; loading?: boolean } {
+): { user?: IUserFragment | null; loading?: boolean } {
   const { loading, error, data } = useQuery(CURRENT_USER, {
     ssr: false,
     fetchPolicy,
