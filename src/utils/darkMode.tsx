@@ -3,16 +3,45 @@ import {
   enable as enableDarkMode,
 } from "darkreader";
 import React, { FC, memo, useEffect } from "react";
+import { createHook, createStore } from "react-sweet-state";
 import ToggleTheme, { Theme } from "react-toggle-theme";
-import { useRememberState } from "use-remember-state";
 
 import { Box, BoxProps } from "@chakra-ui/core";
 
 import { SVG_TEXT } from "../../constants";
 
+const themePersistenceKey = "TrAC-theme";
+
+const themeStore = createStore({
+  initialState: (() => {
+    try {
+      if (localStorage.getItem(themePersistenceKey)) {
+        return { theme: Theme.DARK };
+      }
+    } catch (err) {}
+    return { theme: Theme.LIGHT };
+  })(),
+  actions: {
+    setTheme: (theme: Theme) => ({ setState }) => {
+      try {
+        if (theme === Theme.DARK) {
+          localStorage.setItem(themePersistenceKey, theme);
+        } else {
+          localStorage.removeItem(themePersistenceKey);
+        }
+      } catch (err) {}
+      setState({ theme });
+    },
+  },
+});
+
+export const useTheme = createHook(themeStore, {
+  selector: ({ theme }) => theme,
+});
+
 const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
   ({ render = true, ...props }) => {
-    const [theme, setTheme] = useRememberState("TrAC-theme", Theme.LIGHT);
+    const [theme, { setTheme }] = useTheme();
 
     useEffect(() => {
       if (window?.matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -49,8 +78,12 @@ const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
           background-color: #3a3c3d !important;
           color: white !important;
         }
+
+        .secondaryBlock {
+          color: white !important;
+        }
   
-        th, td, header, section, .courseBox, .ui.modal > * {
+        th, td, header, section, .mainBlock, .ui.modal > * {
           background-color: #181A1B !important;
           color: white !important;
         }

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { some, truncate } from "lodash";
 import dynamic from "next/dynamic";
 import React, { FC, memo, useContext, useMemo } from "react";
+import { Theme } from "react-toggle-theme";
 import ReactTooltip from "react-tooltip";
 
 import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/core";
@@ -28,6 +29,7 @@ import {
   useIsPossibleToTakeForeplan,
 } from "../../context/ForeplanContext";
 import { useTracking } from "../../context/Tracking";
+import { useTheme } from "../../utils/darkMode";
 import { useUser } from "../../utils/useUser";
 import styles from "./CourseBox.module.css";
 import { Histogram } from "./Histogram";
@@ -149,24 +151,24 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
       return { height, width };
     }, [isOpen, historicDistribution, currentDistribution]);
 
+    const borderWidth =
+      activeCourse || isFutureCourseFulfilled
+        ? config.COURSE_BOX_BORDER_WIDTH_ACTIVE
+        : config.COURSE_BOX_BORDER_WIDTH_INACTIVE;
+
     return (
       <Flex
         m={1}
         color={config.COURSE_BOX_TEXT_COLOR}
-        bg={config.COURSE_BOX_BACKGROUND_COLOR}
         width={width}
         height={height}
         borderRadius={5}
         opacity={opacity}
-        border={config.COURSE_BOX_BORDER_WIDTH_INACTIVE}
-        borderColor={borderColor}
-        borderWidth={
-          activeCourse || isFutureCourseFulfilled
-            ? config.COURSE_BOX_BORDER_WIDTH_ACTIVE
-            : config.COURSE_BOX_BORDER_WIDTH_INACTIVE
-        }
+        boxShadow={`0px 0px 0px ${borderWidth} ${borderColor}`}
         transition={config.COURSE_BOX_ALL_TRANSITION_DURATION}
         className="unselectable courseBox"
+        padding={0}
+        overflow="hidden"
       >
         {children}
       </Flex>
@@ -180,6 +182,7 @@ const MainBlockOuter: FC<Pick<ICourse, "code" | "flow" | "requisites"> & {
   const [, { track }] = useTracking();
   const [, { addCourse, removeCourse }] = useDashboardCoursesActions();
   const [isOpen, { toggleOpenCourse }] = useDashboardIsCourseOpen({ code });
+  const config = useContext(ConfigContext);
   return (
     <Flex
       w="100%"
@@ -189,6 +192,8 @@ const MainBlockOuter: FC<Pick<ICourse, "code" | "flow" | "requisites"> & {
       pos="relative"
       className="mainBlock"
       cursor="pointer"
+      borderRadius={5}
+      bg={config.COURSE_BOX_BACKGROUND_COLOR}
       onClick={() => {
         toggleOpenCourse(code);
 
@@ -237,7 +242,7 @@ const NameComponent: FC<Pick<ICourse, "code" | "taken" | "name"> & {
           )}
         </Flex>
 
-        <Text fontSize={9} maxWidth="150px">
+        <Text fontSize={9} maxWidth="150px" pr={1}>
           {truncate(name, { length: isOpen ? 60 : 35 })}
         </Text>
       </Stack>
@@ -250,6 +255,8 @@ const SecondaryBlockOuter: FC<Pick<ICourse, "taken" | "bandColors"> &
     borderColor: string;
   }> = memo(({ children, taken, bandColors, borderColor, state, grade }) => {
   const config = useContext(ConfigContext);
+
+  const [theme] = useTheme();
 
   const stateColor = useMemo(() => {
     const bandColorsCourse = taken?.[0]?.bandColors ?? bandColors;
@@ -286,22 +293,21 @@ const SecondaryBlockOuter: FC<Pick<ICourse, "taken" | "bandColors"> &
         return config.STATE_COURSE_PENDING_COLOR;
       }
       default: {
-        return "transparent";
+        return theme === Theme.LIGHT
+          ? config.COURSE_BOX_BACKGROUND_COLOR
+          : undefined;
       }
     }
-  }, [state, grade, bandColors, taken, config]);
+  }, [state, theme, grade, bandColors, taken, config]);
 
   return (
     <Flex
-      mr="-0.5px"
       w="40px"
-      mt="-0.4px"
-      h="100.5%"
+      h="125.5%"
       bg={stateColor}
       direction="column"
       alignItems="center"
-      borderRadius="0px 3px 3px 0px"
-      zIndex={0}
+      zIndex={-100}
       transition="all 0.4s ease-in-out"
       borderLeft="1px solid"
       borderColor={borderColor}
