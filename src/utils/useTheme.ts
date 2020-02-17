@@ -10,21 +10,26 @@ export enum Theme {
 const themeStore = createStore({
   initialState: { theme: Theme.LIGHT },
   actions: {
-    setTheme: (theme: Theme) => ({ setState }) => {
+    setTheme: (theme: Theme) => ({ setState, getState }) => {
       try {
-        if (theme === Theme.DARK) {
-          localStorage.setItem(themePersistenceKey, theme);
-        } else {
-          localStorage.removeItem(themePersistenceKey);
-        }
+        localStorage.setItem(themePersistenceKey, theme);
       } catch (err) {}
-      setState({ theme });
+      if (getState().theme !== theme) {
+        setState({ theme });
+      }
     },
-    checkLocalStorage: () => ({ setState }) => {
+    checkLocalStorage: () => ({ setState, getState }) => {
       try {
-        if (localStorage.getItem(themePersistenceKey)) {
-          setState({ theme: Theme.DARK });
-          return true;
+        const theme = localStorage.getItem(themePersistenceKey);
+        if (theme) {
+          if (theme === Theme.DARK || theme === Theme.LIGHT) {
+            if (getState().theme !== theme) {
+              setState({ theme });
+            }
+            return true;
+          } else {
+            localStorage.removeItem(themePersistenceKey);
+          }
         }
       } catch (err) {}
       return false;

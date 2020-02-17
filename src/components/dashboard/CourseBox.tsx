@@ -165,6 +165,8 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
         ? config.COURSE_BOX_BORDER_WIDTH_ACTIVE
         : config.COURSE_BOX_BORDER_WIDTH_INACTIVE;
 
+    const boxShadow = `0px 0px 0px ${borderWidth} ${borderColor}`;
+
     return (
       <Flex
         m={1}
@@ -173,7 +175,7 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
         height={height}
         borderRadius={5}
         opacity={opacity}
-        boxShadow={`0px 0px 0px ${borderWidth} ${borderColor}`}
+        boxShadow={boxShadow}
         transition={config.COURSE_BOX_ALL_TRANSITION_DURATION}
         className="unselectable courseBox"
         padding={0}
@@ -201,7 +203,7 @@ const MainBlockOuter: FC<Pick<ICourse, "code" | "flow" | "requisites"> & {
       pos="relative"
       className="mainBlock"
       cursor="pointer"
-      borderRadius={5}
+      borderRadius="5px 0px 0x 5px"
       bg={config.COURSE_BOX_BACKGROUND_COLOR}
       onClick={() => {
         toggleOpenCourse(code);
