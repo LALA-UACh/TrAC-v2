@@ -4,10 +4,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import { some, truncate } from "lodash";
 import dynamic from "next/dynamic";
 import React, { FC, memo, useContext, useMemo } from "react";
-import { Theme } from "react-toggle-theme";
-import ReactTooltip from "react-tooltip";
 
-import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/core";
+import {
+  Badge,
+  Box,
+  Flex,
+  Popover,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  PseudoBoxProps,
+  Stack,
+  Text,
+} from "@chakra-ui/core";
 
 import { StateCourse, termTypeToNumber } from "../../../constants";
 import { ICourse, ITakenCourse, ITakenSemester } from "../../../interfaces";
@@ -29,7 +38,7 @@ import {
   useIsPossibleToTakeForeplan,
 } from "../../context/ForeplanContext";
 import { useTracking } from "../../context/Tracking";
-import { useTheme } from "../../utils/darkMode";
+import { Theme, useTheme } from "../../utils/useTheme";
 import { useUser } from "../../utils/useUser";
 import styles from "./CourseBox.module.css";
 import { Histogram } from "./Histogram";
@@ -303,11 +312,10 @@ const SecondaryBlockOuter: FC<Pick<ICourse, "taken" | "bandColors"> &
   return (
     <Flex
       w="40px"
-      h="125.5%"
+      h="100%"
       bg={stateColor}
       direction="column"
       alignItems="center"
-      zIndex={-100}
       transition="all 0.4s ease-in-out"
       borderLeft="1px solid"
       borderColor={borderColor}
@@ -453,21 +461,76 @@ const GradeComponent: FC<Pick<CurrentTakenData, "state" | "grade">> = memo(
   }
 );
 
-const HistoricalCirclesComponent: FC<Pick<ICourse, "taken" | "code">> = memo(
-  ({ taken, code }) => {
+const HistoricalCircle: FC<{
+  color: string;
+  tooltipLabel?: string | number;
+  tooltipType?: "error" | "info" | "light";
+}> = ({ color, tooltipLabel, tooltipType }) => {
+  const config = useContext(ConfigContext);
+
+  const tooltipProps = useMemo<PseudoBoxProps>(() => {
+    switch (tooltipType) {
+      case "info": {
+        return {
+          className: "info_popover",
+          background: "#3182CE",
+          color: "white",
+        };
+      }
+      case "error": {
+        return {
+          className: "error_popover",
+          background: "#E53E3E",
+          color: "white",
+        };
+      }
+      default:
+        return {
+          className: "white_popover",
+        };
+    }
+  }, [tooltipType]);
+
+  return (
+    <Popover trigger="hover">
+      <PopoverTrigger>
+        <Box
+          m={0}
+          p={0}
+          paddingBottom="0px"
+          color={color}
+          height="16px"
+          width="16px"
+          className="historicalCircle"
+        >
+          <svg width={16} height={16}>
+            <circle
+              cx={8}
+              cy={8}
+              r={6}
+              stroke={config.STATE_COURSE_CIRCLE_STROKE}
+              fill={color}
+            />
+          </svg>
+        </Box>
+      </PopoverTrigger>
+
+      <PopoverContent width="fit-content" {...tooltipProps} zIndex={1000}>
+        <PopoverHeader fontWeight="bold">{tooltipLabel}</PopoverHeader>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+const HistoricalCirclesComponent: FC<Pick<ICourse, "taken">> = memo(
+  ({ taken }) => {
     const config = useContext(ConfigContext);
 
     return (
       <Stack spacing={0.7}>
         {taken.slice(1).map(({ state, grade }, key) => {
           let color: string;
-          let tooltipType:
-            | "dark"
-            | "success"
-            | "warning"
-            | "error"
-            | "info"
-            | "light";
+          let tooltipType: "error" | "info" | "light";
           let tooltipLabel: number | string | undefined = grade;
           switch (state) {
             case StateCourse.Failed:
@@ -483,40 +546,16 @@ const HistoricalCirclesComponent: FC<Pick<ICourse, "taken" | "code">> = memo(
               tooltipType = "light";
               color = config.STATE_COURSE_CANCELED_COLOR;
               break;
-            case StateCourse.Pending:
-              tooltipType = "dark";
-              color = config.STATE_COURSE_PENDING_COLOR;
-              break;
             default:
               return null;
           }
-          const tooltipKey = `code_historic_state_${code}_${key}`;
           return (
-            <Box
+            <HistoricalCircle
               key={key}
-              m={0}
-              p={0}
-              paddingBottom="0px"
               color={color}
-              height={"16px"}
-              width={"16px"}
-            >
-              <svg
-                width={16}
-                height={16}
-                data-tip={tooltipLabel}
-                data-for={tooltipKey}
-              >
-                <circle
-                  cx={8}
-                  cy={8}
-                  r="6"
-                  stroke={config.STATE_COURSE_CIRCLE_STROKE}
-                  fill={color}
-                />
-              </svg>
-              <ReactTooltip id={tooltipKey} type={tooltipType} />
-            </Box>
+              tooltipLabel={tooltipLabel}
+              tooltipType={tooltipType}
+            />
           );
         })}
       </Stack>
@@ -778,9 +817,7 @@ export const CourseBox: FC<ICourse> = ({
       >
         {grade !== undefined && <GradeComponent grade={grade} state={state} />}
 
-        {taken.length > 1 && (
-          <HistoricalCirclesComponent code={code} taken={taken} />
-        )}
+        {taken.length > 1 && <HistoricalCirclesComponent taken={taken} />}
         <AnimatePresence>
           {isPossibleToTakeForeplan && user?.config.FOREPLAN && (
             <ForeplanCourseCheckbox

@@ -331,6 +331,7 @@ export const useForeplanIsFutureCourseRequisitesFulfilled = createHook(
 export const ForeplanContextManager: FC = memo(() => {
   const { program, student, mock, chosenCurriculum } = useDashboardInputState();
   const [state, { reset, disableForeplan }] = useForeplanActiveData();
+
   const { user } = useUser({
     fetchPolicy: "cache-only",
   });

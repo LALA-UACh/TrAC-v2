@@ -155,6 +155,7 @@ const ForeplanCourseCheckbox: FC<Pick<
     isPossible: !directTake,
   });
   const [, { track }] = useTracking();
+
   return (
     <>
       <motion.div

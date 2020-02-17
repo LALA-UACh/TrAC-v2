@@ -3,51 +3,27 @@ import {
   enable as enableDarkMode,
 } from "darkreader";
 import React, { FC, memo, useEffect } from "react";
-import { createHook, createStore } from "react-sweet-state";
-import ToggleTheme, { Theme } from "react-toggle-theme";
+import ToggleTheme from "react-toggle-theme";
 
 import { Box, BoxProps } from "@chakra-ui/core";
 
 import { SVG_TEXT } from "../../constants";
-
-const themePersistenceKey = "TrAC-theme";
-
-const themeStore = createStore({
-  initialState: (() => {
-    try {
-      if (localStorage.getItem(themePersistenceKey)) {
-        return { theme: Theme.DARK };
-      }
-    } catch (err) {}
-    return { theme: Theme.LIGHT };
-  })(),
-  actions: {
-    setTheme: (theme: Theme) => ({ setState }) => {
-      try {
-        if (theme === Theme.DARK) {
-          localStorage.setItem(themePersistenceKey, theme);
-        } else {
-          localStorage.removeItem(themePersistenceKey);
-        }
-      } catch (err) {}
-      setState({ theme });
-    },
-  },
-});
-
-export const useTheme = createHook(themeStore, {
-  selector: ({ theme }) => theme,
-});
+import { Theme, useTheme } from "./useTheme";
 
 const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
   ({ render = true, ...props }) => {
-    const [theme, { setTheme }] = useTheme();
+    const [theme, { setTheme, checkLocalStorage }] = useTheme();
 
     useEffect(() => {
-      if (window?.matchMedia("(prefers-color-scheme: dark)").matches) {
-        setTheme(Theme.DARK);
+      if (!checkLocalStorage()) {
+        if (
+          typeof window !== "undefined" &&
+          window?.matchMedia("(prefers-color-scheme: dark)")?.matches
+        ) {
+          setTheme(Theme.DARK);
+        }
       }
-    }, [setTheme]);
+    }, [setTheme, checkLocalStorage]);
 
     useEffect(() => {
       if (theme === Theme.DARK) {
@@ -86,6 +62,22 @@ const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
         th, td, header, section, .mainBlock, .ui.modal > * {
           background-color: #181A1B !important;
           color: white !important;
+        }
+
+        .info_popover * {
+          background: #3182CE !important;
+          color: white !important;
+        }
+
+        .error_popover * {
+          background-color: #E53E3E !important;
+          background: #E53E3E !important;
+          color: white !important; 
+        }
+
+        .white_popover * {
+          background: white !important;
+          color: black !important;
         }
 
         [class^="styles_toggleContainer"] {
