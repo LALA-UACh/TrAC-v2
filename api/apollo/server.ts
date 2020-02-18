@@ -6,11 +6,13 @@ import { GraphQLJSON, GraphQLJSONObject } from "graphql-type-json";
 import { buildSchema } from "type-graphql";
 import { NonEmptyArray } from "type-graphql/dist/utils/types";
 
+import { NODE_ENV } from "../../constants";
 import * as resolvers from "../resolvers";
+import { ComplexityPlugin } from "../utils/complexity";
 import { authChecker } from "./authChecker";
 import { buildContext } from "./buildContext";
 
-const schema = buildSchema({
+export const schema = buildSchema({
   resolvers: [
     ...Object.values(resolvers),
     GraphQLJSON.toString(),
@@ -18,7 +20,7 @@ const schema = buildSchema({
     EmailAddressResolver.toString(),
   ] as NonEmptyArray<Function> | NonEmptyArray<string>,
   authChecker,
-  emitSchemaFile: process.env.NODE_ENV !== "production",
+  emitSchemaFile: NODE_ENV !== "production",
   validate: true,
 });
 
@@ -29,7 +31,7 @@ export const apolloServer = new Promise<ApolloServer>((resolve, reject) => {
         new ApolloServer({
           schema,
           playground:
-            process.env.NODE_ENV !== "production"
+            NODE_ENV !== "production"
               ? {
                   settings: {
                     "request.credentials": "include",
@@ -38,10 +40,10 @@ export const apolloServer = new Promise<ApolloServer>((resolve, reject) => {
               : false,
           context: ({ req, res }) => buildContext({ req, res }),
           introspection:
-            !!process.env.SHOW_GRAPHQL_API ||
-            process.env.NODE_ENV !== "production",
-          debug: process.env.NODE_ENV !== "production",
-          tracing: false && process.env.NODE_ENV === "development",
+            !!process.env.SHOW_GRAPHQL_API || NODE_ENV !== "production",
+          debug: NODE_ENV !== "production",
+          tracing: false && NODE_ENV === "development",
+          plugins: [ComplexityPlugin],
         })
       );
     })

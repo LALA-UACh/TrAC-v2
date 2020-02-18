@@ -5,7 +5,7 @@ import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 
 import { baseConfig, baseConfigAdmin } from "../../constants/baseConfig";
 import { configStringToValue } from "../../constants/validation";
-import { ADMIN } from "../api_constants";
+import { ADMIN } from "../constants";
 import { ConfigurationTable } from "../db/tables";
 
 @Resolver()

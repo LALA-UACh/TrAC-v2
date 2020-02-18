@@ -17,7 +17,7 @@ import { defaultUserType } from "../../../constants";
 import { baseUserConfig } from "../../../constants/userConfig";
 import { IContext } from "../../../interfaces";
 import { ArrayPropertyType } from "../../../interfaces/utils";
-import { ADMIN } from "../../api_constants";
+import { ADMIN } from "../../constants";
 import { dbAuth } from "../../db";
 import {
   IUser,

@@ -6,6 +6,18 @@ export const STUDENT_LIST_UNAUTHORIZED = "STUDENT_LIST_UNAUTHORIZED";
 export const PROGRAM_UNAUTHORIZED = "PROGRAM_UNAUTHORIZED";
 export const PROGRAM_NOT_FOUND = "PROGRAM_NOT_FOUND";
 
+export const NODE_ENV = (() => {
+  switch (process?.env?.NODE_ENV) {
+    case "development":
+    case "production":
+    case "test":
+      return process.env.NODE_ENV;
+    default:
+      console.warn("Environment not specified!");
+      return "production";
+  }
+})();
+
 export const GRAPHQL_URL =
   typeof window === "undefined"
     ? `${process?.env?.DOMAIN ?? "http://localhost:3000"}/api/graphql`

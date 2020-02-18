@@ -2,7 +2,7 @@ import sha1 from "crypto-js/sha1";
 import { chunk } from "lodash";
 
 import { dbAuth, dbConfig, dbData, dbTracking } from "../";
-import { UserType } from "../../../constants";
+import { NODE_ENV, UserType } from "../../../constants";
 import { baseConfig } from "../../../constants/baseConfig";
 import { baseUserConfig } from "../../../constants/userConfig";
 import { configValueToString } from "../../../constants/validation";
@@ -550,6 +550,6 @@ const dataImport = async () => {
   });
 };
 
-if (process.env.NODE_ENV !== "test") {
+if (NODE_ENV !== "test") {
   dataImport();
 }

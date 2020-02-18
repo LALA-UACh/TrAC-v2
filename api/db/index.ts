@@ -2,6 +2,8 @@ import knex, { Config } from "knex";
 import { merge } from "lodash";
 import pg from "pg";
 
+import { NODE_ENV } from "../../constants";
+
 pg.types.setTypeParser(20, "text", parseInt);
 pg.types.setTypeParser(1700, parseFloat);
 
@@ -14,7 +16,7 @@ const trackingDbName = "tracking";
 const configDbName = "config";
 
 const baseConfig: Config =
-  process.env.NODE_ENV !== "test"
+  NODE_ENV !== "test"
     ? {
         client: "pg",
         connection: {

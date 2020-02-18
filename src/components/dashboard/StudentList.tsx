@@ -29,6 +29,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/core";
 
+import { NODE_ENV } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import { useTracking } from "../../context/Tracking";
 import { STUDENT_LIST } from "../../graphql/queries";
@@ -81,8 +82,7 @@ export const StudentList: FC<{
   const { user } = useUser();
 
   const { isOpen, onOpen, onClose } = useDisclosure(
-    process.env.NODE_ENV === "development" &&
-      localStorage.getItem("student_list_open")
+    NODE_ENV === "development" && localStorage.getItem("student_list_open")
       ? true
       : false
   );
@@ -95,7 +95,7 @@ export const StudentList: FC<{
     });
   }, [isOpen]);
 
-  if (process.env.NODE_ENV === "development") {
+  if (NODE_ENV === "development") {
     useUpdateEffect(() => {
       if (isOpen) {
         localStorage.setItem("student_list_open", "1");

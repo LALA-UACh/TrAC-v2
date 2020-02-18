@@ -7,13 +7,14 @@ import { Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import {
   defaultUserType,
   LOCKED_USER,
+  NODE_ENV,
   USED_OLD_PASSWORD,
   UserType,
   WRONG_INFO,
 } from "../../../constants";
 import { baseUserConfig } from "../../../constants/userConfig";
 import { IContext } from "../../../interfaces";
-import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../../api_constants";
+import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../../constants";
 import { StudentTable, UserTable } from "../../db/tables";
 import { AuthResult, LoginInput, UnlockInput } from "../../entities/auth/auth";
 import { anonService } from "../../utils/anonymization";
@@ -36,9 +37,9 @@ export class AuthResolver {
 
     res.cookie("authorization", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: NODE_ENV === "production",
       expires:
-        process.env.NODE_ENV === "development"
+        NODE_ENV === "development"
           ? addWeeks(Date.now(), 12)
           : addMilliseconds(
               Date.now(),
@@ -157,7 +158,7 @@ export class AuthResolver {
             subject: "Activación cuenta LALA TrAC",
           })
             .then(result => {
-              if (process.env.NODE_ENV !== "test") {
+              if (NODE_ENV !== "test") {
                 console.log(
                   `New locked user! ${email}`,
                   JSON.stringify(result, null, 2)
@@ -165,7 +166,7 @@ export class AuthResolver {
               }
             })
             .catch(err => {
-              if (process.env.NODE_ENV !== "test") {
+              if (NODE_ENV !== "test") {
                 console.error(
                   `Error trying to send an email to new locked user! ${email}`,
                   JSON.stringify(err, null, 2)

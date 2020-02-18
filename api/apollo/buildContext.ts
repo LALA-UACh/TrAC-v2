@@ -2,7 +2,8 @@ import DataLoader from "dataloader";
 import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 
-import { SECRET } from "../api_constants";
+import { NODE_ENV } from "../../constants";
+import { SECRET } from "../constants";
 import { IUser, UserConfigurationTable, UserTable } from "../db/tables";
 import { AuthResolver } from "../resolvers/auth/auth";
 
@@ -20,7 +21,7 @@ export const buildContext = async ({
       req.cookies.authorization || req.headers.authorization;
     if (authorizationToken) {
       const userJWT = verify(authorizationToken, SECRET, {
-        ignoreExpiration: process.env.NODE_ENV === "development",
+        ignoreExpiration: NODE_ENV === "development",
       }) as {
         email: string;
       };

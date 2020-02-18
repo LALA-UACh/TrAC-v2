@@ -6,6 +6,7 @@ import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { NextPage } from "next";
+import withSecureHeaders from "next-secure-headers";
 import withApollo, { WithApolloProps } from "next-with-apollo";
 import { AppProps } from "next/app";
 import Head from "next/head";
@@ -17,7 +18,7 @@ import { ToastContainer } from "react-toastify";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { theme, ThemeProvider } from "@chakra-ui/core";
 
-import { GRAPHQL_URL } from "../../constants";
+import { GRAPHQL_URL, NODE_ENV } from "../../constants";
 import { Config } from "../context/Config";
 import { DarkMode } from "../utils/dynamicDarkMode";
 
@@ -53,14 +54,38 @@ const App: NextPage<AppProps & WithApolloProps<NormalizedCacheObject>> = ({
   );
 };
 
-export default withApollo(({ initialState }) => {
-  return new ApolloClient({
-    link: new BatchHttpLink({
-      uri: GRAPHQL_URL,
-      includeExtensions: true,
-      credentials: "same-origin",
-    }),
-    cache: new InMemoryCache({}).restore(initialState || {}),
-    connectToDevTools: process.env.NODE_ENV !== "production",
-  });
-})(App);
+export default withSecureHeaders({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: [
+        "'self'",
+        "http://cdn.jsdelivr.net",
+        "https://fonts.googleapis.com/",
+        "'unsafe-inline'",
+      ],
+      scriptSrc:
+        NODE_ENV !== "development" ? ["'self'"] : ["'self'", "'unsafe-inline'"],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com",
+        "https://cdn.jsdelivr.net",
+        "data:;",
+      ],
+      imgSrc: ["'self'", "data:;"],
+    },
+    // reportOnly: true,
+  },
+})(
+  withApollo(({ initialState }) => {
+    return new ApolloClient({
+      link: new BatchHttpLink({
+        uri: GRAPHQL_URL,
+        includeExtensions: true,
+        credentials: "same-origin",
+      }),
+      cache: new InMemoryCache({}).restore(initialState || {}),
+      connectToDevTools: NODE_ENV !== "production",
+    });
+  })(App)
+);

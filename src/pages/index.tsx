@@ -10,6 +10,7 @@ import { useMutation } from "@apollo/react-hooks";
 import { Box, Flex, Stack } from "@chakra-ui/core";
 
 import {
+  NODE_ENV,
   PROGRAM_NOT_FOUND,
   PROGRAM_UNAUTHORIZED,
   StateCourse,
@@ -153,7 +154,7 @@ const Dashboard: FC = () => {
   ] = useMutation(SEARCH_STUDENT);
 
   useUpdateEffect(() => {
-    if (process.env.NODE_ENV !== "test" && user?.admin) {
+    if (NODE_ENV !== "test" && user?.admin) {
       console.log({
         searchProgramData,
         searchStudentData,

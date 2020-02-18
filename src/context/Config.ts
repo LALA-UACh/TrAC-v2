@@ -3,6 +3,7 @@ import { useRememberState } from "use-remember-state";
 
 import { useQuery } from "@apollo/react-hooks";
 
+import { NODE_ENV } from "../../constants";
 import { baseConfig } from "../../constants/baseConfig";
 import {
   failColorScale,
@@ -20,14 +21,14 @@ export const ConfigContext = createContext(baseConfig);
 
 export const Config: FC = ({ children }) => {
   const [configState, setConfigState] =
-    process.env.NODE_ENV === "development"
+    NODE_ENV === "development"
       ? useState(baseConfig)
       : useRememberState("baseConfig", baseConfig);
 
   const { data, loading } = useQuery(CONFIG_QUERY);
 
   useEffect(() => {
-    if (process.env.NODE_ENV === "production" && !loading && data) {
+    if (NODE_ENV === "production" && !loading && data) {
       setConfigState({ ...baseConfig, ...data.config });
     }
   }, [data, loading]);

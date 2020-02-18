@@ -1,11 +1,13 @@
 import nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/sendmail-transport";
 
+import { NODE_ENV } from "../../../constants";
+
 const GMAIL_USERNAME = process.env.GMAIL_USERNAME;
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
 
 const transporter = nodemailer.createTransport({
-  ...(process.env.NODE_ENV === "test"
+  ...(NODE_ENV === "test"
     ? {
         // host: "smtp.mailtrap.io",
         // port: 2525,

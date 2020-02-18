@@ -5,6 +5,7 @@ import { useRememberState } from "use-remember-state";
 import { useQuery } from "@apollo/react-hooks";
 import { Flex, Stack } from "@chakra-ui/core";
 
+import { NODE_ENV } from "../../constants";
 import { AdminConfig } from "../components/admin/BaseConfig";
 import { AdminMenu } from "../components/admin/Menu";
 import { Programs } from "../components/admin/programs";
@@ -29,7 +30,7 @@ const Admin: FC = () => {
   const { data, loading, error } = useQuery(ALL_USERS_ADMIN);
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== "test" && data) {
+    if (NODE_ENV !== "test" && data) {
       console.log("data_all_users_admin", data);
     }
   }, [data]);

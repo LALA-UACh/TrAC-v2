@@ -10,7 +10,7 @@ import {
 
 import { UserType } from "../../../constants";
 import { UserConfig } from "../../../constants/userConfig";
-import { ADMIN } from "../../api_constants";
+import { ADMIN } from "../../constants";
 import { IUser } from "../../db/tables";
 import { Program } from "../data/program";
 

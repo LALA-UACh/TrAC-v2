@@ -20,7 +20,7 @@ import {
 } from "../../../constants";
 import { IContext } from "../../../interfaces";
 import { ArrayPropertyType, IfImplements } from "../../../interfaces/utils";
-import { ADMIN } from "../../api_constants";
+import { ADMIN } from "../../constants";
 import {
   CurriculumsDataLoader,
   ProgramDataByStudentDataLoader,

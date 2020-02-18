@@ -27,4 +27,5 @@ module.exports = withBundleAnalyzer({
     return config;
   },
   target: "serverless",
+  poweredByHeader: false,
 });

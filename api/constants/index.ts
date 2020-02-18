@@ -1,9 +1,11 @@
 import ms from "ms";
 
+import { NODE_ENV } from "../../constants";
+
 export const SECRET =
   process.env.SECRET ??
   (() => {
-    if (process.env.NODE_ENV !== "test") {
+    if (NODE_ENV !== "test") {
       console.warn('Please use the "SECRET" environment variable!');
     }
     return "Vzu93jvOF8huLwqw1u2JOZN1FYc5MRbxQgbKgId";
