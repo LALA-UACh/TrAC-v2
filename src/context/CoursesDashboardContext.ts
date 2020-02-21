@@ -1,10 +1,11 @@
 import { isEqual, uniqWith } from "lodash";
 import { FC, memo, useEffect, useState } from "react";
-import { createHook, createStore } from "react-sweet-state";
+import { createHook, createStore, defaults } from "react-sweet-state";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
 
+import { NODE_ENV } from "../../constants";
 import { ITakenSemester } from "../../interfaces";
 import {
   GET_PERSISTENCE_VALUE,
@@ -16,6 +17,10 @@ import { useIsPersistenceLoading } from "../utils/usePersistenceLoading";
 import { useTracking } from "./Tracking";
 
 const emDash = "—";
+
+if (NODE_ENV === "development") {
+  defaults.devtools = true;
+}
 
 export const pairTermYear = (term: string, year: number) => {
   return term + emDash + year;

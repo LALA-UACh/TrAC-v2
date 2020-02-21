@@ -15,7 +15,9 @@
     "jsx": "preserve",
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "sourceMap": true
+    "sourceMap": true,
+    "assumeChangesOnlyAffectDirectDependencies": true,
+    "pretty": true
     // "noUnusedLocals": true
   },
   "exclude": ["node_modules", "api/*"],
