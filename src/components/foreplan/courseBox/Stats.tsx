@@ -4,10 +4,7 @@ import { range } from "lodash";
 import React, { FC, memo } from "react";
 
 import { ICourse } from "../../../../interfaces";
-import {
-  useForeplanCourseEffort,
-  useForeplanCourseFailRate,
-} from "../../../context/ForeplanContext";
+import { ForeplanHelperStore } from "../../../contextNew/ForeplanContext";
 import { useUser } from "../../../utils/useUser";
 import styles from "./foreplanCourseBox.module.css";
 
@@ -16,8 +13,8 @@ export const failRateColorScalePositive = scaleLinear<string, number>();
 export const failRateColorScaleNegative = scaleLinear<string, number>();
 
 const ForeplanCourseStats: FC<Pick<ICourse, "code">> = memo(({ code }) => {
-  const [failRate] = useForeplanCourseFailRate({ code });
-  const [effort] = useForeplanCourseEffort({ code });
+  const failRate = ForeplanHelperStore.useForeplanCourseFailRate({ code });
+  const effort = ForeplanHelperStore.useForeplanCourseEffort({ code });
   const fillColor =
     failRate >= 0.3
       ? ((failRateColorScaleNegative(failRate) as unknown) as string)

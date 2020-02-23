@@ -21,11 +21,9 @@ import {
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";
-import {
-  useForeplanIsDirectTake,
-  useIsForeplanCourseChecked,
-} from "../../../context/ForeplanContext";
+import { useIsForeplanCourseChecked } from "../../../context/ForeplanContext";
 import { useTracking } from "../../../context/Tracking";
+import { ForeplanHelperStore } from "../../../contextNew/ForeplanContext";
 import styles from "./foreplanCourseBox.module.css";
 
 const useWarningModel = ({
@@ -148,7 +146,7 @@ const ForeplanCourseCheckbox: FC<Pick<
     checked,
     { addCourseForeplan, removeCourseForeplan, setFutureCourseRequisitesState },
   ] = useIsForeplanCourseChecked({ code });
-  const [directTake] = useForeplanIsDirectTake({ code });
+  const directTake = ForeplanHelperStore.useForeplanIsDirectTake({ code });
   const { onOpen, manuallyClosed, modalComponent } = useWarningModel({
     code,
     name,

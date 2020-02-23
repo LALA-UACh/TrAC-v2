@@ -31,13 +31,12 @@ import {
 import { ConfigContext } from "../../../context/Config";
 import {
   useAnyForeplanCourses,
-  useForeplanAdvice,
-  useForeplanAdvices,
   useForeplanCoursesSize,
   useForeplanTotalCreditsTaken,
   useIsForeplanActive,
 } from "../../../context/ForeplanContext";
 import { useTracking } from "../../../context/Tracking";
+import { ForeplanHelperStore } from "../../../contextNew/ForeplanContext";
 import { useUser } from "../../../utils/useUser";
 
 const ForeplanContentRowList = dynamic(() => import("./List"));
@@ -264,7 +263,7 @@ const ForeplanTotalCredits: FC<{ isSummaryOpen?: boolean }> = memo(
 
 const ForeplanAdvice: FC = memo(() => {
   const [totalCreditsTaken] = useForeplanTotalCreditsTaken();
-  const [advice] = useForeplanAdvice({
+  const advice = ForeplanHelperStore.useForeplanAdvice({
     totalCreditsTaken,
   });
   const config = useContext(ConfigContext);
@@ -445,7 +444,7 @@ const Waffle: FC<{
 );
 
 const ForeplanWaffleCharts: FC = memo(() => {
-  const [advices] = useForeplanAdvices();
+  const advices = ForeplanHelperStore.useForeplanAdvices();
   const [totalCreditsTaken] = useForeplanTotalCreditsTaken();
 
   return (

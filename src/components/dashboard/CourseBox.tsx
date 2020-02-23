@@ -32,12 +32,12 @@ import {
   useExplicitSemester,
 } from "../../context/CoursesDashboardContext";
 import {
-  useForeplanIsDirectTake,
   useForeplanIsFutureCourseRequisitesFulfilled,
   useIsForeplanActive,
   useIsPossibleToTakeForeplan,
 } from "../../context/ForeplanContext";
 import { useTracking } from "../../context/Tracking";
+import { ForeplanHelperStore } from "../../contextNew/ForeplanContext";
 import { Theme, useTheme } from "../../utils/useTheme";
 import { useUser } from "../../utils/useUser";
 import styles from "./CourseBox.module.css";
@@ -71,7 +71,7 @@ const useIsCourseFuturePlanificationFulfilled = ({
   const [isPossibleToTakeForeplan] = useIsPossibleToTakeForeplan({
     state,
   });
-  const [isDirectTake] = useForeplanIsDirectTake({ code });
+  const isDirectTake = ForeplanHelperStore.useForeplanIsDirectTake({ code });
   const [
     isFutureCourseRequisitesFulfilled,
   ] = useForeplanIsFutureCourseRequisitesFulfilled({

@@ -1,8 +1,10 @@
 import { WatchQueryFetchPolicy } from "apollo-client";
 import Router from "next/router";
+import { useMemo } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
 
+import { baseUserConfig, UserConfig } from "../../constants/userConfig";
 import { CURRENT_USER, IUserFragment } from "../graphql/queries";
 
 export function useUser(
@@ -19,13 +21,27 @@ export function useUser(
     requireAdmin: false,
     requireAuth: false,
   }
-): { user?: IUserFragment | null; loading?: boolean } {
+): {
+  user?: (IUserFragment & { config: UserConfig }) | null;
+  loading?: boolean;
+} {
   const { loading, error, data } = useQuery(CURRENT_USER, {
     ssr: false,
     fetchPolicy,
   });
 
-  const user = data?.currentUser?.user;
+  const user = useMemo(() => {
+    if (data?.currentUser?.user) {
+      return {
+        ...data.currentUser.user,
+        config: {
+          ...baseUserConfig,
+          ...data.currentUser.user.config,
+        },
+      };
+    }
+    return undefined;
+  }, [data]);
 
   if (error) {
     console.error(JSON.stringify(error, null, 2));

@@ -16,7 +16,7 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "sourceMap": true,
-    "assumeChangesOnlyAffectDirectDependencies": true,
+    // "assumeChangesOnlyAffectDirectDependencies": true,
     "pretty": true
     // "noUnusedLocals": true
   },

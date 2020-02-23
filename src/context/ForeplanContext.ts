@@ -7,19 +7,16 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 
 import { StateCourse } from "../../constants";
 import { ICourse } from "../../interfaces";
-import { PerformanceByLoad } from "../../typings/graphql";
 import {
   GET_PERSISTENCE_VALUE,
   SET_PERSISTENCE_VALUE,
 } from "../graphql/queries";
 import { useDashboardInputState } from "../pages";
-import { stringListToBooleanMap } from "../utils";
 import { useIsPersistenceLoading } from "../utils/usePersistenceLoading";
 import { useUser } from "../utils/useUser";
 import { useTracking } from "./Tracking";
 
 const emptyObject = Object.freeze({});
-const emptyArray = Object.freeze([]);
 
 export type ICreditsNumber = { credits: number };
 
@@ -31,120 +28,6 @@ export interface IForeplanActiveData {
     [coursesToOpen: string]: { [requisite: string]: boolean | undefined };
   };
 }
-
-export interface IForeplanHelperData {
-  courseDirectTake: Record<string, boolean | undefined>;
-  courseFailRate: Record<string, number>;
-  courseEffort: Record<string, number>;
-  advices: readonly PerformanceByLoad[];
-}
-
-const defaultForeplanHelperStore: IForeplanHelperData = Object.freeze({
-  courseDirectTake: emptyObject,
-  courseFailRate: emptyObject,
-  courseEffort: emptyObject,
-  advices: emptyArray,
-});
-
-const ForeplanHelperStore = createStore({
-  initialState: defaultForeplanHelperStore,
-  actions: {
-    setDirectTakeData: (data: string[]) => ({ setState }) => {
-      setState({
-        courseDirectTake: stringListToBooleanMap(data),
-      });
-    },
-    setFailRateData: (data: { code: string; failRate: number }[]) => ({
-      setState,
-    }) => {
-      setState({
-        courseFailRate: data.reduce<Record<string, number>>(
-          (acum, { code, failRate }) => {
-            acum[code] = failRate;
-            return acum;
-          },
-          {}
-        ),
-      });
-    },
-    setEffortData: (data: { code: string; effort: number }[]) => ({
-      setState,
-    }) => {
-      setState({
-        courseEffort: data.reduce<Record<string, number>>(
-          (acum, { code, effort }) => {
-            acum[code] = effort;
-            return acum;
-          },
-          {}
-        ),
-      });
-    },
-    setForeplanAdvices: (advices: IForeplanHelperData["advices"]) => ({
-      setState,
-    }) => {
-      setState({
-        advices,
-      });
-    },
-  },
-});
-
-export const useForeplanHelperData = createHook(ForeplanHelperStore);
-
-export const useForeplanHelperActions = createHook(ForeplanHelperStore, {
-  selector: null,
-});
-
-export const useForeplanIsDirectTake = createHook(ForeplanHelperStore, {
-  selector: ({ courseDirectTake }, { code }: { code: string }) => {
-    return (
-      courseDirectTake[code] ||
-      (courseDirectTake === emptyObject ? undefined : false)
-    );
-  },
-});
-
-export const useForeplanCourseFailRate = createHook(ForeplanHelperStore, {
-  selector: ({ courseFailRate }, { code }: { code: string }) => {
-    return courseFailRate[code] || 0;
-  },
-});
-
-export const useForeplanCourseEffort = createHook(ForeplanHelperStore, {
-  selector: ({ courseEffort }, { code }: { code: string }) => {
-    return courseEffort[code] || 1;
-  },
-});
-
-export const useForeplanAdvice = createHook(ForeplanHelperStore, {
-  selector: (
-    { advices },
-    { totalCreditsTaken }: { totalCreditsTaken: number }
-  ) => {
-    return (
-      advices.find(({ lowerBoundary, upperBoundary }) => {
-        if (
-          totalCreditsTaken >= lowerBoundary &&
-          totalCreditsTaken <= upperBoundary
-        ) {
-          return true;
-        }
-        return false;
-      }) ??
-      (() => {
-        console.warn("Advice not found for ", totalCreditsTaken);
-        return advices[advices.length - 1];
-      })()
-    );
-  },
-});
-
-export const useForeplanAdvices = createHook(ForeplanHelperStore, {
-  selector: ({ advices }) => {
-    return advices;
-  },
-});
 
 const rememberForeplanDataKey = "TrAC_foreplan_data";
 
