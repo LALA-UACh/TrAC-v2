@@ -13,8 +13,10 @@ export const failRateColorScalePositive = scaleLinear<string, number>();
 export const failRateColorScaleNegative = scaleLinear<string, number>();
 
 const ForeplanCourseStats: FC<Pick<ICourse, "code">> = memo(({ code }) => {
-  const failRate = ForeplanHelperStore.useForeplanCourseFailRate({ code });
-  const effort = ForeplanHelperStore.useForeplanCourseEffort({ code });
+  const failRate = ForeplanHelperStore.hooks.useForeplanCourseFailRate({
+    code,
+  });
+  const effort = ForeplanHelperStore.hooks.useForeplanCourseEffort({ code });
   const fillColor =
     failRate >= 0.3
       ? ((failRateColorScaleNegative(failRate) as unknown) as string)

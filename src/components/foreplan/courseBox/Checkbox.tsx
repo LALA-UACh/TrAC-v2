@@ -146,7 +146,9 @@ const ForeplanCourseCheckbox: FC<Pick<
     checked,
     { addCourseForeplan, removeCourseForeplan, setFutureCourseRequisitesState },
   ] = useIsForeplanCourseChecked({ code });
-  const directTake = ForeplanHelperStore.useForeplanIsDirectTake({ code });
+  const directTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake({
+    code,
+  });
   const { onOpen, manuallyClosed, modalComponent } = useWarningModel({
     code,
     name,

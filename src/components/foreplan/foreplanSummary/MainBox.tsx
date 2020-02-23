@@ -263,7 +263,7 @@ const ForeplanTotalCredits: FC<{ isSummaryOpen?: boolean }> = memo(
 
 const ForeplanAdvice: FC = memo(() => {
   const [totalCreditsTaken] = useForeplanTotalCreditsTaken();
-  const advice = ForeplanHelperStore.useForeplanAdvice({
+  const advice = ForeplanHelperStore.hooks.useForeplanAdvice({
     totalCreditsTaken,
   });
   const config = useContext(ConfigContext);
@@ -444,7 +444,7 @@ const Waffle: FC<{
 );
 
 const ForeplanWaffleCharts: FC = memo(() => {
-  const advices = ForeplanHelperStore.useForeplanAdvices();
+  const advices = ForeplanHelperStore.hooks.useForeplanAdvices();
   const [totalCreditsTaken] = useForeplanTotalCreditsTaken();
 
   return (

@@ -71,7 +71,9 @@ const useIsCourseFuturePlanificationFulfilled = ({
   const [isPossibleToTakeForeplan] = useIsPossibleToTakeForeplan({
     state,
   });
-  const isDirectTake = ForeplanHelperStore.useForeplanIsDirectTake({ code });
+  const isDirectTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake({
+    code,
+  });
   const [
     isFutureCourseRequisitesFulfilled,
   ] = useForeplanIsFutureCourseRequisitesFulfilled({
