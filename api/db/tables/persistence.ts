@@ -10,6 +10,8 @@ export interface IPersistence {
   data: Record<string, any>;
 
   timestamp: Date;
+
+  id: number;
 }
 
 export const PersistenceTable = () => dbAuth<IPersistence>(PERSISTENCE_TABLE);

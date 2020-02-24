@@ -42,7 +42,7 @@ export const PerformanceLoadAdvicesDataLoader = new DataLoader(
             lp_value,
             message_title,
             message_text,
-            label,
+            cluster_label,
             student_cluster: rowStudentCluster,
           }) => {
             return {
@@ -55,7 +55,7 @@ export const PerformanceLoadAdvicesDataLoader = new DataLoader(
               failRateHigh: toInteger(lp_value * 100),
               adviceTitle: message_title,
               adviceParagraph: message_text,
-              label,
+              clusterLabel: cluster_label,
               isStudentCluster: rowStudentCluster === studentCluster,
             };
           }

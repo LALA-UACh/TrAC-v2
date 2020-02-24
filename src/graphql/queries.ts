@@ -366,7 +366,7 @@ export const PERFORMANCE_BY_LOAD_ADVICES: DocumentNode<
         | "failRateHigh"
         | "adviceTitle"
         | "adviceParagraph"
-        | "label"
+        | "clusterLabel"
         | "isStudentCluster"
       >[];
     },
@@ -385,7 +385,7 @@ export const PERFORMANCE_BY_LOAD_ADVICES: DocumentNode<
       failRateHigh
       adviceTitle
       adviceParagraph
-      label
+      clusterLabel
       isStudentCluster
     }
   }

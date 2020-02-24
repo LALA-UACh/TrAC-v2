@@ -458,7 +458,13 @@ const ForeplanWaffleCharts: FC = memo(() => {
         })
         .map(
           (
-            { failRateLow, failRateMid, failRateHigh, label, isStudentCluster },
+            {
+              failRateLow,
+              failRateMid,
+              failRateHigh,
+              clusterLabel,
+              isStudentCluster,
+            },
             key
           ) => {
             return (
@@ -468,7 +474,7 @@ const ForeplanWaffleCharts: FC = memo(() => {
                 failRateMid={failRateMid ?? 66}
                 failRateHigh={failRateHigh ?? 100}
                 isStudentCluster={isStudentCluster}
-                label={label}
+                label={clusterLabel}
               />
             );
           }

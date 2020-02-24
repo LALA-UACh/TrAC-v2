@@ -202,7 +202,7 @@ export type PerformanceByLoad = {
   failRateHigh: Scalars['Int'],
   adviceTitle: Scalars['String'],
   adviceParagraph: Scalars['String'],
-  label: Scalars['String'],
+  clusterLabel: Scalars['String'],
   isStudentCluster: Scalars['Boolean'],
 };
 

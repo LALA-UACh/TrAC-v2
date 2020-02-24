@@ -54,7 +54,7 @@ export class PerformanceByLoad {
 
   // performance_by_load => label
   @Field()
-  label: string;
+  clusterLabel: string;
 
   // performance_by_load ~ student_cluster
   @Field()

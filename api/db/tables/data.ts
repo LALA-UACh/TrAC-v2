@@ -189,7 +189,7 @@ export interface IPerformanceByLoad {
   lp_value: number;
   message_title: string;
   message_text: string;
-  label: string;
+  cluster_label: string;
 }
 
 export const PERFORMANCE_BY_LOAD_TABLE = "performance_by_load";

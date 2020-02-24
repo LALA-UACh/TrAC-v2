@@ -11,7 +11,7 @@
     "lp_value": 0.15,
     "message_title": "¡Tu carga de estudio parece algo baja!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "bajo"
+    "cluster_label": "bajo"
   },
   {
     "id": 1,
@@ -25,7 +25,7 @@
     "lp_value": 0.2,
     "message_title": "¡Tu carga planeada parece moderada!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "bajo"
+    "cluster_label": "bajo"
   },
   {
     "id": 2,
@@ -39,7 +39,7 @@
     "lp_value": 0.5,
     "message_title": "¡Tu carga de estudio es alta!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "bajo"
+    "cluster_label": "bajo"
   },
   {
     "id": 3,
@@ -53,7 +53,7 @@
     "lp_value": 0.1,
     "message_title": "¡Tu carga de estudio parece algo baja!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "medio"
+    "cluster_label": "medio"
   },
   {
     "id": 4,
@@ -67,7 +67,7 @@
     "lp_value": 0.13,
     "message_title": "¡Tu carga planeada parece moderada!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "medio"
+    "cluster_label": "medio"
   },
   {
     "id": 5,
@@ -81,7 +81,7 @@
     "lp_value": 0.45,
     "message_title": "¡Tu carga de estudio es alta!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "medio"
+    "cluster_label": "medio"
   },
   {
     "id": 6,
@@ -95,7 +95,7 @@
     "lp_value": 0.05,
     "message_title": "¡Tu carga de estudio parece algo baja!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "alto"
+    "cluster_label": "alto"
   },
   {
     "id": 7,
@@ -109,7 +109,7 @@
     "lp_value": 0.1,
     "message_title": "¡Tu carga planeada parece moderada!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "alto"
+    "cluster_label": "alto"
   },
   {
     "id": 8,
@@ -123,7 +123,7 @@
     "lp_value": 0.1,
     "message_title": "¡Tu carga de estudio es alta!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "alto"
+    "cluster_label": "alto"
   },
   {
     "id": 9,
@@ -137,7 +137,7 @@
     "lp_value": 0.15,
     "message_title": "¡Tu carga de estudio parece algo baja!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "bajo"
+    "cluster_label": "bajo"
   },
   {
     "id": 10,
@@ -151,7 +151,7 @@
     "lp_value": 0.2,
     "message_title": "¡Tu carga planeada parece moderada!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "bajo"
+    "cluster_label": "bajo"
   },
   {
     "id": 11,
@@ -165,7 +165,7 @@
     "lp_value": 0.5,
     "message_title": "¡Tu carga de estudio es alta!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "bajo"
+    "cluster_label": "bajo"
   },
   {
     "id": 12,
@@ -179,7 +179,7 @@
     "lp_value": 0.1,
     "message_title": "¡Tu carga de estudio parece algo baja!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "medio"
+    "cluster_label": "medio"
   },
   {
     "id": 13,
@@ -193,7 +193,7 @@
     "lp_value": 0.13,
     "message_title": "¡Tu carga planeada parece moderada!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "medio"
+    "cluster_label": "medio"
   },
   {
     "id": 14,
@@ -207,7 +207,7 @@
     "lp_value": 0.45,
     "message_title": "¡Tu carga de estudio es alta!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "medio"
+    "cluster_label": "medio"
   },
   {
     "id": 15,
@@ -221,7 +221,7 @@
     "lp_value": 0.05,
     "message_title": "¡Tu carga de estudio parece algo baja!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "alto"
+    "cluster_label": "alto"
   },
   {
     "id": 16,
@@ -235,7 +235,7 @@
     "lp_value": 0.1,
     "message_title": "¡Tu carga planeada parece moderada!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "alto"
+    "cluster_label": "alto"
   },
   {
     "id": 17,
@@ -249,6 +249,6 @@
     "lp_value": 0.1,
     "message_title": "¡Tu carga de estudio es alta!",
     "message_text": "Un <LowFailRate /> de estudiantes en años anteriores que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
-    "label": "alto"
+    "cluster_label": "alto"
   }
 ]

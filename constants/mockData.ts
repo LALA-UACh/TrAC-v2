@@ -5930,7 +5930,7 @@ const data: {
       failRateMid: 25,
       failRateHigh: 15,
       loadUnit: PerformanceLoadUnit.Credits,
-      label: "bajo",
+      clusterLabel: "bajo",
       isStudentCluster: false,
     },
     {
@@ -5945,7 +5945,7 @@ const data: {
       failRateMid: 35,
       failRateHigh: 20,
       loadUnit: PerformanceLoadUnit.Credits,
-      label: "bajo",
+      clusterLabel: "bajo",
       isStudentCluster: false,
     },
     {
@@ -5960,7 +5960,7 @@ const data: {
       failRateMid: 30,
       failRateHigh: 50,
       loadUnit: PerformanceLoadUnit.Credits,
-      label: "bajo",
+      clusterLabel: "bajo",
       isStudentCluster: false,
     },
 
@@ -5977,7 +5977,7 @@ const data: {
       failRateMid: 15,
       failRateHigh: 10,
       loadUnit: PerformanceLoadUnit.Credits,
-      label: "medio",
+      clusterLabel: "medio",
       isStudentCluster: false,
     },
     {
@@ -5992,7 +5992,7 @@ const data: {
       failRateMid: 27,
       failRateHigh: 13,
       loadUnit: PerformanceLoadUnit.Credits,
-      label: "medio",
+      clusterLabel: "medio",
       isStudentCluster: false,
     },
     {
@@ -6007,7 +6007,7 @@ const data: {
       failRateMid: 35,
       failRateHigh: 45,
       loadUnit: PerformanceLoadUnit.Credits,
-      label: "medio",
+      clusterLabel: "medio",
       isStudentCluster: false,
     },
     {
@@ -6023,7 +6023,7 @@ const data: {
       failRateMid: 10,
       failRateHigh: 5,
       loadUnit: PerformanceLoadUnit.Credits,
-      label: "alto",
+      clusterLabel: "alto",
       isStudentCluster: true,
     },
     {
@@ -6038,7 +6038,7 @@ const data: {
       failRateMid: 20,
       failRateHigh: 10,
       loadUnit: PerformanceLoadUnit.Credits,
-      label: "alto",
+      clusterLabel: "alto",
       isStudentCluster: true,
     },
     {
@@ -6053,7 +6053,7 @@ const data: {
       failRateMid: 35,
       failRateHigh: 35,
       loadUnit: PerformanceLoadUnit.Credits,
-      label: "alto",
+      clusterLabel: "alto",
       isStudentCluster: true,
     },
   ],

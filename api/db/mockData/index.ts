@@ -503,7 +503,7 @@ const dataImport = async () => {
         table.float("lp_value", 4).notNullable();
         table.text("message_title").notNullable();
         table.text("message_text").notNullable();
-        table.text("label").notNullable();
+        table.text("cluster_label").notNullable();
       });
 
       await PerformanceByLoadTable().insert(
@@ -543,6 +543,7 @@ const dataImport = async () => {
         table.text("key").notNullable();
         table.json("data").notNullable();
         table.timestamp("timestamp", { useTz: true }).notNullable();
+        table.increments("id").primary();
 
         table.unique(["user", "key"]);
       });

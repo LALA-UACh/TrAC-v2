@@ -104,12 +104,12 @@ type Mutation {
 type PerformanceByLoad {
   adviceParagraph: String!
   adviceTitle: String!
+  clusterLabel: String!
   failRateHigh: Int!
   failRateLow: Int!
   failRateMid: Int!
   id: Float!
   isStudentCluster: Boolean!
-  label: String!
   loadUnit: PerformanceLoadUnit!
   lowerBoundary: Float!
   upperBoundary: Float!
