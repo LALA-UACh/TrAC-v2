@@ -23,13 +23,13 @@ import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
 import { LoadingPage } from "../components/Loading";
 import { ConfigContext } from "../context/Config";
-import { CoursesDashbordManager } from "../context/CoursesDashboardContext";
-import { TrackingManager, useTracking } from "../context/Tracking";
+import { CoursesDashbordManager } from "../context/CoursesDashboard";
 import {
   ForeplanActiveStore,
   ForeplanContextManager,
   ForeplanHelperStore,
-} from "../contextNew/ForeplanContext";
+} from "../context/ForeplanContext";
+import { setTrackingData, track, TrackingManager } from "../context/Tracking";
 import {
   DIRECT_TAKE_COURSES,
   INDIRECT_TAKE_COURSES,
@@ -103,8 +103,6 @@ const Dashboard: FC = () => {
       });
     }
   }, [mock, mockData, setMockData]);
-
-  const [, { setTrackingData, track }] = useTracking();
 
   const [
     searchPerformanceByLoad,
@@ -182,7 +180,7 @@ const Dashboard: FC = () => {
     setTrackingData({
       curriculum: chosenCurriculum,
     });
-  }, [chosenCurriculum, setTrackingData]);
+  }, [chosenCurriculum]);
 
   useEffect(() => {
     if (searchStudentData?.student) {
@@ -197,7 +195,7 @@ const Dashboard: FC = () => {
       });
       setStudent(undefined);
     }
-  }, [searchStudentData, setTrackingData, setStudent]);
+  }, [searchStudentData, setStudent]);
 
   useEffect(() => {
     if (searchProgramData?.program) {
@@ -214,7 +212,7 @@ const Dashboard: FC = () => {
         program: undefined,
       });
     }
-  }, [searchProgramData, setTrackingData, setMock, setProgram]);
+  }, [searchProgramData, setMock, setProgram]);
 
   useEffect(() => {
     if (user?.type === UserType.Student) {
@@ -576,7 +574,7 @@ const Dashboard: FC = () => {
         });
       }, 1000);
     }
-  }, [user, track]);
+  }, [user]);
 
   const onlyProgramSearch =
     !!searchProgramData?.program && !searchStudentData?.student;

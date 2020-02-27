@@ -16,7 +16,7 @@ import { AxisLeft } from "@vx/axis";
 
 import { SVG_TEXT } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
-import { useExplicitSemester } from "../../context/CoursesDashboardContext";
+import { CoursesDashboardStore } from "../../context/CoursesDashboard";
 
 const TimeLineTooltip: FC<{
   children: ReactElement;
@@ -100,7 +100,7 @@ export const TimeLine: FC<{
     semestersTaken,
   }) => {
     const config = useContext(ConfigContext);
-    const [explicitSemester, { checkExplicitSemester }] = useExplicitSemester();
+    const explicitSemester = CoursesDashboardStore.hooks.useExplicitSemester();
 
     const { cumulatedGrades, semestralGrades } = useMemo(() => {
       if (
@@ -151,7 +151,7 @@ export const TimeLine: FC<{
                   cx={key * 70 + 70}
                   r={5}
                   fill={
-                    checkExplicitSemester({
+                    CoursesDashboardStore.actions.checkExplicitSemester({
                       term: semestersTaken[key].term,
                       year: semestersTaken[key].year,
                     })

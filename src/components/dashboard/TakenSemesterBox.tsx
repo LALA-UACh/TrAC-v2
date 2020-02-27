@@ -4,10 +4,7 @@ import { Badge, BadgeProps, Box, Stack } from "@chakra-ui/core";
 
 import { termTypeToNumber } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
-import {
-  useActiveSemestersTaken,
-  useExplicitSemester,
-} from "../../context/CoursesDashboardContext";
+import { CoursesDashboardStore } from "../../context/CoursesDashboard";
 
 export const TakenSemesterBox: FC<{
   year: number;
@@ -16,16 +13,13 @@ export const TakenSemesterBox: FC<{
 }> = memo(({ year, term, comments }) => {
   const config = useContext(ConfigContext);
 
-  const [semestersTaken] = useActiveSemestersTaken();
+  const semestersTaken = CoursesDashboardStore.hooks.useActiveSemestersTaken();
 
-  const [
-    explicitSemester,
-    { toggleExplicitSemester, checkExplicitSemester },
-  ] = useExplicitSemester();
+  const explicitSemester = CoursesDashboardStore.hooks.useExplicitSemester();
 
   const borderColor = useMemo(() => {
     if (
-      checkExplicitSemester({ term, year }) ||
+      CoursesDashboardStore.actions.checkExplicitSemester({ term, year }) ||
       (explicitSemester === undefined &&
         semestersTaken?.find(v => year === v.year && term == v.term))
     ) {
@@ -82,7 +76,7 @@ export const TakenSemesterBox: FC<{
       alignItems="center"
       display="flex"
       onClick={() => {
-        toggleExplicitSemester({
+        CoursesDashboardStore.actions.toggleExplicitSemester({
           term,
           year,
         });

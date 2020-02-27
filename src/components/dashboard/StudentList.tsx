@@ -31,7 +31,7 @@ import {
 
 import { NODE_ENV } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
-import { useTracking } from "../../context/Tracking";
+import { track } from "../../context/Tracking";
 import { STUDENT_LIST } from "../../graphql/queries";
 import { useUser } from "../../utils/useUser";
 
@@ -48,8 +48,6 @@ export const StudentList: FC<{
   program_id?: string;
   searchStudent: (student: string) => Promise<void>;
 }> = ({ mockData, program_id, searchStudent }) => {
-  const [, { track }] = useTracking();
-
   const { data: dataStudentList, loading: loadingData } = useQuery(
     STUDENT_LIST,
     {

@@ -8,18 +8,17 @@ import { Box, Flex, Text } from "@chakra-ui/core";
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";
-import { useTracking } from "../../../context/Tracking";
 import {
   ForeplanActiveStore,
   ICreditsNumber,
-} from "../../../contextNew/ForeplanContext";
+} from "../../../context/ForeplanContext";
+import { track } from "../../../context/Tracking";
 
 const ForeplanContentRowListItem: FC<Pick<ICourse, "code" | "name"> &
   ICreditsNumber> = memo(({ code, name, credits }) => {
   const config = useContext(ConfigContext);
   const shouldTruncate =
     name.length > config.FOREPLAN_SUMMARY_LIST_NAME_TRUNCATE_LENGTH;
-  const [, { track }] = useTracking();
 
   return (
     <>

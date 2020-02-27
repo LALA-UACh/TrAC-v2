@@ -4,7 +4,7 @@ import React, { FC, memo, useContext, useEffect, useState } from "react";
 import { Flex, Stack, Text } from "@chakra-ui/core";
 
 import { ConfigContext } from "../../context/Config";
-import { useTracking } from "../../context/Tracking";
+import { setTrackingData, track } from "../../context/Tracking";
 
 export const Dropout: FC<{ probability?: number; accuracy?: number }> = memo(
   ({ probability, accuracy }) => {
@@ -18,7 +18,6 @@ export const Dropout: FC<{ probability?: number; accuracy?: number }> = memo(
 
     const [show, setShow] = useState(false);
 
-    const [, { setTrackingData, track }] = useTracking();
     useEffect(() => {
       setTrackingData({
         showingPrediction: show,

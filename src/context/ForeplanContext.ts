@@ -1,4 +1,4 @@
-import { every, reduce, size } from "lodash";
+import { assign, every, reduce, size } from "lodash";
 import { FC, memo, useEffect, useState } from "react";
 import { createStore } from "react-state-selector";
 import { useDebounce } from "react-use";
@@ -8,7 +8,6 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import { StateCourse } from "../../constants";
 import { ICourse } from "../../interfaces";
 import { PerformanceByLoad } from "../../typings/graphql";
-import { useTracking } from "../context/Tracking";
 import {
   GET_PERSISTENCE_VALUE,
   SET_PERSISTENCE_VALUE,
@@ -17,6 +16,7 @@ import { useDashboardInputState } from "../pages";
 import { stringListToBooleanMap } from "../utils";
 import { useIsPersistenceLoading } from "../utils/usePersistenceLoading";
 import { useUser } from "../utils/useUser";
+import { setTrackingData } from "./Tracking";
 
 const emptyObject = Object.freeze({});
 const emptyArray = Object.freeze([]) as [];
@@ -188,8 +188,8 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
         }
       }
     },
-    reset: (data: IForeplanActiveData = defaultForeplanActiveData) => () =>
-      data,
+    reset: (data: IForeplanActiveData = defaultForeplanActiveData) => draft =>
+      assign(draft, data),
   },
   hooks: {
     useIsForeplanCourseChecked: (
@@ -244,7 +244,7 @@ const rememberForeplanDataKey = "TrAC_foreplan_data";
 
 export const ForeplanContextManager: FC = memo(() => {
   const { program, student, mock, chosenCurriculum } = useDashboardInputState();
-  // const [state, { reset, disableForeplan }] = useForeplanActiveData();
+
   const state = ForeplanActiveStore.useStore();
 
   const { user } = useUser({
@@ -301,8 +301,6 @@ export const ForeplanContextManager: FC = memo(() => {
       ForeplanActiveStore.actions.reset();
     }
   }, [dataRememberForeplan, loadingRememberForeplan]);
-
-  const [, { setTrackingData }] = useTracking();
 
   useEffect(() => {
     if (!loadingRememberForeplan) {

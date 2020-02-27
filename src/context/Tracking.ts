@@ -1,6 +1,6 @@
-import { reduce } from "lodash";
-import { FC, useCallback, useEffect, useMemo } from "react";
-import { createHook, createStore } from "react-sweet-state";
+import { assign, reduce } from "lodash";
+import { FC, memo, useCallback, useEffect, useMemo } from "react";
+import { createStore } from "react-state-selector";
 
 import { useMutation } from "@apollo/react-hooks";
 
@@ -24,29 +24,29 @@ type TrackingTemplateData = {
   target?: string;
 };
 
-const TrackingStore = createStore({
-  initialState: {} as TrackingTemplateData,
+const initialState: TrackingTemplateData = Object.freeze({});
+
+export const TrackingStore = createStore(initialState, {
   actions: {
     setTrackingData: (
       data: Omit<TrackingTemplateData, "action" | "effect" | "target">
-    ) => ({ setState }) => {
-      setState(data);
+    ) => draft => {
+      assign(draft, data);
     },
-    track: (data: { action: string; effect: string; target: string }) => ({
-      setState,
-    }) => {
-      setState(data);
+    track: (data: {
+      action: string;
+      effect: string;
+      target: string;
+    }) => draft => {
+      assign(draft, data);
     },
   },
 });
 
-const useTrackingStore = createHook(TrackingStore);
-export const useTracking = createHook(TrackingStore, {
-  selector: null,
-});
+export const { setTrackingData, track } = TrackingStore.actions;
 
-export const TrackingManager: FC = () => {
-  const [state] = useTrackingStore();
+export const TrackingManager: FC = memo(() => {
+  const state = TrackingStore.useStore();
 
   const { user } = useUser({
     fetchPolicy: "cache-only",
@@ -121,8 +121,9 @@ export const TrackingManager: FC = () => {
         }).catch(err => {
           console.error(JSON.stringify(err, null, 2));
         });
-      }, 50);
+      }, 0);
     }
   }, [trackAction]);
+
   return null;
-};
+});

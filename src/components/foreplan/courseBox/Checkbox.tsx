@@ -21,11 +21,11 @@ import {
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";
-import { useTracking } from "../../../context/Tracking";
 import {
   ForeplanActiveStore,
   ForeplanHelperStore,
-} from "../../../contextNew/ForeplanContext";
+} from "../../../context/ForeplanContext";
+import { track } from "../../../context/Tracking";
 import styles from "./foreplanCourseBox.module.css";
 
 const useWarningModel = ({
@@ -161,7 +161,6 @@ const ForeplanCourseCheckbox: FC<Pick<
     name,
     isPossible: !directTake,
   });
-  const [, { track }] = useTracking();
 
   return (
     <>

@@ -22,21 +22,15 @@ import { StateCourse, termTypeToNumber } from "../../../constants";
 import { ICourse, ITakenCourse, ITakenSemester } from "../../../interfaces";
 import { ConfigContext } from "../../context/Config";
 import {
+  CoursesDashboardStore,
   pairTermYear,
-  useActiveCourse,
-  useActiveFlow,
-  useActiveRequisites,
-  useCheckExplicitSemester,
-  useDashboardCoursesActions,
-  useDashboardIsCourseOpen,
-  useExplicitSemester,
-} from "../../context/CoursesDashboardContext";
-import { useTracking } from "../../context/Tracking";
+} from "../../context/CoursesDashboard";
 import {
   ForeplanActiveStore,
   ForeplanHelperStore,
-} from "../../contextNew/ForeplanContext";
-import { Theme, useTheme } from "../../utils/useTheme";
+} from "../../context/ForeplanContext";
+import { track } from "../../context/Tracking";
+import { Theme, ThemeStore } from "../../utils/useTheme";
 import { useUser } from "../../utils/useUser";
 import styles from "./CourseBox.module.css";
 import { Histogram } from "./Histogram";
@@ -108,15 +102,17 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
   }) => {
     const config = useContext(ConfigContext);
 
-    const [activeCourse] = useActiveCourse({ code });
-    const [explicitSemester, { checkExplicitSemester }] = useExplicitSemester();
+    const activeCourse = CoursesDashboardStore.hooks.useActiveCourse({ code });
+    const explicitSemester = CoursesDashboardStore.hooks.useExplicitSemester();
 
     const opacity = useMemo(() => {
       if (activeCourse) {
         return 1;
       }
       if (explicitSemester) {
-        if (checkExplicitSemester(semestersTaken)) {
+        if (
+          CoursesDashboardStore.actions.checkExplicitSemester(semestersTaken)
+        ) {
           return 1;
         }
         return 0.5;
@@ -192,9 +188,7 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
 const MainBlockOuter: FC<Pick<ICourse, "code" | "flow" | "requisites"> & {
   semestersTaken: ITakenSemester[];
 }> = memo(({ children, code, flow, requisites, semestersTaken }) => {
-  const [, { track }] = useTracking();
-  const [, { addCourse, removeCourse }] = useDashboardCoursesActions();
-  const [isOpen, { toggleOpenCourse }] = useDashboardIsCourseOpen({ code });
+  const isOpen = CoursesDashboardStore.hooks.useDashboardIsCourseOpen({ code });
   const config = useContext(ConfigContext);
   return (
     <Flex
@@ -208,17 +202,17 @@ const MainBlockOuter: FC<Pick<ICourse, "code" | "flow" | "requisites"> & {
       borderRadius="5px 0px 0x 5px"
       bg={config.COURSE_BOX_BACKGROUND_COLOR}
       onClick={() => {
-        toggleOpenCourse(code);
+        CoursesDashboardStore.actions.toggleOpenCourse(code);
 
         if (!isOpen) {
-          addCourse({
+          CoursesDashboardStore.actions.addCourse({
             course: code,
             flow,
             requisites,
             semestersTaken,
           });
         } else {
-          removeCourse(code);
+          CoursesDashboardStore.actions.removeCourse(code);
         }
 
         track({
@@ -269,7 +263,7 @@ const SecondaryBlockOuter: FC<Pick<ICourse, "taken" | "bandColors"> &
   }> = memo(({ children, taken, bandColors, borderColor, state, grade }) => {
   const config = useContext(ConfigContext);
 
-  const [theme] = useTheme();
+  const theme = ThemeStore.hooks.useTheme();
 
   const stateColor = useMemo(() => {
     const bandColorsCourse = taken?.[0]?.bandColors ?? bandColors;
@@ -380,8 +374,10 @@ const CreditsComponent: FC<Pick<ICourse, "credits">> = memo(({ credits }) => {
 export const ReqCircleComponent: FC<Pick<ICourse, "code">> = memo(
   ({ code }) => {
     const config = useContext(ConfigContext);
-    const [activeRequisites] = useActiveRequisites({ code });
-    const [activeFlow] = useActiveFlow({ code });
+    const activeRequisites = CoursesDashboardStore.hooks.useActiveRequisites({
+      code,
+    });
+    const activeFlow = CoursesDashboardStore.hooks.useActiveFlow({ code });
 
     return (
       ((activeFlow || activeRequisites) && (
@@ -682,12 +678,16 @@ export const CourseBox: FC<ICourse> = ({
     return { semestersTaken };
   }, [taken]);
 
-  const [activeCourse] = useActiveCourse({ code });
-  const [activeFlow] = useActiveFlow({ code });
-  const [activeRequisites] = useActiveRequisites({ code });
-  const [explicitSemester] = useCheckExplicitSemester({
-    semestersTaken,
+  const activeCourse = CoursesDashboardStore.hooks.useActiveCourse({ code });
+  const activeFlow = CoursesDashboardStore.hooks.useActiveFlow({ code });
+  const activeRequisites = CoursesDashboardStore.hooks.useActiveRequisites({
+    code,
   });
+  const explicitSemester = CoursesDashboardStore.hooks.useCheckExplicitSemester(
+    {
+      semestersTaken,
+    }
+  );
 
   const { user } = useUser({
     fetchPolicy: "cache-only",
@@ -711,7 +711,7 @@ export const CourseBox: FC<ICourse> = ({
     return taken[0] || {};
   }, [semestersTaken, explicitSemester, taken]);
 
-  const [isOpen] = useDashboardIsCourseOpen({
+  const isOpen = CoursesDashboardStore.hooks.useDashboardIsCourseOpen({
     code,
   });
 

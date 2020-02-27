@@ -11991,18 +11991,13 @@ react-spring@^8.0.27:
     "@babel/runtime" "^7.3.1"
     prop-types "^15.5.8"
 
-react-state-selector@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/react-state-selector/-/react-state-selector-0.2.1.tgz#c446bc9b7cbd6790baebefb41c013ee784d0c333"
-  integrity sha512-T/LDxE/8eNkaBwR6kQXj+ctH+eCCktLRdw0jO0UVtjwXdoiSkxFCI07pSv32XvFkZXgj+dDGalO5OFlWfK1PTQ==
+react-state-selector@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/react-state-selector/-/react-state-selector-0.2.2.tgz#c299bbedd0c3218dd18470a0230578834a7a5501"
+  integrity sha512-GiEOY13ahirmW7Icf+RZsykvsI/xPecYwKCTUwMM8UM5JtVPr+6KLgah5LlHXTOMLHa3CF+W8K8Yfd9k0GVDFw==
   dependencies:
     immer "^5.3.6"
     reselect "^4.0.0"
-
-react-sweet-state@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/react-sweet-state/-/react-sweet-state-1.1.1.tgz#1c890099741ed94f96eb43b84bb4de90756cd4f0"
-  integrity sha512-Bi5F+C88gmNPpCrufGPXABepoIY/PP4yfyu1BonHzxxmJ0LCcHvbhHAtYbUOEmQf3/xizCtX8GlmSuvqDAQw2A==
 
 react-test-renderer@^16.0.0-0:
   version "16.12.0"

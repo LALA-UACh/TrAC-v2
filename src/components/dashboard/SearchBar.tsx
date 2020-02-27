@@ -33,7 +33,7 @@ import {
 } from "@chakra-ui/core";
 
 import { ConfigContext } from "../../context/Config";
-import { useTracking } from "../../context/Tracking";
+import { setTrackingData, track } from "../../context/Tracking";
 import { MY_PROGRAMS } from "../../graphql/queries";
 import { useDashboardInputState } from "../../pages";
 import { useUser } from "../../utils/useUser";
@@ -99,7 +99,6 @@ export const SearchBar: FC<{
     PLACEHOLDER_SEARCH_STUDENT,
   } = useContext(ConfigContext);
 
-  const [, { setTrackingData, track }] = useTracking();
   const { data: myProgramsData, loading: myProgramsLoading } = useQuery(
     MY_PROGRAMS,
     {

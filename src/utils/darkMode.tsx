@@ -8,22 +8,22 @@ import ToggleTheme from "react-toggle-theme";
 import { Box, BoxProps } from "@chakra-ui/core";
 
 import { SVG_TEXT } from "../../constants";
-import { Theme, useTheme } from "./useTheme";
+import { Theme, ThemeStore } from "./useTheme";
 
 const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
   ({ render = true, ...props }) => {
-    const [theme, { setTheme, checkLocalStorage }] = useTheme();
+    const theme = ThemeStore.hooks.useTheme();
 
     useEffect(() => {
-      if (!checkLocalStorage()) {
+      if (!ThemeStore.actions.checkLocalStorage()) {
         if (
           typeof window !== "undefined" &&
           window?.matchMedia("(prefers-color-scheme: dark)")?.matches
         ) {
-          setTheme(Theme.DARK);
+          ThemeStore.actions.setTheme(Theme.DARK);
         }
       }
-    }, [setTheme, checkLocalStorage]);
+    }, []);
 
     useEffect(() => {
       if (theme === Theme.DARK) {
@@ -122,7 +122,7 @@ const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
         <ToggleTheme
           id="toggleTheme"
           selectedTheme={theme}
-          onChange={setTheme}
+          onChange={ThemeStore.actions.setTheme}
         />
       </Box>
     ) : null;

@@ -16,18 +16,17 @@ import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";
-import { useTracking } from "../../../context/Tracking";
 import {
   ForeplanActiveStore,
   ICreditsNumber,
-} from "../../../contextNew/ForeplanContext";
+} from "../../../context/ForeplanContext";
+import { track } from "../../../context/Tracking";
 
 const CourseBadge: FC<Pick<ICourse, "code" | "name"> & ICreditsNumber> = memo(
   ({ code, name, credits }) => {
     const config = useContext(ConfigContext);
 
     const [expanded, setExpanded] = useState(false);
-    const [, { track }] = useTracking();
 
     const width = useMemo(() => {
       const width =

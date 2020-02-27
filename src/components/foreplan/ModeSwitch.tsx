@@ -5,8 +5,8 @@ import { FaToggleOff, FaToggleOn } from "react-icons/fa";
 import { Button } from "@chakra-ui/core";
 
 import { ConfigContext } from "../../context/Config";
-import { useTracking } from "../../context/Tracking";
-import { ForeplanActiveStore } from "../../contextNew/ForeplanContext";
+import { ForeplanActiveStore } from "../../context/ForeplanContext";
+import { track } from "../../context/Tracking";
 
 const { activateForeplan, disableForeplan } = ForeplanActiveStore.actions;
 
@@ -22,7 +22,6 @@ const ForeplanModeSwitch: FC = () => {
     FOREPLAN_MODE_SWITCH_FONT_FAMILY,
     FOREPLAN_MODE_SWITCH_FONT_SIZE,
   } = useContext(ConfigContext);
-  const [, { track }] = useTracking();
 
   return (
     <Button

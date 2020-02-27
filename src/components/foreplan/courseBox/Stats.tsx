@@ -4,7 +4,7 @@ import { range } from "lodash";
 import React, { FC, memo } from "react";
 
 import { ICourse } from "../../../../interfaces";
-import { ForeplanHelperStore } from "../../../contextNew/ForeplanContext";
+import { ForeplanHelperStore } from "../../../context/ForeplanContext";
 import { useUser } from "../../../utils/useUser";
 import styles from "./foreplanCourseBox.module.css";
 

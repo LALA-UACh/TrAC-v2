@@ -29,11 +29,11 @@ import {
 } from "@chakra-ui/core";
 
 import { ConfigContext } from "../../../context/Config";
-import { useTracking } from "../../../context/Tracking";
 import {
   ForeplanActiveStore,
   ForeplanHelperStore,
-} from "../../../contextNew/ForeplanContext";
+} from "../../../context/ForeplanContext";
+import { setTrackingData, track } from "../../../context/Tracking";
 import { useUser } from "../../../utils/useUser";
 
 const ForeplanContentRowList = dynamic(() => import("./List"));
@@ -120,8 +120,6 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
       </motion.div>
     );
   }, [nCourses]);
-
-  const [, { track, setTrackingData }] = useTracking();
 
   return (
     <Flex
