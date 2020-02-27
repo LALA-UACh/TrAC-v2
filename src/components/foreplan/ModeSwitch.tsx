@@ -5,14 +5,13 @@ import { FaToggleOff, FaToggleOn } from "react-icons/fa";
 import { Button } from "@chakra-ui/core";
 
 import { ConfigContext } from "../../context/Config";
-import { useIsForeplanActive } from "../../context/ForeplanContext";
 import { useTracking } from "../../context/Tracking";
+import { ForeplanActiveStore } from "../../contextNew/ForeplanContext";
+
+const { activateForeplan, disableForeplan } = ForeplanActiveStore.actions;
 
 const ForeplanModeSwitch: FC = () => {
-  const [
-    isForeplanActive,
-    { activateForeplan, disableForeplan },
-  ] = useIsForeplanActive();
+  const isForeplanActive = ForeplanActiveStore.hooks.useIsForeplanActive();
   const {
     FOREPLAN_MODE_SWITCH_LABEL,
     FOREPLAN_MODE_SWITCH_ACTIVE_BACKGROUND_COLOR,

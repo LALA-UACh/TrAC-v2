@@ -24,12 +24,12 @@ import { TimeLine } from "../components/dashboard/Timeline";
 import { LoadingPage } from "../components/Loading";
 import { ConfigContext } from "../context/Config";
 import { CoursesDashbordManager } from "../context/CoursesDashboardContext";
-import {
-  ForeplanContextManager,
-  useForeplanActiveActions,
-} from "../context/ForeplanContext";
 import { TrackingManager, useTracking } from "../context/Tracking";
-import { ForeplanHelperStore } from "../contextNew/ForeplanContext";
+import {
+  ForeplanActiveStore,
+  ForeplanContextManager,
+  ForeplanHelperStore,
+} from "../contextNew/ForeplanContext";
 import {
   DIRECT_TAKE_COURSES,
   INDIRECT_TAKE_COURSES,
@@ -226,8 +226,6 @@ const Dashboard: FC = () => {
     }
   }, [user, searchProgram, searchStudent, searchPerformanceByLoad, setStudent]);
 
-  const [, foreplanActiveActions] = useForeplanActiveActions();
-
   const { isPersistenceLoading } = useIsPersistenceLoading();
 
   useEffect(() => {
@@ -278,7 +276,7 @@ const Dashboard: FC = () => {
             return acum;
           }, [])
         );
-        foreplanActiveActions.setNewFutureCourseRequisites(
+        ForeplanActiveStore.actions.setNewFutureCourseRequisites(
           allCoursesOfProgram.reduce<
             {
               course: string;
@@ -345,7 +343,7 @@ const Dashboard: FC = () => {
         !isPersistenceLoading &&
         dataIndirectTakeCourses?.indirectTakeCourses
       ) {
-        foreplanActiveActions.setNewFutureCourseRequisites(
+        ForeplanActiveStore.actions.setNewFutureCourseRequisites(
           dataIndirectTakeCourses.indirectTakeCourses.map(
             ({ course: { code }, requisitesUnmet }) => {
               return {
@@ -363,7 +361,7 @@ const Dashboard: FC = () => {
         !dataDirectTakeCourses &&
         !dataIndirectTakeCourses
       ) {
-        foreplanActiveActions.disableForeplan();
+        ForeplanActiveStore.actions.disableForeplan();
         ForeplanHelperStore.actions.setForeplanAdvices([]);
       }
     }
@@ -375,7 +373,7 @@ const Dashboard: FC = () => {
     mock,
     user,
     mockData,
-    foreplanActiveActions,
+    ForeplanActiveStore.actions,
   ]);
 
   const {

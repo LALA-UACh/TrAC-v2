@@ -16,17 +16,16 @@ import { Box, Flex, Stack, Text } from "@chakra-ui/core";
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";
-import {
-  ICreditsNumber,
-  useForeplanActiveActions,
-  useForeplanCourses,
-} from "../../../context/ForeplanContext";
 import { useTracking } from "../../../context/Tracking";
+import {
+  ForeplanActiveStore,
+  ICreditsNumber,
+} from "../../../contextNew/ForeplanContext";
 
 const CourseBadge: FC<Pick<ICourse, "code" | "name"> & ICreditsNumber> = memo(
   ({ code, name, credits }) => {
     const config = useContext(ConfigContext);
-    const [, { removeCourseForeplan }] = useForeplanActiveActions();
+
     const [expanded, setExpanded] = useState(false);
     const [, { track }] = useTracking();
 
@@ -158,7 +157,7 @@ const CourseBadge: FC<Pick<ICourse, "code" | "name"> & ICreditsNumber> = memo(
                     cursor="pointer"
                     onClick={ev => {
                       ev.stopPropagation();
-                      removeCourseForeplan(code);
+                      ForeplanActiveStore.actions.removeCourseForeplan(code);
                       track({
                         action: "click",
                         effect: "remove_course_foreplan",
@@ -177,7 +176,7 @@ const CourseBadge: FC<Pick<ICourse, "code" | "name"> & ICreditsNumber> = memo(
 );
 
 const ForeplanContentBadgesList: FC = memo(() => {
-  const [foreplanCourses] = useForeplanCourses();
+  const foreplanCourses = ForeplanActiveStore.hooks.useForeplanCourses();
 
   return (
     <Flex wrap="wrap">

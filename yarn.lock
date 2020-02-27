@@ -11909,10 +11909,10 @@ react-spring@^8.0.27:
     "@babel/runtime" "^7.3.1"
     prop-types "^15.5.8"
 
-react-state-selector@^0.1.13:
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/react-state-selector/-/react-state-selector-0.1.13.tgz#f3f17f6f8cb13e17651b66341b97b5af25f6214b"
-  integrity sha512-jKIVXbI/f+RD2rl5qhNfWjB+aWE+yQ3Ww7CCzjWCwii8gzZK5O4PR39XcaL6teNU+T1O/SLcLbpRg2dojoCtag==
+react-state-selector@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-state-selector/-/react-state-selector-0.2.0.tgz#f99cef4f9711976a9e8a527e08bbb47928c8205d"
+  integrity sha512-joP5H7hGbz6jdffiHg8N0C6Kc0aj4h3Vq3CGkFEdySmkSr+mNHtRbKF0vZ+jyKanqGHvRWwGNw2WGoMTqJUSWg==
   dependencies:
     immer "^5.3.6"
     reselect "^4.0.0"

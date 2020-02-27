@@ -29,14 +29,11 @@ import {
 } from "@chakra-ui/core";
 
 import { ConfigContext } from "../../../context/Config";
-import {
-  useAnyForeplanCourses,
-  useForeplanCoursesSize,
-  useForeplanTotalCreditsTaken,
-  useIsForeplanActive,
-} from "../../../context/ForeplanContext";
 import { useTracking } from "../../../context/Tracking";
-import { ForeplanHelperStore } from "../../../contextNew/ForeplanContext";
+import {
+  ForeplanActiveStore,
+  ForeplanHelperStore,
+} from "../../../contextNew/ForeplanContext";
 import { useUser } from "../../../utils/useUser";
 
 const ForeplanContentRowList = dynamic(() => import("./List"));
@@ -91,7 +88,7 @@ const OuterSummary: FC = ({ children }) => {
 };
 
 const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
-  const [nCourses] = useForeplanCoursesSize();
+  const nCourses = ForeplanActiveStore.hooks.useForeplanCoursesSize();
   const config = useContext(ConfigContext);
   const NText = useMemo(() => {
     return (
@@ -163,7 +160,7 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
 
 const ForeplanTotalCredits: FC<{ isSummaryOpen?: boolean }> = memo(
   ({ isSummaryOpen }) => {
-    const [totalCredits] = useForeplanTotalCreditsTaken();
+    const totalCredits = ForeplanActiveStore.hooks.useForeplanTotalCreditsTaken();
     const config = useContext(ConfigContext);
     const { isOpen, onOpen, onClose } = useDisclosure(false);
 
@@ -262,7 +259,7 @@ const ForeplanTotalCredits: FC<{ isSummaryOpen?: boolean }> = memo(
 );
 
 const ForeplanAdvice: FC = memo(() => {
-  const [totalCreditsTaken] = useForeplanTotalCreditsTaken();
+  const totalCreditsTaken = ForeplanActiveStore.hooks.useForeplanTotalCreditsTaken();
   const advice = ForeplanHelperStore.hooks.useForeplanAdvice({
     totalCreditsTaken,
   });
@@ -445,7 +442,7 @@ const Waffle: FC<{
 
 const ForeplanWaffleCharts: FC = memo(() => {
   const advices = ForeplanHelperStore.hooks.useForeplanAdvices();
-  const [totalCreditsTaken] = useForeplanTotalCreditsTaken();
+  const totalCreditsTaken = ForeplanActiveStore.hooks.useForeplanTotalCreditsTaken();
 
   return (
     <Flex color="black" justifyContent="space-between">
@@ -494,7 +491,7 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
       }
       return "500px";
     }, [width]);
-    const [anyForeplanCourse] = useAnyForeplanCourses();
+    const anyForeplanCourse = ForeplanActiveStore.hooks.useAnyForeplanCourses();
 
     const content = useMemo(() => {
       return (
@@ -554,9 +551,9 @@ const ForeplanContent: FC<Pick<ExpandedState, "expanded">> = memo(
 );
 
 const ForeplanSummary: FC = () => {
-  const [active] = useIsForeplanActive();
+  const active = ForeplanActiveStore.hooks.useIsForeplanActive();
 
-  const [anyForeplanCourses] = useAnyForeplanCourses();
+  const anyForeplanCourses = ForeplanActiveStore.hooks.useAnyForeplanCourses();
 
   const [expanded, setExpanded] = useRememberState(
     "foreplanSummaryExpanded",

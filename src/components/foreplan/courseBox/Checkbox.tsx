@@ -21,9 +21,11 @@ import {
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";
-import { useIsForeplanCourseChecked } from "../../../context/ForeplanContext";
 import { useTracking } from "../../../context/Tracking";
-import { ForeplanHelperStore } from "../../../contextNew/ForeplanContext";
+import {
+  ForeplanActiveStore,
+  ForeplanHelperStore,
+} from "../../../contextNew/ForeplanContext";
 import styles from "./foreplanCourseBox.module.css";
 
 const useWarningModel = ({
@@ -138,14 +140,19 @@ const useWarningModel = ({
   };
 };
 
+const {
+  addCourseForeplan,
+  removeCourseForeplan,
+  setFutureCourseRequisitesState,
+} = ForeplanActiveStore.actions;
+
 const ForeplanCourseCheckbox: FC<Pick<
   ICourse,
   "code" | "credits" | "name"
 >> = memo(({ code, credits, name }) => {
-  const [
-    checked,
-    { addCourseForeplan, removeCourseForeplan, setFutureCourseRequisitesState },
-  ] = useIsForeplanCourseChecked({ code });
+  const checked = ForeplanActiveStore.hooks.useIsForeplanCourseChecked({
+    code,
+  });
   const directTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake({
     code,
   });

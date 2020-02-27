@@ -31,13 +31,11 @@ import {
   useDashboardIsCourseOpen,
   useExplicitSemester,
 } from "../../context/CoursesDashboardContext";
-import {
-  useForeplanIsFutureCourseRequisitesFulfilled,
-  useIsForeplanActive,
-  useIsPossibleToTakeForeplan,
-} from "../../context/ForeplanContext";
 import { useTracking } from "../../context/Tracking";
-import { ForeplanHelperStore } from "../../contextNew/ForeplanContext";
+import {
+  ForeplanActiveStore,
+  ForeplanHelperStore,
+} from "../../contextNew/ForeplanContext";
 import { Theme, useTheme } from "../../utils/useTheme";
 import { useUser } from "../../utils/useUser";
 import styles from "./CourseBox.module.css";
@@ -67,18 +65,20 @@ const useIsCourseFuturePlanificationFulfilled = ({
   const { user } = useUser({
     fetchPolicy: "cache-only",
   });
-  const [isForeplanActive] = useIsForeplanActive();
-  const [isPossibleToTakeForeplan] = useIsPossibleToTakeForeplan({
-    state,
-  });
+  const isForeplanActive = ForeplanActiveStore.hooks.useIsForeplanActive();
+  const isPossibleToTakeForeplan = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
+    {
+      state,
+    }
+  );
   const isDirectTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake({
     code,
   });
-  const [
-    isFutureCourseRequisitesFulfilled,
-  ] = useForeplanIsFutureCourseRequisitesFulfilled({
-    code,
-  });
+  const isFutureCourseRequisitesFulfilled = ForeplanActiveStore.hooks.useForeplanIsFutureCourseRequisitesFulfilled(
+    {
+      code,
+    }
+  );
 
   return (
     (user?.config.FOREPLAN_FUTURE_COURSE_PLANIFICATION ?? false) &&
@@ -581,7 +581,9 @@ const currentDistributionLabel = ({
 
 const HistogramsComponent: FC<Pick<CurrentTakenData, "state">> = memo(
   ({ children, state }) => {
-    const [isPossibleToTake] = useIsPossibleToTakeForeplan({ state });
+    const isPossibleToTake = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
+      { state }
+    );
     return (
       <motion.div
         key="histograms"
@@ -718,9 +720,11 @@ export const CourseBox: FC<ICourse> = ({
     code,
   });
 
-  const [isPossibleToTakeForeplan] = useIsPossibleToTakeForeplan({
-    state: taken[0]?.state,
-  });
+  const isPossibleToTakeForeplan = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
+    {
+      state: taken[0]?.state,
+    }
+  );
 
   const borderColor = useMemo(() => {
     if (activeCourse) {

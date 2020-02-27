@@ -8,16 +8,14 @@ import { Box, Flex, Text } from "@chakra-ui/core";
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";
-import {
-  ICreditsNumber,
-  useForeplanActiveActions,
-  useForeplanCourses,
-} from "../../../context/ForeplanContext";
 import { useTracking } from "../../../context/Tracking";
+import {
+  ForeplanActiveStore,
+  ICreditsNumber,
+} from "../../../contextNew/ForeplanContext";
 
 const ForeplanContentRowListItem: FC<Pick<ICourse, "code" | "name"> &
   ICreditsNumber> = memo(({ code, name, credits }) => {
-  const [, { removeCourseForeplan }] = useForeplanActiveActions();
   const config = useContext(ConfigContext);
   const shouldTruncate =
     name.length > config.FOREPLAN_SUMMARY_LIST_NAME_TRUNCATE_LENGTH;
@@ -71,7 +69,7 @@ const ForeplanContentRowListItem: FC<Pick<ICourse, "code" | "name"> &
               effect: "remove_course_foreplan",
               target: `foreplan_${code}_remove_icon_list_row`,
             });
-            removeCourseForeplan(code);
+            ForeplanActiveStore.actions.removeCourseForeplan(code);
           }}
         />
       </Flex>
@@ -81,7 +79,7 @@ const ForeplanContentRowListItem: FC<Pick<ICourse, "code" | "name"> &
 });
 
 const ForeplanContentRowList: FC = memo(() => {
-  const [foreplanCourses] = useForeplanCourses();
+  const foreplanCourses = ForeplanActiveStore.hooks.useForeplanCourses();
 
   return (
     <AnimatePresence>
