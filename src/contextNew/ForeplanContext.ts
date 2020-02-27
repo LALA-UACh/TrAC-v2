@@ -188,11 +188,8 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
         }
       }
     },
-    reset: (
-      data: IForeplanActiveData = defaultForeplanActiveData
-    ) => _oldDraft => {
-      _oldDraft = { ...data };
-    },
+    reset: (data: IForeplanActiveData = defaultForeplanActiveData) => () =>
+      data,
   },
   hooks: {
     useIsForeplanCourseChecked: (
@@ -249,6 +246,7 @@ export const ForeplanContextManager: FC = memo(() => {
   const { program, student, mock, chosenCurriculum } = useDashboardInputState();
   // const [state, { reset, disableForeplan }] = useForeplanActiveData();
   const state = ForeplanActiveStore.useStore();
+
   const { user } = useUser({
     fetchPolicy: "cache-only",
   });
