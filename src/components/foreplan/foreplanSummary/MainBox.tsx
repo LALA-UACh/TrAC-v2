@@ -258,9 +258,7 @@ const ForeplanTotalCredits: FC<{ isSummaryOpen?: boolean }> = memo(
 
 const ForeplanAdvice: FC = memo(() => {
   const totalCreditsTaken = ForeplanActiveStore.hooks.useForeplanTotalCreditsTaken();
-  const advice = ForeplanHelperStore.hooks.useForeplanAdvice({
-    totalCreditsTaken,
-  });
+  const advice = ForeplanHelperStore.hooks.useForeplanAdvice(totalCreditsTaken);
   const config = useContext(ConfigContext);
   if (advice) {
     const LowFailRate: FC = () => {

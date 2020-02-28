@@ -28,7 +28,7 @@ import {
 import { track } from "../../../context/Tracking";
 import styles from "./foreplanCourseBox.module.css";
 
-const useWarningModel = ({
+const useWarningModal = ({
   code,
   name,
   isPossible,
@@ -150,16 +150,12 @@ const ForeplanCourseCheckbox: FC<Pick<
   ICourse,
   "code" | "credits" | "name"
 >> = memo(({ code, credits, name }) => {
-  const checked = ForeplanActiveStore.hooks.useIsForeplanCourseChecked({
-    code,
-  });
-  const directTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake({
-    code,
-  });
-  const { onOpen, manuallyClosed, modalComponent } = useWarningModel({
+  const checked = ForeplanActiveStore.hooks.useIsForeplanCourseChecked(code);
+  const isDirectTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake(code);
+  const { onOpen, manuallyClosed, modalComponent } = useWarningModal({
     code,
     name,
-    isPossible: !directTake,
+    isPossible: !isDirectTake,
   });
 
   return (
@@ -189,7 +185,7 @@ const ForeplanCourseCheckbox: FC<Pick<
                 target: `foreplan_${code}_course_checkbox`,
               });
             } else {
-              if (!directTake && !manuallyClosed) {
+              if (!isDirectTake && !manuallyClosed) {
                 onOpen();
               }
               setFutureCourseRequisitesState(code, true);
@@ -206,8 +202,8 @@ const ForeplanCourseCheckbox: FC<Pick<
           }}
           className={classNames({
             [styles.checkboxInput]: true,
-            [directTake ? styles.direct : styles.indirect]: true,
-            foreplanCourseCheckboxIndirect: !directTake,
+            [isDirectTake ? styles.direct : styles.indirect]: true,
+            foreplanCourseCheckboxIndirect: !isDirectTake,
           })}
         />
       </motion.div>

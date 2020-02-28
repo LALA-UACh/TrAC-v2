@@ -157,13 +157,13 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
     ) => draft => assign(draft, data),
   },
   hooks: {
-    useActiveCourse: ({ activeCourse }, { code }: { code: string }) => {
+    useActiveCourse: ({ activeCourse }, code: string) => {
       return activeCourse === code;
     },
-    useActiveRequisites: ({ requisites }, { code }: { code: string }) => {
+    useActiveRequisites: ({ requisites }, code: string) => {
       return requisites?.[code];
     },
-    useActiveFlow: ({ flow }, { code }: { code: string }) => {
+    useActiveFlow: ({ flow }, code: string) => {
       return flow?.[code];
     },
     useActiveSemestersTaken: ({ semestersTaken }) => {
@@ -174,14 +174,14 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
     },
     useCheckExplicitSemester: (
       { explicitSemester },
-      { semestersTaken }: { semestersTaken: ITakenSemester[] | ITakenSemester }
+      semestersTaken: ITakenSemester[] | ITakenSemester
     ) => {
       const pair = checkExplicitSemesterCallback(explicitSemester)(
         semestersTaken
       );
       return pair ? pairTermYear(pair.term, pair.year) : pair;
     },
-    useDashboardIsCourseOpen: ({ coursesOpen }, { code }: { code: string }) => {
+    useDashboardIsCourseOpen: ({ coursesOpen }, code: string) => {
       return !!coursesOpen[code];
     },
   },

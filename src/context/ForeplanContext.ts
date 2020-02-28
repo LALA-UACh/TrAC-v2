@@ -37,28 +37,19 @@ const defaultForeplanHelperStore: IForeplanHelperData = Object.freeze({
 
 export const ForeplanHelperStore = createStore(defaultForeplanHelperStore, {
   hooks: {
-    useForeplanIsDirectTake: (
-      { courseDirectTake },
-      { code }: { code: string }
-    ) => {
+    useForeplanIsDirectTake: ({ courseDirectTake }, code: string) => {
       return (
         courseDirectTake[code] ||
         (courseDirectTake === emptyObject ? undefined : false)
       );
     },
-    useForeplanCourseFailRate: (
-      { courseFailRate },
-      { code }: { code: string }
-    ) => {
+    useForeplanCourseFailRate: ({ courseFailRate }, code: string) => {
       return courseFailRate[code] || 0;
     },
-    useForeplanCourseEffort: ({ courseEffort }, { code }: { code: string }) => {
+    useForeplanCourseEffort: ({ courseEffort }, code: string) => {
       return courseEffort[code] || 1;
     },
-    useForeplanAdvice: (
-      { advices },
-      { totalCreditsTaken }: { totalCreditsTaken: number }
-    ) => {
+    useForeplanAdvice: ({ advices }, totalCreditsTaken: number) => {
       return (
         advices.find(({ lowerBoundary, upperBoundary }) => {
           if (
@@ -181,10 +172,6 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
           undefined
         ) {
           draft.futureCourseRequisites[courseToOpen][courseToSetState] = state;
-          // draft.futureCourseRequisites[courseToOpen] = {
-          //   ...draft.futureCourseRequisites[courseToOpen],
-          //   [courseToSetState]: state,
-          // };
         }
       }
     },
@@ -192,10 +179,7 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
       assign(draft, data),
   },
   hooks: {
-    useIsForeplanCourseChecked: (
-      { foreplanCourses },
-      { code }: { code: string }
-    ) => {
+    useIsForeplanCourseChecked: ({ foreplanCourses }, code: string) => {
       return !!foreplanCourses[code];
     },
     useForeplanTotalCreditsTaken: ({ totalCreditsTaken }) => {
@@ -215,7 +199,7 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
     },
     useIsPossibleToTakeForeplan: (
       { active },
-      { state }: { state: StateCourse | undefined }
+      state: StateCourse | undefined
     ) => {
       if (active) {
         switch (state) {
@@ -231,7 +215,7 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
     },
     useForeplanIsFutureCourseRequisitesFulfilled: (
       { futureCourseRequisites },
-      { code }: { code: string }
+      code: string
     ) => {
       return (
         !!futureCourseRequisites[code] && every(futureCourseRequisites[code])

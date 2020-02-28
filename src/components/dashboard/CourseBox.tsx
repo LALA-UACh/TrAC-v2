@@ -61,25 +61,20 @@ const useIsCourseFuturePlanificationFulfilled = ({
   });
   const isForeplanActive = ForeplanActiveStore.hooks.useIsForeplanActive();
   const isPossibleToTakeForeplan = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
-    {
-      state,
-    }
+    state
   );
-  const isDirectTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake({
-    code,
-  });
+  const isDirectTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake(code);
   const isFutureCourseRequisitesFulfilled = ForeplanActiveStore.hooks.useForeplanIsFutureCourseRequisitesFulfilled(
-    {
-      code,
-    }
+    code
   );
 
   return (
     (user?.config.FOREPLAN_FUTURE_COURSE_PLANIFICATION ?? false) &&
-    isForeplanActive &&
-    isPossibleToTakeForeplan &&
-    !isDirectTake &&
-    isFutureCourseRequisitesFulfilled
+    ((isForeplanActive && isDirectTake && isPossibleToTakeForeplan) ||
+      (isForeplanActive &&
+        isPossibleToTakeForeplan &&
+        !isDirectTake &&
+        isFutureCourseRequisitesFulfilled))
   );
 };
 
@@ -102,7 +97,7 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
   }) => {
     const config = useContext(ConfigContext);
 
-    const activeCourse = CoursesDashboardStore.hooks.useActiveCourse({ code });
+    const activeCourse = CoursesDashboardStore.hooks.useActiveCourse(code);
     const explicitSemester = CoursesDashboardStore.hooks.useExplicitSemester();
 
     const opacity = useMemo(() => {
@@ -188,7 +183,7 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
 const MainBlockOuter: FC<Pick<ICourse, "code" | "flow" | "requisites"> & {
   semestersTaken: ITakenSemester[];
 }> = memo(({ children, code, flow, requisites, semestersTaken }) => {
-  const isOpen = CoursesDashboardStore.hooks.useDashboardIsCourseOpen({ code });
+  const isOpen = CoursesDashboardStore.hooks.useDashboardIsCourseOpen(code);
   const config = useContext(ConfigContext);
   return (
     <Flex
@@ -374,10 +369,10 @@ const CreditsComponent: FC<Pick<ICourse, "credits">> = memo(({ credits }) => {
 export const ReqCircleComponent: FC<Pick<ICourse, "code">> = memo(
   ({ code }) => {
     const config = useContext(ConfigContext);
-    const activeRequisites = CoursesDashboardStore.hooks.useActiveRequisites({
-      code,
-    });
-    const activeFlow = CoursesDashboardStore.hooks.useActiveFlow({ code });
+    const activeRequisites = CoursesDashboardStore.hooks.useActiveRequisites(
+      code
+    );
+    const activeFlow = CoursesDashboardStore.hooks.useActiveFlow(code);
 
     return (
       ((activeFlow || activeRequisites) && (
@@ -578,7 +573,7 @@ const currentDistributionLabel = ({
 const HistogramsComponent: FC<Pick<CurrentTakenData, "state">> = memo(
   ({ children, state }) => {
     const isPossibleToTake = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
-      { state }
+      state
     );
     return (
       <motion.div
@@ -678,15 +673,13 @@ export const CourseBox: FC<ICourse> = ({
     return { semestersTaken };
   }, [taken]);
 
-  const activeCourse = CoursesDashboardStore.hooks.useActiveCourse({ code });
-  const activeFlow = CoursesDashboardStore.hooks.useActiveFlow({ code });
-  const activeRequisites = CoursesDashboardStore.hooks.useActiveRequisites({
-    code,
-  });
+  const activeCourse = CoursesDashboardStore.hooks.useActiveCourse(code);
+  const activeFlow = CoursesDashboardStore.hooks.useActiveFlow(code);
+  const activeRequisites = CoursesDashboardStore.hooks.useActiveRequisites(
+    code
+  );
   const explicitSemester = CoursesDashboardStore.hooks.useCheckExplicitSemester(
-    {
-      semestersTaken,
-    }
+    semestersTaken
   );
 
   const { user } = useUser({
@@ -711,9 +704,7 @@ export const CourseBox: FC<ICourse> = ({
     return taken[0] || {};
   }, [semestersTaken, explicitSemester, taken]);
 
-  const isOpen = CoursesDashboardStore.hooks.useDashboardIsCourseOpen({
-    code,
-  });
+  const isOpen = CoursesDashboardStore.hooks.useDashboardIsCourseOpen(code);
 
   const isFutureCourseFulfilled = useIsCourseFuturePlanificationFulfilled({
     state: taken[0]?.state,
@@ -721,12 +712,10 @@ export const CourseBox: FC<ICourse> = ({
   });
 
   const isPossibleToTakeForeplan = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
-    {
-      state: taken[0]?.state,
-    }
+    taken[0]?.state
   );
 
-  const borderColor = useMemo(() => {
+  const borderColor = (() => {
     if (activeCourse) {
       return config.ACTIVE_COURSE_BOX_COLOR;
     }
@@ -745,16 +734,7 @@ export const CourseBox: FC<ICourse> = ({
       return config.EXPLICIT_SEMESTER_COURSE_BOX_COLOR;
     }
     return config.INACTIVE_COURSE_BOX_COLOR;
-  }, [
-    activeCourse,
-    activeRequisites,
-    activeFlow,
-    explicitSemester,
-    config,
-    code,
-    isFutureCourseFulfilled,
-    user,
-  ]);
+  })();
 
   return (
     <OuterCourseBox
