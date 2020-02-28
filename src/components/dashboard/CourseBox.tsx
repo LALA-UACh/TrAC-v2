@@ -297,7 +297,7 @@ const SecondaryBlockOuter: FC<Pick<ICourse, "taken" | "bandColors"> &
       default: {
         return theme === Theme.LIGHT
           ? config.COURSE_BOX_BACKGROUND_COLOR
-          : undefined;
+          : config.STATE_COURSE_DEFAULT_DARK_COLOR;
       }
     }
   }, [state, theme, grade, bandColors, taken, config]);
