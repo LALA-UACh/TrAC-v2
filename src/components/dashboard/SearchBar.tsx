@@ -33,15 +33,24 @@ import {
 } from "@chakra-ui/core";
 
 import { ConfigContext } from "../../context/Config";
+import {
+  DashboardInputActions,
+  useChosenCurriculum,
+  useIsMockActive,
+} from "../../context/DashboardInput";
 import { setTrackingData, track } from "../../context/Tracking";
 import { MY_PROGRAMS } from "../../graphql/queries";
-import { useDashboardInputState } from "../../pages";
 import { useUser } from "../../utils/useUser";
 
 const StudentList = dynamic(() => import("./StudentList"));
 
 const MockingMode: FC = memo(() => {
-  const { mock, setMock } = useDashboardInputState();
+  const { user } = useUser({ fetchPolicy: "cache-only" });
+  const [mock, setMock] = useRememberState("mockMode", !!user?.admin);
+  useEffect(() => {
+    DashboardInputActions.setMock(mock);
+  }, [mock]);
+
   return (
     <Button
       basic
@@ -66,25 +75,22 @@ export const SearchBar: FC<{
   };
   error?: string;
 }> = ({ isSearchLoading, onSearch, searchResult, error }) => {
-  const {
-    mock,
-    chosenCurriculum,
-    setChosenCurriculum,
-  } = useDashboardInputState();
+  const mock = useIsMockActive();
+  const chosenCurriculum = useChosenCurriculum();
   useEffect(() => {
     if (
       (chosenCurriculum === undefined &&
         (searchResult?.curriculums.length ?? 0) > 0) ||
       !searchResult?.curriculums.includes(chosenCurriculum ?? "")
     ) {
-      setChosenCurriculum(
+      DashboardInputActions.setChosenCurriculum(
         searchResult?.curriculums
           .sort()
           .slice()
           .reverse()[0]
       );
     }
-  }, [chosenCurriculum, setChosenCurriculum, searchResult?.curriculums]);
+  }, [chosenCurriculum, searchResult?.curriculums]);
 
   const { user } = useUser();
 
@@ -231,7 +237,7 @@ export const SearchBar: FC<{
                     target: "curriculum-menu",
                     effect: "change-curriculum",
                   });
-                  setChosenCurriculum(
+                  DashboardInputActions.setChosenCurriculum(
                     (selected as { label: string; value: string }).value
                   );
                 }}

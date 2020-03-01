@@ -12,10 +12,10 @@ import {
   GET_PERSISTENCE_VALUE,
   SET_PERSISTENCE_VALUE,
 } from "../graphql/queries";
-import { useDashboardInputState } from "../pages";
 import { stringListToBooleanMap } from "../utils";
-import { useIsPersistenceLoading } from "../utils/usePersistenceLoading";
+import { setIsForeplanLoading } from "../utils/usePersistenceLoading";
 import { useUser } from "../utils/useUser";
+import { useDashboardInputState } from "./DashboardInput";
 import { setTrackingData } from "./Tracking";
 
 const emptyObject = Object.freeze({});
@@ -36,6 +36,7 @@ const defaultForeplanHelperStore: IForeplanHelperData = Object.freeze({
 });
 
 export const ForeplanHelperStore = createStore(defaultForeplanHelperStore, {
+  devName: "ForeplanHelper",
   hooks: {
     useForeplanIsDirectTake: ({ courseDirectTake }, code: string) => {
       return (
@@ -115,6 +116,7 @@ const defaultForeplanActiveData: IForeplanActiveData = Object.freeze({
 });
 
 export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
+  devName: "ForeplanActive",
   actions: {
     activateForeplan: () => draft => {
       draft.active = true;
@@ -257,7 +259,6 @@ export const ForeplanContextManager: FC = memo(() => {
     [chosenCurriculum, program, student, mock, setKey]
   );
 
-  const { setIsForeplanLoading } = useIsPersistenceLoading();
   const {
     data: dataRememberForeplan,
     loading: loadingRememberForeplan,
@@ -271,7 +272,7 @@ export const ForeplanContextManager: FC = memo(() => {
 
   useEffect(() => {
     setIsForeplanLoading(loadingRememberForeplan);
-  }, [setIsForeplanLoading, loadingRememberForeplan]);
+  }, [loadingRememberForeplan]);
 
   useEffect(() => {
     if (!loadingRememberForeplan) {

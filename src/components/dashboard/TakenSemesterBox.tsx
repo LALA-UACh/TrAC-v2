@@ -17,16 +17,28 @@ export const TakenSemesterBox: FC<{
 
   const explicitSemester = CoursesDashboardStore.hooks.useExplicitSemester();
 
+  const isExplicitSemester = CoursesDashboardStore.hooks.useCheckExplicitSemester(
+    { term, year },
+    [term, year]
+  );
+
   const borderColor = useMemo(() => {
     if (
-      CoursesDashboardStore.actions.checkExplicitSemester({ term, year }) ||
+      isExplicitSemester ||
       (explicitSemester === undefined &&
         semestersTaken?.find(v => year === v.year && term == v.term))
     ) {
       return config.TAKEN_SEMESTER_BOX_ACTIVE;
     }
     return config.TAKEN_SEMESTER_BOX_INACTIVE;
-  }, [explicitSemester, term, year, semestersTaken, config]);
+  }, [
+    explicitSemester,
+    term,
+    year,
+    isExplicitSemester,
+    semestersTaken,
+    config,
+  ]);
 
   const badgeProps = useMemo<BadgeProps>(() => {
     if (!comments) {

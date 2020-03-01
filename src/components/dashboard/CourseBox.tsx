@@ -100,20 +100,22 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
     const activeCourse = CoursesDashboardStore.hooks.useActiveCourse(code);
     const explicitSemester = CoursesDashboardStore.hooks.useExplicitSemester();
 
+    const isExplicitSemester = CoursesDashboardStore.hooks.useCheckExplicitSemester(
+      semestersTaken
+    );
+
     const opacity = useMemo(() => {
       if (activeCourse) {
         return 1;
       }
       if (explicitSemester) {
-        if (
-          CoursesDashboardStore.actions.checkExplicitSemester(semestersTaken)
-        ) {
+        if (isExplicitSemester) {
           return 1;
         }
         return 0.5;
       }
       return 1;
-    }, [code, activeCourse, explicitSemester]);
+    }, [code, activeCourse, explicitSemester, isExplicitSemester]);
 
     const { height, width } = useMemo(() => {
       let height: number | undefined = undefined;
@@ -665,12 +667,12 @@ export const CourseBox: FC<ICourse> = ({
 }) => {
   const config = useContext(ConfigContext);
 
-  const { semestersTaken } = useMemo(() => {
+  const semestersTaken = useMemo(() => {
     const semestersTaken = taken.map(({ term, year }) => {
       return { term, year };
     });
 
-    return { semestersTaken };
+    return semestersTaken;
   }, [taken]);
 
   const activeCourse = CoursesDashboardStore.hooks.useActiveCourse(code);

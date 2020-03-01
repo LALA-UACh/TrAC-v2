@@ -6,6 +6,7 @@ import React, {
   FC,
   memo,
   ReactElement,
+  useCallback,
   useContext,
   useMemo,
   useState,
@@ -16,7 +17,10 @@ import { AxisLeft } from "@vx/axis";
 
 import { SVG_TEXT } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
-import { CoursesDashboardStore } from "../../context/CoursesDashboard";
+import {
+  checkExplicitSemesterCallback,
+  CoursesDashboardStore,
+} from "../../context/CoursesDashboard";
 
 const TimeLineTooltip: FC<{
   children: ReactElement;
@@ -101,6 +105,10 @@ export const TimeLine: FC<{
   }) => {
     const config = useContext(ConfigContext);
     const explicitSemester = CoursesDashboardStore.hooks.useExplicitSemester();
+    const checkExplicitSemester = useCallback(
+      checkExplicitSemesterCallback(explicitSemester),
+      [explicitSemester]
+    );
 
     const { cumulatedGrades, semestralGrades } = useMemo(() => {
       if (
@@ -151,7 +159,7 @@ export const TimeLine: FC<{
                   cx={key * 70 + 70}
                   r={5}
                   fill={
-                    CoursesDashboardStore.actions.checkExplicitSemester({
+                    checkExplicitSemester({
                       term: semestersTaken[key].term,
                       year: semestersTaken[key].year,
                     })
@@ -165,7 +173,7 @@ export const TimeLine: FC<{
           );
         }),
       [
-        explicitSemester,
+        checkExplicitSemester,
         semestralGrades,
         cumulatedGrades,
         programGrades,

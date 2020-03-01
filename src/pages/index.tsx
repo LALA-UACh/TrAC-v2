@@ -1,10 +1,8 @@
-import constate from "constate";
 import { flatMapDeep, random, uniq } from "lodash";
 import dynamic from "next/dynamic";
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useUpdateEffect } from "react-use";
-import { useRememberState } from "use-remember-state";
 
 import { useMutation } from "@apollo/react-hooks";
 import { Box, Flex, Stack } from "@chakra-ui/core";
@@ -25,6 +23,12 @@ import { LoadingPage } from "../components/Loading";
 import { ConfigContext } from "../context/Config";
 import { CoursesDashbordManager } from "../context/CoursesDashboard";
 import {
+  DashboardInputActions,
+  useChosenCurriculum,
+  useIsMockActive,
+  useProgram,
+} from "../context/DashboardInput";
+import {
   ForeplanActiveStore,
   ForeplanContextManager,
   ForeplanHelperStore,
@@ -38,10 +42,7 @@ import {
   SEARCH_STUDENT,
 } from "../graphql/queries";
 import { DarkMode } from "../utils/dynamicDarkMode";
-import {
-  PersistenceLoadingProvider,
-  useIsPersistenceLoading,
-} from "../utils/usePersistenceLoading";
+import { useIsPersistenceLoading } from "../utils/usePersistenceLoading";
 import { useUser } from "../utils/useUser";
 
 const SearchBar = dynamic(() => import("../components/dashboard/SearchBar"));
@@ -53,42 +54,10 @@ const ForeplanSummary = dynamic(() =>
   import("../components/foreplan/foreplanSummary/MainBox")
 );
 
-export const [DashboardInputStateProvider, useDashboardInputState] = constate(
-  () => {
-    const [chosenCurriculum, setChosenCurriculum] = useState<
-      string | undefined
-    >(undefined);
-
-    const { user } = useUser();
-
-    const [mock, setMock] = useRememberState("mockMode", !!user?.admin);
-
-    const [program, setProgram] = useState<string | undefined>(undefined);
-
-    const [student, setStudent] = useState<string | undefined>(undefined);
-
-    return {
-      chosenCurriculum,
-      setChosenCurriculum,
-      program,
-      setProgram,
-      student,
-      setStudent,
-      mock,
-      setMock,
-    };
-  }
-);
-
 const Dashboard: FC = () => {
-  const {
-    chosenCurriculum,
-    program,
-    setProgram,
-    setStudent,
-    mock,
-    setMock,
-  } = useDashboardInputState();
+  const mock = useIsMockActive();
+  const chosenCurriculum = useChosenCurriculum();
+  const program = useProgram();
 
   const { user } = useUser();
 
@@ -172,9 +141,9 @@ const Dashboard: FC = () => {
 
   useEffect(() => {
     if (!user?.admin && mock) {
-      setMock(false);
+      DashboardInputActions.setMock(false);
     }
-  }, [user, mock, setMock]);
+  }, [user, mock]);
 
   useEffect(() => {
     setTrackingData({
@@ -184,35 +153,35 @@ const Dashboard: FC = () => {
 
   useEffect(() => {
     if (searchStudentData?.student) {
-      setMock(false);
+      DashboardInputActions.setMock(false);
       setTrackingData({
         student: searchStudentData.student.id,
       });
-      setStudent(searchStudentData.student.id);
+      DashboardInputActions.setStudent(searchStudentData.student.id);
     } else {
       setTrackingData({
         student: undefined,
       });
-      setStudent(undefined);
+      DashboardInputActions.setStudent(undefined);
     }
-  }, [searchStudentData, setStudent]);
+  }, [searchStudentData]);
 
   useEffect(() => {
     if (searchProgramData?.program) {
-      setProgram(searchProgramData.program.id);
+      DashboardInputActions.setProgram(searchProgramData.program.id);
       setTrackingData({
         showingProgress: true,
         program: searchProgramData.program.id,
       });
-      setMock(false);
+      DashboardInputActions.setMock(false);
     } else {
-      setProgram(undefined);
+      DashboardInputActions.setProgram(undefined);
       setTrackingData({
         showingProgress: false,
         program: undefined,
       });
     }
-  }, [searchProgramData, setMock, setProgram]);
+  }, [searchProgramData]);
 
   useEffect(() => {
     if (user?.type === UserType.Student) {
@@ -222,156 +191,174 @@ const Dashboard: FC = () => {
       searchDirectTakeCourses();
       searchIndirectTakeCourses();
     }
-  }, [user, searchProgram, searchStudent, searchPerformanceByLoad, setStudent]);
+  }, [user, searchProgram, searchStudent, searchPerformanceByLoad]);
 
-  const { isPersistenceLoading } = useIsPersistenceLoading();
+  const isPersistenceLoading = useIsPersistenceLoading();
 
   useEffect(() => {
-    if (mock) {
-      if (mockData) {
-        ForeplanHelperStore.actions.setForeplanAdvices(
-          mockData.default.performanceByLoad ?? []
-        );
-        const allCoursesOfProgram: {
-          code: string;
-          requisites: string[];
-        }[] = [];
-        mockData.default.searchProgramData.program.curriculums.forEach(
-          ({ semesters }) => {
-            for (const { courses } of semesters) {
-              for (const { code, requisites } of courses) {
-                allCoursesOfProgram.push({
-                  code,
-                  requisites: requisites.map(({ code }) => code),
-                });
-              }
+    if (!mock || !mockData) return;
+
+    ForeplanHelperStore.actions.setForeplanAdvices(
+      mockData.default.performanceByLoad ?? []
+    );
+    const allCoursesOfProgram: {
+      code: string;
+      requisites: string[];
+    }[] = [];
+    mockData.default.searchProgramData.program.curriculums.forEach(
+      ({ semesters }) => {
+        for (const { courses } of semesters) {
+          for (const { code, requisites } of courses) {
+            allCoursesOfProgram.push({
+              code,
+              requisites: requisites.map(({ code }) => code),
+            });
+          }
+        }
+      }
+    );
+    const allApprovedCourses: Record<string, boolean> = {};
+    mockData.default.searchStudentData.student.terms.forEach(
+      ({ takenCourses }) => {
+        for (const { state, code, equiv } of takenCourses) {
+          if (state === StateCourse.Passed) {
+            allApprovedCourses[code] = true;
+            if (equiv) {
+              allApprovedCourses[equiv] = true;
             }
           }
-        );
-        const allApprovedCourses: Record<string, boolean> = {};
-        mockData.default.searchStudentData.student.terms.forEach(
-          ({ takenCourses }) => {
-            for (const { state, code, equiv } of takenCourses) {
-              if (state === StateCourse.Passed) {
-                allApprovedCourses[code] = true;
-                if (equiv) {
-                  allApprovedCourses[equiv] = true;
-                }
-              }
-            }
-          }
-        );
+        }
+      }
+    );
 
-        ForeplanHelperStore.actions.setDirectTakeData(
-          allCoursesOfProgram.reduce<string[]>((acum, { code, requisites }) => {
-            if (
-              requisites.every(requisiteCourseCode => {
-                return allApprovedCourses[requisiteCourseCode] || false;
-              })
-            ) {
-              acum.push(code);
-            }
-            return acum;
-          }, [])
-        );
-        ForeplanActiveStore.actions.setNewFutureCourseRequisites(
-          allCoursesOfProgram.reduce<
-            {
-              course: string;
-              requisitesUnmet: string[];
-            }[]
-          >((acum, { code, requisites }) => {
-            if (
-              requisites.some(requisiteCourseCode => {
-                return !allApprovedCourses[requisiteCourseCode];
-              })
-            ) {
-              acum.push({
-                course: code,
-                requisitesUnmet: requisites.reduce<string[]>(
-                  (acum, requisiteCourseCode) => {
-                    if (!allApprovedCourses[requisiteCourseCode]) {
-                      acum.push(requisiteCourseCode);
-                    }
-                    return acum;
-                  },
-                  []
-                ),
-              });
-            }
-            return acum;
-          }, [])
-        );
-
-        const allCodes = flatMapDeep(
-          mockData.default.searchProgramData.program.curriculums.map(
-            ({ semesters }) => {
-              return semesters.map(({ courses }) => {
-                return courses.map(({ code }) => {
-                  return code;
-                });
-              });
-            }
-          )
-        );
-        ForeplanHelperStore.actions.setFailRateData(
-          allCodes.map(code => {
-            return { code, failRate: Math.random() };
+    ForeplanHelperStore.actions.setDirectTakeData(
+      allCoursesOfProgram.reduce<string[]>((acum, { code, requisites }) => {
+        if (
+          requisites.every(requisiteCourseCode => {
+            return allApprovedCourses[requisiteCourseCode] || false;
           })
-        );
+        ) {
+          acum.push(code);
+        }
+        return acum;
+      }, [])
+    );
+    ForeplanActiveStore.actions.setNewFutureCourseRequisites(
+      allCoursesOfProgram.reduce<
+        {
+          course: string;
+          requisitesUnmet: string[];
+        }[]
+      >((acum, { code, requisites }) => {
+        if (
+          requisites.some(requisiteCourseCode => {
+            return !allApprovedCourses[requisiteCourseCode];
+          })
+        ) {
+          acum.push({
+            course: code,
+            requisitesUnmet: requisites.reduce<string[]>(
+              (acum, requisiteCourseCode) => {
+                if (!allApprovedCourses[requisiteCourseCode]) {
+                  acum.push(requisiteCourseCode);
+                }
+                return acum;
+              },
+              []
+            ),
+          });
+        }
+        return acum;
+      }, [])
+    );
+
+    const allCodes = flatMapDeep(
+      mockData.default.searchProgramData.program.curriculums.map(
+        ({ semesters }) => {
+          return semesters.map(({ courses }) => {
+            return courses.map(({ code }) => {
+              return code;
+            });
+          });
+        }
+      )
+    );
+
+    if (user?.config.FOREPLAN_COURSE_STATS) {
+      if (user?.config.FOREPLAN_COURSE_EFFORT_STATS) {
         ForeplanHelperStore.actions.setEffortData(
           allCodes.map(code => {
             return { code, effort: random(1, 5) };
           })
         );
       }
-    } else {
-      if (dataPerformanceByLoad?.performanceLoadAdvices) {
-        ForeplanHelperStore.actions.setForeplanAdvices(
-          dataPerformanceByLoad.performanceLoadAdvices
-        );
-      }
 
-      if (dataDirectTakeCourses?.directTakeCourses) {
-        ForeplanHelperStore.actions.setDirectTakeData(
-          dataDirectTakeCourses.directTakeCourses.map(({ code }) => code)
+      if (user?.config.FOREPLAN_COURSE_FAIL_RATE_STATS) {
+        ForeplanHelperStore.actions.setFailRateData(
+          allCodes.map(code => {
+            return { code, failRate: Math.random() };
+          })
         );
-      }
-      if (
-        !isPersistenceLoading &&
-        dataIndirectTakeCourses?.indirectTakeCourses
-      ) {
-        ForeplanActiveStore.actions.setNewFutureCourseRequisites(
-          dataIndirectTakeCourses.indirectTakeCourses.map(
-            ({ course: { code }, requisitesUnmet }) => {
-              return {
-                course: code,
-                requisitesUnmet,
-              };
-            }
-          )
-        );
-      }
-
-      if (
-        !isPersistenceLoading &&
-        !dataPerformanceByLoad &&
-        !dataDirectTakeCourses &&
-        !dataIndirectTakeCourses
-      ) {
-        ForeplanActiveStore.actions.disableForeplan();
-        ForeplanHelperStore.actions.setForeplanAdvices([]);
       }
     }
+  }, [mock, mockData, user]);
+
+  useEffect(() => {
+    if (mock) return;
+
+    if (dataPerformanceByLoad?.performanceLoadAdvices) {
+      ForeplanHelperStore.actions.setForeplanAdvices(
+        dataPerformanceByLoad.performanceLoadAdvices
+      );
+    }
+  }, [mock, dataPerformanceByLoad]);
+
+  useEffect(() => {
+    if (mock) return;
+
+    if (dataDirectTakeCourses?.directTakeCourses) {
+      ForeplanHelperStore.actions.setDirectTakeData(
+        dataDirectTakeCourses.directTakeCourses.map(({ code }) => code)
+      );
+    }
+  }, [mock, dataDirectTakeCourses]);
+
+  useEffect(() => {
+    if (mock) return;
+
+    if (!isPersistenceLoading && dataIndirectTakeCourses?.indirectTakeCourses) {
+      ForeplanActiveStore.actions.setNewFutureCourseRequisites(
+        dataIndirectTakeCourses.indirectTakeCourses.map(
+          ({ course: { code }, requisitesUnmet }) => {
+            return {
+              course: code,
+              requisitesUnmet,
+            };
+          }
+        )
+      );
+    }
+  }, [mock, dataIndirectTakeCourses, isPersistenceLoading]);
+
+  useEffect(() => {
+    if (mock) return;
+
+    if (
+      !isPersistenceLoading &&
+      !dataPerformanceByLoad &&
+      !dataDirectTakeCourses &&
+      !dataIndirectTakeCourses
+    ) {
+      ForeplanActiveStore.actions.disableForeplan();
+      ForeplanHelperStore.actions.setForeplanAdvices([]);
+    }
   }, [
+    user,
     isPersistenceLoading,
     dataPerformanceByLoad,
     dataDirectTakeCourses,
     dataIndirectTakeCourses,
     mock,
-    user,
-    mockData,
-    ForeplanActiveStore.actions,
   ]);
 
   const {
@@ -704,11 +691,5 @@ export default () => {
     return <LoadingPage />;
   }
 
-  return (
-    <DashboardInputStateProvider>
-      <PersistenceLoadingProvider>
-        <Dashboard />
-      </PersistenceLoadingProvider>
-    </DashboardInputStateProvider>
-  );
+  return <Dashboard />;
 };

@@ -1,4 +1,4 @@
-import { assign, isEqual, uniqWith } from "lodash";
+import { assign, isEqual, uniq, uniqWith } from "lodash";
 import { FC, memo, useEffect, useState } from "react";
 import { createStore } from "react-state-selector";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
@@ -10,9 +10,9 @@ import {
   GET_PERSISTENCE_VALUE,
   SET_PERSISTENCE_VALUE,
 } from "../graphql/queries";
-import { useDashboardInputState } from "../pages";
 import { stringListToBooleanMap } from "../utils";
-import { useIsPersistenceLoading } from "../utils/usePersistenceLoading";
+import { setIsDashboardLoading } from "../utils/usePersistenceLoading";
+import { useDashboardInputState } from "./DashboardInput";
 import { setTrackingData, track } from "./Tracking";
 
 const emDash = "—";
@@ -21,7 +21,7 @@ export const pairTermYear = (term: string, year: number) => {
   return term + emDash + year;
 };
 
-const checkExplicitSemesterCallback = (explicitSemester?: string) => (
+export const checkExplicitSemesterCallback = (explicitSemester?: string) => (
   semestersTaken: ITakenSemester | ITakenSemester[]
 ): ITakenSemester | undefined => {
   if (explicitSemester) {
@@ -72,6 +72,7 @@ const defaultCourseDashboardData: ICoursesDashboardData = Object.freeze({
 });
 
 export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
+  devName: "CoursesDashboard",
   actions: {
     addCourse: ({
       course,
@@ -84,7 +85,7 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
       requisites: string[];
       semestersTaken?: { year: number; term: string }[];
     }) => draft => {
-      const activeHistory = uniqWithEqual([course, ...draft.activeHistory]);
+      const activeHistory = uniq([course, ...draft.activeHistory]);
       const flowHistory = uniqWithEqual([
         stringListToBooleanMap(flow),
         ...draft.flowHistory,
@@ -98,11 +99,14 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
         activeHistory,
         flowHistory,
         requisitesHistory,
-        semestersTakenHistory: [semestersTaken, ...draft.semestersTakenHistory],
+        semestersTakenHistory: uniq([
+          semestersTaken,
+          ...draft.semestersTakenHistory,
+        ]),
         activeCourse: activeHistory[0],
         flow: flowHistory[0],
         requisites: requisitesHistory[0],
-        semestersTaken: semestersTaken,
+        semestersTaken,
         explicitSemester:
           semestersTaken &&
           checkExplicitSemesterCallback(draft.explicitSemester)(semestersTaken)
@@ -138,13 +142,6 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
       draft.explicitSemester =
         draft.explicitSemester === pair ? undefined : pair;
     },
-    checkExplicitSemester: (
-      semestersTaken: ITakenSemester | ITakenSemester[]
-    ) => draft => {
-      return checkExplicitSemesterCallback(draft.explicitSemester)(
-        semestersTaken
-      );
-    },
     toggleOpenCourse: (course: string) => draft => {
       if (course in draft.coursesOpen) {
         delete draft.coursesOpen[course];
@@ -174,8 +171,10 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
     },
     useCheckExplicitSemester: (
       { explicitSemester },
-      semestersTaken: ITakenSemester[] | ITakenSemester
+      semestersTaken?: ITakenSemester[] | ITakenSemester
     ) => {
+      if (!semestersTaken) return undefined;
+
       const pair = checkExplicitSemesterCallback(explicitSemester)(
         semestersTaken
       );
@@ -220,8 +219,6 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = memo(
       [chosenCurriculum, program, student, mock, setKey]
     );
 
-    const { setIsDashboardLoading } = useIsPersistenceLoading();
-
     const {
       data: dataRememberDashboard,
       loading: loadingDataRememberDashboard,
@@ -235,7 +232,7 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = memo(
 
     useEffect(() => {
       setIsDashboardLoading(loadingDataRememberDashboard);
-    }, [loadingDataRememberDashboard, setIsDashboardLoading]);
+    }, [loadingDataRememberDashboard]);
 
     useEffect(() => {
       if (!loadingDataRememberDashboard) {
