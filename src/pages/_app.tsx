@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.min.css";
 
 import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { BatchHttpLink } from "apollo-link-batch-http";
+import { HttpLink } from "apollo-link-http";
 import { NextPage } from "next";
 import withSecureHeaders from "next-secure-headers";
 import withApollo, { WithApolloProps } from "next-with-apollo";
@@ -79,7 +79,7 @@ export default withSecureHeaders({
 })(
   withApollo(({ initialState }) => {
     return new ApolloClient({
-      link: new BatchHttpLink({
+      link: new HttpLink({
         uri: GRAPHQL_URL,
         includeExtensions: true,
         credentials: "same-origin",
