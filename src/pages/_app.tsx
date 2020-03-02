@@ -60,8 +60,8 @@ export default withSecureHeaders({
       defaultSrc: ["'self'"],
       styleSrc: [
         "'self'",
-        "http://cdn.jsdelivr.net",
-        "https://fonts.googleapis.com/",
+        "https://cdn.jsdelivr.net",
+        "https://fonts.googleapis.com",
         "'unsafe-inline'",
       ],
       scriptSrc:
