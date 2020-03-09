@@ -46,7 +46,7 @@ export const ComplexityPlugin: PluginDefinition = {
         );
       }
       // And here we can e.g. subtract the complexity point from hourly API calls limit.
-      if (NODE_ENV === "development" && complexity > 1) {
+      if (false && NODE_ENV === "development" && complexity > 1) {
         const context = contextArg as IContext;
 
         console.log(

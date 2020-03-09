@@ -28,7 +28,7 @@ export const PerformanceLoadAdvicesDataLoader = new DataLoader(
             .where({ program_id }),
         ]);
 
-        const studentCluster = studentClusterData?.cluster ?? 0;
+        const studentCluster = studentClusterData?.cluster ?? 1;
         const performancesByLoad = performancesByLoadData ?? [];
 
         return performancesByLoad.map(

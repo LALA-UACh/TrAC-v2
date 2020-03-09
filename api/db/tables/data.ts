@@ -190,6 +190,11 @@ export interface IPerformanceByLoad {
   message_title: string;
   message_text: string;
   cluster_label: string;
+  hp_count?: number;
+  mp_count?: number;
+  lp_count?: number;
+  courseload_label: string;
+  n_total?: number;
 }
 
 export const PERFORMANCE_BY_LOAD_TABLE = "performance_by_load";

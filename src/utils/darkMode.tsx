@@ -15,7 +15,7 @@ const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
     const theme = ThemeStore.hooks.useTheme();
 
     useEffect(() => {
-      if (!ThemeStore.actions.checkLocalStorage()) {
+      if (!ThemeStore.actions.checkLocalStorage().hasLocalStorage) {
         if (
           typeof window !== "undefined" &&
           window?.matchMedia("(prefers-color-scheme: dark)")?.matches

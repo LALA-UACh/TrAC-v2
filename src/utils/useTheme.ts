@@ -8,7 +8,7 @@ export enum Theme {
 }
 
 export const ThemeStore = createStore(
-  { theme: Theme.LIGHT },
+  { theme: Theme.LIGHT, hasLocalStorage: false },
   {
     hooks: {
       useTheme: ({ theme }) => theme,
@@ -26,17 +26,16 @@ export const ThemeStore = createStore(
         try {
           const theme = localStorage.getItem(themePersistenceKey);
           if (theme) {
+            draft.hasLocalStorage = true;
             if (theme === Theme.DARK || theme === Theme.LIGHT) {
               if (draft.theme !== theme) {
                 draft.theme = theme;
               }
-              return true;
             } else {
               localStorage.removeItem(themePersistenceKey);
             }
           }
         } catch (err) {}
-        return false;
       },
     },
   }

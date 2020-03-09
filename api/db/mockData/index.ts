@@ -504,6 +504,11 @@ const dataImport = async () => {
         table.text("message_title").notNullable();
         table.text("message_text").notNullable();
         table.text("cluster_label").notNullable();
+        table.integer("hp_count");
+        table.integer("mp_count");
+        table.integer("lp_count");
+        table.text("courseload_label").notNullable();
+        table.integer("n_total");
       });
 
       await PerformanceByLoadTable().insert(
