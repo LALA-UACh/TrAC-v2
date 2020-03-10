@@ -108,6 +108,10 @@ const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
         .foreplanCourseCheckboxIndirect > label:before {
           opacity: 0.5;
         }
+        .waffleContainer {
+          border-color: white !important;
+          border-width: 1px !important;
+        } 
         
         `,
           }

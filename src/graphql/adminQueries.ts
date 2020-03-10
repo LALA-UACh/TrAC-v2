@@ -178,3 +178,35 @@ export const EDIT_CONFIG: DocumentNode<
     editConfig(name: $name, value: $value)
   }
 `;
+
+export const USER_PERSISTENCES: DocumentNode<{
+  userPersistences: {
+    key: string;
+    data: Record<string, any>;
+    timestamp: Date;
+  }[];
+}> = gql`
+  query($user: String!) {
+    userPersistences(user: $user) {
+      key
+      data
+      timestamp
+    }
+  }
+`;
+
+export const RESET_PERSISTENCE: DocumentNode<{
+  resetPersistence: number;
+}> = gql`
+  mutation($user: String!) {
+    resetPersistence(user: $user)
+  }
+`;
+
+export const RESET_DATALOADERS_CACHE: DocumentNode<{
+  resetDataLoadersCache: number;
+}> = gql`
+  mutation {
+    resetDataLoadersCache
+  }
+`;

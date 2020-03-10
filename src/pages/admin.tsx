@@ -7,6 +7,7 @@ import { Flex, Stack } from "@chakra-ui/core";
 
 import { NODE_ENV } from "../../constants";
 import { AdminConfig } from "../components/admin/BaseConfig";
+import { AdminData } from "../components/admin/data/index";
 import { AdminMenu } from "../components/admin/Menu";
 import { Programs } from "../components/admin/programs";
 import { Users } from "../components/admin/users";
@@ -19,6 +20,7 @@ export enum AdminMenuTypes {
   users = "users",
   programs = "programs",
   baseConfig = "baseConfig",
+  data = "data",
 }
 
 const Admin: FC = () => {
@@ -51,6 +53,8 @@ const Admin: FC = () => {
         );
       case AdminMenuTypes.baseConfig:
         return <AdminConfig />;
+      case AdminMenuTypes.data:
+        return <AdminData />;
       default:
         return null;
     }

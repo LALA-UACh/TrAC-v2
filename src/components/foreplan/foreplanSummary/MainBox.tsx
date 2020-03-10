@@ -353,9 +353,10 @@ const Waffle: FC<{
           padding={config.FOREPLAN_SUMMARY_WAFFLE_PADDING}
           border={
             isStudentCluster
-              ? config.FOREPLAN_SUMMARY_WAFFLE_IS_STUDENT_CLUSTER_BORDER
+              ? `${config.FOREPLAN_SUMMARY_WAFFLE_IS_STUDENT_CLUSTER_BORDER} !important`
               : undefined
           }
+          borderColor="white !important"
           marginTop={`${config.FOREPLAN_SUMMARY_WAFFLE_MARGIN_TOP} !important`}
           marginBottom={0}
           margin={0}

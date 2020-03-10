@@ -90,6 +90,8 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   unlock: AuthResult;
   setPersistenceValue: Persistence;
+  resetPersistence: Scalars['Int'];
+  resetDataLoadersCache: Scalars['Int'];
   editConfig: Scalars['JSONObject'];
   program: Program;
   student?: Maybe<Student>;
@@ -122,6 +124,11 @@ export type MutationUnlockArgs = {
 export type MutationSetPersistenceValueArgs = {
   data: Scalars['JSONObject'];
   key: Scalars['String'];
+};
+
+
+export type MutationResetPersistenceArgs = {
+  user: Scalars['String'];
 };
 
 
@@ -215,6 +222,7 @@ export type Persistence = {
   user: Scalars['String'];
   key: Scalars['String'];
   data: Scalars['JSONObject'];
+  timestamp: Scalars['DateTime'];
 };
 
 export type Program = {
@@ -231,6 +239,7 @@ export type Query = {
    __typename?: 'Query';
   currentUser?: Maybe<AuthResult>;
   getPersistenceValue?: Maybe<Persistence>;
+  userPersistences: Array<Persistence>;
   config: Scalars['JSONObject'];
   programs: Array<Program>;
   myPrograms: Array<Program>;
@@ -241,6 +250,11 @@ export type Query = {
 
 export type QueryGetPersistenceValueArgs = {
   key: Scalars['String'];
+};
+
+
+export type QueryUserPersistencesArgs = {
+  user: Scalars['String'];
 };
 
 

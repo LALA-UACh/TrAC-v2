@@ -11,4 +11,7 @@ export class Persistence {
 
   @Field(() => GraphQLJSONObject)
   data: Record<string, any>;
+
+  @Field()
+  timestamp: Date;
 }

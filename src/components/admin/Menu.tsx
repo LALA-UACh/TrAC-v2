@@ -14,6 +14,7 @@ export const AdminMenu: FC<{
     switch (name) {
       case AdminMenuTypes.baseConfig:
       case AdminMenuTypes.users:
+      case AdminMenuTypes.data:
       case AdminMenuTypes.programs: {
         setActive(name);
         return;
@@ -49,6 +50,14 @@ export const AdminMenu: FC<{
       >
         <Icon name="settings" />
         Base Config
+      </Menu.Item>
+      <Menu.Item
+        name={AdminMenuTypes.data}
+        active={active === AdminMenuTypes.data}
+        onClick={handleClick}
+      >
+        <Icon name="database" />
+        Data
       </Menu.Item>
     </Menu>
   );

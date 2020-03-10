@@ -93,6 +93,8 @@ type Mutation {
   mailAllLockedUsers: [JSONObject!]!
   performanceLoadAdvices(program_id: String, student_id: String): [PerformanceByLoad!]!
   program(id: String, student_id: String): Program!
+  resetDataLoadersCache: Int!
+  resetPersistence(user: String!): Int!
   setPersistenceValue(data: JSONObject!, key: String!): Persistence!
   student(program_id: String, student_id: String): Student
   track(data: String!, datetime_client: DateTime!): Boolean!
@@ -123,6 +125,7 @@ enum PerformanceLoadUnit {
 type Persistence {
   data: JSONObject!
   key: String!
+  timestamp: DateTime!
   user: String!
 }
 
@@ -142,6 +145,7 @@ type Query {
   myPrograms: [Program!]!
   programs: [Program!]!
   students(last_n_years: Int = 1, program_id: String!): [Student!]!
+  userPersistences(user: String!): [Persistence!]!
   users: [User!]!
 }
 

@@ -1,7 +1,17 @@
 import { GraphQLJSONObject } from "graphql-type-json";
-import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+} from "type-graphql";
 
 import { IContext } from "../../../interfaces";
+import { ADMIN } from "../../constants";
+import * as localDataLoaders from "../../dataloaders";
 import { PersistenceTable } from "../../db/tables";
 import { Persistence } from "../../entities/auth/persistence";
 import { assertIsDefined } from "../../utils/assert";
@@ -81,5 +91,41 @@ export class PersistenceResolver {
     );
 
     return persistenceValue;
+  }
+
+  @Authorized([ADMIN])
+  @Query(() => [Persistence])
+  async userPersistences(@Arg("user") user: string): Promise<Persistence[]> {
+    return await PersistenceTable()
+      .select("data", "key", "timestamp", "user")
+      .where({
+        user,
+      });
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => Int)
+  async resetPersistence(@Arg("user") user: string) {
+    const n = await PersistenceTable()
+      .update({
+        data: {},
+        timestamp: new Date(),
+      })
+      .where({
+        user,
+      });
+
+    return n;
+  }
+
+  @Authorized([ADMIN])
+  @Mutation(() => Int)
+  async resetDataLoadersCache() {
+    const dataLoaders = Object.values(localDataLoaders);
+    dataLoaders.forEach(dataLoader => {
+      dataLoader.clearAll();
+    });
+
+    return dataLoaders.length;
   }
 }
