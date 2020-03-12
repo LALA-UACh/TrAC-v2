@@ -52,8 +52,9 @@ export const ForeplanHelperStore = createStore(defaultForeplanHelperStore, {
     },
     useForeplanAdvice: ({ advices }, totalCreditsTaken: number) => {
       return (
-        advices.find(({ lowerBoundary, upperBoundary }) => {
+        advices.find(({ lowerBoundary, upperBoundary, isStudentCluster }) => {
           if (
+            isStudentCluster &&
             totalCreditsTaken >= lowerBoundary &&
             totalCreditsTaken <= upperBoundary
           ) {

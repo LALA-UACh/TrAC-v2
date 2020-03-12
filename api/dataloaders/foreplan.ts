@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { compact, toInteger, trim } from "lodash";
+import { compact, sortBy, toInteger, trim } from "lodash";
 import { LRUMap } from "lru_map";
 
 import { defaultPerformanceLoadUnit } from "../../constants";
@@ -31,7 +31,10 @@ export const PerformanceLoadAdvicesDataLoader = new DataLoader(
         const studentCluster = studentClusterData?.cluster ?? 1;
         const performancesByLoad = performancesByLoadData ?? [];
 
-        return performancesByLoad.map(
+        return sortBy(
+          performancesByLoad,
+          ({ student_cluster }) => student_cluster
+        ).map(
           ({
             id,
             courseload_lb,
