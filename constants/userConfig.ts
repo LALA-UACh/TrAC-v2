@@ -10,6 +10,7 @@ export const baseUserConfig = {
   FOREPLAN_SUMMARY_WAFFLE_CHART: true,
   FOREPLAN_SUMMARY_ADVICE: true,
   FOREPLAN_FUTURE_COURSE_PLANIFICATION: true,
+  FEEDBACK: true,
 };
 
 export type UserConfig = typeof baseUserConfig &

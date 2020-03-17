@@ -35,6 +35,11 @@ textarea {
 .toast {
   font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif !important;
 }
+
 body {
   background: initial;
+}
+
+form div[type="radio"] {
+  border: 1px solid black;
 }

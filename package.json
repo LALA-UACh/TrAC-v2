@@ -24,13 +24,16 @@
     "watch-client": "wait-on tcp:4000 && next",
     "watch-graphql-codegen": "wait-on tcp:4000 && graphql-codegen -w"
   },
+  "resolutions": {
+    "apollo-server-core": "2.11.0",
+    "apollo-server-express": "2.11.0"
+  },
   "dependencies": {
     "@apollo/react-common": "^3.1.3",
     "@apollo/react-hooks": "^3.1.3",
     "@chakra-ui/core": "^0.6.1",
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
-    "@next/bundle-analyzer": "^9.3.0",
     "@vx/axis": "^0.0.195",
     "apollo-cache-inmemory": "^1.6.5",
     "apollo-client": "^2.6.8",
@@ -47,7 +50,7 @@
     "crypto-js": "^4.0.0",
     "csvtojson": "^2.0.10",
     "d3-scale": "^3.2.1",
-    "darkreader": "^4.9.1",
+    "darkreader": "^4.9.2",
     "dataloader": "^2.0.0",
     "date-fns": "^2.11.0",
     "emotion-theming": "^10.0.27",
@@ -71,7 +74,7 @@
     "lru_map": "^0.3.3",
     "markdown-to-jsx": "^6.10.3",
     "ms": "^2.1.2",
-    "next": "^9.3.0",
+    "next": "^9.3.1",
     "next-secure-headers": "^1.0.1",
     "next-with-apollo": "^5.0.0",
     "node-fetch": "^2.6.0",
@@ -85,6 +88,7 @@
     "react-dom": "^16.13.0",
     "react-dropzone": "^10.2.1",
     "react-final-form": "^6.3.5",
+    "react-hook-form": "^5.1.1",
     "react-icons": "^3.9.0",
     "react-indiana-drag-scroll": "^1.6.0",
     "react-intersection-observer": "^8.26.1",
@@ -107,9 +111,10 @@
   },
   "devDependencies": {
     "@apollo/react-testing": "^3.1.3",
-    "@graphql-codegen/cli": "^1.13.0",
-    "@graphql-codegen/typescript": "^1.13.0",
-    "@graphql-codegen/typescript-document-nodes": "^1.13.0",
+    "@graphql-codegen/cli": "^1.13.1",
+    "@graphql-codegen/typescript": "^1.13.1",
+    "@graphql-codegen/typescript-document-nodes": "^1.13.1",
+    "@next/bundle-analyzer": "^9.3.1",
     "@testing-library/jest-dom": "^5.1.1",
     "@testing-library/react": "^10.0.1",
     "@types/classnames": "^2.2.10",
@@ -169,9 +174,5 @@
     "waait": "^1.0.5",
     "wait-for-expect": "^3.0.1",
     "wait-on": "^4.0.1"
-  },
-  "resolutions": {
-    "apollo-server-core": "2.11.0",
-    "apollo-server-express": "2.11.0"
   }
 }

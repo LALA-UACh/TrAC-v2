@@ -5,7 +5,7 @@ import ScrollContainer from "react-indiana-drag-scroll";
 import { useUpdateEffect } from "react-use";
 
 import { useMutation } from "@apollo/react-hooks";
-import { Box, Flex, Stack } from "@chakra-ui/core";
+import { Box, Button, Flex, Stack } from "@chakra-ui/core";
 
 import {
   NODE_ENV,
@@ -19,6 +19,7 @@ import { ITakenCourse } from "../../interfaces";
 import { SemestersList } from "../components/dashboard/SemestersList";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
+import { Feedback } from "../components/feedback";
 import { LoadingPage } from "../components/Loading";
 import { ConfigContext } from "../context/Config";
 import { CoursesDashbordManager } from "../context/CoursesDashboard";
@@ -672,6 +673,20 @@ const Dashboard: FC = () => {
       {SemestersComponent}
 
       <TrackingManager />
+
+      <Feedback>
+        {({ onOpen }) => {
+          return (
+            <Button
+              onClick={() => {
+                onOpen();
+              }}
+            >
+              Feedback
+            </Button>
+          );
+        }}
+      </Feedback>
 
       {user?.config.FOREPLAN && <ForeplanContextManager />}
 
