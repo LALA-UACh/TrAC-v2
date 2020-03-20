@@ -2,7 +2,7 @@ import sha1 from "crypto-js/sha1";
 import { chunk } from "lodash";
 
 import { dbAuth, dbConfig, dbData, dbTracking } from "../";
-import { NODE_ENV, UserType } from "../../../constants";
+import { FeedbackQuestionType, NODE_ENV, UserType } from "../../../constants";
 import { baseConfig } from "../../../constants/baseConfig";
 import { baseUserConfig } from "../../../constants/userConfig";
 import { configValueToString } from "../../../constants/validation";
@@ -588,7 +588,7 @@ const dataImport = async () => {
               "opentext",
               "singleanswer",
               "multipleanswer",
-            ] as IFeedbackFormQuestion["type"][]);
+            ] as FeedbackQuestionType[]);
 
             table.integer("priority").defaultTo(0);
 

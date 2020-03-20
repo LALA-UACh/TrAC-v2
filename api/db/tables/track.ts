@@ -1,4 +1,5 @@
 import { dbTracking } from "../";
+import { FeedbackQuestionType } from "../../../constants";
 
 export interface ITrack {
   id: number;
@@ -38,7 +39,7 @@ export interface IFeedbackFormQuestion {
 
   question: string;
 
-  type: "opentext" | "singleanswer" | "multipleanswer";
+  type: FeedbackQuestionType;
 
   priority: number;
 

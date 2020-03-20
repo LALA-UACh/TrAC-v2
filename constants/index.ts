@@ -42,6 +42,12 @@ export enum TermType {
   Anual = "Anual",
 }
 
+export enum FeedbackQuestionType {
+  opentext = "opentext",
+  singleanswer = "singleanswer",
+  multipleanswer = "multipleanswer",
+}
+
 export const defaultUserType = (type?: string): UserType => {
   switch (type) {
     case "director":
