@@ -43,3 +43,11 @@ body {
 form div[type="radio"] {
   border: 1px solid black;
 }
+
+.helpImagesStack img {
+  padding: 10px;
+  width: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  border: 1px solid black;
+}

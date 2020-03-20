@@ -574,7 +574,6 @@ const Dashboard: FC = () => {
   const onlyProgramSearch =
     !!searchProgramData?.program && !searchStudentData?.student;
 
-  console.log({ user });
   const searchResult = useMemo(() => {
     return {
       curriculums:

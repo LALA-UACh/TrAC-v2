@@ -454,8 +454,6 @@ export const UpdateUser: FC<{
                     )}
                   </Field>
 
-                  <UserPersistence user={user.email} />
-
                   <Button
                     type="submit"
                     icon
@@ -473,6 +471,8 @@ export const UpdateUser: FC<{
                     <Icon name="save outline" />
                     Save
                   </Button>
+
+                  <UserPersistence user={user.email} />
 
                   {userConfigModal}
 

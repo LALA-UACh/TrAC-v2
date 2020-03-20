@@ -1,6 +1,7 @@
 import {
   disable as disableDarkMode,
   enable as enableDarkMode,
+  setFetchMethod,
 } from "darkreader";
 import React, { FC, memo, useEffect } from "react";
 import ToggleTheme from "react-toggle-theme";
@@ -9,6 +10,10 @@ import { Box, BoxProps } from "@chakra-ui/core";
 
 import { SVG_TEXT } from "../../constants";
 import { Theme, ThemeStore } from "./useTheme";
+
+if (typeof window !== "undefined" && typeof window.fetch !== "undefined") {
+  setFetchMethod(window.fetch);
+}
 
 const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
   ({ render = true, ...props }) => {

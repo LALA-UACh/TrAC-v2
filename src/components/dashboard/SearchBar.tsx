@@ -42,6 +42,7 @@ import {
 import { setTrackingData, track } from "../../context/Tracking";
 import { MY_PROGRAMS } from "../../graphql/queries";
 import { useUser } from "../../utils/useUser";
+import { Help } from "../Help";
 
 const StudentList = dynamic(() => import("./StudentList"));
 
@@ -175,10 +176,6 @@ export const SearchBar: FC<{
       program_menu: program?.value,
     });
   }, [program, setTrackingData]);
-
-  console.log({
-    searchResult,
-  });
 
   return (
     <Flex
@@ -412,7 +409,12 @@ export const SearchBar: FC<{
         )}
       </Flex>
 
-      <Flex wrap="wrap" justifyContent="flex-end" className="stack">
+      <Flex
+        wrap="wrap"
+        justifyContent="flex-end"
+        alignItems="center"
+        className="stack"
+      >
         {user?.admin && <MockingMode />}
         {isDirector && user?.config?.SHOW_STUDENT_LIST && (
           <StudentList
@@ -474,6 +476,8 @@ export const SearchBar: FC<{
             }}
           />
         )}
+
+        <Help />
 
         <Button
           negative

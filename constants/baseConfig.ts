@@ -258,6 +258,8 @@ export const baseConfig = {
     "No puede ingresar una contraseña usada anteriormente.",
   UNLOCK_WRONG_INFO_MESSAGE:
     "Usuario ingresado no está bloqueado o el código ingresado es erróneo.",
+  HELP_POPOVER_HOVER_TEXT: "Ayuda",
+  HELP_MODAL_HEADER_TEXT: "Ayuda",
 };
 
 export const baseConfigAdmin: typeof baseConfig &
