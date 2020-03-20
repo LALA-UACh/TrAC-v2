@@ -121,6 +121,7 @@ describe("admin", () => {
                       admin: true,
                       type: UserType.Director,
                       config: baseUserConfig,
+                      student_id: "",
                       __typename: "User",
                     },
                     __typename: "AuthResult",

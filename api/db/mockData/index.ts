@@ -13,6 +13,10 @@ import {
   COURSE_TABLE,
   CourseStatsTable,
   CourseTable,
+  FEEDBACK_FORM_QUESTION_TABLE,
+  FEEDBACK_FORM_TABLE,
+  FEEDBACK_RESULT_TABLE,
+  IFeedbackFormQuestion,
   PARAMETER_TABLE,
   ParameterTable,
   PERFORMANCE_BY_LOAD_TABLE,
@@ -551,6 +555,61 @@ const dataImport = async () => {
         table.increments("id").primary();
 
         table.unique(["user", "key"]);
+      });
+    }
+  });
+
+  dbTracking.schema.hasTable(FEEDBACK_FORM_TABLE).then(async exists => {
+    if (!exists) {
+      await dbTracking.schema.createTable(FEEDBACK_FORM_TABLE, table => {
+        table.increments("id").primary();
+
+        table.text("name");
+
+        table.integer("priority").defaultTo(0);
+      });
+    }
+  });
+
+  dbTracking.schema
+    .hasTable(FEEDBACK_FORM_QUESTION_TABLE)
+    .then(async exists => {
+      if (!exists) {
+        await dbTracking.schema.createTable(
+          FEEDBACK_FORM_QUESTION_TABLE,
+          table => {
+            table.increments("id").primary();
+
+            table.integer("form_id");
+
+            table.text("question");
+
+            table.enu("type", [
+              "opentext",
+              "singleanswer",
+              "multipleanswer",
+            ] as IFeedbackFormQuestion["type"][]);
+
+            table.integer("priority").defaultTo(0);
+
+            table.text("options").defaultTo("");
+          }
+        );
+      }
+    });
+
+  dbTracking.schema.hasTable(FEEDBACK_RESULT_TABLE).then(async exists => {
+    if (!exists) {
+      await dbTracking.schema.createTable(FEEDBACK_RESULT_TABLE, table => {
+        table.integer("form_id");
+
+        table.integer("question_id");
+
+        table.text("user_id");
+
+        table.text("answer");
+
+        table.primary(["form_id", "question_id", "user_id"]);
       });
     }
   });

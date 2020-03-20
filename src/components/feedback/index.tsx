@@ -25,7 +25,7 @@ export interface IDisclosure {
   onToggle: () => void;
 }
 
-const feedbackData = [
+const feedbackData: { name: string; options?: string[] }[] = [
   {
     name: "first_question",
     options: ["uno", "dos", "tres", "cuatro", "cinco"],
@@ -46,7 +46,7 @@ const feedbackData = [
 export const Feedback: FC<{
   children: FC<IDisclosure>;
 }> = memo(({ children: Children }) => {
-  const modalDisclosure = useDisclosure(true);
+  const modalDisclosure = useDisclosure(false);
 
   const { register, handleSubmit, errors } = useForm();
 

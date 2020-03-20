@@ -32,6 +32,7 @@ import {
   Tag,
 } from "@chakra-ui/core";
 
+import { UserType } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import {
   DashboardInputActions,
@@ -72,9 +73,10 @@ export const SearchBar: FC<{
     curriculums: string[];
     student?: string;
     program_id?: string;
+    program_name?: string;
   };
   error?: string;
-}> = ({ isSearchLoading, onSearch, searchResult, error }) => {
+}> = memo(({ isSearchLoading, onSearch, searchResult, error }) => {
   const mock = useIsMockActive();
   const chosenCurriculum = useChosenCurriculum();
   useEffect(() => {
@@ -94,6 +96,8 @@ export const SearchBar: FC<{
 
   const { user } = useUser();
 
+  const isDirector = user?.type === UserType.Director;
+
   const {
     LOGOUT_BUTTON_LABEL,
     SEARCH_BAR_BACKGROUND_COLOR,
@@ -109,6 +113,7 @@ export const SearchBar: FC<{
     MY_PROGRAMS,
     {
       ssr: false,
+      skip: !isDirector,
     }
   );
 
@@ -121,6 +126,20 @@ export const SearchBar: FC<{
     "student_input_options",
     []
   );
+
+  const programsOptions = useMemo(() => {
+    return (
+      myProgramsData?.myPrograms.map(({ id, name }) => ({
+        label: `${id} - ${name}`,
+        value: id,
+      })) ?? []
+    );
+  }, [myProgramsLoading, myProgramsData]);
+
+  const [program, setProgram] = useRememberState<
+    $ElementType<typeof programsOptions, number> | undefined
+  >("program_input", undefined);
+
   const addStudentOption = useCallback(
     (value: string) => {
       if (value && !studentOptions.includes(value)) {
@@ -140,19 +159,6 @@ export const SearchBar: FC<{
 
   const [studentIdShow, setStudentIdShow] = useState("");
 
-  const programsOptions = useMemo(() => {
-    return (
-      myProgramsData?.myPrograms.map(({ id, name }) => ({
-        label: `${id} - ${name}`,
-        value: id,
-      })) ?? []
-    );
-  }, [myProgramsLoading, myProgramsData]);
-
-  const [program, setProgram] = useRememberState<
-    $ElementType<typeof programsOptions, number> | undefined
-  >("program_input", undefined);
-
   useEffect(() => {
     if (
       myProgramsData?.myPrograms &&
@@ -170,6 +176,10 @@ export const SearchBar: FC<{
     });
   }, [program, setTrackingData]);
 
+  console.log({
+    searchResult,
+  });
+
   return (
     <Flex
       width="100%"
@@ -182,31 +192,29 @@ export const SearchBar: FC<{
       wrap="wrap"
     >
       <Flex wrap="wrap" alignItems="center">
-        <Box width={300} mr={4} fontSize="0.85em">
-          <Select<{ value: string; label: string }>
-            options={programsOptions}
-            value={program || null}
-            isLoading={isSearchLoading}
-            isDisabled={isSearchLoading}
-            placeholder={PROGRAM_NOT_SPECIFIED_PLACEHOLDER}
-            classNamePrefix="react-select"
-            onChange={(selected: any) => {
-              track({
-                action: "click",
-                effect: `change-program-menu-to-${selected?.value}`,
-                target: "program-menu",
-              });
-              setProgram(
-                selected as $ElementType<typeof programsOptions, number>
-              );
-            }}
-            onMenuOpen={() => {
-              setTimeout(() => {
-                // window.alert();
-              }, 1000);
-            }}
-          />
-        </Box>
+        {isDirector && (
+          <Box width={300} mr={4} fontSize="0.85em">
+            <Select<{ value: string; label: string }>
+              options={programsOptions}
+              value={program || null}
+              isLoading={isSearchLoading}
+              isDisabled={isSearchLoading}
+              placeholder={PROGRAM_NOT_SPECIFIED_PLACEHOLDER}
+              classNamePrefix="react-select"
+              onChange={(selected: any) => {
+                track({
+                  action: "click",
+                  effect: `change-program-menu-to-${selected?.value}`,
+                  target: "program-menu",
+                });
+                setProgram(
+                  selected as $ElementType<typeof programsOptions, number>
+                );
+              }}
+            />
+          </Box>
+        )}
+
         {(searchResult?.curriculums.length ?? 0) > 1 ? (
           <Flex mr={5}>
             <Tag variantColor="blue" variant="outline">
@@ -247,12 +255,9 @@ export const SearchBar: FC<{
             </Box>
           </Flex>
         ) : searchResult?.curriculums.length === 1 ? (
-          <Tag
-            mr={2}
-            mt={1}
-            mb={1}
-            p={2}
-          >{`${searchResult?.program_id} | ${CURRICULUM_LABEL}: ${searchResult?.curriculums[0]}`}</Tag>
+          <Tag mr={2} mt={1} mb={1} p={2}>{`${
+            isDirector ? searchResult?.program_id : searchResult?.program_name
+          } | ${CURRICULUM_LABEL}: ${searchResult?.curriculums[0]}`}</Tag>
         ) : null}
         {searchResult?.student && (
           <Tag
@@ -263,150 +268,153 @@ export const SearchBar: FC<{
             p={3}
             maxW="300px"
             textAlign="center"
-          >{`${STUDENT_LABEL}: ${studentIdShow}`}</Tag>
+          >{`${STUDENT_LABEL}: ${studentIdShow || searchResult?.student}`}</Tag>
         )}
 
-        <form>
-          <Flex wrap="wrap" alignItems="center">
-            <InputGroup size="lg" mt={2} mb={2}>
-              <Input
-                borderColor="gray.400"
-                fontFamily="Lato"
-                variant="outline"
-                fontSize="1em"
-                width={Math.min(
-                  // Width should maximum 300 for mobile
-                  Math.max(
-                    // Width has to be at least 160 for the placeholder text
-                    pixelWidth(student_id ?? "", { size: 21 }),
-                    160
-                  ),
-                  300
-                )}
-                list="student_options"
-                placeholder={PLACEHOLDER_SEARCH_STUDENT}
-                value={student_id}
-                onChange={({
-                  target: { value },
-                }: ChangeEvent<HTMLInputElement>) => {
-                  setStudentId(value);
-                }}
-                mr={4}
-                isDisabled={isSearchLoading}
-              />
-              {studentOptions.findIndex(value => {
-                return student_id === value;
-              }) === -1 && (
-                <datalist id="student_options">
-                  {studentOptions.map((value, key) => (
-                    <option key={key} value={value} />
-                  ))}
-                </datalist>
-              )}
-
-              {student_id !== "" && (
-                <InputRightElement
-                  mr={1}
-                  cursor="pointer"
-                  onClick={() => {
-                    setStudentId("");
+        {isDirector && (
+          <form>
+            <Flex wrap="wrap" alignItems="center">
+              <InputGroup size="lg" mt={2} mb={2}>
+                <Input
+                  borderColor="gray.400"
+                  fontFamily="Lato"
+                  variant="outline"
+                  fontSize="1em"
+                  width={Math.min(
+                    // Width should maximum 300 for mobile
+                    Math.max(
+                      // Width has to be at least 160 for the placeholder text
+                      pixelWidth(student_id ?? "", { size: 21 }),
+                      160
+                    ),
+                    300
+                  )}
+                  list="student_options"
+                  placeholder={PLACEHOLDER_SEARCH_STUDENT}
+                  value={student_id}
+                  onChange={({
+                    target: { value },
+                  }: ChangeEvent<HTMLInputElement>) => {
+                    setStudentId(value);
                   }}
-                >
-                  <Icon color="grey" name="close" />
-                </InputRightElement>
-              )}
-            </InputGroup>
+                  mr={4}
+                  isDisabled={isSearchLoading}
+                />
+                {studentOptions.findIndex(value => {
+                  return student_id === value;
+                }) === -1 && (
+                  <datalist id="student_options">
+                    {studentOptions.map((value, key) => (
+                      <option key={key} value={value} />
+                    ))}
+                  </datalist>
+                )}
 
-            <Button
-              icon
-              labelPosition="left"
-              primary
-              loading={isSearchLoading}
-              type="submit"
-              disabled={isSearchLoading || !program?.value}
-              onClick={async ev => {
-                if (program) {
-                  ev.preventDefault();
-                  const onSearchResult = await onSearch({
-                    student_id,
-                    program_id: program.value,
-                  });
-
-                  switch (onSearchResult) {
-                    case "student": {
-                      addStudentOption(student_id);
-                      setStudentIdShow(student_id);
+                {student_id !== "" && (
+                  <InputRightElement
+                    mr={1}
+                    cursor="pointer"
+                    onClick={() => {
                       setStudentId("");
-                      track({
-                        action: "click",
-                        effect: "load-student",
-                        target: "search-button",
-                      });
-                      break;
-                    }
-                    case "program": {
-                      setTrackingData({
-                        student: undefined,
-                      });
+                    }}
+                  >
+                    <Icon color="grey" name="close" />
+                  </InputRightElement>
+                )}
+              </InputGroup>
 
-                      setStudentIdShow("");
-                      track({
-                        action: "click",
-                        effect: "load-program",
-                        target: "search-button",
-                      });
+              <Button
+                icon
+                labelPosition="left"
+                primary
+                loading={isSearchLoading}
+                type="submit"
+                disabled={isSearchLoading || !program?.value}
+                onClick={async ev => {
+                  if (program) {
+                    ev.preventDefault();
+                    const onSearchResult = await onSearch({
+                      student_id,
+                      program_id: program.value,
+                    });
 
-                      break;
-                    }
-                    default: {
-                      setTrackingData({
-                        student: student_id,
-                      });
-                      setStudentIdShow("");
-                      track({
-                        action: "click",
-                        effect: "wrong-student",
-                        target: "search-button",
-                      });
+                    switch (onSearchResult) {
+                      case "student": {
+                        addStudentOption(student_id);
+                        setStudentIdShow(student_id);
+                        setStudentId("");
+                        track({
+                          action: "click",
+                          effect: "load-student",
+                          target: "search-button",
+                        });
+                        break;
+                      }
+                      case "program": {
+                        setTrackingData({
+                          student: undefined,
+                        });
+
+                        setStudentIdShow("");
+                        track({
+                          action: "click",
+                          effect: "load-program",
+                          target: "search-button",
+                        });
+
+                        break;
+                      }
+                      default: {
+                        setTrackingData({
+                          student: student_id,
+                        });
+                        setStudentIdShow("");
+                        track({
+                          action: "click",
+                          effect: "wrong-student",
+                          target: "search-button",
+                        });
+                      }
                     }
                   }
-                }
-              }}
-              size="medium"
-            >
-              <Icon name="search" />
-              {SEARCH_BUTTON_LABEL}
-            </Button>
-            <AnimatePresence>
-              {!isSearchLoading && error && (
-                <motion.div
-                  initial={{ scale: 0.7, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.5, opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Alert
-                    key="error"
-                    status="error"
-                    borderRadius={4}
-                    whiteSpace="pre-wrap"
-                    mt={5}
-                    mb={5}
-                    maxWidth="40vw"
+                }}
+                size="medium"
+              >
+                <Icon name="search" />
+                {SEARCH_BUTTON_LABEL}
+              </Button>
+
+              <AnimatePresence>
+                {!isSearchLoading && error && (
+                  <motion.div
+                    initial={{ scale: 0.7, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.5, opacity: 0 }}
+                    transition={{ duration: 0.5 }}
                   >
-                    <AlertIcon />
-                    <AlertTitle mr={2}>{error}</AlertTitle>
-                  </Alert>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Flex>
-        </form>
+                    <Alert
+                      key="error"
+                      status="error"
+                      borderRadius={4}
+                      whiteSpace="pre-wrap"
+                      mt={5}
+                      mb={5}
+                      maxWidth="40vw"
+                    >
+                      <AlertIcon />
+                      <AlertTitle mr={2}>{error}</AlertTitle>
+                    </Alert>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Flex>
+          </form>
+        )}
       </Flex>
 
       <Flex wrap="wrap" justifyContent="flex-end" className="stack">
         {user?.admin && <MockingMode />}
-        {user?.config?.SHOW_STUDENT_LIST && (
+        {isDirector && user?.config?.SHOW_STUDENT_LIST && (
           <StudentList
             program_id={program?.value}
             mockData={
@@ -493,6 +501,4 @@ export const SearchBar: FC<{
       </Flex>
     </Flex>
   );
-};
-
-export default SearchBar;
+});

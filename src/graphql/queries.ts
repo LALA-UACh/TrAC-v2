@@ -26,7 +26,7 @@ import { IfImplements } from "../../typings/utils";
 
 export type IUserFragment = Pick<
   User,
-  "email" | "name" | "admin" | "type" | "config"
+  "email" | "name" | "admin" | "type" | "config" | "student_id"
 >;
 
 export const UserFragment = gql`
@@ -36,6 +36,7 @@ export const UserFragment = gql`
     admin
     type
     config
+    student_id
   }
 `;
 

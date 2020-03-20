@@ -1,6 +1,13 @@
 import { flatMapDeep, random, uniq } from "lodash";
 import dynamic from "next/dynamic";
-import React, { FC, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useUpdateEffect } from "react-use";
 
@@ -16,6 +23,7 @@ import {
   UserType,
 } from "../../constants";
 import { ITakenCourse } from "../../interfaces";
+import { SearchBar } from "../components/dashboard/SearchBar";
 import { SemestersList } from "../components/dashboard/SemestersList";
 import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
 import { TimeLine } from "../components/dashboard/Timeline";
@@ -46,7 +54,6 @@ import { DarkMode } from "../utils/dynamicDarkMode";
 import { useIsPersistenceLoading } from "../utils/usePersistenceLoading";
 import { useUser } from "../utils/useUser";
 
-const SearchBar = dynamic(() => import("../components/dashboard/SearchBar"));
 const Dropout = dynamic(() => import("../components/dashboard/Dropout"));
 const ForeplanModeSwitch = dynamic(() =>
   import("../components/foreplan/ModeSwitch")
@@ -567,86 +574,120 @@ const Dashboard: FC = () => {
   const onlyProgramSearch =
     !!searchProgramData?.program && !searchStudentData?.student;
 
+  console.log({ user });
+  const searchResult = useMemo(() => {
+    return {
+      curriculums:
+        searchProgramData?.program?.curriculums?.map(({ id }) => {
+          return id;
+        }) ?? [],
+      student:
+        user?.type === UserType.Director
+          ? searchStudentData?.student?.id
+          : user?.student_id,
+      program_id: searchProgramData?.program?.id,
+      program_name: searchProgramData?.program?.name,
+    };
+  }, [searchProgramData, searchStudentData, user]);
+
+  const searchError = useMemo(() => {
+    return uniq(
+      [
+        ...(searchProgramError?.graphQLErrors ?? []),
+        ...(searchStudentError?.graphQLErrors ?? []),
+        ...(errorPerformanceByLoad?.graphQLErrors ?? []),
+        ...(errorDirectTakeCourses?.graphQLErrors ?? []),
+      ].map(({ message }) => {
+        switch (message) {
+          case STUDENT_NOT_FOUND:
+            return ERROR_STUDENT_NOT_FOUND_MESSAGE;
+          case PROGRAM_UNAUTHORIZED:
+            return ERROR_PROGRAM_UNAUTHORIZED_MESSAGE;
+          case PROGRAM_NOT_FOUND:
+            return ERROR_PROGRAM_NOT_FOUND;
+          default:
+            return message;
+        }
+      })
+    )
+      .join("\n")
+      .trim();
+  }, [
+    searchProgramError,
+    searchStudentError,
+    errorPerformanceByLoad,
+    errorDirectTakeCourses,
+  ]);
+
+  const onSearchFn = useCallback(
+    async ({ student_id, program_id }) => {
+      try {
+        if (student_id) {
+          if (user?.config.FOREPLAN) {
+            searchPerformanceByLoad({
+              variables: { student_id, program_id },
+            });
+            searchDirectTakeCourses({
+              variables: { student_id, program_id },
+            });
+            if (user.config.FOREPLAN_FUTURE_COURSE_PLANIFICATION) {
+              searchIndirectTakeCourses({
+                variables: { student_id, program_id },
+              });
+            }
+          }
+        }
+        const [programSearch, studentSearch] = await Promise.all([
+          searchProgram({
+            variables: {
+              id: program_id,
+              student_id: student_id || undefined,
+            },
+          }),
+          searchStudent({
+            variables: { student_id, program_id },
+          }),
+        ]);
+
+        if (studentSearch.data?.student && programSearch.data?.program) {
+          return "student";
+        } else if (programSearch.data?.program) {
+          return "program";
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      return undefined;
+    },
+    [
+      searchPerformanceByLoad,
+      searchDirectTakeCourses,
+      searchIndirectTakeCourses,
+      searchProgram,
+      searchStudent,
+    ]
+  );
   return (
     <>
       {user?.type === UserType.Director ? (
         <SearchBar
-          error={uniq(
-            [
-              ...(searchProgramError?.graphQLErrors ?? []),
-              ...(searchStudentError?.graphQLErrors ?? []),
-              ...(errorPerformanceByLoad?.graphQLErrors ?? []),
-              ...(errorDirectTakeCourses?.graphQLErrors ?? []),
-            ].map(({ message }) => {
-              switch (message) {
-                case STUDENT_NOT_FOUND:
-                  return ERROR_STUDENT_NOT_FOUND_MESSAGE;
-                case PROGRAM_UNAUTHORIZED:
-                  return ERROR_PROGRAM_UNAUTHORIZED_MESSAGE;
-                case PROGRAM_NOT_FOUND:
-                  return ERROR_PROGRAM_NOT_FOUND;
-                default:
-                  return message;
-              }
-            })
-          )
-            .join("\n")
-            .trim()}
-          searchResult={{
-            curriculums:
-              searchProgramData?.program?.curriculums?.map(({ id }) => {
-                return id;
-              }) ?? [],
-            student: searchStudentData?.student?.id,
-            program_id: searchProgramData?.program?.id,
-          }}
+          error={searchError}
+          searchResult={searchResult}
           isSearchLoading={searchProgramLoading || searchStudentLoading}
-          onSearch={async ({ student_id, program_id }) => {
-            try {
-              if (student_id) {
-                if (user.config.FOREPLAN) {
-                  searchPerformanceByLoad({
-                    variables: { student_id, program_id },
-                  });
-                  searchDirectTakeCourses({
-                    variables: { student_id, program_id },
-                  });
-                  if (user.config.FOREPLAN_FUTURE_COURSE_PLANIFICATION) {
-                    searchIndirectTakeCourses({
-                      variables: { student_id, program_id },
-                    });
-                  }
-                }
-              }
-              const [programSearch, studentSearch] = await Promise.all([
-                searchProgram({
-                  variables: {
-                    id: program_id,
-                    student_id: student_id || undefined,
-                  },
-                }),
-                searchStudent({
-                  variables: { student_id, program_id },
-                }),
-              ]);
-
-              if (studentSearch.data?.student && programSearch.data?.program) {
-                return "student";
-              } else if (programSearch.data?.program) {
-                return "program";
-              }
-            } catch (err) {
-              console.error(err);
-            }
-
-            return undefined;
-          }}
+          onSearch={onSearchFn}
         />
       ) : (
         <>
           {searchProgramLoading || searchStudentLoading ? (
             <LoadingPage />
-          ) : null}
+          ) : (
+            <SearchBar
+              onSearch={onSearchFn}
+              isSearchLoading={false}
+              searchResult={searchResult}
+            />
+          )}
         </>
       )}
 
@@ -674,19 +715,21 @@ const Dashboard: FC = () => {
 
       <TrackingManager />
 
-      <Feedback>
-        {({ onOpen }) => {
-          return (
-            <Button
-              onClick={() => {
-                onOpen();
-              }}
-            >
-              Feedback
-            </Button>
-          );
-        }}
-      </Feedback>
+      {false && (
+        <Feedback>
+          {({ onOpen }) => {
+            return (
+              <Button
+                onClick={() => {
+                  onOpen();
+                }}
+              >
+                Feedback
+              </Button>
+            );
+          }}
+        </Feedback>
+      )}
 
       {user?.config.FOREPLAN && <ForeplanContextManager />}
 

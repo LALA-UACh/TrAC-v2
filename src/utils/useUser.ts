@@ -1,6 +1,6 @@
 import { WatchQueryFetchPolicy } from "apollo-client";
 import Router from "next/router";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
 
@@ -48,14 +48,22 @@ export function useUser(
     throw error;
   }
 
-  if ((requireAuth && !user) || (requireAdmin && !user?.admin)) {
-    if (!loading) {
-      if (user) {
-        Router.push("/");
-      } else {
-        Router.push("/login");
+  useEffect(() => {
+    if (
+      process.env.NODE_ENV !== "test" &&
+      ((requireAuth && !user) || (requireAdmin && !user?.admin))
+    ) {
+      if (!loading) {
+        if (user) {
+          Router.push("/");
+        } else {
+          Router.push("/login");
+        }
       }
     }
+  }, [loading, requireAuth, user, requireAdmin]);
+
+  if ((requireAuth && !user) || (requireAdmin && !user?.admin)) {
     return { user: undefined, loading: true };
   }
 
