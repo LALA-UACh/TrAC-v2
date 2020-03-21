@@ -61,6 +61,54 @@ specified in RFC822: https://www.w3.org/Protocols/rfc822/.
 """
 scalar EmailAddress
 
+type FeedbackAnswer {
+  answer: String!
+  question: FeedbackQuestion!
+}
+
+input FeedbackAnswerInput {
+  form: Int!
+  questions: [FeedbackAnswerQuestionInput!]!
+}
+
+input FeedbackAnswerQuestionInput {
+  answer: String!
+  question: Int!
+}
+
+type FeedbackForm {
+  id: Int!
+  name: String!
+  priority: Int!
+  questions: [FeedbackQuestion!]!
+}
+
+type FeedbackQuestion {
+  id: Int!
+  options: [FeedbackQuestionOption!]!
+  priority: Int!
+  question: String!
+  type: FeedbackQuestionType!
+}
+
+type FeedbackQuestionOption {
+  text: String!
+  value: Float!
+}
+
+"""Type of question in a feedback form"""
+enum FeedbackQuestionType {
+  MultipleAnswer
+  OpenText
+  SingleAnswer
+}
+
+type FeedbackResult {
+  answers: [FeedbackAnswer!]!
+  form: FeedbackForm!
+  user: User!
+}
+
 type IndirectTakeCourse {
   course: Course!
   requisitesUnmet: [String!]!
@@ -83,6 +131,7 @@ type MultipleLockedUserResult {
 
 type Mutation {
   addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
+  answerFeedbackForm(answer: FeedbackAnswerInput!): Boolean!
   deleteUser(email: EmailAddress!): [User!]!
   directTakeCourses(program_id: String, student_id: String): [Course!]!
   editConfig(name: String!, value: String!): JSONObject!
@@ -141,10 +190,12 @@ type Program {
 type Query {
   config: JSONObject!
   currentUser: AuthResult
+  feedbackResults: [FeedbackResult!]!
   getPersistenceValue(key: String!): Persistence
   myPrograms: [Program!]!
   programs: [Program!]!
   students(last_n_years: Int = 1, program_id: String!): [Student!]!
+  unansweredForm: FeedbackForm
   userPersistences(user: String!): [Persistence!]!
   users: [User!]!
 }

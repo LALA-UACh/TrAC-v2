@@ -65,6 +65,58 @@ export type Dropout = {
 };
 
 
+export type FeedbackAnswer = {
+   __typename?: 'FeedbackAnswer';
+  question: FeedbackQuestion;
+  answer: Scalars['String'];
+};
+
+export type FeedbackAnswerInput = {
+  form: Scalars['Int'];
+  questions: Array<FeedbackAnswerQuestionInput>;
+};
+
+export type FeedbackAnswerQuestionInput = {
+  question: Scalars['Int'];
+  answer: Scalars['String'];
+};
+
+export type FeedbackForm = {
+   __typename?: 'FeedbackForm';
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  priority: Scalars['Int'];
+  questions: Array<FeedbackQuestion>;
+};
+
+export type FeedbackQuestion = {
+   __typename?: 'FeedbackQuestion';
+  id: Scalars['Int'];
+  question: Scalars['String'];
+  type: FeedbackQuestionType;
+  priority: Scalars['Int'];
+  options: Array<FeedbackQuestionOption>;
+};
+
+export type FeedbackQuestionOption = {
+   __typename?: 'FeedbackQuestionOption';
+  text: Scalars['String'];
+  value: Scalars['Float'];
+};
+
+export enum FeedbackQuestionType {
+  OpenText = 'OpenText',
+  SingleAnswer = 'SingleAnswer',
+  MultipleAnswer = 'MultipleAnswer'
+}
+
+export type FeedbackResult = {
+   __typename?: 'FeedbackResult';
+  form: FeedbackForm;
+  answers: Array<FeedbackAnswer>;
+  user: User;
+};
+
 export type IndirectTakeCourse = {
    __typename?: 'IndirectTakeCourse';
   course: Course;
@@ -92,19 +144,20 @@ export type Mutation = {
   setPersistenceValue: Persistence;
   resetPersistence: Scalars['Int'];
   resetDataLoadersCache: Scalars['Int'];
-  editConfig: Scalars['JSONObject'];
-  program: Program;
-  student?: Maybe<Student>;
-  performanceLoadAdvices: Array<PerformanceByLoad>;
-  directTakeCourses: Array<Course>;
-  indirectTakeCourses: Array<IndirectTakeCourse>;
-  track: Scalars['Boolean'];
   updateUserPrograms: Array<User>;
   addUsersPrograms: Array<User>;
   upsertUsers: Array<User>;
   lockMailUser: LockedUserResult;
   mailAllLockedUsers: Array<Scalars['JSONObject']>;
   deleteUser: Array<User>;
+  performanceLoadAdvices: Array<PerformanceByLoad>;
+  directTakeCourses: Array<Course>;
+  indirectTakeCourses: Array<IndirectTakeCourse>;
+  program: Program;
+  student?: Maybe<Student>;
+  editConfig: Scalars['JSONObject'];
+  answerFeedbackForm: Scalars['Boolean'];
+  track: Scalars['Boolean'];
 };
 
 
@@ -132,48 +185,6 @@ export type MutationResetPersistenceArgs = {
 };
 
 
-export type MutationEditConfigArgs = {
-  value: Scalars['String'];
-  name: Scalars['String'];
-};
-
-
-export type MutationProgramArgs = {
-  student_id?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['String']>;
-};
-
-
-export type MutationStudentArgs = {
-  program_id?: Maybe<Scalars['String']>;
-  student_id?: Maybe<Scalars['String']>;
-};
-
-
-export type MutationPerformanceLoadAdvicesArgs = {
-  student_id?: Maybe<Scalars['String']>;
-  program_id?: Maybe<Scalars['String']>;
-};
-
-
-export type MutationDirectTakeCoursesArgs = {
-  student_id?: Maybe<Scalars['String']>;
-  program_id?: Maybe<Scalars['String']>;
-};
-
-
-export type MutationIndirectTakeCoursesArgs = {
-  student_id?: Maybe<Scalars['String']>;
-  program_id?: Maybe<Scalars['String']>;
-};
-
-
-export type MutationTrackArgs = {
-  datetime_client: Scalars['DateTime'];
-  data: Scalars['String'];
-};
-
-
 export type MutationUpdateUserProgramsArgs = {
   userPrograms: UpdateUserPrograms;
 };
@@ -196,6 +207,53 @@ export type MutationLockMailUserArgs = {
 
 export type MutationDeleteUserArgs = {
   email: Scalars['EmailAddress'];
+};
+
+
+export type MutationPerformanceLoadAdvicesArgs = {
+  student_id?: Maybe<Scalars['String']>;
+  program_id?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationDirectTakeCoursesArgs = {
+  student_id?: Maybe<Scalars['String']>;
+  program_id?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationIndirectTakeCoursesArgs = {
+  student_id?: Maybe<Scalars['String']>;
+  program_id?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationProgramArgs = {
+  student_id?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationStudentArgs = {
+  program_id?: Maybe<Scalars['String']>;
+  student_id?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationEditConfigArgs = {
+  value: Scalars['String'];
+  name: Scalars['String'];
+};
+
+
+export type MutationAnswerFeedbackFormArgs = {
+  answer: FeedbackAnswerInput;
+};
+
+
+export type MutationTrackArgs = {
+  datetime_client: Scalars['DateTime'];
+  data: Scalars['String'];
 };
 
 export type PerformanceByLoad = {
@@ -240,11 +298,13 @@ export type Query = {
   currentUser?: Maybe<AuthResult>;
   getPersistenceValue?: Maybe<Persistence>;
   userPersistences: Array<Persistence>;
-  config: Scalars['JSONObject'];
+  users: Array<User>;
   programs: Array<Program>;
   myPrograms: Array<Program>;
   students: Array<Student>;
-  users: Array<User>;
+  config: Scalars['JSONObject'];
+  unansweredForm?: Maybe<FeedbackForm>;
+  feedbackResults: Array<FeedbackResult>;
 };
 
 

@@ -43,9 +43,9 @@ export enum TermType {
 }
 
 export enum FeedbackQuestionType {
-  opentext = "opentext",
-  singleanswer = "singleanswer",
-  multipleanswer = "multipleanswer",
+  OpenText = "OpenText",
+  SingleAnswer = "SingleAnswer",
+  MultipleAnswer = "MultipleAnswer",
 }
 
 export const defaultUserType = (type?: string): UserType => {
@@ -133,3 +133,5 @@ export const defaultPerformanceLoadUnit = (
     }
   }
 };
+
+export const NO_ANSWER = "NO_ANSWER";

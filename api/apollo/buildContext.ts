@@ -1,6 +1,7 @@
 import DataLoader from "dataloader";
 import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
+import { keyBy } from "lodash";
 
 import { NODE_ENV } from "../../constants";
 import { SECRET } from "../constants";
@@ -47,15 +48,28 @@ export const buildContext = async ({
     token,
     UserConfigDataLoader: new DataLoader(
       async (usersEmails: readonly string[]) => {
-        return await Promise.all(
-          usersEmails.map(email => {
-            return UserConfigurationTable()
-              .select("config")
-              .where({ email })
-              .first();
-          })
+        const dataHash = keyBy(
+          await UserConfigurationTable()
+            .select("config", "email")
+            .whereIn("email", usersEmails),
+          "email"
         );
+
+        return usersEmails.map(email => {
+          return dataHash[email];
+        });
       }
     ),
+    UserDataLoader: new DataLoader(async (usersEmails: readonly string[]) => {
+      const userDataHash = keyBy(
+        await UserTable()
+          .select("*")
+          .whereIn("email", usersEmails),
+        "email"
+      );
+      return usersEmails.map(email => {
+        return userDataHash[email];
+      });
+    }),
   };
 };

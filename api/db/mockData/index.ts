@@ -585,9 +585,9 @@ const dataImport = async () => {
             table.text("question");
 
             table.enu("type", [
-              "opentext",
-              "singleanswer",
-              "multipleanswer",
+              FeedbackQuestionType.OpenText,
+              FeedbackQuestionType.SingleAnswer,
+              FeedbackQuestionType.MultipleAnswer,
             ] as FeedbackQuestionType[]);
 
             table.integer("priority").defaultTo(0);

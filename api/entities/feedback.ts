@@ -82,7 +82,7 @@ export class FeedbackAnswerQuestionInput {
   @Field(() => Int)
   question: FeedbackAnswer["question"]["id"];
 
-  @Field()
+  @Field(() => String)
   answer: FeedbackAnswer["answer"];
 }
 

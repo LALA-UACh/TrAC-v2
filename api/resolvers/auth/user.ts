@@ -38,6 +38,7 @@ import {
 import { assertIsDefined } from "../../utils/assert";
 import { sendMail, UnlockMail } from "../../utils/mail";
 
+export type PartialUser = Pick<User, "email"> & Partial<User>;
 @Resolver(() => User)
 export class UserResolver {
   @Authorized([ADMIN])
@@ -331,9 +332,69 @@ export class UserResolver {
   }
 
   @FieldResolver()
+  async name(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return restUser.name ?? (await UserDataLoader.load(email))?.name;
+  }
+
+  @FieldResolver()
+  async admin(
+    @Root() { email, ...restUser }: PartialUser,
+    @Ctx() { UserDataLoader }: IContext
+  ) {
+    return restUser.admin ?? (await UserDataLoader.load(email))?.admin;
+  }
+
+  @FieldResolver()
+  async type(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return defaultUserType(
+      restUser.type ?? (await UserDataLoader.load(email))?.type
+    );
+  }
+
+  @FieldResolver()
+  async student_id(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return (
+      restUser.student_id ?? (await UserDataLoader.load(email))?.student_id
+    );
+  }
+
+  @FieldResolver()
+  async locked(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return restUser.locked ?? (await UserDataLoader.load(email))?.locked;
+  }
+
+  @FieldResolver()
+  async tries(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return restUser.tries ?? (await UserDataLoader.load(email))?.tries;
+  }
+
+  @FieldResolver()
+  async unlockKey(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return restUser.unlockKey ?? (await UserDataLoader.load(email))?.unlockKey;
+  }
+
+  @FieldResolver()
   async programs(
     @Root()
-    { email }: Pick<User, "email">
+    { email }: PartialUser
   ): Promise<Pick<ArrayPropertyType<User, "programs">, "id">[]> {
     return (
       await UserProgramsTable()
@@ -347,7 +408,7 @@ export class UserResolver {
   @FieldResolver()
   async config(
     @Ctx() { UserConfigDataLoader }: IContext,
-    @Root() { email }: Pick<User, "email">
+    @Root() { email }: PartialUser
   ): Promise<Pick<User, "config">["config"]> {
     return {
       ...baseUserConfig,
