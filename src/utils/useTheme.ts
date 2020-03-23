@@ -14,7 +14,7 @@ export const ThemeStore = createStore(
       useTheme: ({ theme }) => theme,
     },
     actions: {
-      setTheme: (theme: Theme) => draft => {
+      setTheme: (theme: Theme) => (draft) => {
         try {
           localStorage.setItem(themePersistenceKey, theme);
         } catch (err) {}
@@ -22,7 +22,7 @@ export const ThemeStore = createStore(
           draft.theme = theme;
         }
       },
-      checkLocalStorage: () => draft => {
+      checkLocalStorage: () => (draft) => {
         try {
           const theme = localStorage.getItem(themePersistenceKey);
           if (theme) {

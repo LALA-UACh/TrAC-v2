@@ -17,7 +17,7 @@ registerEnumType(PerformanceLoadUnit, {
 @ObjectType()
 export class PerformanceByLoad {
   // performance_by_load => id
-  @Field()
+  @Field(() => Int)
   id: number;
 
   // performance_by_load => courseload_unit

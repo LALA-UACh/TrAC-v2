@@ -11,11 +11,8 @@ import {
 export const TermDataLoader = new DataLoader(
   async (ids: readonly number[]) => {
     return await Promise.all(
-      ids.map(id => {
-        return StudentTermTable()
-          .select("*")
-          .where({ id })
-          .first();
+      ids.map((id) => {
+        return StudentTermTable().select("*").where({ id }).first();
       })
     );
   },
@@ -27,16 +24,13 @@ export const TermDataLoader = new DataLoader(
 export const ProgramGradeDataLoader = new DataLoader(
   async (ids: readonly number[]) => {
     return await Promise.all(
-      ids.map(async id => {
+      ids.map(async (id) => {
         return (
           await ProgramTable()
             .select("last_gpa")
             .where(
               "id",
-              StudentTermTable()
-                .select("program_id")
-                .where({ id })
-                .first()
+              StudentTermTable().select("program_id").where({ id }).first()
             )
             .first()
         )?.last_gpa;

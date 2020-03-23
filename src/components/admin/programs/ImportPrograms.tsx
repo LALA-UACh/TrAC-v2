@@ -125,8 +125,8 @@ export const ImportPrograms: FC = () => {
               onDrop={(acceptedFiles, _rejectedFiles) => {
                 acceptedFiles.forEach(async (file, _key) => {
                   fetch(URL.createObjectURL(file))
-                    .then(response => response.text())
-                    .then(text => {
+                    .then((response) => response.text())
+                    .then((text) => {
                       setData(data + text);
                     });
                 });
@@ -185,7 +185,7 @@ export const ImportPrograms: FC = () => {
               </Form.Button>
 
               <TextArea
-                ref={ref => {
+                ref={(ref) => {
                   if (ref) ref.focus();
                 }}
                 onChange={(_event, { value }) => {

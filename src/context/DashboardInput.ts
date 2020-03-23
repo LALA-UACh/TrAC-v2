@@ -28,16 +28,16 @@ export const {
       },
     },
     actions: {
-      setProgram: (program?: string) => draft => {
+      setProgram: (program?: string) => (draft) => {
         draft.program = program;
       },
-      setStudent: (student?: string) => draft => {
+      setStudent: (student?: string) => (draft) => {
         draft.student = student;
       },
-      setChosenCurriculum: (chosenCurriculum?: string) => draft => {
+      setChosenCurriculum: (chosenCurriculum?: string) => (draft) => {
         draft.chosenCurriculum = chosenCurriculum;
       },
-      setMock: (mock: boolean) => draft => {
+      setMock: (mock: boolean) => (draft) => {
         draft.mock = mock;
       },
     },

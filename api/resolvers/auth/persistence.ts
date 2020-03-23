@@ -122,7 +122,7 @@ export class PersistenceResolver {
   @Mutation(() => Int)
   async resetDataLoadersCache() {
     const dataLoaders = Object.values(localDataLoaders);
-    dataLoaders.forEach(dataLoader => {
+    dataLoaders.forEach((dataLoader) => {
       dataLoader.clearAll();
     });
 

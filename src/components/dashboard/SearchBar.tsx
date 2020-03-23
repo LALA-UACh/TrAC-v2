@@ -56,7 +56,7 @@ const MockingMode: FC = memo(() => {
   return (
     <Button
       basic
-      onClick={() => setMock(mode => !mode)}
+      onClick={() => setMock((mode) => !mode)}
       color={mock ? "blue" : "red"}
     >
       {mock ? "Mocking ON" : "Mocking OFF"}
@@ -87,10 +87,7 @@ export const SearchBar: FC<{
       !searchResult?.curriculums.includes(chosenCurriculum ?? "")
     ) {
       DashboardInputActions.setChosenCurriculum(
-        searchResult?.curriculums
-          .sort()
-          .slice()
-          .reverse()[0]
+        searchResult?.curriculums.sort().slice().reverse()[0]
       );
     }
   }, [chosenCurriculum, searchResult?.curriculums]);
@@ -152,7 +149,7 @@ export const SearchBar: FC<{
 
   useEffect(() => {
     if (student_id.trim() !== student_id) {
-      setStudentId(student => student.trim());
+      setStudentId((student) => student.trim());
     }
   }, [student_id, setStudentId]);
 
@@ -163,7 +160,7 @@ export const SearchBar: FC<{
   useEffect(() => {
     if (
       myProgramsData?.myPrograms &&
-      programsOptions.findIndex(programFound => {
+      programsOptions.findIndex((programFound) => {
         return programFound.value === program?.value;
       }) === -1
     ) {
@@ -224,7 +221,7 @@ export const SearchBar: FC<{
                     .sort()
                     .slice()
                     .reverse()
-                    .map(curriculum => {
+                    .map((curriculum) => {
                       return {
                         label: curriculum,
                         value: curriculum,
@@ -236,7 +233,7 @@ export const SearchBar: FC<{
                     ? { value: chosenCurriculum, label: chosenCurriculum }
                     : undefined
                 }
-                onChange={selected => {
+                onChange={(selected) => {
                   track({
                     action: "click",
                     target: "curriculum-menu",
@@ -297,7 +294,7 @@ export const SearchBar: FC<{
                   mr={4}
                   isDisabled={isSearchLoading}
                 />
-                {studentOptions.findIndex(value => {
+                {studentOptions.findIndex((value) => {
                   return student_id === value;
                 }) === -1 && (
                   <datalist id="student_options">
@@ -327,7 +324,7 @@ export const SearchBar: FC<{
                 loading={isSearchLoading}
                 type="submit"
                 disabled={isSearchLoading || !program?.value}
-                onClick={async ev => {
+                onClick={async (ev) => {
                   if (program) {
                     ev.preventDefault();
                     const onSearchResult = await onSearch({

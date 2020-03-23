@@ -15,7 +15,7 @@ import { TermDataLoader } from "./term";
 export const StudentDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
     return await Promise.all(
-      student_ids.map(student_id => {
+      student_ids.map((student_id) => {
         return StudentProgramTable()
           .select("program_id", "name", "state")
           .innerJoin<IStudent>(
@@ -37,7 +37,7 @@ export const StudentDataLoader = new DataLoader(
 export const StudentLastProgramDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
     return await Promise.all(
-      student_ids.map(student_id => {
+      student_ids.map((student_id) => {
         return StudentProgramTable()
           .select("*")
           .orderBy("start_year", "desc")
@@ -56,12 +56,10 @@ export const StudentLastProgramDataLoader = new DataLoader(
 export const StudentProgramsDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
     return await Promise.all(
-      student_ids.map(student_id => {
-        return StudentProgramTable()
-          .distinct("program_id")
-          .where({
-            student_id,
-          });
+      student_ids.map((student_id) => {
+        return StudentProgramTable().distinct("program_id").where({
+          student_id,
+        });
       })
     );
   },
@@ -107,7 +105,7 @@ export const StudentTermsDataLoader = new DataLoader(
     );
   },
   {
-    cacheKeyFn: key => {
+    cacheKeyFn: (key) => {
       return key.student_id;
     },
     cacheMap: new LRUMap(1000),
@@ -117,10 +115,8 @@ export const StudentTermsDataLoader = new DataLoader(
 export const StudentDropoutDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
     return await Promise.all(
-      student_ids.map(student_id => {
-        return StudentDropoutTable()
-          .where({ student_id })
-          .first();
+      student_ids.map((student_id) => {
+        return StudentDropoutTable().where({ student_id }).first();
       })
     );
   },
@@ -132,7 +128,7 @@ export const StudentDropoutDataLoader = new DataLoader(
 export const StudentListDataLoader = new DataLoader(
   async (program_ids: readonly string[]) => {
     return await Promise.all(
-      program_ids.map(program_id => {
+      program_ids.map((program_id) => {
         return StudentProgramTable()
           .select("id", "name", "state", "last_term")
           .rightJoin<IStudent>(

@@ -178,7 +178,9 @@ export const StudentList: FC<{
 
   const handleSort = (clickedColumn: columnNames) => () => {
     if (columnSort[0] !== clickedColumn) {
-      setColumnSort(columnSortList => uniq([clickedColumn, ...columnSortList]));
+      setColumnSort((columnSortList) =>
+        uniq([clickedColumn, ...columnSortList])
+      );
       setDirectionSort("ascending");
     } else {
       setDirectionSort(

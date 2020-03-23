@@ -26,7 +26,7 @@ export const TakenSemesterBox: FC<{
     if (
       isExplicitSemester ||
       (explicitSemester === undefined &&
-        semestersTaken?.find(v => year === v.year && term == v.term))
+        semestersTaken?.find((v) => year === v.year && term == v.term))
     ) {
       return config.TAKEN_SEMESTER_BOX_ACTIVE;
     }

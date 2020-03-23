@@ -6045,7 +6045,7 @@ const data: {
       upperBoundary: 20,
       adviceTitle: "¡Tu carga de estudio parece algo baja!",
       adviceParagraph:
-      "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+        "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
       failRateLow: 66,
       failRateMid: 21,
       failRateHigh: 13,
@@ -6060,7 +6060,7 @@ const data: {
       upperBoundary: 26,
       adviceTitle: "¡Tu carga planeada parece moderada!",
       adviceParagraph:
-      "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+        "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
       failRateLow: 60,
       failRateMid: 21,
       failRateHigh: 19,
@@ -6075,7 +6075,7 @@ const data: {
       upperBoundary: 30,
       adviceTitle: "¡Tu carga de estudio es alta!",
       adviceParagraph:
-      "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+        "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
       failRateLow: 64,
       failRateMid: 18,
       failRateHigh: 18,

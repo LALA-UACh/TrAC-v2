@@ -18,7 +18,7 @@ app.use(helmet.hsts());
 app.use(cookieParser());
 
 apolloServer
-  .then(apolloServer => {
+  .then((apolloServer) => {
     apolloServer.applyMiddleware({
       app,
       path: "/api/graphql",
@@ -45,6 +45,6 @@ apolloServer
       });
     }
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
   });

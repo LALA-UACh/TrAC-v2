@@ -12,7 +12,7 @@ module.exports = withBundleAnalyzer({
   webpack: (config, options) => {
     const typeGraphQlShim = new webpack.NormalModuleReplacementPlugin(
       /type-graphql$/,
-      resource => {
+      (resource) => {
         resource.request = resource.request.replace(
           /type-graphql/,
           "type-graphql/dist/browser-shim"

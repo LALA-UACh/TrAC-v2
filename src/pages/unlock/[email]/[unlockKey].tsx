@@ -251,7 +251,7 @@ const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
   );
 };
 
-UnlockPage.getInitialProps = ctx => {
+UnlockPage.getInitialProps = (ctx) => {
   const { email, unlockKey } = ctx.query;
 
   if (

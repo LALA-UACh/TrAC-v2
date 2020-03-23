@@ -27,7 +27,7 @@ export const checkExplicitSemesterCallback = (explicitSemester?: string) => (
   if (explicitSemester) {
     if (Array.isArray(semestersTaken)) {
       return semestersTaken.find(
-        v => pairTermYear(v.term, v.year) === explicitSemester
+        (v) => pairTermYear(v.term, v.year) === explicitSemester
       );
     }
     return pairTermYear(semestersTaken.term, semestersTaken.year) ===
@@ -84,7 +84,7 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
       flow: string[];
       requisites: string[];
       semestersTaken?: { year: number; term: string }[];
-    }) => draft => {
+    }) => (draft) => {
       const activeHistory = uniq([course, ...draft.activeHistory]);
       const flowHistory = uniqWithEqual([
         stringListToBooleanMap(flow),
@@ -114,9 +114,9 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
             : undefined,
       });
     },
-    removeCourse: (course: string) => draft => {
+    removeCourse: (course: string) => (draft) => {
       const indexToRemove = draft.activeHistory.findIndex(
-        activeCourse => activeCourse === course
+        (activeCourse) => activeCourse === course
       );
 
       if (indexToRemove !== -1) {
@@ -137,21 +137,21 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
         draft.semestersTaken = draft.semestersTakenHistory[0];
       }
     },
-    toggleExplicitSemester: ({ term, year }: ITakenSemester) => draft => {
+    toggleExplicitSemester: ({ term, year }: ITakenSemester) => (draft) => {
       const pair = pairTermYear(term, year);
       draft.explicitSemester =
         draft.explicitSemester === pair ? undefined : pair;
     },
-    toggleOpenCourse: (course: string) => draft => {
+    toggleOpenCourse: (course: string) => (draft) => {
       if (course in draft.coursesOpen) {
         delete draft.coursesOpen[course];
       } else {
         draft.coursesOpen[course] = true;
       }
     },
-    reset: (
-      data: ICoursesDashboardData = defaultCourseDashboardData
-    ) => draft => assign(draft, data),
+    reset: (data: ICoursesDashboardData = defaultCourseDashboardData) => (
+      draft
+    ) => assign(draft, data),
   },
   hooks: {
     useActiveCourse: ({ activeCourse }, code: string) => {

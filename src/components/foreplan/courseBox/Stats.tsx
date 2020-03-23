@@ -42,7 +42,7 @@ const ForeplanCourseStats: FC<Pick<ICourse, "code">> = memo(({ code }) => {
 
       {user?.config.FOREPLAN_COURSE_EFFORT_STATS && (
         <svg className={styles.courseEffortStats} height="10px" width="20px">
-          {range(0, effort).map(i => {
+          {range(0, effort).map((i) => {
             return (
               <rect
                 key={i}

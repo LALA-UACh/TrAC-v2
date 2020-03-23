@@ -29,7 +29,7 @@ const optionsValueSplitChar = "=";
 export function splitFeedbackQuestionOptions(
   options: string
 ): FeedbackQuestionOption[] {
-  return options.split(optionsSplitChar).map(optionValue => {
+  return options.split(optionsSplitChar).map((optionValue) => {
     const [numberValueStr, ...textValue] = optionValue.split(
       optionsValueSplitChar
     );
@@ -45,7 +45,7 @@ export function joinFeedbackQuestionOptions(
   questionsOptions: FeedbackQuestionOption[]
 ): string {
   return questionsOptions
-    .map(optionValue => {
+    .map((optionValue) => {
       return `${optionValue.value}${optionsValueSplitChar}${optionValue.text}`;
     })
     .join(optionsSplitChar);
@@ -128,13 +128,13 @@ export class FeedbackFormResolver {
 
     if (form && questions) {
       const feedbackAnswers: IFeedbackResult[] = questions.map(
-        questionDbValue => {
+        (questionDbValue) => {
           return {
             form_id: form.id,
             question_id: questionDbValue.id,
             user_id: user.email,
             answer:
-              feedbackAnswerInput.questions.find(questionFeedbackValue => {
+              feedbackAnswerInput.questions.find((questionFeedbackValue) => {
                 if (questionFeedbackValue.question === questionDbValue.id) {
                   if (questionDbValue.type === FeedbackQuestionType.OpenText) {
                     return true;
@@ -144,7 +144,7 @@ export class FeedbackFormResolver {
                     );
 
                     const answerValue = toInteger(questionFeedbackValue.answer);
-                    return options.some(feedbackQuestionOption => {
+                    return options.some((feedbackQuestionOption) => {
                       return feedbackQuestionOption.value === answerValue;
                     });
                   }
@@ -257,7 +257,7 @@ export class FeedbackFormResolver {
                 priority: form.priority,
                 questions: orderBy(
                   formQuestions.array,
-                  val => val.priority,
+                  (val) => val.priority,
                   "desc"
                 ),
               },
@@ -275,7 +275,7 @@ export class FeedbackFormResolver {
 
                   return acum;
                 }, []),
-                val => val.question.priority,
+                (val) => val.question.priority,
                 "desc"
               ),
               user: {
@@ -287,7 +287,7 @@ export class FeedbackFormResolver {
         },
         [] as PartialFeedbackResult[]
       ),
-      val => val.form.priority,
+      (val) => val.form.priority,
       "desc"
     );
   }

@@ -40,7 +40,7 @@ export const CourseRequisitesLoader = new DataLoader(
       "id"
     );
 
-    return program_structure_ids.map(key => {
+    return program_structure_ids.map((key) => {
       return data[key]?.courses;
     });
   },
@@ -52,15 +52,13 @@ export const CourseRequisitesLoader = new DataLoader(
 export const CourseFlowDataLoader = new DataLoader(
   async (keys: readonly { id: number; code: string }[]) => {
     return await Promise.all(
-      keys.map(async key => {
+      keys.map(async (key) => {
         const flowData = (
           await ProgramStructureTable()
             .select("id", "course_id", "requisites")
             .whereIn(
               "curriculum",
-              ProgramStructureTable()
-                .select("curriculum")
-                .where({ id: key.id })
+              ProgramStructureTable().select("curriculum").where({ id: key.id })
             )
         ).map(({ course_id, ...rest }) => ({ ...rest, code: course_id }));
 
@@ -73,7 +71,7 @@ export const CourseFlowDataLoader = new DataLoader(
     );
   },
   {
-    cacheKeyFn: key => {
+    cacheKeyFn: (key) => {
       return key.id + key.code;
     },
     cacheMap: new LRUMap(1000),
@@ -83,7 +81,7 @@ export const CourseFlowDataLoader = new DataLoader(
 export const CourseDataLoader = new DataLoader(
   async (ids: readonly string[]) => {
     return await Promise.all(
-      ids.map(id => {
+      ids.map((id) => {
         return CourseTable()
           .select("*")
           .where({
@@ -114,7 +112,7 @@ export const CourseAndStructureDataLoader = new DataLoader(
     const hashCourseTableData = keyBy(clearErrorArray(courseTableData), "id");
     const hashProgramStructureData = keyBy(programStructureData, "id");
 
-    return keys.map(key => {
+    return keys.map((key) => {
       return {
         courseTable: hashCourseTableData[key.code],
         programStructureTable: hashProgramStructureData[key.id],
@@ -122,7 +120,7 @@ export const CourseAndStructureDataLoader = new DataLoader(
     });
   },
   {
-    cacheKeyFn: key => {
+    cacheKeyFn: (key) => {
       return key.id + key.code;
     },
     cacheMap: new LRUMap(5000),
@@ -132,12 +130,10 @@ export const CourseAndStructureDataLoader = new DataLoader(
 export const CourseStatsDataLoader = new DataLoader(
   async (codes: readonly string[]) => {
     return await Promise.all(
-      codes.map(code => {
-        return CourseStatsTable()
-          .select("*")
-          .where({
-            course_taken: code,
-          });
+      codes.map((code) => {
+        return CourseStatsTable().select("*").where({
+          course_taken: code,
+        });
       })
     );
   },

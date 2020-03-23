@@ -91,7 +91,7 @@ beforeAll(() => {
         const userIndex = usersTable.findIndex(({ email }) => {
           return email === bindings[1];
         });
-        update(usersTable, userIndex, user => {
+        update(usersTable, userIndex, (user) => {
           user.tries = bindings[0];
 
           return user;
@@ -102,7 +102,7 @@ beforeAll(() => {
         const userIndex = usersTable.findIndex(({ email }) => {
           return email === bindings[1];
         });
-        update(usersTable, userIndex, user => {
+        update(usersTable, userIndex, (user) => {
           user.tries = user.tries + (bindings[0] as number);
           return user;
         });
@@ -112,7 +112,7 @@ beforeAll(() => {
         const userIndex = usersTable.findIndex(({ email }) => {
           return email === bindings[3];
         });
-        update(usersTable, userIndex, user => {
+        update(usersTable, userIndex, (user) => {
           user.locked = bindings[0];
           user.tries = bindings[1];
           user.unlockKey = bindings[2];
@@ -134,7 +134,7 @@ beforeAll(() => {
         const userIndex = usersTable.findIndex(({ email }) => {
           return email === bindings[7];
         });
-        update(usersTable, userIndex, user => {
+        update(usersTable, userIndex, (user) => {
           user.password = bindings[0];
           user.oldPassword1 = bindings[1];
           user.oldPassword2 = bindings[2];

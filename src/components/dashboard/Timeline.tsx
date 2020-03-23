@@ -118,15 +118,15 @@ export const TimeLine: FC<{
         return {
           cumulatedGrades: cumulatedGradesProp
             .slice(0, -1)
-            .map(n => round(n, 2)),
+            .map((n) => round(n, 2)),
           semestralGrades: semestralGradesProp
             .slice(0, -1)
-            .map(n => round(n, 2)),
+            .map((n) => round(n, 2)),
         };
       }
       return {
-        cumulatedGrades: cumulatedGradesProp.map(n => round(n, 2)),
-        semestralGrades: semestralGradesProp.map(n => round(n, 2)),
+        cumulatedGrades: cumulatedGradesProp.map((n) => round(n, 2)),
+        semestralGrades: semestralGradesProp.map((n) => round(n, 2)),
       };
     }, [cumulatedGradesProp, semestralGradesProp]);
 

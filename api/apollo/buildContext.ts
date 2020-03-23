@@ -55,19 +55,17 @@ export const buildContext = async ({
           "email"
         );
 
-        return usersEmails.map(email => {
+        return usersEmails.map((email) => {
           return dataHash[email];
         });
       }
     ),
     UserDataLoader: new DataLoader(async (usersEmails: readonly string[]) => {
       const userDataHash = keyBy(
-        await UserTable()
-          .select("*")
-          .whereIn("email", usersEmails),
+        await UserTable().select("*").whereIn("email", usersEmails),
         "email"
       );
-      return usersEmails.map(email => {
+      return usersEmails.map((email) => {
         return userDataHash[email];
       });
     }),

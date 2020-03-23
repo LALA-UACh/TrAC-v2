@@ -70,7 +70,7 @@ export class UserResolver {
         });
 
       await trx<IUserPrograms>(USER_PROGRAMS_TABLE).insert(
-        programs.map(program => ({
+        programs.map((program) => ({
           email,
           program: program.toString(),
         }))
@@ -244,10 +244,7 @@ export class UserResolver {
   async lockMailUser(
     @Arg("email", () => EmailAddress) email: string
   ): Promise<LockedUserResult> {
-    const user = await UserTable()
-      .select("email")
-      .where({ email })
-      .first();
+    const user = await UserTable().select("email").where({ email }).first();
 
     assertIsDefined(user, `User ${email} not found`);
 
@@ -289,15 +286,11 @@ export class UserResolver {
   @Authorized([ADMIN])
   @Mutation(() => [GraphQLJSONObject])
   async mailAllLockedUsers(): Promise<Record<string, any>> {
-    const users = await UserTable()
-      .select("email")
-      .where({ locked: true });
+    const users = await UserTable().select("email").where({ locked: true });
     const mailResults: Record<string, any>[] = [];
     for (const { email } of users) {
       const unlockKey = generate();
-      await UserTable()
-        .update({ unlockKey })
-        .where({ email });
+      await UserTable().update({ unlockKey }).where({ email });
 
       const result = await sendMail({
         to: email,
@@ -317,9 +310,7 @@ export class UserResolver {
   async deleteUser(
     @Arg("email", () => EmailAddress) email: string
   ): Promise<User[]> {
-    await UserTable()
-      .delete()
-      .where({ email });
+    await UserTable().delete().where({ email });
 
     return (await UserTable().select("*")).map(({ type, ...rest }) => {
       return {
@@ -396,13 +387,11 @@ export class UserResolver {
     @Root()
     { email }: PartialUser
   ): Promise<Pick<ArrayPropertyType<User, "programs">, "id">[]> {
-    return (
-      await UserProgramsTable()
-        .select("program")
-        .where({ email })
-    ).map(({ program }) => {
-      return { id: program };
-    });
+    return (await UserProgramsTable().select("program").where({ email })).map(
+      ({ program }) => {
+        return { id: program };
+      }
+    );
   }
 
   @FieldResolver()

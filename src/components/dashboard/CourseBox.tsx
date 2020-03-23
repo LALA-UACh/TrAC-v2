@@ -78,13 +78,15 @@ const useIsCourseFuturePlanificationFulfilled = ({
   );
 };
 
-const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
-  isOpen: boolean;
-  borderColor: string;
-  semestersTaken: ITakenSemester[];
-} & Pick<CurrentTakenData, "currentDistribution"> & {
-    isFutureCourseFulfilled: boolean;
-  }> = memo(
+const OuterCourseBox: FC<
+  Pick<ICourse, "code" | "historicDistribution"> & {
+    isOpen: boolean;
+    borderColor: string;
+    semestersTaken: ITakenSemester[];
+  } & Pick<CurrentTakenData, "currentDistribution"> & {
+      isFutureCourseFulfilled: boolean;
+    }
+> = memo(
   ({
     children,
     code,
@@ -182,9 +184,11 @@ const OuterCourseBox: FC<Pick<ICourse, "code" | "historicDistribution"> & {
   }
 );
 
-const MainBlockOuter: FC<Pick<ICourse, "code" | "flow" | "requisites"> & {
-  semestersTaken: ITakenSemester[];
-}> = memo(({ children, code, flow, requisites, semestersTaken }) => {
+const MainBlockOuter: FC<
+  Pick<ICourse, "code" | "flow" | "requisites"> & {
+    semestersTaken: ITakenSemester[];
+  }
+> = memo(({ children, code, flow, requisites, semestersTaken }) => {
   const isOpen = CoursesDashboardStore.hooks.useDashboardIsCourseOpen(code);
   const config = useContext(ConfigContext);
   return (
@@ -224,40 +228,42 @@ const MainBlockOuter: FC<Pick<ICourse, "code" | "flow" | "requisites"> & {
   );
 });
 
-const NameComponent: FC<Pick<ICourse, "code" | "taken" | "name"> & {
-  isOpen: boolean;
-} & Pick<CurrentTakenData, "parallelGroup">> = memo(
-  ({ code, name, taken, parallelGroup, isOpen }) => {
-    const config = useContext(ConfigContext);
-    return (
-      <Stack spacing={1}>
-        <Flex alignItems="center">
-          <Text m={0} whiteSpace="nowrap">
-            <b>{taken?.find(({ equiv }) => equiv)?.equiv || code}</b>
-          </Text>
-          {!!parallelGroup && (
-            <Badge
-              ml={2}
-              backgroundColor={config.PARALLEL_GROUP_BACKGROUND_COLOR}
-              color={config.PARALLEL_GROUP_LABEL_COLOR}
-            >
-              {config.PARALLEL_GROUP_LABEL}: {parallelGroup}
-            </Badge>
-          )}
-        </Flex>
-
-        <Text fontSize={9} maxWidth="150px" pr={1}>
-          {truncate(name, { length: isOpen ? 60 : 35 })}
+const NameComponent: FC<
+  Pick<ICourse, "code" | "taken" | "name"> & {
+    isOpen: boolean;
+  } & Pick<CurrentTakenData, "parallelGroup">
+> = memo(({ code, name, taken, parallelGroup, isOpen }) => {
+  const config = useContext(ConfigContext);
+  return (
+    <Stack spacing={1}>
+      <Flex alignItems="center">
+        <Text m={0} whiteSpace="nowrap">
+          <b>{taken?.find(({ equiv }) => equiv)?.equiv || code}</b>
         </Text>
-      </Stack>
-    );
-  }
-);
+        {!!parallelGroup && (
+          <Badge
+            ml={2}
+            backgroundColor={config.PARALLEL_GROUP_BACKGROUND_COLOR}
+            color={config.PARALLEL_GROUP_LABEL_COLOR}
+          >
+            {config.PARALLEL_GROUP_LABEL}: {parallelGroup}
+          </Badge>
+        )}
+      </Flex>
 
-const SecondaryBlockOuter: FC<Pick<ICourse, "taken" | "bandColors"> &
-  Pick<CurrentTakenData, "grade" | "state"> & {
-    borderColor: string;
-  }> = memo(({ children, taken, bandColors, borderColor, state, grade }) => {
+      <Text fontSize={9} maxWidth="150px" pr={1}>
+        {truncate(name, { length: isOpen ? 60 : 35 })}
+      </Text>
+    </Stack>
+  );
+});
+
+const SecondaryBlockOuter: FC<
+  Pick<ICourse, "taken" | "bandColors"> &
+    Pick<CurrentTakenData, "grade" | "state"> & {
+      borderColor: string;
+    }
+> = memo(({ children, taken, bandColors, borderColor, state, grade }) => {
   const config = useContext(ConfigContext);
 
   const theme = ThemeStore.hooks.useTheme();
@@ -605,11 +611,10 @@ const HistogramsComponent: FC<Pick<CurrentTakenData, "state">> = memo(
   }
 );
 
-const HistogramNow: FC<Pick<ICourse, "taken" | "bandColors"> &
-  Pick<
-    CurrentTakenData,
-    "currentDistribution" | "term" | "year" | "grade"
-  >> = memo(({ currentDistribution, term, year, taken, grade, bandColors }) => {
+const HistogramNow: FC<
+  Pick<ICourse, "taken" | "bandColors"> &
+    Pick<CurrentTakenData, "currentDistribution" | "term" | "year" | "grade">
+> = memo(({ currentDistribution, term, year, taken, grade, bandColors }) => {
   const { GRADES_LABEL: label } = useContext(ConfigContext);
 
   return (
@@ -633,27 +638,24 @@ const HistogramNow: FC<Pick<ICourse, "taken" | "bandColors"> &
   );
 });
 
-const HistogramHistoric: FC<Pick<
-  ICourse,
-  "historicDistribution" | "bandColors"
-> &
-  Pick<CurrentTakenData, "grade">> = memo(
-  ({ historicDistribution, bandColors, grade }) => {
-    const config = useContext(ConfigContext);
-    return historicDistribution &&
-      some(historicDistribution, ({ value }) => value) ? (
-      <Histogram
-        key="historic"
-        label={config.HISTORIC_GRADES}
-        distribution={historicDistribution}
-        grade={grade}
-        bandColors={bandColors}
-      />
-    ) : (
-      <Badge>{config.NO_HISTORIC_DATA}</Badge>
-    );
-  }
-);
+const HistogramHistoric: FC<
+  Pick<ICourse, "historicDistribution" | "bandColors"> &
+    Pick<CurrentTakenData, "grade">
+> = memo(({ historicDistribution, bandColors, grade }) => {
+  const config = useContext(ConfigContext);
+  return historicDistribution &&
+    some(historicDistribution, ({ value }) => value) ? (
+    <Histogram
+      key="historic"
+      label={config.HISTORIC_GRADES}
+      distribution={historicDistribution}
+      grade={grade}
+      bandColors={bandColors}
+    />
+  ) : (
+    <Badge>{config.NO_HISTORIC_DATA}</Badge>
+  );
+});
 
 export const CourseBox: FC<ICourse> = ({
   code,

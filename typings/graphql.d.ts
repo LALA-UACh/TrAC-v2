@@ -27,7 +27,7 @@ export type BandColor = {
 
 export type Course = {
    __typename?: 'Course';
-  id: Scalars['Float'];
+  id: Scalars['Int'];
   code: Scalars['String'];
   name: Scalars['String'];
   credits: Array<Credit>;
@@ -101,7 +101,12 @@ export type FeedbackQuestion = {
 export type FeedbackQuestionOption = {
    __typename?: 'FeedbackQuestionOption';
   text: Scalars['String'];
-  value: Scalars['Float'];
+  value: Scalars['Int'];
+};
+
+export type FeedbackQuestionOptionInput = {
+  text: Scalars['String'];
+  value: Scalars['Int'];
 };
 
 export enum FeedbackQuestionType {
@@ -258,7 +263,7 @@ export type MutationTrackArgs = {
 
 export type PerformanceByLoad = {
    __typename?: 'PerformanceByLoad';
-  id: Scalars['Float'];
+  id: Scalars['Int'];
   loadUnit: PerformanceLoadUnit;
   lowerBoundary: Scalars['Float'];
   upperBoundary: Scalars['Float'];
@@ -387,7 +392,7 @@ export enum TermType {
 
 export type Track = {
    __typename?: 'Track';
-  id: Scalars['Float'];
+  id: Scalars['Int'];
   app_id: Scalars['String'];
   user_id: Scalars['String'];
   datetime: Scalars['DateTime'];
@@ -407,7 +412,7 @@ export type UpsertedUser = {
   name?: Maybe<Scalars['String']>;
   type?: Maybe<UserType>;
   config?: Maybe<Scalars['JSONObject']>;
-  tries?: Maybe<Scalars['Float']>;
+  tries?: Maybe<Scalars['Int']>;
   student_id?: Maybe<Scalars['String']>;
   locked?: Maybe<Scalars['Boolean']>;
 };
@@ -420,7 +425,7 @@ export type User = {
   type: UserType;
   student_id: Scalars['String'];
   locked: Scalars['Boolean'];
-  tries: Scalars['Float'];
+  tries: Scalars['Int'];
   unlockKey: Scalars['String'];
   programs: Array<Program>;
   config: Scalars['JSONObject'];

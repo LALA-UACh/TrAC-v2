@@ -9,7 +9,7 @@ import { CURRENT_USER, LOGOUT } from "../graphql/queries";
 export default () => {
   const [logout] = useMutation(LOGOUT, {
     ignoreResults: true,
-    update: cache => {
+    update: (cache) => {
       cache.writeQuery({
         query: CURRENT_USER,
         data: { currentUser: null },

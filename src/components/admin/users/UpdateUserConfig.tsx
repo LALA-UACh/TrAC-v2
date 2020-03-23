@@ -96,7 +96,7 @@ export const useUpdateUserConfigModal = ({
       <Button
         icon
         color="purple"
-        onClick={ev => {
+        onClick={(ev) => {
           ev.preventDefault();
 
           onOpen();

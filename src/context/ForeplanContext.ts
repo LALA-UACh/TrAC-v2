@@ -71,10 +71,12 @@ export const ForeplanHelperStore = createStore(defaultForeplanHelperStore, {
     useForeplanAdvices: ({ advices }) => advices,
   },
   actions: {
-    setDirectTakeData: (data: string[]) => draft => {
+    setDirectTakeData: (data: string[]) => (draft) => {
       draft.courseDirectTake = stringListToBooleanMap(data);
     },
-    setFailRateData: (data: { code: string; failRate: number }[]) => draft => {
+    setFailRateData: (data: { code: string; failRate: number }[]) => (
+      draft
+    ) => {
       draft.courseFailRate = data.reduce<Record<string, number>>(
         (acum, { code, failRate }) => {
           acum[code] = failRate;
@@ -83,7 +85,7 @@ export const ForeplanHelperStore = createStore(defaultForeplanHelperStore, {
         {}
       );
     },
-    setEffortData: (data: { code: string; effort: number }[]) => draft => {
+    setEffortData: (data: { code: string; effort: number }[]) => (draft) => {
       draft.courseEffort = data.reduce<Record<string, number>>(
         (acum, { code, effort }) => {
           acum[code] = effort;
@@ -92,7 +94,9 @@ export const ForeplanHelperStore = createStore(defaultForeplanHelperStore, {
         {}
       );
     },
-    setForeplanAdvices: (advices: IForeplanHelperData["advices"]) => draft => {
+    setForeplanAdvices: (advices: IForeplanHelperData["advices"]) => (
+      draft
+    ) => {
       draft.advices = advices;
     },
   },
@@ -119,16 +123,16 @@ const defaultForeplanActiveData: IForeplanActiveData = Object.freeze({
 export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
   devName: "ForeplanActive",
   actions: {
-    activateForeplan: () => draft => {
+    activateForeplan: () => (draft) => {
       draft.active = true;
     },
-    disableForeplan: () => draft => {
+    disableForeplan: () => (draft) => {
       draft.active = false;
     },
     addCourseForeplan: (
       course: string,
       data: IForeplanActiveData["foreplanCourses"][string]
-    ) => draft => {
+    ) => (draft) => {
       draft.foreplanCourses[course] = data;
 
       draft.totalCreditsTaken = reduce(
@@ -139,7 +143,7 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
         0
       );
     },
-    removeCourseForeplan: (course: string) => draft => {
+    removeCourseForeplan: (course: string) => (draft) => {
       delete draft.foreplanCourses[course];
 
       draft.totalCreditsTaken = reduce(
@@ -152,7 +156,7 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
     },
     setNewFutureCourseRequisites: (
       indirectTakeCourses: { course: string; requisitesUnmet: string[] }[]
-    ) => draft => {
+    ) => (draft) => {
       draft.futureCourseRequisites = indirectTakeCourses.reduce<
         IForeplanActiveData["futureCourseRequisites"]
       >((acum, { course, requisitesUnmet }) => {
@@ -168,7 +172,7 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
     setFutureCourseRequisitesState: (
       courseToSetState: string,
       state: boolean
-    ) => draft => {
+    ) => (draft) => {
       for (const courseToOpen in draft.futureCourseRequisites) {
         if (
           draft.futureCourseRequisites[courseToOpen]?.[courseToSetState] !==
@@ -178,7 +182,7 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
         }
       }
     },
-    reset: (data: IForeplanActiveData = defaultForeplanActiveData) => draft =>
+    reset: (data: IForeplanActiveData = defaultForeplanActiveData) => (draft) =>
       assign(draft, data),
   },
   hooks: {

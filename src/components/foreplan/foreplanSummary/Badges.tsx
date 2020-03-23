@@ -154,7 +154,7 @@ const CourseBadge: FC<Pick<ICourse, "code" | "name"> & ICreditsNumber> = memo(
                     as={IoMdCloseCircleOutline}
                     size="20px"
                     cursor="pointer"
-                    onClick={ev => {
+                    onClick={(ev) => {
                       ev.stopPropagation();
                       ForeplanActiveStore.actions.removeCourseForeplan(code);
                       track({

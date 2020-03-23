@@ -36,7 +36,7 @@ export const Dropout: FC<{ probability?: number; accuracy?: number }> = memo(
           borderRadius={show ? "5px 5px 5px 5px" : "0px 5px 5px 0px"}
           alignItems="center"
           onClick={() => {
-            setShow(show => !show);
+            setShow((show) => !show);
 
             track({
               action: "click",

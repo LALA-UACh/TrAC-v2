@@ -34,10 +34,12 @@ const toRoman = (num: number, first = false): string => {
   return "";
 };
 
-export const Semester: FC<{
-  courses: ICourse[];
-  n: number;
-} & StackProps> = memo(({ courses: semester, n, mr, ...stackProps }) => {
+export const Semester: FC<
+  {
+    courses: ICourse[];
+    n: number;
+  } & StackProps
+> = memo(({ courses: semester, n, mr, ...stackProps }) => {
   const { SEMESTER_HEADER_TEXT_COLOR, SEMESTER_HEADER_FONT_SIZE } = useContext(
     ConfigContext
   );

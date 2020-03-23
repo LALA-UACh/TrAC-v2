@@ -88,11 +88,9 @@ export class AuthResolver {
     @Args()
     { email, password: passwordInput }: LoginInput
   ): Promise<AuthResult> {
-    let user = await UserTable()
-      .first()
-      .where({
-        email,
-      });
+    let user = await UserTable().first().where({
+      email,
+    });
 
     if (user) {
       if (defaultUserType(user.type) === UserType.Student) {
@@ -120,7 +118,7 @@ export class AuthResolver {
             tries: 0,
           })
           .where({ email })
-          .catch(err => {
+          .catch((err) => {
             console.error(JSON.stringify(err, null, 2));
           });
         const token = AuthResolver.authenticate({
@@ -141,13 +139,11 @@ export class AuthResolver {
       } else {
         if (user.tries && user.tries >= 2) {
           const unlockKey = generate();
-          await UserTable()
-            .where({ email })
-            .update({
-              locked: true,
-              tries: 3,
-              unlockKey,
-            });
+          await UserTable().where({ email }).update({
+            locked: true,
+            tries: 3,
+            unlockKey,
+          });
 
           await sendMail({
             to: email,
@@ -157,7 +153,7 @@ export class AuthResolver {
             }),
             subject: "Activación cuenta LALA TrAC",
           })
-            .then(result => {
+            .then((result) => {
               if (NODE_ENV !== "test") {
                 console.log(
                   `New locked user! ${email}`,
@@ -165,7 +161,7 @@ export class AuthResolver {
                 );
               }
             })
-            .catch(err => {
+            .catch((err) => {
               if (NODE_ENV !== "test") {
                 console.error(
                   `Error trying to send an email to new locked user! ${email}`,
@@ -175,9 +171,7 @@ export class AuthResolver {
             });
           return { error: LOCKED_USER };
         } else {
-          await UserTable()
-            .increment("tries", 1)
-            .where({ email });
+          await UserTable().increment("tries", 1).where({ email });
         }
       }
     }
@@ -199,9 +193,7 @@ export class AuthResolver {
     @Args()
     { email, password: passwordInput, unlockKey }: UnlockInput
   ): Promise<AuthResult> {
-    let user = await UserTable()
-      .where({ email, unlockKey })
-      .first();
+    let user = await UserTable().where({ email, unlockKey }).first();
 
     if (!user) {
       return { error: WRONG_INFO };

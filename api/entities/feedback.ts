@@ -19,7 +19,7 @@ export class FeedbackQuestionOption {
   @Field()
   text: string;
 
-  @Field()
+  @Field(() => Int)
   value: number;
 }
 
@@ -84,6 +84,15 @@ export class FeedbackAnswerQuestionInput {
 
   @Field(() => String)
   answer: FeedbackAnswer["answer"];
+}
+
+@InputType()
+export class FeedbackQuestionOptionInput {
+  @Field()
+  text: string;
+
+  @Field(() => Int)
+  value: number;
 }
 
 @InputType()

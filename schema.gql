@@ -23,7 +23,7 @@ type Course {
   historicalDistribution: [DistributionValue!]!
 
   """Course-Semester-Curriculum-Program ID """
-  id: Float!
+  id: Int!
   mention: String!
   name: String!
   requisites: [Course!]!
@@ -93,7 +93,12 @@ type FeedbackQuestion {
 
 type FeedbackQuestionOption {
   text: String!
-  value: Float!
+  value: Int!
+}
+
+input FeedbackQuestionOptionInput {
+  text: String!
+  value: Int!
 }
 
 """Type of question in a feedback form"""
@@ -159,7 +164,7 @@ type PerformanceByLoad {
   failRateHigh: Int!
   failRateLow: Int!
   failRateMid: Int!
-  id: Float!
+  id: Int!
   isStudentCluster: Boolean!
   loadUnit: PerformanceLoadUnit!
   lowerBoundary: Float!
@@ -265,7 +270,7 @@ type Track {
   data: String!
   datetime: DateTime!
   datetime_client: DateTime!
-  id: Float!
+  id: Int!
   user_id: String!
 }
 
@@ -282,7 +287,7 @@ input UpsertedUser {
   name: String = "default_name"
   oldEmail: EmailAddress
   student_id: String = ""
-  tries: Float = 0
+  tries: Int = 0
   type: UserType = Student
 }
 
@@ -294,7 +299,7 @@ type User {
   name: String!
   programs: [Program!]!
   student_id: String!
-  tries: Float!
+  tries: Int!
   type: UserType!
   unlockKey: String!
 }

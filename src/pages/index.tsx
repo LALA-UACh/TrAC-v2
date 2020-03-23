@@ -75,7 +75,7 @@ const Dashboard: FC = () => {
 
   useEffect(() => {
     if (mock && !mockData) {
-      import("../../constants/mockData").then(data => {
+      import("../../constants/mockData").then((data) => {
         setMockData(data);
       });
     }
@@ -242,7 +242,7 @@ const Dashboard: FC = () => {
     ForeplanHelperStore.actions.setDirectTakeData(
       allCoursesOfProgram.reduce<string[]>((acum, { code, requisites }) => {
         if (
-          requisites.every(requisiteCourseCode => {
+          requisites.every((requisiteCourseCode) => {
             return allApprovedCourses[requisiteCourseCode] || false;
           })
         ) {
@@ -259,7 +259,7 @@ const Dashboard: FC = () => {
         }[]
       >((acum, { code, requisites }) => {
         if (
-          requisites.some(requisiteCourseCode => {
+          requisites.some((requisiteCourseCode) => {
             return !allApprovedCourses[requisiteCourseCode];
           })
         ) {
@@ -295,7 +295,7 @@ const Dashboard: FC = () => {
     if (user?.config.FOREPLAN_COURSE_STATS) {
       if (user?.config.FOREPLAN_COURSE_EFFORT_STATS) {
         ForeplanHelperStore.actions.setEffortData(
-          allCodes.map(code => {
+          allCodes.map((code) => {
             return { code, effort: random(1, 5) };
           })
         );
@@ -303,7 +303,7 @@ const Dashboard: FC = () => {
 
       if (user?.config.FOREPLAN_COURSE_FAIL_RATE_STATS) {
         ForeplanHelperStore.actions.setFailRateData(
-          allCodes.map(code => {
+          allCodes.map((code) => {
             return { code, failRate: Math.random() };
           })
         );
@@ -461,7 +461,7 @@ const Dashboard: FC = () => {
             return true;
           })
           .map(({ semesters: curriculumSemesters, id: curriculumId }) => {
-            const semesters = curriculumSemesters.map(va => {
+            const semesters = curriculumSemesters.map((va) => {
               const semester = {
                 n: va.id,
                 courses: va.courses.map(

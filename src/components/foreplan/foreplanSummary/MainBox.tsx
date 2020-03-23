@@ -130,7 +130,7 @@ const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {
       m={0}
       cursor="pointer"
       onClick={() => {
-        setExpanded(expanded => !expanded);
+        setExpanded((expanded) => !expanded);
         setTrackingData({
           foreplanSummaryExpanded: !expanded,
         });
@@ -376,8 +376,8 @@ const Waffle: FC<{
             width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
             height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
           >
-            {flatMap(rowRange, key1 => {
-              return rowRange.map(key2 => {
+            {flatMap(rowRange, (key1) => {
+              return rowRange.map((key2) => {
                 const n = key1 * 10 + key2;
                 let fill: string;
                 let data_tip: string;

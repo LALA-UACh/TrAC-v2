@@ -4,6 +4,7 @@ import {
   Authorized,
   Field,
   InputType,
+  Int,
   ObjectType,
   registerEnumType,
 } from "type-graphql";
@@ -41,7 +42,7 @@ export class User implements Partial<IUser> {
   locked: boolean;
 
   @Authorized([ADMIN])
-  @Field()
+  @Field(() => Int)
   tries: number;
 
   @Authorized([ADMIN])
@@ -61,7 +62,7 @@ export class UserProgram {
   email: string;
 
   @Field(() => String)
-  program: number;
+  program: string;
 }
 
 @InputType()
@@ -89,7 +90,7 @@ export class UpsertedUser implements Partial<User> {
   })
   config?: UserConfig;
 
-  @Field({ defaultValue: 0 })
+  @Field(() => Int, { defaultValue: 0 })
   tries: number;
 
   @Field({ defaultValue: "" })

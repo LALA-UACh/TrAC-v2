@@ -179,7 +179,7 @@ export const AdminConfig = () => {
   const [] = useDebounce(
     () => {
       setFilteredKeys(
-        baseConfigKeys.filter(keyName => {
+        baseConfigKeys.filter((keyName) => {
           if (filterInput) {
             return keyName.includes(filterInput);
           }
@@ -191,7 +191,7 @@ export const AdminConfig = () => {
     [filterInput]
   );
   const configList = useMemo(() => {
-    return sortBy(filteredKeys).map(configKey => {
+    return sortBy(filteredKeys).map((configKey) => {
       return (
         <ConfigInput
           key={configKey}

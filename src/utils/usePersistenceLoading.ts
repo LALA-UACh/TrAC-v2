@@ -11,10 +11,10 @@ export const {
   {
     devName: "PersistenceLoading",
     actions: {
-      setIsForeplanLoading: (isLoading: boolean) => draft => {
+      setIsForeplanLoading: (isLoading: boolean) => (draft) => {
         draft.isForeplanLoading = isLoading;
       },
-      setIsDashboardLoading: (isLoading: boolean) => draft => {
+      setIsDashboardLoading: (isLoading: boolean) => (draft) => {
         draft.isDashboardLoading = isLoading;
       },
     },

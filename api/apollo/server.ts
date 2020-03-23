@@ -26,7 +26,7 @@ export const schema = buildSchema({
 
 export const apolloServer = new Promise<ApolloServer>((resolve, reject) => {
   schema
-    .then(schema => {
+    .then((schema) => {
       resolve(
         new ApolloServer({
           schema,

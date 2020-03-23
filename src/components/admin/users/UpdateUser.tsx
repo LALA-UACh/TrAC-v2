@@ -77,7 +77,7 @@ const UserPersistence: FC<{ user: string }> = memo(({ user }) => {
   const dataComp = useMemo(() => {
     return (
       <Stack>
-        {sortBy(data?.userPersistences, ({ key }) => key).map(persistence => {
+        {sortBy(data?.userPersistences, ({ key }) => key).map((persistence) => {
           return (
             <Fragment key={persistence.key}>
               <Box
@@ -335,7 +335,7 @@ export const UpdateUser: FC<{
                   <Field
                     name="email"
                     initialValue={user.email}
-                    validate={email => !isEmail(email ?? "")}
+                    validate={(email) => !isEmail(email ?? "")}
                   >
                     {({ input, meta: { error } }) => {
                       return (
@@ -356,7 +356,7 @@ export const UpdateUser: FC<{
                   <Field
                     name="name"
                     initialValue={user.name}
-                    validate={name => (name?.length ?? 0) < 2}
+                    validate={(name) => (name?.length ?? 0) < 2}
                   >
                     {({ input, meta: { error } }) => (
                       <FormSemantic.Field>
@@ -379,8 +379,8 @@ export const UpdateUser: FC<{
                   <Field
                     name="tries"
                     initialValue={user.tries}
-                    validate={tries => !isInt(tries?.toString() ?? "")}
-                    parse={tries => tries && toInteger(tries)}
+                    validate={(tries) => !isInt(tries?.toString() ?? "")}
+                    parse={(tries) => tries && toInteger(tries)}
                   >
                     {({ input, meta: { error } }) => (
                       <FormSemantic.Field>

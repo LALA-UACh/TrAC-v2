@@ -23,9 +23,7 @@ export const PerformanceLoadAdvicesDataLoader = new DataLoader(
               program_id,
             })
             .first(),
-          PerformanceByLoadTable()
-            .select("*")
-            .where({ program_id }),
+          PerformanceByLoadTable().select("*").where({ program_id }),
         ]);
 
         const studentCluster = studentClusterData?.cluster ?? 1;
@@ -102,7 +100,7 @@ export const AllCoursesOfProgramCurriculumDataLoader = new DataLoader(
 export const AllApprovedCoursesDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
     return await Promise.all(
-      student_ids.map(async student_id => {
+      student_ids.map(async (student_id) => {
         return (
           await StudentCourseTable()
             .select("course_taken", "course_equiv", "elect_equiv")

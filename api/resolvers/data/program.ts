@@ -127,11 +127,9 @@ export class ProgramResolver {
     assertIsDefined(user, `Authorization in context is broken`);
 
     const [userPrograms, allPrograms] = await Promise.all([
-      UserProgramsTable()
-        .select("program")
-        .where({
-          email: user.email,
-        }),
+      UserProgramsTable().select("program").where({
+        email: user.email,
+      }),
       ProgramTable().select("id"),
     ]);
 

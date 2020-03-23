@@ -37,7 +37,7 @@ export class TrackResolver {
         data,
       })
       .then(() => {})
-      .catch(err => {
+      .catch((err) => {
         console.error(
           `Error on tracking insert! `,
           JSON.stringify(err, null, 2)

@@ -12,11 +12,8 @@ import { Curriculum } from "../entities/data/program";
 export const ProgramDataLoader = new DataLoader(
   async (ids: readonly string[]) => {
     return await Promise.all(
-      ids.map(id => {
-        return ProgramTable()
-          .select("*")
-          .where({ id })
-          .first();
+      ids.map((id) => {
+        return ProgramTable().select("*").where({ id }).first();
       })
     );
   },
@@ -28,7 +25,7 @@ export const ProgramDataLoader = new DataLoader(
 export const StudentProgramDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
     return await Promise.all(
-      student_ids.map(student_id => {
+      student_ids.map((student_id) => {
         return StudentProgramTable()
           .distinct("program_id", "curriculum", "start_year")
           .where({
@@ -54,11 +51,9 @@ export const ProgramDataByStudentDataLoader = new DataLoader(
           })
           .whereIn(
             "id",
-            StudentProgramTable()
-              .distinct("program_id")
-              .where({
-                student_id,
-              })
+            StudentProgramTable().distinct("program_id").where({
+              student_id,
+            })
           )
           .first();
       })
@@ -75,7 +70,7 @@ export const ProgramDataByStudentDataLoader = new DataLoader(
 export const StudentProgramCurriculumsDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
     return await Promise.all(
-      student_ids.map(student_id => {
+      student_ids.map((student_id) => {
         return StudentProgramTable()
           .distinct("curriculum", "start_year")
           .where({

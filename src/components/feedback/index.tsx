@@ -65,7 +65,7 @@ export const Feedback: FC<{
 
           <ModalBody>
             <form
-              onSubmit={handleSubmit(data => {
+              onSubmit={handleSubmit((data) => {
                 console.log({
                   data,
                 });

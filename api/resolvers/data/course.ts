@@ -133,7 +133,7 @@ export class CourseResolver {
       return [];
     }
 
-    const bandColors = bandColorsData.color_bands.split(";").map(value => {
+    const bandColors = bandColorsData.color_bands.split(";").map((value) => {
       const [min, max, color] = value.split(",");
       return {
         min: toNumber(min),

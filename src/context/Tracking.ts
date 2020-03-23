@@ -30,14 +30,12 @@ export const TrackingStore = createStore(initialState, {
   actions: {
     setTrackingData: (
       data: Omit<TrackingTemplateData, "action" | "effect" | "target">
-    ) => draft => {
+    ) => (draft) => {
       assign(draft, data);
     },
-    track: (data: {
-      action: string;
-      effect: string;
-      target: string;
-    }) => draft => {
+    track: (data: { action: string; effect: string; target: string }) => (
+      draft
+    ) => {
       assign(draft, data);
     },
   },
@@ -86,16 +84,17 @@ export const TrackingManager: FC = memo(() => {
       foreplanCredits,
       foreplanSummaryExpanded,
     }: TrackingTemplateData) => {
-      return `program=${program || null},program-menu=${program_menu ||
-        null},curriculum=${curriculum || null},student=${student ||
-        null},showing-progress=${showingProgress ? 1 : 0},showing-prediction=${
+      return `program=${program || null},program-menu=${
+        program_menu || null
+      },curriculum=${curriculum || null},student=${
+        student || null
+      },showing-progress=${showingProgress ? 1 : 0},showing-prediction=${
         showingPrediction ? 1 : 0
-      },courses-open=${coursesOpen || null},user-config=${userConfig ||
-        "null"},foreplanActive=${
-        foreplanActive ? 1 : 0
-      },foreplanCourses=${foreplanCourses ||
-        "null"},foreplanCredits=${foreplanCredits ??
-        "null"},foreplanSummaryExpanded=${
+      },courses-open=${coursesOpen || null},user-config=${
+        userConfig || "null"
+      },foreplanActive=${foreplanActive ? 1 : 0},foreplanCourses=${
+        foreplanCourses || "null"
+      },foreplanCredits=${foreplanCredits ?? "null"},foreplanSummaryExpanded=${
         foreplanSummaryExpanded ? 1 : 0
       },action=${action},effect=${effect},target=${target}`;
     },
@@ -106,8 +105,9 @@ export const TrackingManager: FC = memo(() => {
     ignoreResults: true,
   });
 
-  const trackAction = `${state.action || ""}${state.effect ||
-    ""}${state.target || ""}`;
+  const trackAction = `${state.action || ""}${state.effect || ""}${
+    state.target || ""
+  }`;
 
   useEffect(() => {
     if (trackAction) {
@@ -118,7 +118,7 @@ export const TrackingManager: FC = memo(() => {
             data,
             datetime_client: new Date(),
           },
-        }).catch(err => {
+        }).catch((err) => {
           console.error(JSON.stringify(err, null, 2));
         });
       }, 0);

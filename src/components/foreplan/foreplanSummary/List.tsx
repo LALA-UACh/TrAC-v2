@@ -14,8 +14,9 @@ import {
 } from "../../../context/ForeplanContext";
 import { track } from "../../../context/Tracking";
 
-const ForeplanContentRowListItem: FC<Pick<ICourse, "code" | "name"> &
-  ICreditsNumber> = memo(({ code, name, credits }) => {
+const ForeplanContentRowListItem: FC<
+  Pick<ICourse, "code" | "name"> & ICreditsNumber
+> = memo(({ code, name, credits }) => {
   const config = useContext(ConfigContext);
   const shouldTruncate =
     name.length > config.FOREPLAN_SUMMARY_LIST_NAME_TRUNCATE_LENGTH;

@@ -145,7 +145,7 @@ export class ForeplanResolver {
     return allCoursesOfProgramCurriculum.reduce<PartialCourse[]>(
       (acum, { id, code, requisites }) => {
         if (
-          requisites.every(requisiteCourseCode => {
+          requisites.every((requisiteCourseCode) => {
             return allApprovedCourses[requisiteCourseCode] || false;
           })
         ) {
@@ -202,7 +202,7 @@ export class ForeplanResolver {
       }[]
     >((acum, { id, code, requisites }) => {
       if (
-        requisites.some(requisiteCourseCode => {
+        requisites.some((requisiteCourseCode) => {
           return !allApprovedCourses[requisiteCourseCode];
         })
       ) {

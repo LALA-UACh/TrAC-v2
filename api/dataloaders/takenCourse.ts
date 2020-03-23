@@ -6,11 +6,8 @@ import { CourseStatsTable, StudentCourseTable } from "../db/tables";
 export const StudentCourseDataLoader = new DataLoader(
   async (ids: readonly number[]) => {
     return await Promise.all(
-      ids.map(id => {
-        return StudentCourseTable()
-          .select("*")
-          .where({ id })
-          .first();
+      ids.map((id) => {
+        return StudentCourseTable().select("*").where({ id }).first();
       })
     );
   },
@@ -53,7 +50,7 @@ export const CourseStatsByStateDataLoader = new DataLoader(
 export const CourseStatsByCourseTakenDataLoader = new DataLoader(
   async (codes: readonly string[]) => {
     return await Promise.all(
-      codes.map(course_taken => {
+      codes.map((course_taken) => {
         return CourseStatsTable()
           .select("color_bands")
           .where({

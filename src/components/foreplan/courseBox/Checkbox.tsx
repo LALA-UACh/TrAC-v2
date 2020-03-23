@@ -173,7 +173,7 @@ const ForeplanCourseCheckbox: FC<Pick<
       >
         <Checkbox
           checked={checked}
-          onChange={ev => {
+          onChange={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             if (checked) {
