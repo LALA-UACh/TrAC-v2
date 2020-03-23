@@ -12,7 +12,7 @@ import ScrollContainer from "react-indiana-drag-scroll";
 import { useUpdateEffect } from "react-use";
 
 import { useMutation } from "@apollo/react-hooks";
-import { Box, Button, Flex, Stack } from "@chakra-ui/core";
+import { Box, Flex, Stack } from "@chakra-ui/core";
 
 import {
   NODE_ENV,
@@ -714,21 +714,7 @@ const Dashboard: FC = () => {
 
       <TrackingManager />
 
-      {false && (
-        <Feedback>
-          {({ onOpen }) => {
-            return (
-              <Button
-                onClick={() => {
-                  onOpen();
-                }}
-              >
-                Feedback
-              </Button>
-            );
-          }}
-        </Feedback>
-      )}
+      <Feedback />
 
       {user?.config.FOREPLAN && <ForeplanContextManager />}
 

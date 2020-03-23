@@ -4,6 +4,7 @@ import { StateCourse, TermType } from "../../constants";
 import {
   Maybe,
   Mutation,
+  MutationAnswerFeedbackFormArgs,
   MutationDirectTakeCoursesArgs,
   MutationIndirectTakeCoursesArgs,
   MutationLoginArgs,
@@ -464,5 +465,37 @@ export const SET_PERSISTENCE_VALUE: DocumentNode<
     setPersistenceValue(key: $key, data: $data) {
       __typename
     }
+  }
+`;
+
+export const UNANSWERED_FEEDBACK_FORM: DocumentNode<Pick<
+  Query,
+  "unansweredForm"
+>> = gql`
+  query {
+    unansweredForm {
+      id
+      name
+      priority
+      questions {
+        id
+        question
+        type
+        priority
+        options {
+          text
+          value
+        }
+      }
+    }
+  }
+`;
+
+export const ANSWER_FEEDBACK_FORM: DocumentNode<
+  Pick<Mutation, "answerFeedbackForm">,
+  MutationAnswerFeedbackFormArgs
+> = gql`
+  mutation($answer: FeedbackAnswerInput!) {
+    answerFeedbackForm(answer: $answer)
   }
 `;

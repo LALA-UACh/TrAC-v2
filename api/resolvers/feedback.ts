@@ -1,7 +1,12 @@
-import { orderBy, reduce, toInteger } from "lodash";
+import { reduce, toInteger } from "lodash";
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
-import { FeedbackQuestionType, NO_ANSWER } from "../../constants";
+import {
+  FeedbackQuestionType,
+  NO_ANSWER,
+  OPTIONS_FEEDBACK_SPLIT_CHAR,
+  OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR,
+} from "../../constants";
 import { IContext } from "../../interfaces";
 import { ADMIN } from "../constants";
 import {
@@ -22,21 +27,19 @@ import {
 import { assertIsDefined } from "../utils/assert";
 import { PartialUser } from "./auth/user";
 
-const optionsSplitChar = "|";
-
-const optionsValueSplitChar = "=";
-
 export function splitFeedbackQuestionOptions(
   options: string
 ): FeedbackQuestionOption[] {
-  return options.split(optionsSplitChar).map((optionValue) => {
+  return options.split(OPTIONS_FEEDBACK_SPLIT_CHAR).map((optionValue) => {
     const [numberValueStr, ...textValue] = optionValue.split(
-      optionsValueSplitChar
+      OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR
     );
+
+    const textStr = textValue.join(OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR);
 
     return {
       value: toInteger(numberValueStr),
-      text: textValue.join(optionsValueSplitChar),
+      text: textStr.slice(1, textStr.length - 1),
     };
   });
 }
@@ -46,9 +49,9 @@ export function joinFeedbackQuestionOptions(
 ): string {
   return questionsOptions
     .map((optionValue) => {
-      return `${optionValue.value}${optionsValueSplitChar}${optionValue.text}`;
+      return `${optionValue.value}${OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR}"${optionValue.text}"`;
     })
-    .join(optionsSplitChar);
+    .join(OPTIONS_FEEDBACK_SPLIT_CHAR);
 }
 
 type PartialFeedbackResult = Pick<FeedbackResult, "answers" | "form"> & {
@@ -121,12 +124,12 @@ export class FeedbackFormResolver {
       FeedbackFormQuestionTable()
         .select("id", "options", "type")
         .whereIn(
-          "question",
+          "id",
           feedbackAnswerInput.questions.map(({ question }) => question)
         ),
     ]);
 
-    if (form && questions) {
+    if (form && questions?.length) {
       const feedbackAnswers: IFeedbackResult[] = questions.map(
         (questionDbValue) => {
           return {
@@ -138,7 +141,9 @@ export class FeedbackFormResolver {
                 if (questionFeedbackValue.question === questionDbValue.id) {
                   if (questionDbValue.type === FeedbackQuestionType.OpenText) {
                     return true;
-                  } else {
+                  } else if (
+                    questionDbValue.type === FeedbackQuestionType.SingleAnswer
+                  ) {
                     const options = splitFeedbackQuestionOptions(
                       questionDbValue.options
                     );
@@ -146,6 +151,18 @@ export class FeedbackFormResolver {
                     const answerValue = toInteger(questionFeedbackValue.answer);
                     return options.some((feedbackQuestionOption) => {
                       return feedbackQuestionOption.value === answerValue;
+                    });
+                  } else {
+                    const questionOptions = splitFeedbackQuestionOptions(
+                      questionDbValue.options
+                    ).map((opt) => opt.value);
+
+                    const answerValueArray = questionFeedbackValue.answer
+                      .split(OPTIONS_FEEDBACK_SPLIT_CHAR)
+                      .map(toInteger);
+
+                    return answerValueArray.every((answerValue) => {
+                      return questionOptions.includes(answerValue);
                     });
                   }
                 }
@@ -214,81 +231,101 @@ export class FeedbackFormResolver {
       return acum;
     }, {});
 
-    return orderBy(
-      reduce(
-        feedbackAnswersHashByFormIdAndUser,
-        (acum, { form, result }, userEmail) => {
-          if (form) {
-            type IFormQuestion = {
-              id: number;
-              question: string;
-              type: FeedbackQuestionType;
-              priority: number;
-              options: FeedbackQuestionOption[];
-            };
-            type IFormQuestionObj = {
-              array: IFormQuestion[];
-              hash: Record<string, IFormQuestion>;
-            };
+    return reduce(
+      feedbackAnswersHashByFormIdAndUser,
+      (acum, { form, result }, userEmail) => {
+        if (form) {
+          type IFormQuestion = {
+            id: number;
+            question: string;
+            type: FeedbackQuestionType;
+            priority: number;
+            options: FeedbackQuestionOption[];
+          };
+          type IFormQuestionObj = {
+            array: IFormQuestion[];
+            hash: Record<string, IFormQuestion>;
+          };
 
-            const formQuestions = form.questions.reduce<IFormQuestionObj>(
-              (acum, { options, ...restQuestionValue }) => {
-                const question = {
-                  ...restQuestionValue,
-                  options: splitFeedbackQuestionOptions(options),
-                };
+          const formQuestions = form.questions.reduce<IFormQuestionObj>(
+            (acum, { options, ...restQuestionValue }) => {
+              const question = {
+                ...restQuestionValue,
+                options: splitFeedbackQuestionOptions(options),
+              };
 
-                acum.array.push(question);
+              acum.array.push(question);
 
-                acum.hash[question.id] = question;
+              acum.hash[question.id] = question;
 
-                return acum;
-              },
-              {
-                array: [],
-                hash: {},
-              }
-            );
+              return acum;
+            },
+            {
+              array: [],
+              hash: {},
+            }
+          );
 
-            acum.push({
-              form: {
-                id: form.id,
-                name: form.name,
-                priority: form.priority,
-                questions: orderBy(
-                  formQuestions.array,
-                  (val) => val.priority,
-                  "desc"
-                ),
-              },
-              answers: orderBy(
-                result.reduce<FeedbackAnswer[]>((acum, resultValue) => {
-                  const resultQuestion =
-                    formQuestions.hash[resultValue.question_id];
+          acum.push({
+            form: {
+              id: form.id,
+              name: form.name,
+              priority: form.priority,
+              questions: formQuestions.array,
+            },
+            answers: result.reduce<FeedbackAnswer[]>((acum, resultValue) => {
+              const resultQuestion =
+                formQuestions.hash[resultValue.question_id];
 
-                  if (resultQuestion) {
-                    acum.push({
-                      question: resultQuestion,
-                      answer: resultValue.answer,
-                    });
+              if (resultQuestion) {
+                let answer: string;
+                switch (resultQuestion.type) {
+                  case FeedbackQuestionType.MultipleAnswer: {
+                    answer = resultValue.answer
+                      .split(OPTIONS_FEEDBACK_SPLIT_CHAR)
+                      .map((optionAnswerValue) => {
+                        return (
+                          resultQuestion.options.find((option) => {
+                            return (
+                              option.value === toInteger(optionAnswerValue)
+                            );
+                          })?.text ?? optionAnswerValue
+                        );
+                      })
+                      .join(OPTIONS_FEEDBACK_SPLIT_CHAR);
+                    break;
                   }
+                  case FeedbackQuestionType.SingleAnswer: {
+                    const intAnswer = toInteger(resultValue.answer);
+                    answer =
+                      resultQuestion.options.find((option) => {
+                        return option.value === intAnswer;
+                      })?.text ?? resultValue.answer;
+                    break;
+                  }
+                  case FeedbackQuestionType.OpenText:
+                  default: {
+                    answer = resultValue.answer;
+                    break;
+                  }
+                }
+                acum.push({
+                  question: resultQuestion,
+                  answer,
+                });
+              }
 
-                  return acum;
-                }, []),
-                (val) => val.question.priority,
-                "desc"
-              ),
-              user: {
-                email: userEmail,
-              },
-            });
-          }
-          return acum;
-        },
-        [] as PartialFeedbackResult[]
-      ),
-      (val) => val.form.priority,
-      "desc"
+              return acum;
+            }, []),
+
+            user: {
+              email: userEmail,
+            },
+          });
+        }
+        return acum;
+      },
+      [] as PartialFeedbackResult[]
     );
   }
 }

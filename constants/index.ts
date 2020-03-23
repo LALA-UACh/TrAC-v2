@@ -135,3 +135,7 @@ export const defaultPerformanceLoadUnit = (
 };
 
 export const NO_ANSWER = "NO_ANSWER";
+
+export const OPTIONS_FEEDBACK_SPLIT_CHAR = "|";
+
+export const OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR = "=";

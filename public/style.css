@@ -41,7 +41,7 @@ body {
 }
 
 form div[type="radio"] {
-  border: 1px solid black;
+  border: 1px solid rgb(63, 63, 63);
 }
 
 .helpImagesStack img {
@@ -50,4 +50,8 @@ form div[type="radio"] {
   max-width: 100%;
   object-fit: contain;
   border: 1px solid black;
+}
+
+.checkbox [aria-hidden="true"] {
+  border: 1px solid rgb(63, 63, 63);
 }

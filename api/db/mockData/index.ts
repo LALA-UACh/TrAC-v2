@@ -6,6 +6,7 @@ import { FeedbackQuestionType, NODE_ENV, UserType } from "../../../constants";
 import { baseConfig } from "../../../constants/baseConfig";
 import { baseUserConfig } from "../../../constants/userConfig";
 import { configValueToString } from "../../../constants/validation";
+import { joinFeedbackQuestionOptions } from "../../resolvers";
 import {
   CONFIGURATION_TABLE,
   ConfigurationTable,
@@ -16,6 +17,8 @@ import {
   FEEDBACK_FORM_QUESTION_TABLE,
   FEEDBACK_FORM_TABLE,
   FEEDBACK_RESULT_TABLE,
+  FeedbackFormQuestionTable,
+  FeedbackFormTable,
   PARAMETER_TABLE,
   ParameterTable,
   PERFORMANCE_BY_LOAD_TABLE,
@@ -45,6 +48,8 @@ import {
   USERS_TABLE,
   UserTable,
 } from "../tables";
+
+import type { FeedbackQuestionOption } from "../../entities/feedback";
 
 const dataImport = async () => {
   dbAuth.schema.hasTable(USERS_TABLE).then(async (exists) => {
@@ -448,6 +453,10 @@ const dataImport = async () => {
   });
 
   dbTracking.schema.hasTable(FEEDBACK_FORM_TABLE).then(async (exists) => {
+    if (exists && process.env.NODE_ENV === "development") {
+      await dbTracking.schema.dropTable(FEEDBACK_FORM_TABLE);
+      exists = false;
+    }
     if (!exists) {
       await dbTracking.schema.createTable(FEEDBACK_FORM_TABLE, (table) => {
         table.increments("id").primary();
@@ -456,12 +465,27 @@ const dataImport = async () => {
 
         table.integer("priority").defaultTo(0);
       });
+
+      await FeedbackFormTable().insert([
+        {
+          id: 0,
+          name: "Feedback1",
+        },
+        {
+          id: 1,
+          name: "Feedback2",
+        },
+      ]);
     }
   });
 
   dbTracking.schema
     .hasTable(FEEDBACK_FORM_QUESTION_TABLE)
     .then(async (exists) => {
+      if (exists && process.env.NODE_ENV === "development") {
+        await dbTracking.schema.dropTable(FEEDBACK_FORM_QUESTION_TABLE);
+        exists = false;
+      }
       if (!exists) {
         await dbTracking.schema.createTable(
           FEEDBACK_FORM_QUESTION_TABLE,
@@ -483,10 +507,67 @@ const dataImport = async () => {
             table.text("options").defaultTo("");
           }
         );
+        const mockFeedbackOptions: FeedbackQuestionOption[] = [
+          {
+            text: "option 1",
+            value: 1,
+          },
+          {
+            text: "option 2",
+            value: 2,
+          },
+          {
+            text: "option 3",
+            value: 3,
+          },
+        ];
+
+        await FeedbackFormQuestionTable().insert([
+          {
+            form_id: 0,
+            question: "Question1",
+            type: FeedbackQuestionType.OpenText,
+            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
+          },
+          {
+            form_id: 0,
+            question: "Question2",
+            type: FeedbackQuestionType.SingleAnswer,
+            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
+          },
+          {
+            form_id: 0,
+            question: "Question1",
+            type: FeedbackQuestionType.MultipleAnswer,
+            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
+          },
+          {
+            form_id: 1,
+            question: "Question4",
+            type: FeedbackQuestionType.OpenText,
+            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
+          },
+          {
+            form_id: 1,
+            question: "Question5",
+            type: FeedbackQuestionType.SingleAnswer,
+            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
+          },
+          {
+            form_id: 1,
+            question: "Question6",
+            type: FeedbackQuestionType.MultipleAnswer,
+            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
+          },
+        ]);
       }
     });
 
   dbTracking.schema.hasTable(FEEDBACK_RESULT_TABLE).then(async (exists) => {
+    if (exists && process.env.NODE_ENV === "development") {
+      await dbTracking.schema.dropTable(FEEDBACK_RESULT_TABLE);
+      exists = false;
+    }
     if (!exists) {
       await dbTracking.schema.createTable(FEEDBACK_RESULT_TABLE, (table) => {
         table.integer("form_id");
