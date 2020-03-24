@@ -21,7 +21,7 @@ export const Users: FC<{
     tries: number;
     type: UserType;
     student_id?: string;
-    config: UserConfig;
+    config: Record<string, unknown>;
     locked: boolean;
   }[];
 }> = ({ users }) => {
@@ -232,6 +232,7 @@ export const Users: FC<{
                     }}
                   >
                     {({ setOpen }) => {
+                      const configObj = config as UserConfig;
                       const configOnClick = (ev: React.MouseEvent) => {
                         ev.stopPropagation();
                         setOpen(true, true);
@@ -259,7 +260,7 @@ export const Users: FC<{
                             <Icon
                               circular
                               name={
-                                config?.SHOW_DROPOUT
+                                configObj?.SHOW_DROPOUT
                                   ? "check circle outline"
                                   : "times circle outline"
                               }
@@ -269,7 +270,7 @@ export const Users: FC<{
                             <Icon
                               circular
                               name={
-                                config?.SHOW_STUDENT_LIST
+                                configObj?.SHOW_STUDENT_LIST
                                   ? "check circle outline"
                                   : "times circle outline"
                               }
@@ -279,7 +280,7 @@ export const Users: FC<{
                             <Icon
                               circular
                               name={
-                                config?.FOREPLAN
+                                configObj?.FOREPLAN
                                   ? "check circle outline"
                                   : "times circle outline"
                               }

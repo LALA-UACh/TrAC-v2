@@ -22,7 +22,9 @@ type Course {
   flow: [Course!]!
   historicalDistribution: [DistributionValue!]!
 
-  """Course-Semester-Curriculum-Program ID """
+  """
+  Course-Semester-Curriculum-Program ID
+  """
   id: Int!
   mention: String!
   name: String!
@@ -101,7 +103,9 @@ input FeedbackQuestionOptionInput {
   value: Int!
 }
 
-"""Type of question in a feedback form"""
+"""
+Type of question in a feedback form
+"""
 enum FeedbackQuestionType {
   MultipleAnswer
   OpenText
@@ -111,6 +115,7 @@ enum FeedbackQuestionType {
 type FeedbackResult {
   answers: [FeedbackAnswer!]!
   form: FeedbackForm!
+  timestamp: DateTime!
   user: User!
 }
 
@@ -140,19 +145,30 @@ type Mutation {
   deleteUser(email: EmailAddress!): [User!]!
   directTakeCourses(program_id: String, student_id: String): [Course!]!
   editConfig(name: String!, value: String!): JSONObject!
-  indirectTakeCourses(program_id: String, student_id: String): [IndirectTakeCourse!]!
+  feedbackResultsCsv: String!
+  indirectTakeCourses(
+    program_id: String
+    student_id: String
+  ): [IndirectTakeCourse!]!
   lockMailUser(email: EmailAddress!): LockedUserResult!
   login(email: EmailAddress!, password: String!): AuthResult!
   logout: Boolean!
   mailAllLockedUsers: [JSONObject!]!
-  performanceLoadAdvices(program_id: String, student_id: String): [PerformanceByLoad!]!
+  performanceLoadAdvices(
+    program_id: String
+    student_id: String
+  ): [PerformanceByLoad!]!
   program(id: String, student_id: String): Program!
   resetDataLoadersCache: Int!
   resetPersistence(user: String!): Int!
   setPersistenceValue(data: JSONObject!, key: String!): Persistence!
   student(program_id: String, student_id: String): Student
   track(data: String!, datetime_client: DateTime!): Boolean!
-  unlock(email: EmailAddress!, password: String!, unlockKey: String!): AuthResult!
+  unlock(
+    email: EmailAddress!
+    password: String!
+    unlockKey: String!
+  ): AuthResult!
   updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
   upsertUsers(users: [UpsertedUser!]!): [User!]!
 }
@@ -171,7 +187,9 @@ type PerformanceByLoad {
   upperBoundary: Float!
 }
 
-"""Unit used to distinguish load in the foreplan"""
+"""
+Unit used to distinguish load in the foreplan
+"""
 enum PerformanceLoadUnit {
   Credits
 }
@@ -195,7 +213,7 @@ type Program {
 type Query {
   config: JSONObject!
   currentUser: AuthResult
-  feedbackResults: [FeedbackResult!]!
+  feedbackResults(user_ids: [String!]): [FeedbackResult!]!
   getPersistenceValue(key: String!): Persistence
   myPrograms: [Program!]!
   programs: [Program!]!
@@ -210,7 +228,9 @@ type Semester {
   id: Int!
 }
 
-"""Possible states of a taken course"""
+"""
+Possible states of a taken course
+"""
 enum StateCourse {
   Canceled
   Current
@@ -258,7 +278,9 @@ type Term {
   year: Int!
 }
 
-"""Possible states of a term, first semester, second semester or anual"""
+"""
+Possible states of a term, first semester, second semester or anual
+"""
 enum TermType {
   Anual
   First
@@ -309,7 +331,9 @@ input UserProgram {
   program: String!
 }
 
-"""Possible options of an user type"""
+"""
+Possible options of an user type
+"""
 enum UserType {
   Director
   Student

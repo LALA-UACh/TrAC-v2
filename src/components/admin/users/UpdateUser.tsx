@@ -28,7 +28,6 @@ import {
 } from "@chakra-ui/core";
 
 import { UserType } from "../../../../constants";
-import { UserConfig } from "../../../../constants/userConfig";
 import {
   ALL_USERS_ADMIN,
   DELETE_USER_ADMIN,
@@ -47,7 +46,7 @@ export interface IUserConfig {
   tries: number;
   type: UserType;
   student_id?: string;
-  config: UserConfig;
+  config: Record<string, unknown>;
   locked: boolean;
 }
 

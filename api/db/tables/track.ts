@@ -59,6 +59,8 @@ export interface IFeedbackResult {
   user_id: string;
 
   answer: string;
+
+  timestamp: Date;
 }
 
 export const FEEDBACK_RESULT_TABLE = "feedback_result";

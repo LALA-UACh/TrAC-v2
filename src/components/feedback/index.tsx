@@ -42,7 +42,9 @@ export const Feedback: FC<{
   children?: FC<IDisclosure>;
 }> = memo(({ children: Children }) => {
   const { user } = useUser();
-  const { data, loading } = useQuery(UNANSWERED_FEEDBACK_FORM);
+  const { data, loading, refetch } = useQuery(UNANSWERED_FEEDBACK_FORM, {
+    notifyOnNetworkStatusChange: true,
+  });
   const [answerFeedback] = useMutation(ANSWER_FEEDBACK_FORM);
   const modalDisclosure = useDisclosure(!!user?.admin);
 
@@ -94,7 +96,11 @@ export const Feedback: FC<{
                       ),
                     },
                   },
+                  optimisticResponse: {
+                    answerFeedbackForm: true,
+                  },
                 });
+                await refetch();
               })}
             >
               <Stack>

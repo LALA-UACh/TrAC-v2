@@ -1,4 +1,5 @@
-import { reduce, toInteger } from "lodash";
+import { Parser } from "json2csv";
+import { assign, reduce, toInteger } from "lodash";
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import {
@@ -21,6 +22,7 @@ import {
   FeedbackAnswer,
   FeedbackAnswerInput,
   FeedbackForm,
+  FeedbackQuestion,
   FeedbackQuestionOption,
   FeedbackResult,
 } from "../entities/feedback";
@@ -30,18 +32,21 @@ import { PartialUser } from "./auth/user";
 export function splitFeedbackQuestionOptions(
   options: string
 ): FeedbackQuestionOption[] {
-  return options.split(OPTIONS_FEEDBACK_SPLIT_CHAR).map((optionValue) => {
-    const [numberValueStr, ...textValue] = optionValue.split(
-      OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR
-    );
+  return options
+    .split(OPTIONS_FEEDBACK_SPLIT_CHAR)
+    .filter((v) => v.trim())
+    .map((optionValue) => {
+      const [numberValueStr, ...textValue] = optionValue
+        .trim()
+        .split(OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR);
 
-    const textStr = textValue.join(OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR);
+      const textStr = textValue.join(OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR);
 
-    return {
-      value: toInteger(numberValueStr),
-      text: textStr.slice(1, textStr.length - 1),
-    };
-  });
+      return {
+        value: toInteger(numberValueStr),
+        text: textStr.slice(1, textStr.length - 1),
+      };
+    });
 }
 
 export function joinFeedbackQuestionOptions(
@@ -49,12 +54,17 @@ export function joinFeedbackQuestionOptions(
 ): string {
   return questionsOptions
     .map((optionValue) => {
-      return `${optionValue.value}${OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR}"${optionValue.text}"`;
+      return `${
+        optionValue.value
+      }${OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR}"${optionValue.text.trim()}"`;
     })
     .join(OPTIONS_FEEDBACK_SPLIT_CHAR);
 }
 
-type PartialFeedbackResult = Pick<FeedbackResult, "answers" | "form"> & {
+type PartialFeedbackResult = Pick<
+  FeedbackResult,
+  "answers" | "form" | "timestamp"
+> & {
   user: PartialUser;
 };
 
@@ -114,24 +124,27 @@ export class FeedbackFormResolver {
   ) {
     assertIsDefined(user, "Authorization context not working properly");
 
-    const [form, questions] = await Promise.all([
-      FeedbackFormTable()
-        .select("id")
-        .where({
-          id: feedbackAnswerInput.form,
-        })
-        .first(),
-      FeedbackFormQuestionTable()
-        .select("id", "options", "type")
-        .whereIn(
-          "id",
-          feedbackAnswerInput.questions.map(({ question }) => question)
-        ),
-    ]);
+    try {
+      const [form, questions] = await Promise.all([
+        FeedbackFormTable()
+          .select("id")
+          .where({
+            id: feedbackAnswerInput.form,
+          })
+          .first(),
+        FeedbackFormQuestionTable()
+          .select("id", "options", "type")
+          .whereIn(
+            "id",
+            feedbackAnswerInput.questions.map(({ question }) => question)
+          ),
+      ]);
 
-    if (form && questions?.length) {
-      const feedbackAnswers: IFeedbackResult[] = questions.map(
-        (questionDbValue) => {
+      if (form && questions?.length) {
+        const feedbackAnswers: Pick<
+          IFeedbackResult,
+          "answer" | "form_id" | "question_id" | "user_id"
+        >[] = questions.map((questionDbValue) => {
           return {
             form_id: form.id,
             question_id: questionDbValue.id,
@@ -170,12 +183,14 @@ export class FeedbackFormResolver {
                 return;
               })?.answer || NO_ANSWER,
           };
-        }
-      );
+        });
 
-      await FeedbackResultTable().insert(feedbackAnswers);
+        await FeedbackResultTable().insert(feedbackAnswers);
 
-      return true;
+        return true;
+      }
+    } catch (err) {
+      console.error(err);
     }
 
     return false;
@@ -183,88 +198,31 @@ export class FeedbackFormResolver {
 
   @Authorized([ADMIN])
   @Query(() => [FeedbackResult])
-  async feedbackResults(): Promise<PartialFeedbackResult[]> {
+  async feedbackResults(
+    @Arg("user_ids", () => [String], { nullable: true }) user_ids?: string[]
+  ): Promise<PartialFeedbackResult[]> {
     const [allFeedbackAnswers, allForms, allQuestions] = await Promise.all([
-      FeedbackResultTable().select("*"),
+      user_ids
+        ? FeedbackResultTable().select("*").whereIn("user_id", user_ids)
+        : FeedbackResultTable().select("*"),
       FeedbackFormTable().select("*"),
       FeedbackFormQuestionTable().select("*"),
     ]);
 
-    const questionsHashByForm = allQuestions.reduce<
-      Record<number, IFeedbackFormQuestion[]>
-    >((acum, value) => {
-      if (value.form_id in acum) {
-        acum[value.form_id].push(value);
-      } else {
-        acum[value.form_id] = [value];
-      }
-      return acum;
-    }, {});
+    const questionsHashByForm = hashQuestionsByForm(allQuestions);
 
-    const formsHashById = allForms.reduce<
-      Record<number, IFeedbackForm & { questions: IFeedbackFormQuestion[] }>
-    >((acum, value) => {
-      acum[value.id] = {
-        ...value,
-        questions: questionsHashByForm[value.id] ?? [],
-      };
-      return acum;
-    }, {});
+    const formsHashById = hashFormsById(allForms, questionsHashByForm);
 
-    const feedbackAnswersHashByFormIdAndUser = allFeedbackAnswers.reduce<
-      Record<
-        string,
-        {
-          result: IFeedbackResult[];
-          form?: typeof formsHashById[number];
-        }
-      >
-    >((acum, value) => {
-      if (value.user_id in acum) {
-        acum[value.user_id].result.push(value);
-      } else {
-        acum[value.user_id] = {
-          result: [value],
-          form: formsHashById[value.form_id],
-        };
-      }
-      return acum;
-    }, {});
+    const feedbackAnswersHashByUser = hashAnswersByUser(
+      allFeedbackAnswers,
+      formsHashById
+    );
 
     return reduce(
-      feedbackAnswersHashByFormIdAndUser,
-      (acum, { form, result }, userEmail) => {
-        if (form) {
-          type IFormQuestion = {
-            id: number;
-            question: string;
-            type: FeedbackQuestionType;
-            priority: number;
-            options: FeedbackQuestionOption[];
-          };
-          type IFormQuestionObj = {
-            array: IFormQuestion[];
-            hash: Record<string, IFormQuestion>;
-          };
-
-          const formQuestions = form.questions.reduce<IFormQuestionObj>(
-            (acum, { options, ...restQuestionValue }) => {
-              const question = {
-                ...restQuestionValue,
-                options: splitFeedbackQuestionOptions(options),
-              };
-
-              acum.array.push(question);
-
-              acum.hash[question.id] = question;
-
-              return acum;
-            },
-            {
-              array: [],
-              hash: {},
-            }
-          );
+      feedbackAnswersHashByUser,
+      (acum, resultsHashByForm, userEmail) => {
+        for (const { result, form } of Object.values(resultsHashByForm)) {
+          const formQuestions = hashAndListFormQuestions(form.questions);
 
           acum.push({
             form: {
@@ -273,59 +231,267 @@ export class FeedbackFormResolver {
               priority: form.priority,
               questions: formQuestions.array,
             },
-            answers: result.reduce<FeedbackAnswer[]>((acum, resultValue) => {
-              const resultQuestion =
-                formQuestions.hash[resultValue.question_id];
-
-              if (resultQuestion) {
-                let answer: string;
-                switch (resultQuestion.type) {
-                  case FeedbackQuestionType.MultipleAnswer: {
-                    answer = resultValue.answer
-                      .split(OPTIONS_FEEDBACK_SPLIT_CHAR)
-                      .map((optionAnswerValue) => {
-                        return (
-                          resultQuestion.options.find((option) => {
-                            return (
-                              option.value === toInteger(optionAnswerValue)
-                            );
-                          })?.text ?? optionAnswerValue
-                        );
-                      })
-                      .join(OPTIONS_FEEDBACK_SPLIT_CHAR);
-                    break;
-                  }
-                  case FeedbackQuestionType.SingleAnswer: {
-                    const intAnswer = toInteger(resultValue.answer);
-                    answer =
-                      resultQuestion.options.find((option) => {
-                        return option.value === intAnswer;
-                      })?.text ?? resultValue.answer;
-                    break;
-                  }
-                  case FeedbackQuestionType.OpenText:
-                  default: {
-                    answer = resultValue.answer;
-                    break;
-                  }
-                }
-                acum.push({
-                  question: resultQuestion,
-                  answer,
-                });
-              }
-
-              return acum;
-            }, []),
+            answers: transformResultAnswers(result, formQuestions),
 
             user: {
               email: userEmail,
             },
+            timestamp: result[0]?.timestamp ?? new Date(),
           });
         }
+
         return acum;
       },
       [] as PartialFeedbackResult[]
     );
   }
+
+  @Authorized([ADMIN])
+  @Mutation(() => String)
+  async feedbackResultsCsv() {
+    const [allFeedbackAnswers, allForms, allQuestions] = await Promise.all([
+      FeedbackResultTable().select("*"),
+      FeedbackFormTable().select("*").orderBy("priority", "desc"),
+      FeedbackFormQuestionTable().select("*").orderBy("priority", "desc"),
+    ]);
+
+    const questionsByForm = hashQuestionsByForm(allQuestions);
+    const formsById = hashFormsById(allForms, questionsByForm);
+
+    const memoQuestionsInfo: Record<number | string, FeedbackQuestion> = {};
+
+    const resultListForCsv = allFeedbackAnswers.reduce<
+      FeedbackResultCsvParse[]
+    >((acum, { form_id, question_id, user_id, answer }) => {
+      const formInfo = formsById[form_id];
+      if (!formInfo) return acum;
+
+      if (!(question_id in memoQuestionsInfo)) {
+        assign(
+          memoQuestionsInfo,
+          hashAndListFormQuestions(formInfo.questions, false).hash
+        );
+      }
+
+      const questionInfo = memoQuestionsInfo[question_id];
+      if (!questionInfo) return acum;
+
+      switch (questionInfo.type) {
+        case FeedbackQuestionType.SingleAnswer: {
+          answer = parseSingleAnswerQuestionResult(
+            answer,
+            questionInfo.options
+          );
+          break;
+        }
+        case FeedbackQuestionType.MultipleAnswer: {
+          answer = parseMultipleAnswerQuestionResult(
+            answer,
+            questionInfo.options
+          );
+          break;
+        }
+      }
+      acum.push({
+        user_id,
+        form: formInfo.name,
+        question: questionInfo.question,
+        answer,
+      });
+
+      return acum;
+    }, []);
+
+    return FeedbackParser.parse(resultListForCsv);
+  }
+}
+
+type FeedbackResultCsvParse = {
+  user_id: string;
+  form: string;
+  question: string;
+  answer: string;
+};
+
+const FeedbackParser = new Parser<FeedbackResultCsvParse>({
+  fields: [
+    {
+      label: "User",
+      value: "user_id",
+    },
+    {
+      label: "Form",
+      value: "form",
+    },
+    {
+      label: "Question",
+      value: "question",
+    },
+    {
+      label: "Answer",
+      value: "answer",
+    },
+  ],
+});
+
+function hashQuestionsByForm(allQuestions: IFeedbackFormQuestion[]) {
+  return allQuestions.reduce<Record<number, IFeedbackFormQuestion[]>>(
+    (acum, value) => {
+      if (value.form_id in acum) {
+        acum[value.form_id].push(value);
+      } else {
+        acum[value.form_id] = [value];
+      }
+      return acum;
+    },
+    {}
+  );
+}
+
+function hashFormsById(
+  allForms: IFeedbackForm[],
+  questionsHash: ReturnType<typeof hashQuestionsByForm>
+) {
+  return allForms.reduce<
+    Record<number, IFeedbackForm & { questions: IFeedbackFormQuestion[] }>
+  >((acum, value) => {
+    acum[value.id] = {
+      ...value,
+      questions: questionsHash[value.id] ?? [],
+    };
+    return acum;
+  }, {});
+}
+
+function hashAnswersByUser(
+  allFeedbackAnswers: IFeedbackResult[],
+  formsHashById: ReturnType<typeof hashFormsById>
+) {
+  return allFeedbackAnswers.reduce<
+    Record<
+      string,
+      Record<
+        string,
+        {
+          result: IFeedbackResult[];
+          form: typeof formsHashById[number];
+        }
+      >
+    >
+  >((acum, resultValue) => {
+    const { form_id, user_id } = resultValue;
+    const form = formsHashById[form_id];
+    if (!form) return acum;
+
+    if (user_id in acum) {
+      if (form_id in acum[user_id]) {
+        acum[user_id][form_id].result.push(resultValue);
+      } else {
+        acum[user_id][form_id] = { result: [resultValue], form };
+      }
+    } else {
+      acum[user_id] = { [form_id]: { result: [resultValue], form } };
+    }
+
+    return acum;
+  }, {});
+}
+
+function hashAndListFormQuestions(
+  questions: IFeedbackFormQuestion[],
+  doArray = true
+) {
+  return questions.reduce<{
+    array: FeedbackQuestion[];
+    hash: Record<string, FeedbackQuestion>;
+  }>(
+    (acum, { options, ...restQuestionValue }) => {
+      const question = {
+        ...restQuestionValue,
+        options:
+          restQuestionValue.type !== FeedbackQuestionType.OpenText
+            ? splitFeedbackQuestionOptions(options)
+            : [],
+      };
+
+      if (doArray) acum.array.push(question);
+
+      acum.hash[question.id] = question;
+
+      return acum;
+    },
+    {
+      array: [],
+      hash: {},
+    }
+  );
+}
+
+function transformResultAnswers(
+  result: IFeedbackResult[],
+  formQuestions: ReturnType<typeof hashAndListFormQuestions>
+) {
+  return result.reduce<FeedbackAnswer[]>((acum, resultValue) => {
+    const resultQuestion = formQuestions.hash[resultValue.question_id];
+
+    if (resultQuestion) {
+      let answer: string;
+      switch (resultQuestion.type) {
+        case FeedbackQuestionType.MultipleAnswer: {
+          answer = parseMultipleAnswerQuestionResult(
+            resultValue.answer,
+            resultQuestion.options
+          );
+          break;
+        }
+        case FeedbackQuestionType.SingleAnswer: {
+          answer = parseSingleAnswerQuestionResult(
+            resultValue.answer,
+            resultQuestion.options
+          );
+          break;
+        }
+        case FeedbackQuestionType.OpenText:
+        default: {
+          answer = resultValue.answer;
+          break;
+        }
+      }
+      acum.push({
+        question: resultQuestion,
+        answer,
+      });
+    }
+
+    return acum;
+  }, []);
+}
+
+function parseSingleAnswerQuestionResult(
+  answer: string,
+  options: FeedbackQuestionOption[]
+) {
+  const intAnswer = toInteger(answer);
+  return (
+    options.find((option) => {
+      return option.value === intAnswer;
+    })?.text ?? answer
+  );
+}
+
+function parseMultipleAnswerQuestionResult(
+  answer: string,
+  options: FeedbackQuestionOption[]
+) {
+  return answer
+    .split(OPTIONS_FEEDBACK_SPLIT_CHAR)
+    .map((optionAnswerValue) => {
+      const intOptionAnswerValue = toInteger(optionAnswerValue);
+      return (
+        options.find((option) => {
+          return option.value === intOptionAnswerValue;
+        })?.text ?? optionAnswerValue
+      );
+    })
+    .join(OPTIONS_FEEDBACK_SPLIT_CHAR);
 }

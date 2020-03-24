@@ -55,3 +55,10 @@ form div[type="radio"] {
 .checkbox [aria-hidden="true"] {
   border: 1px solid rgb(63, 63, 63);
 }
+
+.feedbackOptResult:not(.chosen) {
+  color: red;
+}
+.feedbackOptResult.chosen {
+  color: blue;
+}

@@ -75,6 +75,9 @@ export class FeedbackResult {
 
   @Field(() => User)
   user: User;
+
+  @Field()
+  timestamp: Date;
 }
 
 @InputType()

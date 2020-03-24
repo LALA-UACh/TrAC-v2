@@ -1,12 +1,15 @@
 import sha1 from "crypto-js/sha1";
-import { chunk } from "lodash";
+import { chunk, sample } from "lodash";
 
 import { dbAuth, dbConfig, dbData, dbTracking } from "../";
 import { FeedbackQuestionType, NODE_ENV, UserType } from "../../../constants";
 import { baseConfig } from "../../../constants/baseConfig";
 import { baseUserConfig } from "../../../constants/userConfig";
 import { configValueToString } from "../../../constants/validation";
-import { joinFeedbackQuestionOptions } from "../../resolvers";
+import {
+  joinFeedbackQuestionOptions,
+  splitFeedbackQuestionOptions,
+} from "../../resolvers";
 import {
   CONFIGURATION_TABLE,
   ConfigurationTable,
@@ -19,6 +22,7 @@ import {
   FEEDBACK_RESULT_TABLE,
   FeedbackFormQuestionTable,
   FeedbackFormTable,
+  FeedbackResultTable,
   PARAMETER_TABLE,
   ParameterTable,
   PERFORMANCE_BY_LOAD_TABLE,
@@ -452,6 +456,17 @@ const dataImport = async () => {
     }
   });
 
+  const mockFeedbackForms = [
+    {
+      id: 0,
+      name: "Feedback1",
+    },
+    {
+      id: 1,
+      name: "Feedback2",
+    },
+  ];
+
   dbTracking.schema.hasTable(FEEDBACK_FORM_TABLE).then(async (exists) => {
     if (exists && process.env.NODE_ENV === "development") {
       await dbTracking.schema.dropTable(FEEDBACK_FORM_TABLE);
@@ -461,23 +476,74 @@ const dataImport = async () => {
       await dbTracking.schema.createTable(FEEDBACK_FORM_TABLE, (table) => {
         table.increments("id").primary();
 
-        table.text("name");
+        table.text("name").notNullable();
 
-        table.integer("priority").defaultTo(0);
+        table.integer("priority").notNullable().defaultTo(0);
       });
 
-      await FeedbackFormTable().insert([
-        {
-          id: 0,
-          name: "Feedback1",
-        },
-        {
-          id: 1,
-          name: "Feedback2",
-        },
-      ]);
+      await FeedbackFormTable().insert(mockFeedbackForms);
     }
   });
+
+  const mockFeedbackOptions: FeedbackQuestionOption[] = [
+    {
+      text: "option 1",
+      value: 1,
+    },
+    {
+      text: "option 2",
+      value: 2,
+    },
+    {
+      text: "option 3",
+      value: 3,
+    },
+  ];
+
+  const mockFeedbackQuestions = [
+    {
+      id: 0,
+      form_id: 0,
+      question: "Question1",
+      type: FeedbackQuestionType.OpenText,
+      options: "",
+    },
+    {
+      id: 1,
+      form_id: 0,
+      question: "Question2",
+      type: FeedbackQuestionType.SingleAnswer,
+      options: joinFeedbackQuestionOptions(mockFeedbackOptions),
+    },
+    {
+      id: 2,
+      form_id: 0,
+      question: "Question3",
+      type: FeedbackQuestionType.MultipleAnswer,
+      options: joinFeedbackQuestionOptions(mockFeedbackOptions),
+    },
+    {
+      id: 3,
+      form_id: 1,
+      question: "Question4",
+      type: FeedbackQuestionType.OpenText,
+      options: "",
+    },
+    {
+      id: 4,
+      form_id: 1,
+      question: "Question5",
+      type: FeedbackQuestionType.SingleAnswer,
+      options: joinFeedbackQuestionOptions(mockFeedbackOptions),
+    },
+    {
+      id: 5,
+      form_id: 1,
+      question: "Question6",
+      type: FeedbackQuestionType.MultipleAnswer,
+      options: joinFeedbackQuestionOptions(mockFeedbackOptions),
+    },
+  ];
 
   dbTracking.schema
     .hasTable(FEEDBACK_FORM_QUESTION_TABLE)
@@ -492,74 +558,25 @@ const dataImport = async () => {
           (table) => {
             table.increments("id").primary();
 
-            table.integer("form_id");
+            table.integer("form_id").notNullable();
 
-            table.text("question");
+            table.text("question").notNullable();
 
-            table.enu("type", [
-              FeedbackQuestionType.OpenText,
-              FeedbackQuestionType.SingleAnswer,
-              FeedbackQuestionType.MultipleAnswer,
-            ] as FeedbackQuestionType[]);
+            table
+              .enu("type", [
+                FeedbackQuestionType.OpenText,
+                FeedbackQuestionType.SingleAnswer,
+                FeedbackQuestionType.MultipleAnswer,
+              ] as FeedbackQuestionType[])
+              .notNullable();
 
-            table.integer("priority").defaultTo(0);
+            table.integer("priority").notNullable().defaultTo(0);
 
-            table.text("options").defaultTo("");
+            table.text("options").notNullable().defaultTo("");
           }
         );
-        const mockFeedbackOptions: FeedbackQuestionOption[] = [
-          {
-            text: "option 1",
-            value: 1,
-          },
-          {
-            text: "option 2",
-            value: 2,
-          },
-          {
-            text: "option 3",
-            value: 3,
-          },
-        ];
 
-        await FeedbackFormQuestionTable().insert([
-          {
-            form_id: 0,
-            question: "Question1",
-            type: FeedbackQuestionType.OpenText,
-            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
-          },
-          {
-            form_id: 0,
-            question: "Question2",
-            type: FeedbackQuestionType.SingleAnswer,
-            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
-          },
-          {
-            form_id: 0,
-            question: "Question1",
-            type: FeedbackQuestionType.MultipleAnswer,
-            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
-          },
-          {
-            form_id: 1,
-            question: "Question4",
-            type: FeedbackQuestionType.OpenText,
-            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
-          },
-          {
-            form_id: 1,
-            question: "Question5",
-            type: FeedbackQuestionType.SingleAnswer,
-            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
-          },
-          {
-            form_id: 1,
-            question: "Question6",
-            type: FeedbackQuestionType.MultipleAnswer,
-            options: joinFeedbackQuestionOptions(mockFeedbackOptions),
-          },
-        ]);
+        await FeedbackFormQuestionTable().insert(mockFeedbackQuestions);
       }
     });
 
@@ -570,16 +587,41 @@ const dataImport = async () => {
     }
     if (!exists) {
       await dbTracking.schema.createTable(FEEDBACK_RESULT_TABLE, (table) => {
-        table.integer("form_id");
+        table.integer("form_id").notNullable();
 
-        table.integer("question_id");
+        table.integer("question_id").notNullable();
 
-        table.text("user_id");
+        table.text("user_id").notNullable();
 
-        table.text("answer");
+        table.text("answer").notNullable().defaultTo("");
+
+        table
+          .timestamp("timestamp", { useTz: true })
+          .notNullable()
+          .defaultTo(dbTracking.fn.now());
 
         table.primary(["form_id", "question_id", "user_id"]);
       });
+
+      const form_id = sample(mockFeedbackForms)?.id ?? 0;
+
+      const questionsOfForm = mockFeedbackQuestions.filter(
+        (question) => question.form_id === form_id
+      );
+
+      await FeedbackResultTable().insert(
+        questionsOfForm.map((question) => {
+          return {
+            form_id,
+            question_id: question.id,
+            user_id: "admin@admin.dev",
+            answer:
+              sample(
+                splitFeedbackQuestionOptions(question.options)
+              )?.value.toString() ?? "random",
+          };
+        })
+      );
     }
   });
 };

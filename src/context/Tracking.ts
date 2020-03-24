@@ -116,7 +116,7 @@ export const TrackingManager: FC = memo(() => {
         trackMutate({
           variables: {
             data,
-            datetime_client: new Date(),
+            datetime_client: new Date().toISOString(),
           },
         }).catch((err) => {
           console.error(JSON.stringify(err, null, 2));

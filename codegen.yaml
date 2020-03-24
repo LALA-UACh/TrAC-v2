@@ -6,6 +6,6 @@ plugins:
   - typescript
 config:
   scalars:
-    DateTime: Date
+    DateTime: string
     EmailAddress: string
     JSONObject: Record<string,any>

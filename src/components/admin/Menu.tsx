@@ -15,12 +15,15 @@ export const AdminMenu: FC<{
       case AdminMenuTypes.baseConfig:
       case AdminMenuTypes.users:
       case AdminMenuTypes.data:
+      case AdminMenuTypes.feedback:
       case AdminMenuTypes.programs: {
         setActive(name);
         return;
       }
       default: {
-        throw new Error("Invalid name!");
+        if (process.env.NODE_ENV !== "production") {
+          throw new Error("Invalid name!");
+        }
       }
     }
   };
@@ -58,6 +61,14 @@ export const AdminMenu: FC<{
       >
         <Icon name="database" />
         Data
+      </Menu.Item>
+      <Menu.Item
+        name={AdminMenuTypes.feedback}
+        active={active === AdminMenuTypes.feedback}
+        onClick={handleClick}
+      >
+        <Icon name="comments outline" />
+        Feedback
       </Menu.Item>
     </Menu>
   );
