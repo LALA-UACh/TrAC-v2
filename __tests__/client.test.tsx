@@ -4,16 +4,16 @@ import React from "react";
 import waitForExpect from "wait-for-expect";
 
 import { MockedProvider } from "@apollo/react-testing";
-import { act, render } from "@testing-library/react";
+import { act, cleanup, render } from "@testing-library/react";
 
 import { UserType } from "../constants";
 import { baseConfig } from "../constants/baseConfig";
 import { baseUserConfig } from "../constants/userConfig";
+import AdminPage from "../pages/admin";
+import LoginPage from "../pages/login";
+import UnlockPage from "../pages/unlock/[email]/[unlockKey]";
 import { ALL_USERS_ADMIN } from "../src/graphql/adminQueries";
 import { CURRENT_USER } from "../src/graphql/queries";
-import AdminPage from "../src/pages/admin";
-import LoginPage from "../src/pages/login";
-import UnlockPage from "../src/pages/unlock/[email]/[unlockKey]";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
@@ -29,10 +29,14 @@ Object.defineProperty(window, "matchMedia", {
   })),
 });
 
+afterEach(async () => {
+  await cleanup();
+});
+
 describe("unlock", () => {
   test("renders correctly", async () => {
     await act(async () => {
-      const { getByText, unmount } = render(
+      const { getByText } = render(
         <MockedProvider
           mocks={[
             {
@@ -61,7 +65,6 @@ describe("unlock", () => {
 
         expect(NewPasswordFieldLabel).toBeTruthy();
       });
-      unmount();
     });
   });
 });
@@ -69,7 +72,7 @@ describe("unlock", () => {
 describe("login", () => {
   test("renders correctly", async () => {
     await act(async () => {
-      const { getByText, unmount } = render(
+      const { getByText } = render(
         <MockedProvider
           mocks={[
             {
@@ -97,7 +100,6 @@ describe("login", () => {
         expect(LoginButton).toBeTruthy();
         expect(LoginButton).toHaveAttribute("disabled");
       });
-      unmount();
     });
   });
 });

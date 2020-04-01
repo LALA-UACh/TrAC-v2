@@ -1,5 +1,5 @@
 import { toInteger } from "lodash";
-import React, { FC, memo } from "react";
+import React, { FC, memo, useContext } from "react";
 import { useForm } from "react-hook-form";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -25,6 +25,7 @@ import {
   FeedbackQuestionType,
   OPTIONS_FEEDBACK_SPLIT_CHAR,
 } from "../../../constants";
+import { ConfigContext } from "../../context/Config";
 import {
   ANSWER_FEEDBACK_FORM,
   UNANSWERED_FEEDBACK_FORM,
@@ -47,7 +48,7 @@ export const Feedback: FC<{
   });
   const [answerFeedback] = useMutation(ANSWER_FEEDBACK_FORM);
   const modalDisclosure = useDisclosure(!!user?.admin);
-
+  const config = useContext(ConfigContext);
   const { register, handleSubmit, errors, watch } = useForm();
 
   if (loading || !data?.unansweredForm) {
@@ -119,7 +120,8 @@ export const Feedback: FC<{
                                 ref={register({
                                   required: {
                                     value: true,
-                                    message: `Ingrese su opinión`,
+                                    message:
+                                      config.FEEDBACK_OPEN_TEXT_REQUIRED_ERROR_MESSAGE,
                                   },
                                 })}
                               />
@@ -137,7 +139,8 @@ export const Feedback: FC<{
                                         ref={register({
                                           required: {
                                             value: true,
-                                            message: `Eliga una opción`,
+                                            message:
+                                              config.FEEDBACK_SINGLE_ANSWER_REQUIRED_ERROR_MESSAGE,
                                           },
                                         })}
                                         lineHeight={0}
@@ -172,7 +175,7 @@ export const Feedback: FC<{
                                           );
                                           return (
                                             checkedValues.some((v) => v) ||
-                                            `Debe especificar al menos 1 opción`
+                                            config.FEEDBACK_MULTIPLE_ANSWER_REQUIRED_ERROR_MESSAGE
                                           );
                                         },
                                       })}
@@ -189,19 +192,23 @@ export const Feedback: FC<{
                         }
                       })()}
 
-                      {errors[questionValue.id.toString()] &&
-                        (Array.isArray(errors[questionValue.id.toString()]) ? (
-                          <Text>
-                            {errors[questionValue.id.toString()][0]?.message}
-                          </Text>
+                      {(() => {
+                        const error = errors[questionValue.id];
+                        if (!error) return null;
+
+                        return Array.isArray(error) ? (
+                          <Text>{error[1]?.message}</Text>
                         ) : (
-                          <Text>{errors[questionValue.id].message}</Text>
-                        ))}
+                          <Text>{error.message}</Text>
+                        );
+                      })()}
                     </Box>
                   );
                 })}
 
-                <Button type="submit">OK</Button>
+                <Button type="submit">
+                  {config.FEEDBACK_SUBMIT_BUTTON_LABEL_TEXT}
+                </Button>
               </Stack>
             </form>
           </ModalBody>

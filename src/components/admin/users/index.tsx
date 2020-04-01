@@ -7,12 +7,13 @@ import { useMutation } from "@apollo/react-hooks";
 import { Flex, Stack } from "@chakra-ui/core";
 
 import { UserType } from "../../../../constants";
-import { UserConfig } from "../../../../constants/userConfig";
 import { MAIL_LOCKED_USERS_ADMIN } from "../../../graphql/adminQueries";
 import { Confirm } from "../../Confirm";
 import { usePagination } from "../Pagination";
 import { ImportUsers } from "./ImportUsers";
 import { UpdateUser } from "./UpdateUser";
+
+import type { UserConfig } from "../../../../constants/userConfig";
 
 export const Users: FC<{
   users: {

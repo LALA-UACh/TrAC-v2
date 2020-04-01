@@ -18,10 +18,10 @@ import matches from "validator/lib/matches";
 import { useMutation } from "@apollo/react-hooks";
 import { Image } from "@chakra-ui/core";
 
-import { USED_OLD_PASSWORD, WRONG_INFO } from "../../../../constants";
-import { ConfigContext } from "../../../context/Config";
-import { CURRENT_USER, UNLOCK } from "../../../graphql/queries";
-import { DarkMode } from "../../../utils/dynamicDarkMode";
+import { USED_OLD_PASSWORD, WRONG_INFO } from "../../../constants";
+import { ConfigContext } from "../../../src/context/Config";
+import { CURRENT_USER, UNLOCK } from "../../../src/graphql/queries";
+import { DarkMode } from "../../../src/utils/dynamicDarkMode";
 
 const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
   email,

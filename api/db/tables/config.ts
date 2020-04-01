@@ -1,5 +1,6 @@
 import { dbConfig } from "../";
-import { UserConfig } from "../../../constants/userConfig";
+
+import type { UserConfig } from "../../../constants/userConfig";
 
 export interface IConfiguration {
   name: string;

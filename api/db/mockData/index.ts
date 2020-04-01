@@ -6,6 +6,7 @@ import { FeedbackQuestionType, NODE_ENV, UserType } from "../../../constants";
 import { baseConfig } from "../../../constants/baseConfig";
 import { baseUserConfig } from "../../../constants/userConfig";
 import { configValueToString } from "../../../constants/validation";
+import { FeedbackQuestionOption } from "../../entities/feedback";
 import {
   joinFeedbackQuestionOptions,
   splitFeedbackQuestionOptions,
@@ -52,8 +53,6 @@ import {
   USERS_TABLE,
   UserTable,
 } from "../tables";
-
-import type { FeedbackQuestionOption } from "../../entities/feedback";
 
 const dataImport = async () => {
   dbAuth.schema.hasTable(USERS_TABLE).then(async (exists) => {

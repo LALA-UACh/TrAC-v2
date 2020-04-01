@@ -5,17 +5,17 @@ import { useRememberState } from "use-remember-state";
 import { useQuery } from "@apollo/react-hooks";
 import { Flex, Stack } from "@chakra-ui/core";
 
-import { NODE_ENV } from "../../constants";
-import { AdminConfig } from "../components/admin/BaseConfig";
-import { AdminData } from "../components/admin/data/index";
-import { AdminFeedback } from "../components/admin/feedback";
-import { AdminMenu } from "../components/admin/Menu";
-import { Programs } from "../components/admin/programs";
-import { Users } from "../components/admin/users";
-import { LoadingPage } from "../components/Loading";
-import { ALL_USERS_ADMIN } from "../graphql/adminQueries";
-import { DarkMode } from "../utils/dynamicDarkMode";
-import { useUser } from "../utils/useUser";
+import { NODE_ENV } from "../constants";
+import { AdminConfig } from "../src/components/admin/BaseConfig";
+import { AdminData } from "../src/components/admin/data/index";
+import { AdminFeedback } from "../src/components/admin/feedback";
+import { AdminMenu } from "../src/components/admin/Menu";
+import { Programs } from "../src/components/admin/programs";
+import { Users } from "../src/components/admin/users";
+import { LoadingPage } from "../src/components/Loading";
+import { ALL_USERS_ADMIN } from "../src/graphql/adminQueries";
+import { DarkMode } from "../src/utils/dynamicDarkMode";
+import { useUser } from "../src/utils/useUser";
 
 export enum AdminMenuTypes {
   users = "users",

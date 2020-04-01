@@ -1,7 +1,7 @@
 import React, { Dispatch, FC, SetStateAction } from "react";
 import { Icon, Menu, MenuItemProps } from "semantic-ui-react";
 
-import { AdminMenuTypes } from "../../pages/admin";
+import { AdminMenuTypes } from "../../../pages/admin";
 
 export const AdminMenu: FC<{
   active: AdminMenuTypes;

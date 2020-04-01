@@ -21,45 +21,49 @@ import {
   StateCourse,
   STUDENT_NOT_FOUND,
   UserType,
-} from "../../constants";
-import { ITakenCourse } from "../../interfaces";
-import { SearchBar } from "../components/dashboard/SearchBar";
-import { SemestersList } from "../components/dashboard/SemestersList";
-import { TakenSemesterBox } from "../components/dashboard/TakenSemesterBox";
-import { TimeLine } from "../components/dashboard/Timeline";
-import { Feedback } from "../components/feedback";
-import { LoadingPage } from "../components/Loading";
-import { ConfigContext } from "../context/Config";
-import { CoursesDashbordManager } from "../context/CoursesDashboard";
+} from "../constants";
+import { ITakenCourse } from "../interfaces";
+import { SearchBar } from "../src/components/dashboard/SearchBar";
+import { SemestersList } from "../src/components/dashboard/SemestersList";
+import { TakenSemesterBox } from "../src/components/dashboard/TakenSemesterBox";
+import { TimeLine } from "../src/components/dashboard/Timeline";
+import { Feedback } from "../src/components/feedback";
+import { LoadingPage } from "../src/components/Loading";
+import { ConfigContext } from "../src/context/Config";
+import { CoursesDashbordManager } from "../src/context/CoursesDashboard";
 import {
   DashboardInputActions,
   useChosenCurriculum,
   useIsMockActive,
   useProgram,
-} from "../context/DashboardInput";
+} from "../src/context/DashboardInput";
 import {
   ForeplanActiveStore,
   ForeplanContextManager,
   ForeplanHelperStore,
-} from "../context/ForeplanContext";
-import { setTrackingData, track, TrackingManager } from "../context/Tracking";
+} from "../src/context/ForeplanContext";
+import {
+  setTrackingData,
+  track,
+  TrackingManager,
+} from "../src/context/Tracking";
 import {
   DIRECT_TAKE_COURSES,
   INDIRECT_TAKE_COURSES,
   PERFORMANCE_BY_LOAD_ADVICES,
   SEARCH_PROGRAM,
   SEARCH_STUDENT,
-} from "../graphql/queries";
-import { DarkMode } from "../utils/dynamicDarkMode";
-import { useIsPersistenceLoading } from "../utils/usePersistenceLoading";
-import { useUser } from "../utils/useUser";
+} from "../src/graphql/queries";
+import { DarkMode } from "../src/utils/dynamicDarkMode";
+import { useIsPersistenceLoading } from "../src/utils/usePersistenceLoading";
+import { useUser } from "../src/utils/useUser";
 
-const Dropout = dynamic(() => import("../components/dashboard/Dropout"));
+const Dropout = dynamic(() => import("../src/components/dashboard/Dropout"));
 const ForeplanModeSwitch = dynamic(() =>
-  import("../components/foreplan/ModeSwitch")
+  import("../src/components/foreplan/ModeSwitch")
 );
 const ForeplanSummary = dynamic(() =>
-  import("../components/foreplan/foreplanSummary/MainBox")
+  import("../src/components/foreplan/foreplanSummary/MainBox")
 );
 
 const Dashboard: FC = () => {
@@ -70,12 +74,12 @@ const Dashboard: FC = () => {
   const { user } = useUser();
 
   const [mockData, setMockData] = useState<
-    typeof import("../../constants/mockData")
+    typeof import("../constants/mockData")
   >();
 
   useEffect(() => {
     if (mock && !mockData) {
-      import("../../constants/mockData").then((data) => {
+      import("../constants/mockData").then((data) => {
         setMockData(data);
       });
     }

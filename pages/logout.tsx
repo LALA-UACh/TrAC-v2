@@ -3,8 +3,8 @@ import { useEffect } from "react";
 
 import { useMutation } from "@apollo/react-hooks";
 
-import { LoadingPage } from "../components/Loading";
-import { CURRENT_USER, LOGOUT } from "../graphql/queries";
+import { LoadingPage } from "../src/components/Loading";
+import { CURRENT_USER, LOGOUT } from "../src/graphql/queries";
 
 export default () => {
   const [logout] = useMutation(LOGOUT, {

@@ -1,5 +1,5 @@
-import "../../public/style.css";
-import "../../public/nprogress.css";
+import "../public/style.css";
+import "../public/nprogress.css";
 import "react-toastify/dist/ReactToastify.min.css";
 
 import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
@@ -18,9 +18,9 @@ import { ToastContainer } from "react-toastify";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { theme, ThemeProvider } from "@chakra-ui/core";
 
-import { GRAPHQL_URL, NODE_ENV } from "../../constants";
-import { Config } from "../context/Config";
-import { DarkMode } from "../utils/dynamicDarkMode";
+import { GRAPHQL_URL, NODE_ENV } from "../constants";
+import { Config } from "../src/context/Config";
+import { DarkMode } from "../src/utils/dynamicDarkMode";
 
 Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
@@ -73,6 +73,7 @@ export default withSecureHeaders({
         "data:;",
       ],
       imgSrc: ["'self'", "data:;"],
+      connectSrc: ["'self'", "https://cdn.jsdelivr.net"],
     },
     // reportOnly: true,
   },
