@@ -6,8 +6,14 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /**
+   * A field whose value conforms to the standard internet email address format as
+   * specified in RFC822: https://www.w3.org/Protocols/rfc822/.
+   */
   EmailAddress: string;
+  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSONObject: Record<string, any>;
+  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
   DateTime: string;
 };
 
@@ -27,6 +33,7 @@ export type BandColor = {
 
 export type Course = {
   __typename?: "Course";
+  /** Course-Semester-Curriculum-Program ID  */
   id: Scalars["Int"];
   code: Scalars["String"];
   name: Scalars["String"];
@@ -107,6 +114,7 @@ export type FeedbackQuestionOptionInput = {
   value: Scalars["Int"];
 };
 
+/** Type of question in a feedback form */
 export enum FeedbackQuestionType {
   OpenText = "OpenText",
   SingleAnswer = "SingleAnswer",
@@ -258,6 +266,7 @@ export type PerformanceByLoad = {
   isStudentCluster: Scalars["Boolean"];
 };
 
+/** Unit used to distinguish load in the foreplan */
 export enum PerformanceLoadUnit {
   Credits = "Credits",
 }
@@ -317,6 +326,7 @@ export type Semester = {
   courses: Array<Course>;
 };
 
+/** Possible states of a taken course */
 export enum StateCourse {
   Passed = "Passed",
   Failed = "Failed",
@@ -367,6 +377,7 @@ export type Term = {
   takenCourses: Array<TakenCourse>;
 };
 
+/** Possible states of a term, first semester, second semester or anual */
 export enum TermType {
   First = "First",
   Second = "Second",
@@ -419,6 +430,7 @@ export type UserProgram = {
   program: Scalars["String"];
 };
 
+/** Possible options of an user type */
 export enum UserType {
   Director = "Director",
   Student = "Student",

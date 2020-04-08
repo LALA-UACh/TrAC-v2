@@ -107,6 +107,7 @@ export type ICreditsNumber = { credits: number };
 export interface IForeplanActiveData {
   active: boolean;
   foreplanCourses: Record<string, Pick<ICourse, "name"> & ICreditsNumber>;
+  currentCoursesPrediction: Record<string, StateCourse | undefined>;
   totalCreditsTaken: number;
   futureCourseRequisites: {
     [coursesToOpen: string]: { [requisite: string]: boolean | undefined };
@@ -118,6 +119,7 @@ const defaultForeplanActiveData: IForeplanActiveData = Object.freeze({
   foreplanCourses: emptyObject,
   totalCreditsTaken: 0,
   futureCourseRequisites: emptyObject,
+  currentCoursesPrediction: emptyObject,
 });
 
 export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
@@ -182,6 +184,17 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
         }
       }
     },
+    setCoursePrediction: (
+      { code: course, requisites }: Pick<ICourse, "code" | "requisites">,
+      state: StateCourse
+    ) => (draft) => {
+      if (state === StateCourse.Passed) {
+        for (const courseToOpen of requisites) {
+          draft.futureCourseRequisites[courseToOpen][course] = true;
+        }
+      }
+      draft.currentCoursesPrediction[course] = state;
+    },
     reset: (data: IForeplanActiveData = defaultForeplanActiveData) => (draft) =>
       assign(draft, data),
   },
@@ -205,17 +218,18 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
       return foreplanCourses;
     },
     useIsPossibleToTakeForeplan: (
-      { active },
-      state: StateCourse | undefined
+      { active, currentCoursesPrediction },
+      { state, course }: { state: StateCourse | undefined; course: string }
     ) => {
       if (active) {
-        switch (state) {
+        const prediction = currentCoursesPrediction[course];
+
+        switch (prediction || state) {
           case undefined:
           case StateCourse.Failed:
           case StateCourse.Canceled: {
             return true;
           }
-          default:
         }
       }
       return false;

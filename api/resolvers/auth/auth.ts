@@ -1,5 +1,4 @@
 import { addMilliseconds, addWeeks } from "date-fns";
-import { Request, Response } from "express";
 import { sign } from "jsonwebtoken";
 import { generate } from "randomstring";
 import { Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
@@ -20,6 +19,7 @@ import { AuthResult, LoginInput, UnlockInput } from "../../entities/auth/auth";
 import { anonService } from "../../utils/anonymization";
 import { sendMail, UnlockMail } from "../../utils/mail";
 
+import type { Request, Response } from "express-serve-static-core";
 @Resolver()
 export class AuthResolver {
   static authenticate({

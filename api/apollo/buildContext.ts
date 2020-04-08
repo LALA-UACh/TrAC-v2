@@ -1,5 +1,4 @@
 import DataLoader from "dataloader";
-import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import { keyBy } from "lodash";
 
@@ -7,6 +6,8 @@ import { NODE_ENV } from "../../constants";
 import { SECRET } from "../constants";
 import { IUser, UserConfigurationTable, UserTable } from "../db/tables";
 import { AuthResolver } from "../resolvers/auth/auth";
+
+import type { Request, Response } from "express-serve-static-core";
 
 export const buildContext = async ({
   req,

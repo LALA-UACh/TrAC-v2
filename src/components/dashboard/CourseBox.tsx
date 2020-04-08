@@ -34,6 +34,7 @@ import { Theme, ThemeStore } from "../../utils/useTheme";
 import { useUser } from "../../utils/useUser";
 import styles from "./CourseBox.module.css";
 import { Histogram } from "./Histogram";
+import { PredictState } from "../foreplan/courseBox/PredictState";
 
 const ForeplanCourseCheckbox = dynamic(() =>
   import("../foreplan/courseBox/Checkbox")
@@ -61,7 +62,8 @@ const useIsCourseFuturePlanificationFulfilled = ({
   });
   const isForeplanActive = ForeplanActiveStore.hooks.useIsForeplanActive();
   const isPossibleToTakeForeplan = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
-    state
+    { state, course: code },
+    [state, code]
   );
   const isDirectTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake(code);
   const isFutureCourseRequisitesFulfilled = ForeplanActiveStore.hooks.useForeplanIsFutureCourseRequisitesFulfilled(
@@ -578,38 +580,39 @@ const currentDistributionLabel = ({
   return `${label} ${term} ${year}`;
 };
 
-const HistogramsComponent: FC<Pick<CurrentTakenData, "state">> = memo(
-  ({ children, state }) => {
-    const isPossibleToTake = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
-      state
-    );
-    return (
-      <motion.div
-        key="histograms"
-        initial={{
-          opacity: 0,
-          scale: 0,
-        }}
-        animate={{
-          scale: 1,
-          opacity: 1,
-          position: "static",
-        }}
-        exit={{
-          opacity: 0,
-          scale: 0.4,
-          position: "absolute",
-        }}
-        className={classNames({
-          [styles.histogramBox]: true,
-          [styles.foreplanActive]: isPossibleToTake,
-        })}
-      >
-        {children}
-      </motion.div>
-    );
-  }
-);
+const HistogramsComponent: FC<
+  Pick<CurrentTakenData, "state"> & Pick<ICourse, "code">
+> = memo(({ children, state, code }) => {
+  const isPossibleToTake = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
+    { state, course: code },
+    [state, code]
+  );
+  return (
+    <motion.div
+      key="histograms"
+      initial={{
+        opacity: 0,
+        scale: 0,
+      }}
+      animate={{
+        scale: 1,
+        opacity: 1,
+        position: "static",
+      }}
+      exit={{
+        opacity: 0,
+        scale: 0.4,
+        position: "absolute",
+      }}
+      className={classNames({
+        [styles.histogramBox]: true,
+        [styles.foreplanActive]: isPossibleToTake,
+      })}
+    >
+      {children}
+    </motion.div>
+  );
+});
 
 const HistogramNow: FC<
   Pick<ICourse, "taken" | "bandColors"> &
@@ -715,8 +718,11 @@ export const CourseBox: FC<ICourse> = ({
     code,
   });
 
+  const isForeplanActive = ForeplanActiveStore.hooks.useIsForeplanActive();
+
   const isPossibleToTakeForeplan = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
-    taken[0]?.state
+    { state: taken[0]?.state, course: code },
+    [taken, code]
   );
 
   const borderColor = (() => {
@@ -739,6 +745,22 @@ export const CourseBox: FC<ICourse> = ({
     }
     return config.INACTIVE_COURSE_BOX_COLOR;
   })();
+
+  const shouldPredictCourseState = useMemo(() => {
+    if (
+      !isForeplanActive ||
+      !user?.config.FOREPLAN_PREDICT_CURRENT_COURSE ||
+      taken[0]?.state !== StateCourse.Current
+    ) {
+      return false;
+    }
+
+    ForeplanActiveStore.actions.setCoursePrediction(
+      { code, requisites },
+      StateCourse.Current
+    );
+    return true;
+  }, [isForeplanActive, code, requisites, taken, user]);
 
   return (
     <OuterCourseBox
@@ -778,6 +800,7 @@ export const CourseBox: FC<ICourse> = ({
           {isOpen && (
             <HistogramsComponent
               key="histogramsComponent"
+              code={code}
               state={taken[0]?.state}
             >
               <HistogramNow
@@ -807,9 +830,11 @@ export const CourseBox: FC<ICourse> = ({
         grade={grade}
         state={state}
       >
+        {/*TODO: CONSTANT WIDTH SECONDARY BLOCK*/}
         {grade !== undefined && <GradeComponent grade={grade} state={state} />}
 
         {taken.length > 1 && <HistoricalCirclesComponent taken={taken} />}
+        {shouldPredictCourseState && <PredictState course={code} />}
         <AnimatePresence>
           {isPossibleToTakeForeplan && user?.config.FOREPLAN && (
             <ForeplanCourseCheckbox

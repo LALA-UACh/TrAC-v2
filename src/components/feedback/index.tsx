@@ -42,12 +42,12 @@ export interface IDisclosure {
 export const Feedback: FC<{
   children?: FC<IDisclosure>;
 }> = memo(({ children: Children }) => {
-  const { user } = useUser();
+  const {} = useUser();
   const { data, loading, refetch } = useQuery(UNANSWERED_FEEDBACK_FORM, {
     notifyOnNetworkStatusChange: true,
   });
   const [answerFeedback] = useMutation(ANSWER_FEEDBACK_FORM);
-  const modalDisclosure = useDisclosure(!!user?.admin);
+  const modalDisclosure = useDisclosure(false);
   const config = useContext(ConfigContext);
   const { register, handleSubmit, errors, watch } = useForm();
 

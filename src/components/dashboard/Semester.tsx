@@ -53,8 +53,8 @@ export const Semester: FC<
       >
         <b>{toRoman(n, true)}</b>
       </Text>
-      {semester.map((course, key) => (
-        <CourseBox key={key} {...course} />
+      {semester.map((course) => (
+        <CourseBox key={course.code} {...course} />
       ))}
     </Stack>
   );
