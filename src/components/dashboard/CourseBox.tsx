@@ -3,7 +3,14 @@ import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
 import { some, truncate } from "lodash";
 import dynamic from "next/dynamic";
-import React, { FC, memo, useContext, useMemo } from "react";
+import React, {
+  FC,
+  memo,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   Badge,
@@ -32,9 +39,9 @@ import {
 import { track } from "../../context/Tracking";
 import { Theme, ThemeStore } from "../../utils/useTheme";
 import { useUser } from "../../utils/useUser";
+import { PredictState } from "../foreplan/courseBox/PredictState";
 import styles from "./CourseBox.module.css";
 import { Histogram } from "./Histogram";
-import { PredictState } from "../foreplan/courseBox/PredictState";
 
 const ForeplanCourseCheckbox = dynamic(() =>
   import("../foreplan/courseBox/Checkbox")
@@ -66,18 +73,31 @@ const useIsCourseFuturePlanificationFulfilled = ({
     [state, code]
   );
   const isDirectTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake(code);
+  const isPredictedDirectTake = ForeplanActiveStore.hooks.useIsDirectTakePredicted(
+    code
+  );
   const isFutureCourseRequisitesFulfilled = ForeplanActiveStore.hooks.useForeplanIsFutureCourseRequisitesFulfilled(
     code
   );
 
-  return (
-    (user?.config.FOREPLAN_FUTURE_COURSE_PLANIFICATION ?? false) &&
-    ((isForeplanActive && isDirectTake && isPossibleToTakeForeplan) ||
-      (isForeplanActive &&
-        isPossibleToTakeForeplan &&
-        !isDirectTake &&
-        isFutureCourseRequisitesFulfilled))
-  );
+  if (!user?.config.FOREPLAN_FUTURE_COURSE_PLANIFICATION) {
+    return false;
+  }
+
+  if (!isForeplanActive) {
+    return false;
+  }
+
+  if (isPossibleToTakeForeplan) {
+    if (isDirectTake || isPredictedDirectTake) {
+      return true;
+    }
+    if (isFutureCourseRequisitesFulfilled) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 const OuterCourseBox: FC<
@@ -314,7 +334,9 @@ const SecondaryBlockOuter: FC<
 
   return (
     <Flex
-      w="40px"
+      width="100px"
+      maxW="32px"
+      overflow="visible"
       h="100%"
       bg={stateColor}
       direction="column"
@@ -477,21 +499,21 @@ const HistoricalCircle: FC<{
     switch (tooltipType) {
       case "info": {
         return {
-          className: "info_popover",
+          className: "info_popover popover",
           background: "#3182CE",
           color: "white",
         };
       }
       case "error": {
         return {
-          className: "error_popover",
+          className: "error_popover popover",
           background: "#E53E3E",
           color: "white",
         };
       }
       default:
         return {
-          className: "white_popover",
+          className: "white_popover popover",
         };
     }
   }, [tooltipType]);
@@ -520,7 +542,12 @@ const HistoricalCircle: FC<{
         </Box>
       </PopoverTrigger>
 
-      <PopoverContent width="fit-content" {...tooltipProps} zIndex={1000}>
+      <PopoverContent
+        width="fit-content"
+        {...tooltipProps}
+        pos="absolute"
+        zIndex={1000}
+      >
         <PopoverHeader fontWeight="bold">{tooltipLabel}</PopoverHeader>
       </PopoverContent>
     </Popover>
@@ -532,7 +559,7 @@ const HistoricalCirclesComponent: FC<Pick<ICourse, "taken">> = memo(
     const config = useContext(ConfigContext);
 
     return (
-      <Stack spacing={0.7}>
+      <Stack spacing={0.7} alignItems="center">
         {taken.slice(1).map(({ state, grade }, key) => {
           let color: string;
           let tooltipType: "error" | "info" | "light";
@@ -750,15 +777,12 @@ export const CourseBox: FC<ICourse> = ({
     if (
       !isForeplanActive ||
       !user?.config.FOREPLAN_PREDICT_CURRENT_COURSE ||
-      taken[0]?.state !== StateCourse.Current
+      (taken[0]?.state !== StateCourse.Current &&
+        taken[0]?.state !== StateCourse.Pending)
     ) {
       return false;
     }
 
-    ForeplanActiveStore.actions.setCoursePrediction(
-      { code, requisites },
-      StateCourse.Current
-    );
     return true;
   }, [isForeplanActive, code, requisites, taken, user]);
 
@@ -830,11 +854,12 @@ export const CourseBox: FC<ICourse> = ({
         grade={grade}
         state={state}
       >
-        {/*TODO: CONSTANT WIDTH SECONDARY BLOCK*/}
         {grade !== undefined && <GradeComponent grade={grade} state={state} />}
 
         {taken.length > 1 && <HistoricalCirclesComponent taken={taken} />}
-        {shouldPredictCourseState && <PredictState course={code} />}
+        {shouldPredictCourseState && (
+          <PredictState code={code} requisites={requisites} />
+        )}
         <AnimatePresence>
           {isPossibleToTakeForeplan && user?.config.FOREPLAN && (
             <ForeplanCourseCheckbox

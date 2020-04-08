@@ -208,7 +208,7 @@ const Dashboard: FC = () => {
   const isPersistenceLoading = useIsPersistenceLoading();
 
   useEffect(() => {
-    if (!mock || !mockData) return;
+    if (!mock || !mockData || isPersistenceLoading) return;
 
     ForeplanHelperStore.actions.setForeplanAdvices(
       mockData.default.performanceByLoad ?? []
@@ -255,33 +255,36 @@ const Dashboard: FC = () => {
         return acum;
       }, [])
     );
-    ForeplanActiveStore.actions.setNewFutureCourseRequisites(
-      allCoursesOfProgram.reduce<
-        {
-          course: string;
-          requisitesUnmet: string[];
-        }[]
-      >((acum, { code, requisites }) => {
-        if (
-          requisites.some((requisiteCourseCode) => {
-            return !allApprovedCourses[requisiteCourseCode];
-          })
-        ) {
-          acum.push({
-            course: code,
-            requisitesUnmet: requisites.reduce<string[]>(
-              (acum, requisiteCourseCode) => {
-                if (!allApprovedCourses[requisiteCourseCode]) {
-                  acum.push(requisiteCourseCode);
-                }
-                return acum;
-              },
-              []
-            ),
-          });
-        }
-        return acum;
-      }, [])
+
+    const requisitesUnmetObj = allCoursesOfProgram.reduce<
+      {
+        course: string;
+        requisitesUnmet: string[];
+      }[]
+    >((acum, { code, requisites }) => {
+      if (
+        requisites.some((requisiteCourseCode) => {
+          return !allApprovedCourses[requisiteCourseCode];
+        })
+      ) {
+        acum.push({
+          course: code,
+          requisitesUnmet: requisites.reduce<string[]>(
+            (acum, requisiteCourseCode) => {
+              if (!allApprovedCourses[requisiteCourseCode]) {
+                acum.push(requisiteCourseCode);
+              }
+              return acum;
+            },
+            []
+          ),
+        });
+      }
+      return acum;
+    }, []);
+
+    ForeplanHelperStore.actions.setIndirectTakeCoursesRequisites(
+      requisitesUnmetObj
     );
 
     const allCodes = flatMapDeep(
@@ -313,7 +316,7 @@ const Dashboard: FC = () => {
         );
       }
     }
-  }, [mock, mockData, user]);
+  }, [mock, mockData, user, isPersistenceLoading]);
 
   useEffect(() => {
     if (mock) return;
@@ -339,15 +342,17 @@ const Dashboard: FC = () => {
     if (mock) return;
 
     if (!isPersistenceLoading && dataIndirectTakeCourses?.indirectTakeCourses) {
-      ForeplanActiveStore.actions.setNewFutureCourseRequisites(
-        dataIndirectTakeCourses.indirectTakeCourses.map(
-          ({ course: { code }, requisitesUnmet }) => {
-            return {
-              course: code,
-              requisitesUnmet,
-            };
-          }
-        )
+      const indirectTakesCoursesList = dataIndirectTakeCourses.indirectTakeCourses.map(
+        ({ course: { code }, requisitesUnmet }) => {
+          return {
+            course: code,
+            requisitesUnmet,
+          };
+        }
+      );
+
+      ForeplanHelperStore.actions.setIndirectTakeCoursesRequisites(
+        indirectTakesCoursesList
       );
     }
   }, [mock, dataIndirectTakeCourses, isPersistenceLoading]);

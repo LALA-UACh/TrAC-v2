@@ -62,3 +62,7 @@ form div[type="radio"] {
 .feedbackOptResult.chosen {
   color: blue;
 }
+
+.popover {
+  position: absolute !important;
+}

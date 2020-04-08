@@ -1,6 +1,6 @@
-import { assign, every, reduce, size } from "lodash";
+import { assign, every, reduce, size, set } from "lodash";
 import { FC, memo, useEffect, useState } from "react";
-import { createStore } from "react-state-selector";
+import { createStore, createSelector } from "react-state-selector";
 import { useDebounce } from "react-use";
 
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -26,6 +26,9 @@ interface IForeplanHelperData {
   courseFailRate: Record<string, number>;
   courseEffort: Record<string, number>;
   advices: PerformanceByLoad[];
+  indirectTakeCourses: {
+    [indirectTakeCourse: string]: string[];
+  };
 }
 
 const defaultForeplanHelperStore: IForeplanHelperData = Object.freeze({
@@ -33,6 +36,7 @@ const defaultForeplanHelperStore: IForeplanHelperData = Object.freeze({
   courseFailRate: emptyObject,
   courseEffort: emptyObject,
   advices: emptyArray,
+  indirectTakeCourses: emptyObject,
 });
 
 export const ForeplanHelperStore = createStore(defaultForeplanHelperStore, {
@@ -99,6 +103,16 @@ export const ForeplanHelperStore = createStore(defaultForeplanHelperStore, {
     ) => {
       draft.advices = advices;
     },
+    setIndirectTakeCoursesRequisites: (
+      indirectTakeCourses: { course: string; requisitesUnmet: string[] }[]
+    ) => (draft) => {
+      draft.indirectTakeCourses = indirectTakeCourses.reduce<
+        IForeplanHelperData["indirectTakeCourses"]
+      >((acum, { course, requisitesUnmet }) => {
+        acum[course] = requisitesUnmet;
+        return acum;
+      }, {});
+    },
   },
 });
 
@@ -109,16 +123,12 @@ export interface IForeplanActiveData {
   foreplanCourses: Record<string, Pick<ICourse, "name"> & ICreditsNumber>;
   currentCoursesPrediction: Record<string, StateCourse | undefined>;
   totalCreditsTaken: number;
-  futureCourseRequisites: {
-    [coursesToOpen: string]: { [requisite: string]: boolean | undefined };
-  };
 }
 
 const defaultForeplanActiveData: IForeplanActiveData = Object.freeze({
   active: false,
   foreplanCourses: emptyObject,
   totalCreditsTaken: 0,
-  futureCourseRequisites: emptyObject,
   currentCoursesPrediction: emptyObject,
 });
 
@@ -156,44 +166,11 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
         0
       );
     },
-    setNewFutureCourseRequisites: (
-      indirectTakeCourses: { course: string; requisitesUnmet: string[] }[]
-    ) => (draft) => {
-      draft.futureCourseRequisites = indirectTakeCourses.reduce<
-        IForeplanActiveData["futureCourseRequisites"]
-      >((acum, { course, requisitesUnmet }) => {
-        acum[course] = requisitesUnmet.reduce<
-          IForeplanActiveData["futureCourseRequisites"][string]
-        >((reqAcum, reqCode) => {
-          reqAcum[reqCode] = false;
-          return reqAcum;
-        }, {});
-        return acum;
-      }, {});
-    },
-    setFutureCourseRequisitesState: (
-      courseToSetState: string,
-      state: boolean
-    ) => (draft) => {
-      for (const courseToOpen in draft.futureCourseRequisites) {
-        if (
-          draft.futureCourseRequisites[courseToOpen]?.[courseToSetState] !==
-          undefined
-        ) {
-          draft.futureCourseRequisites[courseToOpen][courseToSetState] = state;
-        }
-      }
-    },
     setCoursePrediction: (
-      { code: course, requisites }: Pick<ICourse, "code" | "requisites">,
+      { code }: Pick<ICourse, "code">,
       state: StateCourse
     ) => (draft) => {
-      if (state === StateCourse.Passed) {
-        for (const courseToOpen of requisites) {
-          draft.futureCourseRequisites[courseToOpen][course] = true;
-        }
-      }
-      draft.currentCoursesPrediction[course] = state;
+      draft.currentCoursesPrediction[code] = state;
     },
     reset: (data: IForeplanActiveData = defaultForeplanActiveData) => (draft) =>
       assign(draft, data),
@@ -234,14 +211,39 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
       }
       return false;
     },
+    usePredictionState: ({ currentCoursesPrediction }, course: string) => {
+      return currentCoursesPrediction[course];
+    },
     useForeplanIsFutureCourseRequisitesFulfilled: (
-      { futureCourseRequisites },
+      { foreplanCourses, currentCoursesPrediction },
       code: string
     ) => {
-      return (
-        !!futureCourseRequisites[code] && every(futureCourseRequisites[code])
-      );
+      const indirectTakeCourseRequisites = ForeplanHelperStore.produce()
+        .indirectTakeCourses[code];
+      if (!indirectTakeCourseRequisites) return false;
+
+      return indirectTakeCourseRequisites.every((requisiteUnmet) => {
+        return (
+          requisiteUnmet in foreplanCourses ||
+          currentCoursesPrediction[requisiteUnmet] === StateCourse.Passed
+        );
+      });
     },
+    useIsDirectTakePredicted: createSelector(
+      ({ currentCoursesPrediction }: IForeplanActiveData, _code: string) =>
+        currentCoursesPrediction,
+      (_, code) => code,
+      (currentCoursesPrediction, code: string) => {
+        const requisitesUnmet = ForeplanHelperStore.produce()
+          .indirectTakeCourses[code];
+        if (!requisitesUnmet) return false;
+
+        return requisitesUnmet.every((requisiteUnmet) => {
+          const prediction = currentCoursesPrediction[requisiteUnmet];
+          return prediction === StateCourse.Passed;
+        });
+      }
+    ),
   },
 });
 

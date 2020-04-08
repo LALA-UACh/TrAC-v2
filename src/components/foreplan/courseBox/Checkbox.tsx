@@ -140,11 +140,7 @@ const useWarningModal = ({
   };
 };
 
-const {
-  addCourseForeplan,
-  removeCourseForeplan,
-  setFutureCourseRequisitesState,
-} = ForeplanActiveStore.actions;
+const { addCourseForeplan, removeCourseForeplan } = ForeplanActiveStore.actions;
 
 const ForeplanCourseCheckbox: FC<Pick<
   ICourse,
@@ -152,10 +148,13 @@ const ForeplanCourseCheckbox: FC<Pick<
 >> = memo(({ code, credits, name }) => {
   const checked = ForeplanActiveStore.hooks.useIsForeplanCourseChecked(code);
   const isDirectTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake(code);
+  const isPredictedDirectTake = ForeplanActiveStore.hooks.useIsDirectTakePredicted(
+    code
+  );
   const { onOpen, manuallyClosed, modalComponent } = useWarningModal({
     code,
     name,
-    isPossible: !isDirectTake,
+    isPossible: !(isDirectTake || isPredictedDirectTake),
   });
 
   return (
@@ -177,7 +176,6 @@ const ForeplanCourseCheckbox: FC<Pick<
             ev.preventDefault();
             ev.stopPropagation();
             if (checked) {
-              setFutureCourseRequisitesState(code, false);
               removeCourseForeplan(code);
               track({
                 action: "click",
@@ -185,10 +183,9 @@ const ForeplanCourseCheckbox: FC<Pick<
                 target: `foreplan_${code}_course_checkbox`,
               });
             } else {
-              if (!isDirectTake && !manuallyClosed) {
+              if (!(isDirectTake || isPredictedDirectTake) && !manuallyClosed) {
                 onOpen();
               }
-              setFutureCourseRequisitesState(code, true);
               addCourseForeplan(code, {
                 credits: credits?.[0]?.value ?? 0,
                 name,
@@ -202,8 +199,12 @@ const ForeplanCourseCheckbox: FC<Pick<
           }}
           className={classNames({
             [styles.checkboxInput]: true,
-            [isDirectTake ? styles.direct : styles.indirect]: true,
-            foreplanCourseCheckboxIndirect: !isDirectTake,
+            [isDirectTake || isPredictedDirectTake
+              ? styles.direct
+              : styles.indirect]: true,
+            foreplanCourseCheckboxIndirect: !(
+              isDirectTake || isPredictedDirectTake
+            ),
           })}
         />
       </motion.div>
