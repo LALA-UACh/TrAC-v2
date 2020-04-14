@@ -451,7 +451,7 @@ const ForeplanWaffleCharts: FC = memo(() => {
   const config = useContext(ConfigContext);
 
   return (
-    <Flex color="black" justifyContent="space-between">
+    <Flex color="black" justifyContent="space-between" overflowX="auto">
       {advices
         .filter(({ lowerBoundary, upperBoundary, isStudentCluster }) => {
           return advicesType === "byPerformance"

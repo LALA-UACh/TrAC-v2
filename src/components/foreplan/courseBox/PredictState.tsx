@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useMemo,
   useState,
-  useEffect,
   useRef,
   useContext,
 } from "react";
@@ -138,6 +137,7 @@ export const PredictState: FC<
       isOpen={isOpenPrediction}
       trigger="click"
       placement="right"
+      usePortal
     >
       <PopoverTrigger>{Trigger}</PopoverTrigger>
       <PopoverContent

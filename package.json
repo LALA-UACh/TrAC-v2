@@ -12,7 +12,7 @@
     "build-client": "next build",
     "clean": "rm -rf logs/*",
     "dev": "cross-env NODE_ENV=development run-p -l watch-*",
-    "graphql-codegen": "wait-on tcp:4000 && graphql-codegen",
+    "graphql-codegen": "wait-on tcp:4000 && graphql-codegen && prettier --check --write typings schema.gql",
     "postinstall": "patch-package",
     "prettier": "prettier --check --write api constants interfaces public src typings __tests__ .vscode *.js *.ts *.json",
     "start": "run-p start-client start-api",

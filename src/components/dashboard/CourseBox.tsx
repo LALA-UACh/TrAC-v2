@@ -3,14 +3,7 @@ import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
 import { some, truncate } from "lodash";
 import dynamic from "next/dynamic";
-import React, {
-  FC,
-  memo,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { FC, memo, useContext, useMemo } from "react";
 
 import {
   Badge,
@@ -520,7 +513,7 @@ const HistoricalCircle: FC<{
   }, [tooltipType]);
 
   return (
-    <Popover trigger="hover">
+    <Popover trigger="hover" usePortal placement="bottom">
       <PopoverTrigger>
         <Box
           m={0}
