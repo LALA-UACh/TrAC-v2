@@ -332,10 +332,10 @@ const Waffle: FC<{
   failRateLow: number;
   failRateMid: number;
   failRateHigh: number;
-  isStudentCluster?: boolean;
+  shouldHighlight?: boolean;
   label: string;
 }> = memo(
-  ({ failRateLow, failRateMid, failRateHigh, isStudentCluster, label }) => {
+  ({ failRateLow, failRateMid, failRateHigh, shouldHighlight, label }) => {
     const config = useContext(ConfigContext);
 
     const colors = config.FOREPLAN_SUMMARY_WAFFLE_COLORS_FAIL_RATE;
@@ -352,8 +352,8 @@ const Waffle: FC<{
         <Flex
           padding={config.FOREPLAN_SUMMARY_WAFFLE_PADDING}
           border={
-            isStudentCluster
-              ? `${config.FOREPLAN_SUMMARY_WAFFLE_IS_STUDENT_CLUSTER_BORDER} !important`
+            shouldHighlight
+              ? `${config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_BORDER} !important`
               : undefined
           }
           borderColor="white !important"
@@ -361,8 +361,8 @@ const Waffle: FC<{
           marginBottom={0}
           margin={0}
           borderWidth={
-            isStudentCluster
-              ? config.FOREPLAN_SUMMARY_WAFFLE_IS_STUDENT_CLUSTER_BORDER_WIDTH
+            shouldHighlight
+              ? config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_BORDER_WIDTH
               : undefined
           }
           direction="column"
@@ -420,18 +420,20 @@ const Waffle: FC<{
         >
           {label}
         </Text>
-        {isStudentCluster && (
+        {shouldHighlight && (
           <Text
             textAlign="center"
-            color={
-              config.FOREPLAN_SUMMARY_WAFFLE_IS_STUDENT_CLUSTER_LABEL_COLOR
-            }
+            color={config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_LABEL_COLOR}
             m={0}
           >
-            {config.FOREPLAN_SUMMARY_WAFFLE_IS_STUDENT_CLUSTER_LABEL}
+            {config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_LABEL}
           </Text>
         )}
-        <ReactTooltip id="waffle_tooltip" delayHide={300} />
+        <ReactTooltip
+          className="waffle_tooltip"
+          id="waffle_tooltip"
+          delayHide={300}
+        />
       </Stack>
     );
   }
@@ -441,18 +443,27 @@ const ForeplanWaffleCharts: FC = memo(() => {
   const advices = ForeplanHelperStore.hooks.useForeplanAdvices();
   const totalCreditsTaken = ForeplanActiveStore.hooks.useForeplanTotalCreditsTaken();
 
+  const { user } = useUser();
+
+  const advicesType = user?.config.FOREPLAN_ADVICES_COMPARE_BY_PERFORMANCE
+    ? "byPerformance"
+    : "byLoad";
+  const config = useContext(ConfigContext);
+
   return (
     <Flex color="black" justifyContent="space-between">
       {advices
-        .filter(({ lowerBoundary, upperBoundary }) => {
-          return (
-            totalCreditsTaken >= lowerBoundary &&
-            totalCreditsTaken <= upperBoundary
-          );
+        .filter(({ lowerBoundary, upperBoundary, isStudentCluster }) => {
+          return advicesType === "byPerformance"
+            ? totalCreditsTaken >= lowerBoundary &&
+                totalCreditsTaken <= upperBoundary
+            : isStudentCluster;
         })
         .map(
           (
             {
+              upperBoundary,
+              lowerBoundary,
               failRateLow,
               failRateMid,
               failRateHigh,
@@ -467,8 +478,24 @@ const ForeplanWaffleCharts: FC = memo(() => {
                 failRateLow={failRateLow ?? 33}
                 failRateMid={failRateMid ?? 66}
                 failRateHigh={failRateHigh ?? 100}
-                isStudentCluster={isStudentCluster}
-                label={clusterLabel}
+                shouldHighlight={
+                  advicesType === "byPerformance"
+                    ? isStudentCluster
+                    : totalCreditsTaken >= lowerBoundary &&
+                      totalCreditsTaken <= upperBoundary
+                }
+                label={
+                  advicesType === "byPerformance"
+                    ? clusterLabel
+                    : `${lowerBoundary} <= ${
+                        config.FOREPLAN_SUMMARY_WAFFLE_LABEL_PERFORMANCE_BY_LOAD
+                      } <= ${
+                        upperBoundary <=
+                        config.FOREPLAN_SUMMARY_WAFFLE_LABEL_UPPER_BOUNDARY
+                          ? upperBoundary
+                          : config.FOREPLAN_SUMMARY_WAFFLE_LABEL_UPPER_BOUNDARY_TEXT
+                      }`
+                }
               />
             );
           }

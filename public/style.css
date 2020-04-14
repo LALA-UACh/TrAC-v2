@@ -80,3 +80,7 @@ form div[type="radio"] {
 .predictionStateRow:hover {
   box-shadow: 0px 0px 0px 1px black;
 }
+
+.waffle_tooltip {
+  padding: 5px !important;
+}

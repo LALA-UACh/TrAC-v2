@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext } from "react";
+import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { Button } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
@@ -26,10 +26,20 @@ export const Help: FC = () => {
     true
   );
 
-  const [isPopoverOpen, setPopoverOpen] = useRememberState(
-    "TrAC_help_popover",
-    true
-  );
+  const [isPopoverOpen, setPopoverOpen] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      try {
+        const firstMountHelpKey = "TrAC_help_popover";
+        const receivedFirstMountHelp = localStorage.getItem(firstMountHelpKey);
+        if (!receivedFirstMountHelp) {
+          setPopoverOpen(true);
+          localStorage.setItem(firstMountHelpKey, "1");
+        }
+      } catch (err) {}
+    }, 3000);
+  }, []);
 
   const config = useContext(ConfigContext);
 
