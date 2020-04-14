@@ -66,3 +66,17 @@ form div[type="radio"] {
 .popover {
   position: absolute !important;
 }
+
+.predictionStateRow {
+  width: fit-content;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  border-radius: 5px;
+  transition: all 1s;
+}
+
+.predictionStateRow:hover {
+  box-shadow: 0px 0px 0px 1px black;
+}

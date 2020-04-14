@@ -31,6 +31,7 @@ import { ConfigContext } from "../../context/Config";
 import {
   CoursesDashboardStore,
   pairTermYear,
+  toggleOpenCourse,
 } from "../../context/CoursesDashboard";
 import {
   ForeplanActiveStore,
@@ -225,7 +226,7 @@ const MainBlockOuter: FC<
       borderRadius="5px 0px 0x 5px"
       bg={config.COURSE_BOX_BACKGROUND_COLOR}
       onClick={() => {
-        CoursesDashboardStore.actions.toggleOpenCourse(code);
+        toggleOpenCourse(code);
 
         if (!isOpen) {
           CoursesDashboardStore.actions.addCourse({
@@ -554,46 +555,58 @@ const HistoricalCircle: FC<{
   );
 };
 
-const HistoricalCirclesComponent: FC<Pick<ICourse, "taken">> = memo(
-  ({ taken }) => {
-    const config = useContext(ConfigContext);
+const HistoricalCirclesComponent: FC<
+  Pick<ICourse, "taken"> & { isOpen: boolean }
+> = memo(({ taken, isOpen }) => {
+  const config = useContext(ConfigContext);
+  const isForeplanActive = ForeplanActiveStore.hooks.useIsForeplanActive();
 
-    return (
-      <Stack spacing={0.7} alignItems="center">
-        {taken.slice(1).map(({ state, grade }, key) => {
-          let color: string;
-          let tooltipType: "error" | "info" | "light";
-          let tooltipLabel: number | string | undefined = grade;
-          switch (state) {
-            case StateCourse.Failed:
-              tooltipType = "error";
-              color = (failColorScale(grade || 0) as unknown) as string;
-              break;
-            case StateCourse.Current:
-              tooltipType = "info";
-              color = config.STATE_COURSE_CURRENT_COLOR;
-              break;
-            case StateCourse.Canceled:
-              tooltipLabel = config.CANCELED_HISTORIC_TOOLTIP_LABEL;
-              tooltipType = "light";
-              color = config.STATE_COURSE_CANCELED_COLOR;
-              break;
-            default:
-              return null;
-          }
-          return (
-            <HistoricalCircle
-              key={key}
-              color={color}
-              tooltipLabel={tooltipLabel}
-              tooltipType={tooltipType}
-            />
-          );
-        })}
-      </Stack>
-    );
-  }
-);
+  const StateHistoryArray = useMemo(() => {
+    if (
+      !isOpen &&
+      isForeplanActive &&
+      taken[0]?.state === StateCourse.Current
+    ) {
+      return taken.slice(1, 2);
+    }
+    return taken.slice(1);
+  }, [isOpen, isForeplanActive, taken]);
+
+  return (
+    <Stack spacing={0.7} alignItems="center">
+      {StateHistoryArray.map(({ state, grade }, key) => {
+        let color: string;
+        let tooltipType: "error" | "info" | "light";
+        let tooltipLabel: number | string | undefined = grade;
+        switch (state) {
+          case StateCourse.Failed:
+            tooltipType = "error";
+            color = (failColorScale(grade || 0) as unknown) as string;
+            break;
+          case StateCourse.Current:
+            tooltipType = "info";
+            color = config.STATE_COURSE_CURRENT_COLOR;
+            break;
+          case StateCourse.Canceled:
+            tooltipLabel = config.CANCELED_HISTORIC_TOOLTIP_LABEL;
+            tooltipType = "light";
+            color = config.STATE_COURSE_CANCELED_COLOR;
+            break;
+          default:
+            return null;
+        }
+        return (
+          <HistoricalCircle
+            key={key}
+            color={color}
+            tooltipLabel={tooltipLabel}
+            tooltipType={tooltipType}
+          />
+        );
+      })}
+    </Stack>
+  );
+});
 
 const currentDistributionLabel = ({
   term,
@@ -856,9 +869,11 @@ export const CourseBox: FC<ICourse> = ({
       >
         {grade !== undefined && <GradeComponent grade={grade} state={state} />}
 
-        {taken.length > 1 && <HistoricalCirclesComponent taken={taken} />}
+        {taken.length > 1 && (
+          <HistoricalCirclesComponent taken={taken} isOpen={isOpen} />
+        )}
         {shouldPredictCourseState && (
-          <PredictState code={code} requisites={requisites} />
+          <PredictState code={code} isCourseOpen={isOpen} />
         )}
         <AnimatePresence>
           {isPossibleToTakeForeplan && user?.config.FOREPLAN && (

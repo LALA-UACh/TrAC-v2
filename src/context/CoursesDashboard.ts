@@ -1,4 +1,4 @@
-import { assign, isEqual, uniq, uniqWith } from "lodash";
+import { assign, isEqual, uniq, uniqWith, throttle } from "lodash";
 import { FC, memo, useEffect, useState } from "react";
 import { createStore } from "react-state-selector";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
@@ -70,6 +70,17 @@ const defaultCourseDashboardData: ICoursesDashboardData = Object.freeze({
   requisites: emptyObject,
   explicitSemester: undefined,
 });
+
+export const toggleOpenCourse = throttle(
+  (code: string) => {
+    CoursesDashboardStore.actions.toggleOpenCourse(code);
+  },
+  300,
+  {
+    leading: true,
+    trailing: false,
+  }
+);
 
 export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
   devName: "CoursesDashboard",
@@ -182,6 +193,9 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
     },
     useDashboardIsCourseOpen: ({ coursesOpen }, code: string) => {
       return !!coursesOpen[code];
+    },
+    useDashboardCoursesOpen: ({ coursesOpen }) => {
+      return coursesOpen;
     },
   },
 });
