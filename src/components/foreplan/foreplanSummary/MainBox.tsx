@@ -333,9 +333,17 @@ const Waffle: FC<{
   failRateMid: number;
   failRateHigh: number;
   shouldHighlight?: boolean;
+  highlightLabel: string;
   label: string;
 }> = memo(
-  ({ failRateLow, failRateMid, failRateHigh, shouldHighlight, label }) => {
+  ({
+    failRateLow,
+    failRateMid,
+    failRateHigh,
+    shouldHighlight,
+    label,
+    highlightLabel,
+  }) => {
     const config = useContext(ConfigContext);
 
     const colors = config.FOREPLAN_SUMMARY_WAFFLE_COLORS_FAIL_RATE;
@@ -426,7 +434,7 @@ const Waffle: FC<{
             color={config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_LABEL_COLOR}
             m={0}
           >
-            {config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_LABEL}
+            {highlightLabel}
           </Text>
         )}
         <ReactTooltip
@@ -484,11 +492,16 @@ const ForeplanWaffleCharts: FC = memo(() => {
                     : totalCreditsTaken >= lowerBoundary &&
                       totalCreditsTaken <= upperBoundary
                 }
+                highlightLabel={
+                  advicesType === "byPerformance"
+                    ? config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_BY_PERFORMANCE_LABEL
+                    : config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_BY_LOAD_LABEL
+                }
                 label={
                   advicesType === "byPerformance"
                     ? clusterLabel
                     : `${lowerBoundary} <= ${
-                        config.FOREPLAN_SUMMARY_WAFFLE_LABEL_PERFORMANCE_BY_LOAD
+                        config.FOREPLAN_SUMMARY_WAFFLE_LABEL_BY_LOAD
                       } <= ${
                         upperBoundary <=
                         config.FOREPLAN_SUMMARY_WAFFLE_LABEL_UPPER_BOUNDARY
