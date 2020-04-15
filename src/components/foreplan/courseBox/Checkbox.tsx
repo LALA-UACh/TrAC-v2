@@ -69,6 +69,7 @@ const useWarningModal = ({
         }}
         size="xl"
         preserveScrollBarGap
+        blockScrollOnMount
       >
         <ModalOverlay />
         <ModalContent>

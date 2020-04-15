@@ -87,6 +87,7 @@ export const Help: FC = () => {
         size="90vw"
         preserveScrollBarGap
         scrollBehavior="inside"
+        blockScrollOnMount
       >
         <ModalOverlay />
 

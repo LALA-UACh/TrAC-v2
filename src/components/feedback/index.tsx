@@ -61,7 +61,12 @@ export const Feedback: FC<{
     <>
       {Children && <Children {...modalDisclosure} />}
 
-      <Modal {...modalDisclosure} preserveScrollBarGap>
+      <Modal
+        {...modalDisclosure}
+        preserveScrollBarGap
+        scrollBehavior="inside"
+        blockScrollOnMount
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{name}</ModalHeader>

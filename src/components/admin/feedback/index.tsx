@@ -116,6 +116,9 @@ const ResultsModal: FC = memo(() => {
         onClose={disclosure.onClose}
         isOpen={disclosure.isOpen}
         size="fit-content"
+        blockScrollOnMount
+        preserveScrollBarGap
+        scrollBehavior="inside"
       >
         <ModalOverlay width="100%" height="100%" />
         <ModalContent>
