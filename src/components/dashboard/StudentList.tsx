@@ -102,7 +102,7 @@ const TableHeader: FC<{
 const nStudentPerChunk = 25;
 
 const initialOpen = (() => {
-  if (NODE_ENV === "development" && typeof localStorage !== undefined) {
+  if (NODE_ENV === "development" && typeof window !== "undefined") {
     return !!localStorage.getItem("student_list_open");
   }
 
