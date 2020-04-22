@@ -1,13 +1,13 @@
 import { chunk, some, sortBy, toInteger, truncate, uniq } from "lodash";
 import React, {
   FC,
+  memo,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
-  memo,
-  useCallback,
 } from "react";
 import { FaListOl } from "react-icons/fa";
 import ReactTooltip from "react-tooltip";
@@ -26,10 +26,15 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Icon,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Spinner,
+  Stack,
   Text,
   useDisclosure,
-  Stack,
 } from "@chakra-ui/core";
 
 import { NODE_ENV } from "../../../constants";
@@ -37,13 +42,6 @@ import { ConfigContext } from "../../context/Config";
 import { track } from "../../context/Tracking";
 import { STUDENT_LIST } from "../../graphql/queries";
 import { useUser } from "../../utils/useUser";
-
-type columnNames =
-  | "student_id"
-  | "dropout_probability"
-  | "start_year"
-  | "explanation"
-  | "progress";
 
 const TableHeader: FC<{
   columnSort: columnNames[];
@@ -104,14 +102,22 @@ const TableHeader: FC<{
 const nStudentPerChunk = 25;
 
 const initialOpen = (() => {
-  if (NODE_ENV === "development") {
+  if (NODE_ENV === "development" && typeof localStorage !== undefined) {
     return !!localStorage.getItem("student_list_open");
   }
 
   return false;
 })();
 
-export type StudentListInfo = { [key in columnNames]: string | number };
+export type columnNames = keyof StudentListInfo;
+
+export type StudentListInfo = {
+  student_id: string;
+  dropout_probability: number;
+  start_year: number;
+  explanation: string;
+  progress: number;
+};
 
 export const StudentList: FC<{
   mockData?: StudentListInfo[];
@@ -128,7 +134,7 @@ export const StudentList: FC<{
     }
   );
 
-  const studentListData = useMemo<StudentListInfo[]>(() => {
+  const studentListData = useMemo(() => {
     return (
       mockData ||
       (dataStudentList?.students.map(
@@ -284,7 +290,7 @@ export const StudentList: FC<{
       >
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerCloseButton />
+          <DrawerCloseButton background="white" />
           <DrawerHeader height={20} display="flex" alignItems="center">
             {STUDENT_LIST_TITLE} {loadingData && <Spinner ml={3} />}
           </DrawerHeader>
@@ -366,15 +372,48 @@ export const StudentList: FC<{
                           </Table.Cell>
                           {showDropout && (
                             <Table.Cell>
-                              <Text
-                                color={
-                                  dropout_probability !== -1 ? color : undefined
-                                }
+                              <Stack
+                                isInline
+                                shouldWrapChildren
+                                alignItems="center"
                               >
-                                {dropout_probability !== -1
-                                  ? `${toInteger(dropout_probability)}%`
-                                  : "-"}
-                              </Text>
+                                <Text
+                                  margin={0}
+                                  textShadow="0.5px 0.5px 0px #a1a1a1"
+                                  color={
+                                    dropout_probability !== -1
+                                      ? color
+                                      : undefined
+                                  }
+                                  fontWeight="bold"
+                                >
+                                  {dropout_probability !== -1
+                                    ? `${toInteger(dropout_probability)}`
+                                    : "-"}
+                                </Text>
+                                {explanation ? (
+                                  <Popover trigger="hover">
+                                    <PopoverTrigger>
+                                      <Icon
+                                        display="flex"
+                                        name="info-outline"
+                                        size="13px"
+                                        cursor="help"
+                                      />
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                      width="fit-content"
+                                      zIndex={100}
+                                      padding="5px"
+                                    >
+                                      <PopoverArrow />
+                                      <PopoverBody>
+                                        <Text>{explanation}</Text>
+                                      </PopoverBody>
+                                    </PopoverContent>
+                                  </Popover>
+                                ) : null}
+                              </Stack>
                             </Table.Cell>
                           )}
                         </Table.Row>
