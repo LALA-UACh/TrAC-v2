@@ -53,8 +53,9 @@ type DistributionValue {
 
 type Dropout {
   active: Boolean!
-  model_accuracy: Float!
-  prob_dropout: Float!
+  explanation: String
+  model_accuracy: Float
+  prob_dropout: Float
 }
 
 """

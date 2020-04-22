@@ -228,8 +228,8 @@ export type IStudentData = IfImplements<
       }>;
     }>;
     dropout?: Maybe<{
-      prob_dropout?: number;
-      model_accuracy?: number;
+      prob_dropout?: Maybe<number>;
+      model_accuracy?: Maybe<number>;
       active: boolean;
     }>;
   },
@@ -334,7 +334,8 @@ export const STUDENT_LIST: DocumentNode<
         progress: number;
         start_year: number;
         dropout?: Maybe<{
-          prob_dropout?: number;
+          prob_dropout?: Maybe<number>;
+          explanation?: Maybe<string>;
         }>;
       }[];
     },
@@ -349,6 +350,7 @@ export const STUDENT_LIST: DocumentNode<
       start_year
       dropout {
         prob_dropout
+        explanation
       }
     }
   }

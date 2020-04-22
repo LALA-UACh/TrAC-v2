@@ -65,9 +65,10 @@ export type DistributionValue = {
 
 export type Dropout = {
   __typename?: "Dropout";
-  prob_dropout: Scalars["Float"];
-  model_accuracy: Scalars["Float"];
+  prob_dropout?: Maybe<Scalars["Float"]>;
+  model_accuracy?: Maybe<Scalars["Float"]>;
   active: Scalars["Boolean"];
+  explanation?: Maybe<Scalars["String"]>;
 };
 
 export type FeedbackAnswer = {

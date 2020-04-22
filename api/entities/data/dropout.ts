@@ -2,12 +2,15 @@ import { Field, ObjectType } from "type-graphql";
 
 @ObjectType()
 export class Dropout {
-  @Field()
+  @Field({ nullable: true })
   prob_dropout?: number;
 
-  @Field()
+  @Field({ nullable: true })
   model_accuracy?: number;
 
   @Field()
   active: boolean;
+
+  @Field({ nullable: true })
+  explanation?: string;
 }

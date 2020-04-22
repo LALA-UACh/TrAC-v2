@@ -316,6 +316,7 @@ const dataImport = async () => {
         table.text("weight_per_semester");
         table.boolean("active").defaultTo(false).notNullable();
         table.float("model_accuracy", 4);
+        table.text("explanation");
       });
       await StudentDropoutTable().insert(
         (await import("./student_dropout.json")).default.map(

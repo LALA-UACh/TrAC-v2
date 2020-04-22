@@ -129,6 +129,7 @@ export interface IStudentDropout {
   weight_per_semester?: string;
   active: boolean;
   model_accuracy?: number;
+  explanation?: string;
 }
 
 export const STUDENT_DROPOUT_TABLE = "student_dropout";
