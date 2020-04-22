@@ -4,13 +4,15 @@
     "prob_dropout": 36.16,
     "weight_per_semester": 0.2,
     "active": true,
-    "model_accuracy": 0.82
+    "model_accuracy": 0.82,
+    "explanation": "se estima que el 36% de todos los estudiantes tienen más riesgo de abandono que el estudiante en análisis"
   },
   {
     "student_id": "e078c7de4d67798a915801ba7e2539fb",
     "prob_dropout": 60.56,
     "weight_per_semester": 0.2,
     "active": true,
-    "model_accuracy": 0.82
+    "model_accuracy": 0.82,
+    "explanation": "se estima que el 60% de todos los estudiantes tienen más riesgo de abandono que el estudiante en análisis"
   }
 ]

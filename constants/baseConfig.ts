@@ -211,7 +211,7 @@ export const baseConfig = {
   REQ_CIRCLE_LABEL: "Req",
   RISK_HIGH_COLOR: "rgb(255,0,0)",
   RISK_HIGH_THRESHOLD: 80,
-  RISK_LABEL: "Riesgo",
+  RISK_LABEL: "Percentil de riesgo",
   RISK_LOW_COLOR: "rgb(128,255,0)",
   RISK_MEDIUM_COLOR: "rgb(252,186,3)",
   RISK_MEDIUM_THRESHOLD: 50,

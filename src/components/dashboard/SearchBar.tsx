@@ -418,12 +418,16 @@ export const SearchBar: FC<{
             program_id={program?.value}
             mockData={
               mock
-                ? range(70).map(() => ({
-                    student_id: "mock_" + generate(),
-                    dropout_probability: Math.round(Math.random() * 100),
-                    start_year: 2005 + Math.round(Math.random() * 14),
-                    progress: Math.round(Math.random() * 100),
-                  }))
+                ? range(110).map(() => {
+                    const dropout_probability = Math.round(Math.random() * 100);
+                    return {
+                      student_id: "mock_" + generate(),
+                      dropout_probability,
+                      start_year: 2005 + Math.round(Math.random() * 14),
+                      progress: Math.round(Math.random() * 100),
+                      explanation: `se estima que el ${dropout_probability}% de todos los estudiantes tienen más riesgo de abandono que el estudiante en análisis`,
+                    };
+                  })
                 : undefined
             }
             searchStudent={async (student_id: string) => {
