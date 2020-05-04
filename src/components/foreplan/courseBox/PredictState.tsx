@@ -1,36 +1,38 @@
 import React, {
   FC,
   useCallback,
-  useMemo,
-  useState,
-  useRef,
   useContext,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 import {
   IoMdCheckmarkCircle,
   IoMdCloseCircle,
   IoMdHelpCircle,
 } from "react-icons/io";
+import { useDebounce, useUpdateEffect } from "react-use";
 
 import {
   Box,
   Flex,
   Popover,
+  PopoverArrow,
   PopoverBody,
   PopoverCloseButton,
   PopoverContent,
   PopoverTrigger,
   Stack,
   Text,
-  PopoverArrow,
 } from "@chakra-ui/core";
 
 import { StateCourse } from "../../../../constants";
 import { ICourse } from "../../../../interfaces";
-import { ForeplanActiveStore } from "../../../context/ForeplanContext";
-import { useUpdateEffect, useDebounce } from "react-use";
-import { CoursesDashboardStore } from "../../../context/CoursesDashboard";
 import { ConfigContext } from "../../../context/Config";
+import { CoursesDashboardStore } from "../../../context/CoursesDashboard";
+import { ForeplanActiveStore } from "../../../context/ForeplanContext";
+import { track } from "../../../context/Tracking";
+import { customColor } from "../../../utils/cssConstants";
 
 export const PredictState: FC<
   Pick<ICourse, "code"> & { isCourseOpen: boolean }
@@ -68,9 +70,18 @@ export const PredictState: FC<
     [CoursesOpen]
   );
 
-  const ApprovedColor = config.FOREPLAN_STATE_PREDICTION_APPROVED_COLOR;
-  const FailedColor = config.FOREPLAN_STATE_PREDICTION_FAILED_COLOR;
-  const PendingColor = config.FOREPLAN_STATE_PREDICTION_PENDING_COLOR;
+  const {
+    FOREPLAN_STATE_PREDICTION_APPROVED_COLOR,
+    FOREPLAN_STATE_PREDICTION_FAILED_COLOR,
+    FOREPLAN_STATE_PREDICTION_PENDING_COLOR,
+    FOREPLAN_STATE_PREDICTION_APPROVED_SYMBOL,
+    FOREPLAN_STATE_PREDICTION_FAILED_SYMBOL,
+    FOREPLAN_STATE_PREDICTION_UNKNOWN_SYMBOL,
+    FOREPLAN_STATE_PREDICTION_UNKNOWN_LABEL,
+    FOREPLAN_STATE_PREDICTION_LABEL_PRE,
+    FOREPLAN_STATE_PREDICTION_APPROVED_LABEL,
+    FOREPLAN_STATE_PREDICTION_FAILED_LABEL,
+  } = config;
 
   const Trigger = useMemo(() => {
     switch (predictionState) {
@@ -81,14 +92,14 @@ export const PredictState: FC<
             fontSize="2em"
             fontWeight="bold"
             margin={0}
-            background={ApprovedColor}
+            background={FOREPLAN_STATE_PREDICTION_APPROVED_COLOR}
             marginTop={1}
             paddingLeft={1}
             paddingRight={1}
             borderRadius="5px"
             border="1px solid black"
           >
-            A
+            {FOREPLAN_STATE_PREDICTION_APPROVED_SYMBOL}
           </Text>
         );
       }
@@ -99,14 +110,14 @@ export const PredictState: FC<
             fontSize="2em"
             fontWeight="bold"
             margin={0}
-            background={FailedColor}
+            background={FOREPLAN_STATE_PREDICTION_FAILED_COLOR}
             marginTop={1}
             paddingLeft={1}
             paddingRight={1}
             borderRadius="5px"
             border="1px solid black"
           >
-            R
+            {FOREPLAN_STATE_PREDICTION_FAILED_SYMBOL}
           </Text>
         );
       }
@@ -123,7 +134,7 @@ export const PredictState: FC<
             borderRadius="5px"
             border="1px solid black"
           >
-            ?
+            {FOREPLAN_STATE_PREDICTION_UNKNOWN_SYMBOL}
           </Text>
         );
       }
@@ -153,6 +164,12 @@ export const PredictState: FC<
             <Flex
               alignItems="center"
               onClick={() => {
+                track({
+                  action: "click",
+                  target: `predict-state-${code}`,
+                  effect: "set-unknown",
+                });
+                onClose();
                 ForeplanActiveStore.actions.setCoursePrediction(
                   { code },
                   StateCourse.Current
@@ -164,13 +181,19 @@ export const PredictState: FC<
                 as={IoMdHelpCircle}
                 size="1em"
                 marginRight={2}
-                color={`${PendingColor} !important`}
+                color={`${FOREPLAN_STATE_PREDICTION_PENDING_COLOR} !important`}
               />
-              <Text>no lo sé</Text>
+              <Text>{FOREPLAN_STATE_PREDICTION_UNKNOWN_LABEL}</Text>
             </Flex>
             <Flex
               alignItems="center"
               onClick={() => {
+                track({
+                  action: "click",
+                  target: `predict-state-${code}`,
+                  effect: "set-passed",
+                });
+                onClose();
                 ForeplanActiveStore.actions.setCoursePrediction(
                   { code },
                   StateCourse.Passed
@@ -182,16 +205,27 @@ export const PredictState: FC<
                 as={IoMdCheckmarkCircle}
                 size="1em"
                 marginRight={2}
-                color={`${ApprovedColor} !important`}
+                color={`${FOREPLAN_STATE_PREDICTION_APPROVED_COLOR} !important`}
               />
 
               <Text>
-                creo que <span style={{ color: ApprovedColor }}>aprobaré</span>
+                {FOREPLAN_STATE_PREDICTION_LABEL_PRE}{" "}
+                <span
+                  css={customColor(FOREPLAN_STATE_PREDICTION_APPROVED_COLOR)}
+                >
+                  {FOREPLAN_STATE_PREDICTION_APPROVED_LABEL}
+                </span>
               </Text>
             </Flex>
             <Flex
               alignItems="center"
               onClick={() => {
+                track({
+                  action: "click",
+                  target: `predict-state-${code}`,
+                  effect: "set-failed",
+                });
+                onClose();
                 ForeplanActiveStore.actions.setCoursePrediction(
                   { code },
                   StateCourse.Failed
@@ -203,10 +237,13 @@ export const PredictState: FC<
                 as={IoMdCloseCircle}
                 size="1em"
                 marginRight={2}
-                color={`${FailedColor} !important`}
+                color={`${FOREPLAN_STATE_PREDICTION_FAILED_COLOR} !important`}
               />
               <Text>
-                creo que <span style={{ color: FailedColor }}>reprobaré</span>
+                {FOREPLAN_STATE_PREDICTION_LABEL_PRE}{" "}
+                <span css={customColor(FOREPLAN_STATE_PREDICTION_FAILED_COLOR)}>
+                  {FOREPLAN_STATE_PREDICTION_FAILED_LABEL}
+                </span>
               </Text>
             </Flex>
           </Stack>

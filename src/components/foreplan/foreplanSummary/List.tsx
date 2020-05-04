@@ -13,6 +13,7 @@ import {
   ICreditsNumber,
 } from "../../../context/ForeplanContext";
 import { track } from "../../../context/Tracking";
+import { width100percent } from "../../../utils/cssConstants";
 
 const ForeplanContentRowListItem: FC<
   Pick<ICourse, "code" | "name"> & ICreditsNumber
@@ -94,7 +95,7 @@ const ForeplanContentRowList: FC = memo(() => {
               opacity: 0,
             }}
             key={course}
-            style={{ width: "100%" }}
+            css={width100percent}
           >
             <ForeplanContentRowListItem
               code={course}

@@ -13,6 +13,7 @@ import React, {
 } from "react";
 import pixelWidth from "string-pixel-width";
 
+import { css } from "@emotion/core";
 import { AxisLeft } from "@vx/axis";
 
 import { SVG_TEXT } from "../../../constants";
@@ -91,6 +92,10 @@ export const GradeScale = scaleLinear();
 
 export const YAxisScale = scaleLinear();
 
+const transitionCSS = css`
+  transition: "all 0.4s ease-in-out";
+`;
+
 export const TimeLine: FC<{
   cumulatedGrades: number[];
   semestralGrades: number[];
@@ -143,6 +148,7 @@ export const TimeLine: FC<{
                   cx={key * 70 + 70}
                   r={5}
                   fill={config.CUMULATED_GRADE_COLOR}
+                  css={transitionCSS}
                 />
               </TimeLineTooltip>
               <TimeLineTooltip grade={programGrades[key]}>
@@ -151,6 +157,7 @@ export const TimeLine: FC<{
                   cx={key * 70 + 70}
                   r={5}
                   fill={config.PROGRAM_GRADE_COLOR}
+                  css={transitionCSS}
                 />
               </TimeLineTooltip>
               <TimeLineTooltip grade={semestralGrades[key]}>
@@ -166,7 +173,7 @@ export const TimeLine: FC<{
                       ? config.TIMELINE_EXPLICIT_CIRCLE_COLOR
                       : config.SEMESTRAL_GRADE_COLOR
                   }
-                  style={{ transition: "all 0.4s ease-in-out" }}
+                  css={transitionCSS}
                 />
               </TimeLineTooltip>
             </g>
@@ -194,6 +201,7 @@ export const TimeLine: FC<{
                   y1={GradeScale(semestralGrades[key])}
                   x2={(key + 1) * 70 + 70}
                   y2={GradeScale(semestralGrades[key + 1])}
+                  css={transitionCSS}
                 />
               )}
               {cumulatedGrades[key + 1] !== undefined && (
@@ -203,6 +211,7 @@ export const TimeLine: FC<{
                   y1={GradeScale(cumulatedGrades[key])}
                   x2={(key + 1) * 70 + 70}
                   y2={GradeScale(cumulatedGrades[key + 1])}
+                  css={transitionCSS}
                 />
               )}
               {cumulatedGrades[key + 1] !== undefined &&
@@ -213,6 +222,7 @@ export const TimeLine: FC<{
                     y1={GradeScale(programGrades[key])}
                     x2={(key + 1) * 70 + 70}
                     y2={GradeScale(programGrades[key + 1])}
+                    css={transitionCSS}
                   />
                 )}
             </g>
@@ -230,6 +240,7 @@ export const TimeLine: FC<{
             fontSize="1em"
             fontWeight="bold"
             className={SVG_TEXT}
+            css={transitionCSS}
           >
             {config.GRADES_SCALES}
           </text>
@@ -256,6 +267,7 @@ export const TimeLine: FC<{
             x2={cumulatedGrades.length * 100 + 160}
             y2={40 + 130}
             stroke={config.TIMELINE_AXIS_COLOR}
+            css={transitionCSS}
           />
           <line
             x1={39}
@@ -264,19 +276,38 @@ export const TimeLine: FC<{
             y2={GradeScale(config.PASS_GRADE)}
             stroke={config.TIMELINE_PASS_LINE_COLOR}
             strokeDasharray="2"
+            css={transitionCSS}
           />
 
-          <circle cx={150} cy={12} r={5} fill={config.SEMESTRAL_GRADE_COLOR} />
+          <circle
+            cx={150}
+            cy={12}
+            r={5}
+            fill={config.SEMESTRAL_GRADE_COLOR}
+            css={transitionCSS}
+          />
 
-          <text x={160} y={20} className={SVG_TEXT}>
+          <text x={160} y={20} className={SVG_TEXT} css={transitionCSS}>
             {config.SEMESTRAL_GRADE_LABEL}
           </text>
-          <circle cx={250} cy={12} r={5} fill={config.CUMULATED_GRADE_COLOR} />
-          <text x={260} y={20} className={SVG_TEXT}>
+          <circle
+            cx={250}
+            cy={12}
+            r={5}
+            fill={config.CUMULATED_GRADE_COLOR}
+            css={transitionCSS}
+          />
+          <text x={260} y={20} className={SVG_TEXT} css={transitionCSS}>
             {config.CUMULATED_GRADE_LABEL}
           </text>
-          <circle cx={350} cy={12} r={5} fill={config.PROGRAM_GRADE_COLOR} />
-          <text x={360} y={20} className={SVG_TEXT}>
+          <circle
+            cx={350}
+            cy={12}
+            r={5}
+            fill={config.PROGRAM_GRADE_COLOR}
+            css={transitionCSS}
+          />
+          <text x={360} y={20} className={SVG_TEXT} css={transitionCSS}>
             {config.PROGRAM_GRADE_LABEL}
           </text>
         </>

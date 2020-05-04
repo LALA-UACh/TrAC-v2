@@ -10,7 +10,6 @@ import React, {
   useState,
 } from "react";
 import { FaListOl } from "react-icons/fa";
-import ReactTooltip from "react-tooltip";
 import { useUpdateEffect } from "react-use";
 import { Pagination, Progress, Table, TableCell } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
@@ -34,14 +33,29 @@ import {
   Spinner,
   Stack,
   Text,
+  Tooltip,
   useDisclosure,
 } from "@chakra-ui/core";
+import { css } from "@emotion/core";
 
 import { NODE_ENV } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import { track } from "../../context/Tracking";
 import { STUDENT_LIST } from "../../graphql/queries";
+import { marginZero, textAlignCenter } from "../../utils/cssConstants";
 import { useUser } from "../../utils/useUser";
+
+const progressTextShadow = css`
+  .progress {
+    text-shadow: 1px 0.5px 1px black !important;
+  }
+`;
+
+const progressSmallText = css`
+  .progress {
+    font-size: 10px !important;
+  }
+`;
 
 const TableHeader: FC<{
   columnSort: columnNames[];
@@ -61,21 +75,21 @@ const TableHeader: FC<{
       <Table.Row>
         <Table.HeaderCell width={2} />
         <Table.HeaderCell
-          width={5}
+          width={4}
           sorted={columnSort[0] === "student_id" ? directionSort : undefined}
           onClick={handleSort("student_id")}
         >
           {STUDENT_LABEL}
         </Table.HeaderCell>
         <Table.HeaderCell
-          width={3}
+          width={2}
           sorted={columnSort[0] === "start_year" ? directionSort : undefined}
           onClick={handleSort("start_year")}
         >
           {ENTRY_YEAR_LABEL}
         </Table.HeaderCell>
         <Table.HeaderCell
-          width={4}
+          width={5}
           sorted={columnSort[0] === "progress" ? directionSort : undefined}
           onClick={handleSort("progress")}
         >
@@ -298,7 +312,7 @@ export const StudentList: FC<{
           <DrawerBody>
             <Stack alignItems="center">
               <Pagination
-                style={{ textAlign: "center" }}
+                css={textAlignCenter}
                 totalPages={studentListChunks.length}
                 activePage={pageSelected}
                 onPageChange={(_, { activePage }) => {
@@ -338,36 +352,47 @@ export const StudentList: FC<{
                       } else {
                         color = RISK_LOW_COLOR;
                       }
+                      const integerProgress = toInteger(progress);
+                      const checkStudentLabel = `${CHECK_STUDENT_FROM_LIST_LABEL} ${student_id}`;
                       return (
                         <Table.Row key={key} verticalAlign="middle">
                           <TableCell textAlign="center">
                             {1 + key + (pageSelected - 1) * nStudentPerChunk}
-                            <ReactTooltip id={`student_list_${key}`} />
-                            <ReactTooltip id={`student_list_check_${key}`} />
                           </TableCell>
                           <Table.Cell
                             className="cursorPointer"
                             onClick={() => {
-                              searchStudent(student_id.toString());
+                              searchStudent(student_id);
                               onClose();
                             }}
                           >
-                            <Text
-                              data-tip={`${CHECK_STUDENT_FROM_LIST_LABEL} ${student_id}`}
-                              data-for={`student_list_check_${key}`}
+                            <Tooltip
+                              aria-label={checkStudentLabel}
+                              label={checkStudentLabel}
+                              zIndex={10000}
+                              placement="top"
+                              textAlign="center"
                             >
-                              {truncate(student_id.toString(), { length: 16 })}
-                            </Text>
+                              <Text>
+                                {truncate(student_id, { length: 16 })}
+                              </Text>
+                            </Tooltip>
                           </Table.Cell>
                           <Table.Cell>
                             <Text>{start_year}</Text>
                           </Table.Cell>
                           <Table.Cell verticalAlign="middle">
                             <Progress
-                              style={{ margin: 0 }}
-                              percent={toInteger(progress)}
-                              data-tip={`${toInteger(progress)}%`}
-                              data-for={`student_list_${key}`}
+                              indicating
+                              css={[
+                                marginZero,
+                                progressTextShadow,
+                                integerProgress >= 10 &&
+                                  integerProgress < 20 &&
+                                  progressSmallText,
+                              ]}
+                              progress
+                              percent={integerProgress}
                             />
                           </Table.Cell>
                           {showDropout && (
@@ -408,7 +433,10 @@ export const StudentList: FC<{
                                     >
                                       <PopoverArrow />
                                       <PopoverBody>
-                                        <Text>{explanation}</Text>
+                                        <Text>
+                                          {explanation.charAt(0).toUpperCase() +
+                                            explanation.slice(1)}
+                                        </Text>
                                       </PopoverBody>
                                     </PopoverContent>
                                   </Popover>

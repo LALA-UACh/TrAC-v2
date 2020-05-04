@@ -279,7 +279,7 @@ describe("authentication", () => {
     expect(testingUserOk.tries).toBe(0);
 
     expect(currentUser.user?.email).toBe(testingUserOk.email);
-  });
+  }, 5000);
 
   test("lock and unlock user", async () => {
     const { mutate, query, setOptions } = await apolloTestClient();
@@ -416,7 +416,7 @@ describe("authentication", () => {
     );
     expect(currentUser.data.currentUser.token).toBeTruthy();
     expect(currentUser.data.currentUser.error).toBeNull();
-  });
+  }, 5000);
 });
 
 export {};

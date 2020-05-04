@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { range } from "lodash";
+import { range, uniq } from "lodash";
 import dynamic from "next/dynamic";
 import Router from "next/router";
 import { generate } from "randomstring";
@@ -41,6 +41,7 @@ import {
 } from "../../context/DashboardInput";
 import { setTrackingData, track } from "../../context/Tracking";
 import { MY_PROGRAMS } from "../../graphql/queries";
+import { marginLeft5px } from "../../utils/cssConstants";
 import { useUser } from "../../utils/useUser";
 import { Help } from "../Help";
 
@@ -105,6 +106,7 @@ export const SearchBar: FC<{
     CURRICULUM_LABEL,
     STUDENT_LABEL,
     PLACEHOLDER_SEARCH_STUDENT,
+    LOGOUT_CONFIRMATION_LABEL,
   } = useContext(ConfigContext);
 
   const { data: myProgramsData, loading: myProgramsLoading } = useQuery(
@@ -120,10 +122,9 @@ export const SearchBar: FC<{
     ""
   );
 
-  const [studentOptions, setStudentOptions] = useRememberState<string[]>(
-    "student_input_options",
-    []
-  );
+  const [studentOptions, setStudentOptions] = useRememberState<
+    Record<string, string[]>
+  >("student_input_program_options", {});
 
   const programsOptions = useMemo(() => {
     return (
@@ -140,11 +141,22 @@ export const SearchBar: FC<{
 
   const addStudentOption = useCallback(
     (value: string) => {
-      if (value && !studentOptions.includes(value)) {
-        setStudentOptions([...studentOptions, value]);
-      }
+      if (!value || !program) return;
+
+      let studentIdList = studentOptions[program.value];
+
+      if (studentIdList === undefined) studentIdList = [];
+
+      studentIdList = uniq(studentIdList.concat(value));
+
+      setStudentOptions((prevStudentOptions) => {
+        return {
+          ...prevStudentOptions,
+          [program.value]: studentIdList,
+        };
+      });
     },
-    [studentOptions, setStudentOptions]
+    [studentOptions, setStudentOptions, program]
   );
 
   useEffect(() => {
@@ -294,11 +306,9 @@ export const SearchBar: FC<{
                   mr={4}
                   isDisabled={isSearchLoading}
                 />
-                {studentOptions.findIndex((value) => {
-                  return student_id === value;
-                }) === -1 && (
+                {program && studentOptions[program.value] && (
                   <datalist id="student_options">
-                    {studentOptions.map((value, key) => (
+                    {studentOptions[program.value].map((value, key) => (
                       <option key={key} value={value} />
                     ))}
                   </datalist>
@@ -418,7 +428,7 @@ export const SearchBar: FC<{
             program_id={program?.value}
             mockData={
               mock
-                ? range(110).map(() => {
+                ? range(160).map(() => {
                     const dropout_probability = Math.round(Math.random() * 100);
                     return {
                       student_id: "mock_" + generate(),
@@ -481,11 +491,15 @@ export const SearchBar: FC<{
         <Help />
 
         <Button
+          css={marginLeft5px}
           negative
           size="large"
           disabled={logoutLoading}
           loading={logoutLoading}
           onClick={async () => {
+            const confirmed = window.confirm(LOGOUT_CONFIRMATION_LABEL);
+            if (!confirmed) return;
+
             setLogoutLoading(true);
 
             track({

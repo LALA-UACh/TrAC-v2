@@ -31,6 +31,7 @@ import {
   ForeplanHelperStore,
 } from "../../context/ForeplanContext";
 import { track } from "../../context/Tracking";
+import { width100percent } from "../../utils/cssConstants";
 import { Theme, ThemeStore } from "../../utils/useTheme";
 import { useUser } from "../../utils/useUser";
 import { PredictState } from "../foreplan/courseBox/PredictState";
@@ -359,7 +360,7 @@ const RegistrationComponent: FC<Pick<CurrentTakenData, "registration">> = memo(
           opacity: 0,
           position: "absolute",
         }}
-        style={{ width: "100%" }}
+        css={width100percent}
       >
         <Text fontSize="9px" mr={2} textAlign="end">
           <b>{registration}</b>

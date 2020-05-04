@@ -23,6 +23,7 @@ import {
   ALL_PROGRAMS_ADMIN,
   ALL_USERS_ADMIN,
 } from "../../../graphql/adminQueries";
+import { width45em } from "../../../utils/cssConstants";
 
 export const ImportPrograms: FC = () => {
   const [data, setData] = useRememberState(
@@ -191,7 +192,7 @@ export const ImportPrograms: FC = () => {
                 onChange={(_event, { value }) => {
                   setData(toString(value));
                 }}
-                style={{ width: "45em" }}
+                css={width45em}
                 placeholder=".json o .csv"
                 rows={(data.match(/\n/g) || []).length + 3}
                 value={data}

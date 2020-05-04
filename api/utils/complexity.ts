@@ -8,7 +8,7 @@ import {
 
 import { NODE_ENV } from "../../constants";
 import { IContext } from "../../interfaces";
-import { schema } from "../apollo/server";
+import { schema } from "../apollo/schema";
 
 const complexityLimit = 40;
 
@@ -17,7 +17,7 @@ export const ComplexityPlugin: PluginDefinition = {
     async didResolveOperation({ request, document, context: contextArg }) {
       const complexity = getComplexity({
         // Our built schema
-        schema: await schema,
+        schema,
         // To calculate query complexity properly,
         // we have to check if the document contains multiple operations
         // and eventually extract it operation from the whole query document.

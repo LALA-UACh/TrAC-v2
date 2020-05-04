@@ -9,6 +9,11 @@ import { Flex, Stack } from "@chakra-ui/core";
 import { UserType } from "../../../../constants";
 import { UserConfig } from "../../../../constants/userConfig";
 import { MAIL_LOCKED_USERS_ADMIN } from "../../../graphql/adminQueries";
+import {
+  cursorPointer,
+  whiteSpacePreLine,
+  width50percent,
+} from "../../../utils/cssConstants";
 import { Confirm } from "../../Confirm";
 import { usePagination } from "../Pagination";
 import { ImportUsers } from "./ImportUsers";
@@ -111,7 +116,7 @@ export const Users: FC<{
                 icon
                 compact
                 size="small"
-                style={{ whiteSpace: "pre-line" }}
+                css={whiteSpacePreLine}
               >
                 <Icon name="close" onClick={() => setOpenMailMessage(false)} />
                 <Message.Content>
@@ -125,7 +130,7 @@ export const Users: FC<{
                       {dataMailLockedUsers.mailAllLockedUsers.map(
                         (value, key) => {
                           return (
-                            <Message.Item style={{ width: "50%" }} key={key}>
+                            <Message.Item css={width50percent} key={key}>
                               {JSON.stringify(value, null, 2)}
                             </Message.Item>
                           );
@@ -239,7 +244,7 @@ export const Users: FC<{
                       };
                       return (
                         <Table.Row
-                          style={{ cursor: "pointer" }}
+                          css={cursorPointer}
                           onClick={() => {
                             setOpen(true);
                           }}

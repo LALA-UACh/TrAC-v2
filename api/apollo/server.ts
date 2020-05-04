@@ -1,41 +1,14 @@
-import "reflect-metadata";
-
 import { ApolloServer } from "apollo-server-express";
-import { EmailAddressResolver } from "graphql-scalars";
-import { GraphQLJSON, GraphQLJSONObject } from "graphql-type-json";
-import { buildSchema, buildSchemaSync } from "type-graphql";
-import { NonEmptyArray } from "type-graphql/dist/utils/types";
 
 import { NODE_ENV } from "../../constants";
-import * as resolvers from "../resolvers";
-import { ComplexityPlugin } from "../utils/complexity";
-import { authChecker } from "./authChecker";
-import { buildContext } from "./buildContext";
 
-export const schema = buildSchema({
-  resolvers: [
-    ...Object.values(resolvers),
-    GraphQLJSON.toString(),
-    GraphQLJSONObject.toString(),
-    EmailAddressResolver.toString(),
-  ] as NonEmptyArray<Function> | NonEmptyArray<string>,
-  authChecker,
-  emitSchemaFile: NODE_ENV !== "production",
-  validate: true,
-});
+import { ComplexityPlugin } from "../utils/complexity";
+
+import { buildContext } from "./buildContext";
+import { schema } from "./schema";
 
 export const apolloServer = new ApolloServer({
-  schema: buildSchemaSync({
-    resolvers: [
-      ...Object.values(resolvers),
-      GraphQLJSON.toString(),
-      GraphQLJSONObject.toString(),
-      EmailAddressResolver.toString(),
-    ] as NonEmptyArray<Function> | NonEmptyArray<string>,
-    authChecker,
-    emitSchemaFile: NODE_ENV !== "production",
-    validate: true,
-  }),
+  schema,
   playground:
     NODE_ENV !== "production"
       ? {

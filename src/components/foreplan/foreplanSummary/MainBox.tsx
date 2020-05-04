@@ -34,6 +34,11 @@ import {
   ForeplanHelperStore,
 } from "../../../context/ForeplanContext";
 import { setTrackingData, track } from "../../../context/Tracking";
+import {
+  customColor,
+  padding5px,
+  zIndex700,
+} from "../../../utils/cssConstants";
 import { useUser } from "../../../utils/useUser";
 
 const ForeplanContentRowList = dynamic(() => import("./List"));
@@ -69,7 +74,6 @@ const OuterSummary: FC = ({ children }) => {
         top={positionMobile ? 0 : undefined}
         right={0}
         zIndex={600}
-        style={{ zIndex: 600 }}
         backgroundColor={config.FOREPLAN_SUMMARY_BACKGROUND_COLOR}
         color={config.FOREPLAN_SUMMARY_FONT_COLOR}
         p={0}
@@ -264,9 +268,9 @@ const ForeplanAdvice: FC = memo(() => {
     const LowFailRate: FC = () => {
       return (
         <span
-          style={{
-            color: config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.low,
-          }}
+          css={customColor(
+            config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.low
+          )}
         >
           {advice.failRateLow}%
         </span>
@@ -275,9 +279,9 @@ const ForeplanAdvice: FC = memo(() => {
     const MidFailRate: FC = () => {
       return (
         <span
-          style={{
-            color: config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.mid,
-          }}
+          css={customColor(
+            config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.mid
+          )}
         >
           {advice.failRateMid}%
         </span>
@@ -286,9 +290,9 @@ const ForeplanAdvice: FC = memo(() => {
     const HighFailRate: FC = () => {
       return (
         <span
-          style={{
-            color: config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.high,
-          }}
+          css={customColor(
+            config.FOREPLAN_SUMMARY_ADVICE_FAIL_RATES_COLORS.high
+          )}
         >
           {advice.failRateHigh}%
         </span>
@@ -437,11 +441,7 @@ const Waffle: FC<{
             {highlightLabel}
           </Text>
         )}
-        <ReactTooltip
-          className="waffle_tooltip"
-          id="waffle_tooltip"
-          delayHide={300}
-        />
+        <ReactTooltip css={padding5px} id="waffle_tooltip" delayHide={300} />
       </Stack>
     );
   }
@@ -612,7 +612,7 @@ const ForeplanSummary: FC = () => {
       {active && anyForeplanCourses && (
         <motion.div
           key="foreplanSummary"
-          style={{ zIndex: 700 }}
+          css={zIndex700}
           initial={{
             opacity: 0,
           }}

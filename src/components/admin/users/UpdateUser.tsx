@@ -26,6 +26,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/core";
+import { css } from "@emotion/core";
 
 import { UserType } from "../../../../constants";
 import {
@@ -36,6 +37,7 @@ import {
   UPSERT_USERS_ADMIN,
   USER_PERSISTENCES,
 } from "../../../graphql/adminQueries";
+import { whiteSpacePreLine } from "../../../utils/cssConstants";
 import { ThemeStore } from "../../../utils/useTheme";
 import { Confirm } from "../../Confirm";
 import { useUpdateUserConfigModal } from "./UpdateUserConfig";
@@ -153,6 +155,12 @@ const UserPersistence: FC<{ user: string }> = memo(({ user }) => {
     </Modal>
   );
 });
+
+const resetFormButtonCSS = css`
+  position: absolute;
+  right: 0.5em;
+  top: 0.5em;
+`;
 
 export const UpdateUser: FC<{
   user: IUserConfig;
@@ -317,11 +325,7 @@ export const UpdateUser: FC<{
                   circular
                   icon
                   secondary
-                  style={{
-                    position: "absolute",
-                    right: "0.5em",
-                    top: "0.5em",
-                  }}
+                  css={resetFormButtonCSS}
                   disabled={pristine}
                   onClick={() => reset()}
                 >
@@ -543,7 +547,7 @@ export const UpdateUser: FC<{
                       icon
                       compact
                       size="small"
-                      style={{ whiteSpace: "pre-line" }}
+                      css={whiteSpacePreLine}
                     >
                       <Icon
                         name="close"

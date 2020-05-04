@@ -36,6 +36,11 @@ import { ConfigContext } from "../../context/Config";
 import { EDIT_CONFIG } from "../../graphql/adminQueries";
 import { CONFIG_QUERY } from "../../graphql/queries";
 import { Confirm } from "../Confirm";
+import {
+  wordBreakAll,
+  width300,
+  marginLeft5px,
+} from "../../utils/cssConstants";
 
 const baseConfigKeys = Object.keys(baseConfigAdmin);
 
@@ -64,12 +69,7 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
     }, [error]);
     return (
       <Flex alignItems="center" m={1} wrap="wrap" alignContent="space-between">
-        <Label
-          basic
-          color="black"
-          size="large"
-          style={{ wordBreak: " break-all" }}
-        >
+        <Label basic color="black" size="large" css={wordBreakAll}>
           {configKey}
         </Label>
 
@@ -94,7 +94,7 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
                     setState(toString(value));
                   }}
                   rows={4}
-                  style={{ width: 300 }}
+                  css={width300}
                 />
               ) : (
                 <Input
@@ -131,7 +131,7 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
                     }
                   }}
                   rows={6}
-                  style={{ width: 300 }}
+                  css={width300}
                 />
               );
             default:
@@ -149,7 +149,7 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
               loading={loading}
               icon
               labelPosition="left"
-              style={{ wordBreak: "break-all", marginLeft: "5px" }}
+              css={[marginLeft5px, wordBreakAll]}
               primary
               onClick={() => {
                 editConfig({
@@ -226,7 +226,7 @@ export const AdminConfig = () => {
         border="2px solid black"
         p={4}
       >
-        <Label color="green" size="large" style={{ wordBreak: " break-all" }}>
+        <Label color="green" size="large" css={wordBreakAll}>
           Filter config keys
         </Label>
         <Input
