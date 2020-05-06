@@ -383,7 +383,6 @@ export const StudentList: FC<{
                           </Table.Cell>
                           <Table.Cell verticalAlign="middle">
                             <Progress
-                              indicating
                               css={[
                                 marginZero,
                                 progressTextShadow,

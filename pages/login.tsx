@@ -110,7 +110,7 @@ const Login: FC = () => {
             email: string;
             password: string;
           },
-          { change }
+          { reset }
         ) => {
           const { data } = await login({
             variables: {
@@ -119,11 +119,19 @@ const Login: FC = () => {
             },
           });
           if (data?.login.error) {
-            change("password", "");
+            setTimeout(
+              () =>
+                reset({
+                  email,
+                  password: "",
+                }),
+              0
+            );
           }
         }}
         validate={({ email, password }) => {
           const errors: ValidationErrors = {};
+
           if (!email || !isEmail(email)) {
             errors.email = LOGIN_PUT_VALID_EMAIL;
           }

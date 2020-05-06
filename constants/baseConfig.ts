@@ -13,10 +13,11 @@ export const baseConfig = {
   CURRICULUM_LABEL: "Plan",
   DASHBOARD_SEMESTERS_LIST_MOBILE_BREAKPOINT: 1200,
   DROPOUT_BACKGROUND_COLOR: "rgb(252,249,165)",
-  DROPOUT_PREDICTION: "Predicción de abandono",
-  DROPOUT_PREDICTION_ACCURACY: "acierto del modelo:",
+  DROPOUT_PREDICTION: "Percentil de riesgo",
+  DROPOUT_PREDICTION_ACCURACY_ENABLED: false,
+  DROPOUT_PREDICTION_ACCURACY: "modelo:",
   DROPOUT_PREDICTION_DESCRIPTION:
-    "El sistema estima una probabilidad de abandono de",
+    "El sistema estima un percentil de riesgo de abandono",
   DROPOUT_TEXT_COLOR: "black",
   ENTRY_YEAR_LABEL: "Ingreso",
   ERROR_PROGRAM_NOT_FOUND: "Programa especificado no pudo ser encontrado.",
@@ -191,7 +192,7 @@ export const baseConfig = {
   LOGIN_PASSWORD_LABEL: "Contraseña",
   LOGIN_PASSWORD_PLACEHOLDER: "contraseña",
   LOGIN_PUT_VALID_EMAIL: "Ingrese un Email Válido",
-  LOGIN_PUT_VALID_PASSWORD_LENGTH: "Ingrese una contraseña de largo válido",
+  LOGIN_PUT_VALID_PASSWORD_LENGTH: "Ingrese una contraseña válida",
   LOGIN_REMEMBER_SESSION: "Mantenerse conectado",
   LOGIN_WRONG_INFO_MESSAGE:
     "Información ingresada erronea. Verificar datos o su cuenta puede ser bloqueda por seguridad.",

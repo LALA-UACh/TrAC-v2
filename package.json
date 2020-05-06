@@ -113,6 +113,7 @@
     "react-toggle-theme": "^1.0.0",
     "react-tooltip": "^4.2.5",
     "react-use": "^14.2.0",
+    "react-useportal": "^1.0.13",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "reflect-metadata": "^0.1.13",

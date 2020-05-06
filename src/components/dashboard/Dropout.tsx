@@ -16,6 +16,7 @@ export const Dropout: FC<{
     DROPOUT_PREDICTION_ACCURACY,
     DROPOUT_PREDICTION_DESCRIPTION,
     DROPOUT_TEXT_COLOR,
+    DROPOUT_PREDICTION_ACCURACY_ENABLED,
   } = useContext(ConfigContext);
 
   const [show, setShow] = useState(false);
@@ -88,9 +89,11 @@ export const Dropout: FC<{
                 >
                   {probability ?? "-"}%
                 </Text>
-                <Text ml={5} fontFamily="Lato">
-                  ({DROPOUT_PREDICTION_ACCURACY} <b>{accuracy ?? "-"}</b>)
-                </Text>
+                {DROPOUT_PREDICTION_ACCURACY_ENABLED && (
+                  <Text ml={5} fontFamily="Lato">
+                    ({DROPOUT_PREDICTION_ACCURACY} <b>{accuracy ?? "-"}</b>)
+                  </Text>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

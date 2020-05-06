@@ -38,7 +38,7 @@ import {
   USER_PERSISTENCES,
 } from "../../../graphql/adminQueries";
 import { whiteSpacePreLine } from "../../../utils/cssConstants";
-import { ThemeStore } from "../../../utils/useTheme";
+import { ThemeStore } from "../../../context/Theme";
 import { Confirm } from "../../Confirm";
 import { useUpdateUserConfigModal } from "./UpdateUserConfig";
 

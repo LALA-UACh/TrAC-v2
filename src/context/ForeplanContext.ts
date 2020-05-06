@@ -13,7 +13,7 @@ import {
   SET_PERSISTENCE_VALUE,
 } from "../graphql/queries";
 import { stringListToBooleanMap } from "../utils";
-import { setIsForeplanLoading } from "../utils/usePersistenceLoading";
+import { setIsForeplanLoading } from "./PersistenceLoading";
 import { useUser } from "../utils/useUser";
 import { useDashboardInputState } from "./DashboardInput";
 import { setTrackingData } from "./Tracking";

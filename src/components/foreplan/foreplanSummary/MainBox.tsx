@@ -40,7 +40,7 @@ import {
   zIndex700,
 } from "../../../utils/cssConstants";
 import { useUser } from "../../../utils/useUser";
-
+import usePortal from "react-useportal";
 const ForeplanContentRowList = dynamic(() => import("./List"));
 const ForeplanContentBadgesList = dynamic(() => import("./Badges"));
 interface ExpandedState {
@@ -67,8 +67,10 @@ const OuterSummary: FC = ({ children }) => {
     return config.FOREPLAN_SUMMARY_HEIGHT;
   }, [height, config]);
 
-  return useMemo(
-    () => (
+  const { Portal } = usePortal();
+
+  return useMemo(() => {
+    const cmp = (
       <Flex
         pos={positionMobile ? "fixed" : "absolute"}
         top={positionMobile ? 0 : undefined}
@@ -78,7 +80,8 @@ const OuterSummary: FC = ({ children }) => {
         color={config.FOREPLAN_SUMMARY_FONT_COLOR}
         p={0}
         m={1}
-        height={responsiveHeight}
+        height="fit-content"
+        maxHeight={responsiveHeight}
         width="fit-content"
         alignSelf="flex-end"
         justifySelf="flex-end"
@@ -86,9 +89,12 @@ const OuterSummary: FC = ({ children }) => {
       >
         {children}
       </Flex>
-    ),
-    [children, positionMobile, config]
-  );
+    );
+    if (positionMobile) {
+      return <Portal>{cmp}</Portal>;
+    }
+    return cmp;
+  }, [children, positionMobile, config]);
 };
 
 const SummaryTab: FC<ExpandedState> = memo(({ expanded, setExpanded }) => {

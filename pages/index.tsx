@@ -55,7 +55,7 @@ import {
   SEARCH_STUDENT,
 } from "../src/graphql/queries";
 import { DarkMode } from "../src/utils/dynamicDarkMode";
-import { useIsPersistenceLoading } from "../src/utils/usePersistenceLoading";
+import { useIsPersistenceLoading } from "../src/context/PersistenceLoading";
 import { useUser } from "../src/utils/useUser";
 
 const Dropout = dynamic(() => import("../src/components/dashboard/Dropout"));
@@ -676,6 +676,8 @@ const Dashboard: FC = () => {
       searchStudent,
     ]
   );
+  const showsForeplanSummaryTab = ForeplanActiveStore.hooks.useAnyForeplanCourses();
+
   return (
     <>
       {user?.type === UserType.Director ? (
@@ -704,7 +706,7 @@ const Dashboard: FC = () => {
         width="100%"
         justifyContent="flex-end"
       >
-        <DarkMode p={2} />
+        <DarkMode mr={showsForeplanSummaryTab ? "30px" : undefined} p={2} />
       </Flex>
 
       <ScrollContainer activationDistance={5} hideScrollbars={false}>

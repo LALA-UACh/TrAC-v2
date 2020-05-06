@@ -11,7 +11,7 @@ import {
   SET_PERSISTENCE_VALUE,
 } from "../graphql/queries";
 import { stringListToBooleanMap } from "../utils";
-import { setIsDashboardLoading } from "../utils/usePersistenceLoading";
+import { setIsDashboardLoading } from "./PersistenceLoading";
 import { useDashboardInputState } from "./DashboardInput";
 import { setTrackingData, track } from "./Tracking";
 

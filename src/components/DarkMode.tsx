@@ -9,7 +9,7 @@ import ToggleTheme from "react-toggle-theme";
 import { Box, BoxProps } from "@chakra-ui/core";
 
 import { SVG_TEXT } from "../../constants";
-import { Theme, ThemeStore } from "./useTheme";
+import { Theme, ThemeStore } from "../context/Theme";
 
 if (typeof window !== "undefined" && typeof window.fetch !== "undefined") {
   setFetchMethod(window.fetch);

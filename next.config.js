@@ -10,7 +10,4 @@ module.exports = withBundleAnalyzer({
   },
   target: "serverless",
   poweredByHeader: false,
-  experimental: {
-    reactRefresh: true,
-  },
 });

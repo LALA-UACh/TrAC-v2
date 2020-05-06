@@ -32,7 +32,7 @@ import {
 } from "../../context/ForeplanContext";
 import { track } from "../../context/Tracking";
 import { width100percent } from "../../utils/cssConstants";
-import { Theme, ThemeStore } from "../../utils/useTheme";
+import { Theme, ThemeStore } from "../../context/Theme";
 import { useUser } from "../../utils/useUser";
 import { PredictState } from "../foreplan/courseBox/PredictState";
 import styles from "./CourseBox.module.css";
