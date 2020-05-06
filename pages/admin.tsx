@@ -74,16 +74,14 @@ const Admin: FC = () => {
   }
 
   return (
-    <Stack alignItems="center" height="100vh" spacing="1em">
+    <Stack alignItems="center" spacing="1em" padding="5px">
       <Flex position="absolute" justifyContent="flex-end" width="100%">
         <DarkMode p={3} />
       </Flex>
       <Flex>
         <AdminMenu active={active} setActive={setActive} />
       </Flex>
-      <Stack height="100%" overflowY="auto">
-        {ActiveTab}
-      </Stack>
+      {ActiveTab}
     </Stack>
   );
 };

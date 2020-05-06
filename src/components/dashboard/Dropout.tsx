@@ -27,6 +27,8 @@ export const Dropout: FC<{
     });
   }, [show]);
 
+  if (probability == null) return null;
+
   return (
     <Flex alignItems="center" ml="1em">
       <Flex
@@ -87,7 +89,7 @@ export const Dropout: FC<{
                   mb={0}
                   fontFamily="Lato"
                 >
-                  {probability ?? "-"}%
+                  {probability}
                 </Text>
                 {DROPOUT_PREDICTION_ACCURACY_ENABLED && (
                   <Text ml={5} fontFamily="Lato">
