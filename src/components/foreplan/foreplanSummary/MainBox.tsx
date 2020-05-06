@@ -49,14 +49,14 @@ interface ExpandedState {
 }
 
 const OuterSummary: FC = ({ children }) => {
-  const { width, height } = useWindowSize();
+  const { width, height } = useWindowSize(1920, 1080);
 
   const config = useContext(ConfigContext);
 
   const positionMobile = useMemo(() => {
     return (
-      width < config.FOREPLAN_SUMMARY_MOBILE_BREAKPOINT_HEIGHT ||
-      height < config.FOREPLAN_SUMMARY_POSITION_MOBILE_BREAKPOINT_WIDTH
+      width < config.FOREPLAN_SUMMARY_MOBILE_BREAKPOINT_WIDTH ||
+      height < config.FOREPLAN_SUMMARY_MOBILE_BREAKPOINT_HEIGHT
     );
   }, [width, height, config]);
 
