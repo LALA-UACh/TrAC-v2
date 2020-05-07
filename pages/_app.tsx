@@ -19,6 +19,7 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import { theme, ThemeProvider } from "@chakra-ui/core";
 
 import { GRAPHQL_URL, NODE_ENV } from "../constants";
+import { RefreshToken } from "../src/components/RefreshToken";
 import { Config } from "../src/context/Config";
 import { DarkMode } from "../src/utils/dynamicDarkMode";
 
@@ -49,6 +50,7 @@ const App: NextPage<AppProps & WithApolloProps<NormalizedCacheObject>> = ({
         </Config>
       </ThemeProvider>
       <DarkMode render={false} />
+      <RefreshToken />
       <ToastContainer toastClassName="toast" />
     </ApolloProvider>
   );

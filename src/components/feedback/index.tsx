@@ -42,7 +42,6 @@ export interface IDisclosure {
 export const Feedback: FC<{
   children?: FC<IDisclosure>;
 }> = memo(({ children: Children }) => {
-  const {} = useUser();
   const { data, loading, refetch } = useQuery(UNANSWERED_FEEDBACK_FORM, {
     notifyOnNetworkStatusChange: true,
   });

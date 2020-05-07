@@ -24,8 +24,9 @@ export function useUser(
 ): {
   user?: (IUserFragment & { config: UserConfig }) | null;
   loading?: boolean;
+  refetch: () => Promise<unknown>;
 } {
-  const { loading, error, data } = useQuery(CURRENT_USER, {
+  const { loading, error, data, refetch } = useQuery(CURRENT_USER, {
     ssr: false,
     fetchPolicy,
   });
@@ -64,8 +65,8 @@ export function useUser(
   }, [loading, requireAuth, user, requireAdmin]);
 
   if ((requireAuth && !user) || (requireAdmin && !user?.admin)) {
-    return { user: undefined, loading: true };
+    return { user: undefined, loading: true, refetch };
   }
 
-  return { user, loading };
+  return { user, loading, refetch };
 }
