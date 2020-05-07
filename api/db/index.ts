@@ -1,5 +1,5 @@
 import knex, { Config } from "knex";
-import { merge } from "lodash";
+import { merge } from "lodash/fp";
 import pg from "pg";
 
 import { NODE_ENV } from "../../constants";
@@ -15,7 +15,7 @@ const dataDbName = "data-lala";
 const trackingDbName = "tracking";
 const configDbName = "config";
 
-const baseConfig: Config =
+const baseDBConfig: Config =
   NODE_ENV !== "test"
     ? {
         client: "pg",
@@ -30,7 +30,7 @@ const baseConfig: Config =
       };
 
 export const dbAuth = knex({
-  ...merge<Config, Config>(baseConfig, {
+  ...merge<Config, Config>(baseDBConfig, {
     connection: {
       database: authDbName,
     },
@@ -40,7 +40,7 @@ export const dbAuth = knex({
 });
 
 export const dbData = knex({
-  ...merge<Config, Config>(baseConfig, {
+  ...merge<Config, Config>(baseDBConfig, {
     connection: {
       database: dataDbName,
     },
@@ -50,7 +50,7 @@ export const dbData = knex({
 });
 
 export const dbTracking = knex({
-  ...merge<Config, Config>(baseConfig, {
+  ...merge<Config, Config>(baseDBConfig, {
     connection: {
       database: trackingDbName,
     },
@@ -59,7 +59,7 @@ export const dbTracking = knex({
 });
 
 export const dbConfig = knex({
-  ...merge<Config, Config>(baseConfig, {
+  ...merge<Config, Config>(baseDBConfig, {
     connection: {
       database: configDbName,
     },
@@ -67,4 +67,4 @@ export const dbConfig = knex({
   // debug: true,
 });
 
-import("./mockData");
+import("./mockData/migration");

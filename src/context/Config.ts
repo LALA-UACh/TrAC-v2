@@ -28,7 +28,7 @@ export const Config: FC = ({ children }) => {
   const { data, loading } = useQuery(CONFIG_QUERY);
 
   useEffect(() => {
-    if (NODE_ENV === "production" && !loading && data) {
+    if (!loading && data) {
       setConfigState({ ...baseConfig, ...data.config });
     }
   }, [data, loading]);

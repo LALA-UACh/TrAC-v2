@@ -3,9 +3,7 @@ import { chunk, sample } from "lodash";
 
 import { dbAuth, dbConfig, dbData, dbTracking } from "../";
 import { FeedbackQuestionType, NODE_ENV, UserType } from "../../../constants";
-import { baseConfig } from "../../../constants/baseConfig";
 import { baseUserConfig } from "../../../constants/userConfig";
-import { configValueToString } from "../../../constants/validation";
 import { FeedbackQuestionOption } from "../../entities/feedback";
 import {
   joinFeedbackQuestionOptions,
@@ -130,15 +128,6 @@ const dataImport = async () => {
         table.text("name").primary().defaultTo("");
         table.text("value").defaultTo("").notNullable();
       });
-
-      await ConfigurationTable().insert(
-        Object.entries(baseConfig).map(([name, valueRaw]) => {
-          return {
-            name,
-            value: configValueToString(valueRaw),
-          };
-        })
-      );
     }
   });
 

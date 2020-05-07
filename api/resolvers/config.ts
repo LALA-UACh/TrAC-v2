@@ -1,6 +1,6 @@
 import assert from "assert";
 import { GraphQLJSONObject } from "graphql-type-json";
-import { reduce } from "lodash";
+import { isEqual, reduce } from "lodash";
 import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 
 import { baseConfig, baseConfigAdmin } from "../../constants/baseConfig";
@@ -25,7 +25,7 @@ export class ConfigurationResolver {
 
         return acum;
       },
-      baseConfigAdmin
+      { ...baseConfigAdmin }
     );
   }
 
@@ -62,7 +62,58 @@ export class ConfigurationResolver {
       });
     }
 
-    return await ConfigurationResolver.getConfigData();
+    const dbConfigData = await ConfigurationResolver.getConfigData();
+
+    (async () => {
+      const dataDb = await ConfigurationTable().select("*");
+
+      const dataConfigDb = dataDb.reduce<Record<string, any>>(
+        (acum, { name, value }) => {
+          acum[name] = configStringToValue(value);
+          return acum;
+        },
+        {}
+      );
+
+      const { unnecessaryKeys, differentKeys } = reduce<
+        typeof dataConfigDb,
+        {
+          differentKeys: { key: string; value: any }[];
+          unnecessaryKeys: string[];
+        }
+      >(
+        dataConfigDb,
+        (acum, dbValue, dbKey) => {
+          if (isEqual(baseConfigAdmin[dbKey], dbValue)) {
+            acum.unnecessaryKeys.push(dbKey);
+          } else {
+            acum.differentKeys.push({
+              key: dbKey,
+              value: dbValue,
+            });
+          }
+          return acum;
+        },
+        {
+          differentKeys: [],
+          unnecessaryKeys: [],
+        }
+      );
+
+      console.log({
+        unnecessaryKeys,
+        differentKeys,
+      });
+
+      await ConfigurationTable()
+        .delete()
+        .whereIn("name", unnecessaryKeys)
+        .catch((err) => {
+          console.error("Error removing baseConfig unnecessaryKeys", err);
+        });
+    })();
+
+    return dbConfigData;
   }
   @Query(() => GraphQLJSONObject)
   async config(): Promise<typeof baseConfig> {

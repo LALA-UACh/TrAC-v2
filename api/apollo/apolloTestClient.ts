@@ -8,7 +8,7 @@ export const apolloTestClient = async ({
   headers,
 }: { headers?: Record<string, string> } = {}) =>
   createTestClient({
-    apolloServer: await apolloServer,
+    apolloServer: apolloServer as any,
     extendMockRequest: {
       headers,
     },
