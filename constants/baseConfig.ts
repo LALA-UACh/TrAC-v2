@@ -179,6 +179,7 @@ export const baseConfig = {
   FOREPLAN_WARNING_INDIRECT_TAKE_CLOSE_BUTTON_LABEL: "De acuerdo",
   GRADES_LABEL: "Calificaciones",
   GRADES_SCALES: "Escala de notas",
+  HELP_ENABLED: false,
   HISTOGRAM_BAR_ACTIVE: "rgb(122,122,122)",
   HISTOGRAM_BAR_INACTIVE: "rgb(191,191,191)",
   HISTORIC_GRADES: "Calificaciones históricas",

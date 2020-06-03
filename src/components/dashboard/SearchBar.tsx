@@ -107,6 +107,7 @@ export const SearchBar: FC<{
     STUDENT_LABEL,
     PLACEHOLDER_SEARCH_STUDENT,
     LOGOUT_CONFIRMATION_LABEL,
+    HELP_ENABLED,
   } = useContext(ConfigContext);
 
   const { data: myProgramsData, loading: myProgramsLoading } = useQuery(
@@ -488,7 +489,7 @@ export const SearchBar: FC<{
           />
         )}
 
-        <Help />
+        {HELP_ENABLED && <Help />}
 
         <Button
           css={marginLeft5px}
