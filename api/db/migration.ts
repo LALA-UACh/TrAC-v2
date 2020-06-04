@@ -500,10 +500,6 @@ const migration = async () => {
   ];
 
   await dbTracking.schema.hasTable(FEEDBACK_FORM_TABLE).then(async (exists) => {
-    if (exists && process.env.NODE_ENV === "development") {
-      await dbTracking.schema.dropTable(FEEDBACK_FORM_TABLE);
-      exists = false;
-    }
     if (!exists) {
       await dbTracking.schema.createTable(FEEDBACK_FORM_TABLE, (table) => {
         table.increments("id").primary();
@@ -580,10 +576,6 @@ const migration = async () => {
   await dbTracking.schema
     .hasTable(FEEDBACK_FORM_QUESTION_TABLE)
     .then(async (exists) => {
-      if (exists && process.env.NODE_ENV === "development") {
-        await dbTracking.schema.dropTable(FEEDBACK_FORM_QUESTION_TABLE);
-        exists = false;
-      }
       if (!exists) {
         await dbTracking.schema.createTable(
           FEEDBACK_FORM_QUESTION_TABLE,
@@ -615,10 +607,6 @@ const migration = async () => {
   await dbTracking.schema
     .hasTable(FEEDBACK_RESULT_TABLE)
     .then(async (exists) => {
-      if (exists && process.env.NODE_ENV === "development") {
-        await dbTracking.schema.dropTable(FEEDBACK_RESULT_TABLE);
-        exists = false;
-      }
       if (!exists) {
         await dbTracking.schema.createTable(FEEDBACK_RESULT_TABLE, (table) => {
           table.integer("form_id").notNullable();
