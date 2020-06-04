@@ -6,10 +6,9 @@ import {
   FeedbackQuestionType,
   NO_ANSWER,
   OPTIONS_FEEDBACK_SPLIT_CHAR,
-  OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR,
-} from "../../constants";
-import { IContext } from "../../interfaces";
-import { ADMIN } from "../constants";
+} from "../../../constants";
+import { IContext } from "../../../interfaces";
+import { ADMIN } from "../../constants";
 import {
   FeedbackFormQuestionTable,
   FeedbackFormTable,
@@ -17,7 +16,7 @@ import {
   IFeedbackForm,
   IFeedbackFormQuestion,
   IFeedbackResult,
-} from "../db/tables";
+} from "../../db/tables";
 import {
   FeedbackAnswer,
   FeedbackAnswerInput,
@@ -25,41 +24,10 @@ import {
   FeedbackQuestion,
   FeedbackQuestionOption,
   FeedbackResult,
-} from "../entities/feedback";
-import { assertIsDefined } from "../utils/assert";
-import { PartialUser } from "./auth/user";
-
-export function splitFeedbackQuestionOptions(
-  options: string
-): FeedbackQuestionOption[] {
-  return options
-    .split(OPTIONS_FEEDBACK_SPLIT_CHAR)
-    .filter((v) => v.trim())
-    .map((optionValue) => {
-      const [numberValueStr, ...textValue] = optionValue
-        .trim()
-        .split(OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR);
-
-      const textStr = textValue.join(OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR);
-
-      return {
-        value: toInteger(numberValueStr),
-        text: textStr.slice(1, textStr.length - 1),
-      };
-    });
-}
-
-export function joinFeedbackQuestionOptions(
-  questionsOptions: FeedbackQuestionOption[]
-): string {
-  return questionsOptions
-    .map((optionValue) => {
-      return `${
-        optionValue.value
-      }${OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR}"${optionValue.text.trim()}"`;
-    })
-    .join(OPTIONS_FEEDBACK_SPLIT_CHAR);
-}
+} from "../../entities/feedback";
+import { assertIsDefined } from "../../utils/assert";
+import { PartialUser } from "../auth/user";
+import { splitFeedbackQuestionOptions } from "./utils";
 
 type PartialFeedbackResult = Pick<
   FeedbackResult,

@@ -1,58 +1,92 @@
-import sha1 from "crypto-js/sha1";
-import { chunk, sample } from "lodash";
+// This file is intented to be used simply calling "yarn" or "yarn migrate"
 
-import { FeedbackQuestionType, NODE_ENV, UserType } from "../../constants";
-import { baseUserConfig } from "../../constants/userConfig";
-import { FeedbackQuestionOption } from "../entities/feedback";
-import {
-  joinFeedbackQuestionOptions,
-  splitFeedbackQuestionOptions,
-} from "../resolvers";
-import { dbAuth, dbConfig, dbData, dbTracking } from "./index";
-import {
-  CONFIGURATION_TABLE,
-  COURSE_STATS_TABLE,
-  COURSE_TABLE,
-  CourseStatsTable,
-  CourseTable,
-  FEEDBACK_FORM_QUESTION_TABLE,
-  FEEDBACK_FORM_TABLE,
-  FEEDBACK_RESULT_TABLE,
-  FeedbackFormQuestionTable,
-  FeedbackFormTable,
-  FeedbackResultTable,
-  PARAMETER_TABLE,
-  ParameterTable,
-  PERFORMANCE_BY_LOAD_TABLE,
-  PerformanceByLoadTable,
-  PERSISTENCE_TABLE,
-  PROGRAM_STRUCTURE_TABLE,
-  PROGRAM_TABLE,
-  ProgramStructureTable,
-  ProgramTable,
-  STUDENT_CLUSTER_TABLE,
-  STUDENT_COURSE_TABLE,
-  STUDENT_DROPOUT_TABLE,
-  STUDENT_PROGRAM_TABLE,
-  STUDENT_TABLE,
-  STUDENT_TERM_TABLE,
-  StudentClusterTable,
-  StudentCourseTable,
-  StudentDropoutTable,
-  StudentProgramTable,
-  StudentTable,
-  StudentTermTable,
-  TRACKING_TABLE,
-  USER_CONFIGURATION_TABLE,
-  USER_PROGRAMS_TABLE,
-  UserConfigurationTable,
-  UserProgramsTable,
-  USERS_TABLE,
-  UserTable,
-} from "./tables";
+import type { FeedbackQuestionOption } from "../entities/feedback";
+import type { FeedbackQuestionType } from "../../constants";
 
-const dataImport = async () => {
-  dbAuth.schema.hasTable(USERS_TABLE).then(async (exists) => {
+const migration = async () => {
+  const { FeedbackQuestionType, UserType } = await import("../../constants");
+  const { baseDBConfig, dbNames } = await import("./config");
+
+  const knexDB = (await import("knex")).default(baseDBConfig);
+
+  const createdDatabases = Object.values(dbNames);
+  for (const dbName of Object.values(dbNames)) {
+    try {
+      await knexDB.raw(`CREATE DATABASE "${dbName}";`);
+    } catch (err) {
+      const message: string = err.message;
+      if (message.includes("already exists")) {
+        createdDatabases.splice(createdDatabases.indexOf(dbName), 1);
+      } else {
+        console.error(message);
+        await knexDB.destroy();
+        process.exit(1);
+      }
+    }
+  }
+
+  if (createdDatabases.length) {
+    console.info(
+      `CREATED "${createdDatabases.join(" | ")}" DATABASE${
+        createdDatabases.length > 1 ? "S" : ""
+      }!`
+    );
+  }
+
+  await knexDB.destroy();
+
+  const sha1 = (await import("crypto-js/sha1")).default;
+  const { chunk, sample } = await import("lodash");
+
+  const { baseUserConfig } = await import("../../constants/userConfig");
+  const {
+    joinFeedbackQuestionOptions,
+    splitFeedbackQuestionOptions,
+  } = await import("../resolvers/feedback/utils");
+  const { dbAuth, dbConfig, dbData, dbTracking } = await import("./index");
+  const {
+    CONFIGURATION_TABLE,
+    COURSE_STATS_TABLE,
+    COURSE_TABLE,
+    CourseStatsTable,
+    CourseTable,
+    FEEDBACK_FORM_QUESTION_TABLE,
+    FEEDBACK_FORM_TABLE,
+    FEEDBACK_RESULT_TABLE,
+    FeedbackFormQuestionTable,
+    FeedbackFormTable,
+    FeedbackResultTable,
+    PARAMETER_TABLE,
+    ParameterTable,
+    PERFORMANCE_BY_LOAD_TABLE,
+    PerformanceByLoadTable,
+    PERSISTENCE_TABLE,
+    PROGRAM_STRUCTURE_TABLE,
+    PROGRAM_TABLE,
+    ProgramStructureTable,
+    ProgramTable,
+    STUDENT_CLUSTER_TABLE,
+    STUDENT_COURSE_TABLE,
+    STUDENT_DROPOUT_TABLE,
+    STUDENT_PROGRAM_TABLE,
+    STUDENT_TABLE,
+    STUDENT_TERM_TABLE,
+    StudentClusterTable,
+    StudentCourseTable,
+    StudentDropoutTable,
+    StudentProgramTable,
+    StudentTable,
+    StudentTermTable,
+    TRACKING_TABLE,
+    USER_CONFIGURATION_TABLE,
+    USER_PROGRAMS_TABLE,
+    UserConfigurationTable,
+    UserProgramsTable,
+    USERS_TABLE,
+    UserTable,
+  } = await import("./tables");
+
+  await dbAuth.schema.hasTable(USERS_TABLE).then(async (exists) => {
     if (!exists) {
       await dbAuth.schema.createTable(USERS_TABLE, (table) => {
         table.text("email").primary();
@@ -84,7 +118,7 @@ const dataImport = async () => {
     }
   });
 
-  dbAuth.schema.hasTable(USER_PROGRAMS_TABLE).then(async (exists) => {
+  await dbAuth.schema.hasTable(USER_PROGRAMS_TABLE).then(async (exists) => {
     if (!exists) {
       await dbAuth.schema.createTable(USER_PROGRAMS_TABLE, (table) => {
         table.text("email");
@@ -102,26 +136,28 @@ const dataImport = async () => {
     }
   });
 
-  dbConfig.schema.hasTable(USER_CONFIGURATION_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbConfig.schema.createTable(USER_CONFIGURATION_TABLE, (table) => {
-        table.text("email").primary().notNullable();
-        table.json("config").notNullable();
-      });
+  await dbConfig.schema
+    .hasTable(USER_CONFIGURATION_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbConfig.schema.createTable(USER_CONFIGURATION_TABLE, (table) => {
+          table.text("email").primary().notNullable();
+          table.json("config").notNullable();
+        });
 
-      await UserConfigurationTable().insert({
-        email: "admin@admin.dev",
-        config: {
-          ...baseUserConfig,
-          SHOW_DROPOUT: true,
-          SHOW_STUDENT_LIST: true,
-          FOREPLAN: true,
-        },
-      });
-    }
-  });
+        await UserConfigurationTable().insert({
+          email: "admin@admin.dev",
+          config: {
+            ...baseUserConfig,
+            SHOW_DROPOUT: true,
+            SHOW_STUDENT_LIST: true,
+            FOREPLAN: true,
+          },
+        });
+      }
+    });
 
-  dbConfig.schema.hasTable(CONFIGURATION_TABLE).then(async (exists) => {
+  await dbConfig.schema.hasTable(CONFIGURATION_TABLE).then(async (exists) => {
     if (!exists) {
       await dbConfig.schema.createTable(CONFIGURATION_TABLE, (table) => {
         table.text("name").primary().defaultTo("");
@@ -130,7 +166,7 @@ const dataImport = async () => {
     }
   });
 
-  dbTracking.schema.hasTable(TRACKING_TABLE).then(async (exists) => {
+  await dbTracking.schema.hasTable(TRACKING_TABLE).then(async (exists) => {
     if (!exists) {
       await dbTracking.schema.createTable(TRACKING_TABLE, (table) => {
         table.bigIncrements("id").primary().unsigned();
@@ -143,7 +179,7 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(COURSE_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(COURSE_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(COURSE_TABLE, (table) => {
         table.text("id").notNullable().primary();
@@ -162,7 +198,7 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(COURSE_STATS_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(COURSE_STATS_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(COURSE_STATS_TABLE, (table) => {
         table.text("course_taken").notNullable();
@@ -193,7 +229,7 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(PARAMETER_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(PARAMETER_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(PARAMETER_TABLE, (table) => {
         table.float("passing_grade", 8);
@@ -212,7 +248,7 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(PROGRAM_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(PROGRAM_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(PROGRAM_TABLE, (table) => {
         table.text("id").notNullable().primary();
@@ -235,7 +271,7 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(PROGRAM_STRUCTURE_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(PROGRAM_STRUCTURE_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(PROGRAM_STRUCTURE_TABLE, (table) => {
         table.integer("id", 8).notNullable().primary();
@@ -265,7 +301,7 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(STUDENT_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(STUDENT_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(STUDENT_TABLE, (table) => {
         table.text("id").notNullable().primary();
@@ -278,7 +314,7 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(STUDENT_COURSE_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(STUDENT_COURSE_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(STUDENT_COURSE_TABLE, (table) => {
         table.integer("id", 8).notNullable().primary();
@@ -302,7 +338,7 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(STUDENT_DROPOUT_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(STUDENT_DROPOUT_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(STUDENT_DROPOUT_TABLE, (table) => {
         table.text("student_id").notNullable().primary();
@@ -325,7 +361,7 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(STUDENT_PROGRAM_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(STUDENT_PROGRAM_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(STUDENT_PROGRAM_TABLE, (table) => {
         table.text("student_id").notNullable();
@@ -353,7 +389,7 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(STUDENT_TERM_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(STUDENT_TERM_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(STUDENT_TERM_TABLE, (table) => {
         table.integer("id", 8).primary().notNullable();
@@ -384,35 +420,37 @@ const dataImport = async () => {
     }
   });
 
-  dbData.schema.hasTable(PERFORMANCE_BY_LOAD_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbData.schema.createTable(PERFORMANCE_BY_LOAD_TABLE, (table) => {
-        table.integer("id", 8).primary().notNullable();
-        table.text("program_id").notNullable().defaultTo("");
-        table.integer("student_cluster", 2).notNullable();
-        table.text("courseload_unit").notNullable().defaultTo("credits");
-        table.float("courseload_lb", 4).notNullable();
-        table.float("courseload_ub", 4).notNullable();
-        table.float("hp_value", 4).notNullable();
-        table.float("mp_value", 4).notNullable();
-        table.float("lp_value", 4).notNullable();
-        table.text("message_title").notNullable();
-        table.text("message_text").notNullable();
-        table.text("cluster_label").notNullable();
-        table.integer("hp_count");
-        table.integer("mp_count");
-        table.integer("lp_count");
-        table.text("courseload_label").notNullable();
-        table.integer("n_total");
-      });
+  await dbData.schema
+    .hasTable(PERFORMANCE_BY_LOAD_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbData.schema.createTable(PERFORMANCE_BY_LOAD_TABLE, (table) => {
+          table.integer("id", 8).primary().notNullable();
+          table.text("program_id").notNullable().defaultTo("");
+          table.integer("student_cluster", 2).notNullable();
+          table.text("courseload_unit").notNullable().defaultTo("credits");
+          table.float("courseload_lb", 4).notNullable();
+          table.float("courseload_ub", 4).notNullable();
+          table.float("hp_value", 4).notNullable();
+          table.float("mp_value", 4).notNullable();
+          table.float("lp_value", 4).notNullable();
+          table.text("message_title").notNullable();
+          table.text("message_text").notNullable();
+          table.text("cluster_label").notNullable();
+          table.integer("hp_count");
+          table.integer("mp_count");
+          table.integer("lp_count");
+          table.text("courseload_label").notNullable();
+          table.integer("n_total");
+        });
 
-      await PerformanceByLoadTable().insert(
-        (await import("./mockData/performance_by_load.json")).default
-      );
-    }
-  });
+        await PerformanceByLoadTable().insert(
+          (await import("./mockData/performance_by_load.json")).default
+        );
+      }
+    });
 
-  dbData.schema.hasTable(STUDENT_CLUSTER_TABLE).then(async (exists) => {
+  await dbData.schema.hasTable(STUDENT_CLUSTER_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(STUDENT_CLUSTER_TABLE, (table) => {
         table.text("student_id");
@@ -436,7 +474,7 @@ const dataImport = async () => {
     }
   });
 
-  dbAuth.schema.hasTable(PERSISTENCE_TABLE).then(async (exists) => {
+  await dbAuth.schema.hasTable(PERSISTENCE_TABLE).then(async (exists) => {
     if (!exists) {
       await dbAuth.schema.createTable(PERSISTENCE_TABLE, (table) => {
         table.text("user").notNullable();
@@ -461,7 +499,7 @@ const dataImport = async () => {
     },
   ];
 
-  dbTracking.schema.hasTable(FEEDBACK_FORM_TABLE).then(async (exists) => {
+  await dbTracking.schema.hasTable(FEEDBACK_FORM_TABLE).then(async (exists) => {
     if (exists && process.env.NODE_ENV === "development") {
       await dbTracking.schema.dropTable(FEEDBACK_FORM_TABLE);
       exists = false;
@@ -539,7 +577,7 @@ const dataImport = async () => {
     },
   ];
 
-  dbTracking.schema
+  await dbTracking.schema
     .hasTable(FEEDBACK_FORM_QUESTION_TABLE)
     .then(async (exists) => {
       if (exists && process.env.NODE_ENV === "development") {
@@ -574,52 +612,68 @@ const dataImport = async () => {
       }
     });
 
-  dbTracking.schema.hasTable(FEEDBACK_RESULT_TABLE).then(async (exists) => {
-    if (exists && process.env.NODE_ENV === "development") {
-      await dbTracking.schema.dropTable(FEEDBACK_RESULT_TABLE);
-      exists = false;
-    }
-    if (!exists) {
-      await dbTracking.schema.createTable(FEEDBACK_RESULT_TABLE, (table) => {
-        table.integer("form_id").notNullable();
+  await dbTracking.schema
+    .hasTable(FEEDBACK_RESULT_TABLE)
+    .then(async (exists) => {
+      if (exists && process.env.NODE_ENV === "development") {
+        await dbTracking.schema.dropTable(FEEDBACK_RESULT_TABLE);
+        exists = false;
+      }
+      if (!exists) {
+        await dbTracking.schema.createTable(FEEDBACK_RESULT_TABLE, (table) => {
+          table.integer("form_id").notNullable();
 
-        table.integer("question_id").notNullable();
+          table.integer("question_id").notNullable();
 
-        table.text("user_id").notNullable();
+          table.text("user_id").notNullable();
 
-        table.text("answer").notNullable().defaultTo("");
+          table.text("answer").notNullable().defaultTo("");
 
-        table
-          .timestamp("timestamp", { useTz: true })
-          .notNullable()
-          .defaultTo(dbTracking.fn.now());
+          table
+            .timestamp("timestamp", { useTz: true })
+            .notNullable()
+            .defaultTo(dbTracking.fn.now());
 
-        table.primary(["form_id", "question_id", "user_id"]);
-      });
+          table.primary(["form_id", "question_id", "user_id"]);
+        });
 
-      const form_id = sample(mockFeedbackForms)?.id ?? 0;
+        const form_id = sample(mockFeedbackForms)?.id ?? 0;
 
-      const questionsOfForm = mockFeedbackQuestions.filter(
-        (question) => question.form_id === form_id
-      );
+        const questionsOfForm = mockFeedbackQuestions.filter(
+          (question) => question.form_id === form_id
+        );
 
-      await FeedbackResultTable().insert(
-        questionsOfForm.map((question) => {
-          return {
-            form_id,
-            question_id: question.id,
-            user_id: "admin@admin.dev",
-            answer:
-              sample(
-                splitFeedbackQuestionOptions(question.options)
-              )?.value.toString() ?? "random",
-          };
-        })
-      );
-    }
-  });
+        await FeedbackResultTable().insert(
+          questionsOfForm.map((question) => {
+            return {
+              form_id,
+              question_id: question.id,
+              user_id: "admin@admin.dev",
+              answer:
+                sample(
+                  splitFeedbackQuestionOptions(question.options)
+                )?.value.toString() ?? "random",
+            };
+          })
+        );
+      }
+    });
+
+  setTimeout(async () => {
+    await Promise.all([
+      dbAuth.destroy(),
+      dbConfig.destroy(),
+      dbData.destroy(),
+      dbTracking.destroy(),
+    ]);
+    console.info("DATABASE PREPARED!");
+  }, 2000);
 };
 
-if (NODE_ENV !== "test") {
-  dataImport();
+if (process.env.NODE_ENV === undefined) {
+  //@ts-ignore
+  process.env.NODE_ENV = "development";
+}
+if (process.env.NODE_ENV !== "test") {
+  migration();
 }
