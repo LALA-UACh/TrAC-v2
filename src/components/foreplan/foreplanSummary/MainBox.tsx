@@ -9,11 +9,12 @@ import React, {
   SetStateAction,
   useContext,
   useMemo,
+  useState,
 } from "react";
 import { FaGripLinesVertical } from "react-icons/fa";
 import { IoMdHelpCircleOutline } from "react-icons/io";
-import ReactTooltip from "react-tooltip";
 import { useWindowSize } from "react-use";
+import usePortal from "react-useportal";
 import { useRememberState } from "use-remember-state";
 
 import {
@@ -34,13 +35,9 @@ import {
   ForeplanHelperStore,
 } from "../../../context/ForeplanContext";
 import { setTrackingData, track } from "../../../context/Tracking";
-import {
-  customColor,
-  padding5px,
-  zIndex700,
-} from "../../../utils/cssConstants";
+import { customColor, zIndex700 } from "../../../utils/cssConstants";
 import { useUser } from "../../../utils/useUser";
-import usePortal from "react-useportal";
+
 const ForeplanContentRowList = dynamic(() => import("./List"));
 const ForeplanContentBadgesList = dynamic(() => import("./Badges"));
 interface ExpandedState {
@@ -364,6 +361,7 @@ const Waffle: FC<{
     const rowRange = range(0, 10);
     const rectSize = config.FOREPLAN_SUMMARY_WAFFLE_SQUARE_SIZE;
     const separation = config.FOREPLAN_SUMMARY_WAFFLE_RECT_SEPARATION;
+    const [tooltip, setTooltip] = useState("");
 
     return (
       <Stack alignItems="center">
@@ -389,6 +387,7 @@ const Waffle: FC<{
           className="waffleContainer"
           width="fit-content"
           height="fit-content"
+          title={tooltip ? tooltip : undefined}
         >
           <svg
             width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
@@ -399,28 +398,26 @@ const Waffle: FC<{
                 const n = key1 * 10 + key2;
                 let fill: string;
                 let data_tip: string;
-                let data_type: "success" | "warning" | "error";
                 if (n < nLow) {
                   fill = colors.low;
                   data_tip = failRateLow + "%";
-                  data_type = "success";
                 } else if (n < nMid) {
                   fill = colors.mid;
                   data_tip = failRateMid + "%";
-                  data_type = "warning";
                 } else {
                   fill = colors.high;
                   data_tip = failRateHigh + "%";
-                  data_type = "error";
                 }
                 return (
                   <rect
                     key={n}
-                    data-type={data_type}
-                    data-tip={data_tip}
-                    data-for="waffle_tooltip"
                     x={rectSize * key2 * separation}
                     y={rectSize * key1 * separation}
+                    onMouseOver={() => {
+                      if (tooltip !== data_tip) {
+                        setTooltip(data_tip);
+                      }
+                    }}
                     width={rectSize}
                     height={rectSize}
                     fill={fill}
@@ -447,7 +444,6 @@ const Waffle: FC<{
             {highlightLabel}
           </Text>
         )}
-        <ReactTooltip css={padding5px} id="waffle_tooltip" delayHide={300} />
       </Stack>
     );
   }

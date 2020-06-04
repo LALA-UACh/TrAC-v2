@@ -2,7 +2,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { map, truncate } from "lodash";
 import React, { FC, memo, useContext } from "react";
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import ReactTooltip from "react-tooltip";
 
 import { Box, Flex, Text } from "@chakra-ui/core";
 
@@ -48,9 +47,8 @@ const ForeplanContentRowListItem: FC<
           m={0}
           textAlign="start"
           width={config.FOREPLAN_SUMMARY_LIST_NAME_WIDTH}
-          data-tip={name}
-          data-for={code}
           cursor={shouldTruncate ? "help" : undefined}
+          title={shouldTruncate ? name : undefined}
         >
           {truncate(name, {
             length: config.FOREPLAN_SUMMARY_LIST_NAME_TRUNCATE_LENGTH,
@@ -74,7 +72,6 @@ const ForeplanContentRowListItem: FC<
           }}
         />
       </Flex>
-      {shouldTruncate && <ReactTooltip id={code} type="light" />}
     </>
   );
 });
