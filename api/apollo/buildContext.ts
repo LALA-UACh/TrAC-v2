@@ -1,9 +1,13 @@
-import { Request, Response } from "express";
+import DataLoader from "dataloader";
 import { verify } from "jsonwebtoken";
+import { keyBy } from "lodash";
 
-import { SECRET } from "../api_constants";
-import { IUser, UserTable } from "../db/tables";
+import { NODE_ENV } from "../../constants";
+import { SECRET } from "../constants";
+import { IUser, UserConfigurationTable, UserTable } from "../db/tables";
 import { AuthResolver } from "../resolvers/auth/auth";
+
+import type { Request, Response } from "express-serve-static-core";
 
 export const buildContext = async ({
   req,
@@ -19,7 +23,7 @@ export const buildContext = async ({
       req.cookies.authorization || req.headers.authorization;
     if (authorizationToken) {
       const userJWT = verify(authorizationToken, SECRET, {
-        ignoreExpiration: process.env.NODE_ENV === "development",
+        ignoreExpiration: NODE_ENV === "development",
       }) as {
         email: string;
       };
@@ -43,5 +47,28 @@ export const buildContext = async ({
     res,
     user,
     token,
+    UserConfigDataLoader: new DataLoader(
+      async (usersEmails: readonly string[]) => {
+        const dataHash = keyBy(
+          await UserConfigurationTable()
+            .select("config", "email")
+            .whereIn("email", usersEmails),
+          "email"
+        );
+
+        return usersEmails.map((email) => {
+          return dataHash[email];
+        });
+      }
+    ),
+    UserDataLoader: new DataLoader(async (usersEmails: readonly string[]) => {
+      const userDataHash = keyBy(
+        await UserTable().select("*").whereIn("email", usersEmails),
+        "email"
+      );
+      return usersEmails.map((email) => {
+        return userDataHash[email];
+      });
+    }),
   };
 };

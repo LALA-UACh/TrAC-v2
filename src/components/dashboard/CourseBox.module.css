@@ -1,0 +1,16 @@
+.histogramBox {
+  position: absolute !important;
+  bottom: 0 !important;
+  transform-origin: 0% 100%;
+  -moz-transform-origin: 0% 100%;
+  -ms-transform-origin: 0% 100%;
+  -o-transform-origin: 0% 100%;
+  -webkit-transform-origin: 0% 100%;
+  transition-timing-function: ease-in-out;
+  -webkit-transition-timing-function: ease-in-out;
+  -o-transition-timing-function: ease-in-out;
+  -moz-transition-timing-function: ease-in-out;
+}
+.histogramBox.foreplanActive {
+  padding-bottom: 20px;
+}

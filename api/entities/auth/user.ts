@@ -4,16 +4,17 @@ import {
   Authorized,
   Field,
   InputType,
+  Int,
   ObjectType,
   registerEnumType,
 } from "type-graphql";
 
 import { UserType } from "../../../constants";
-import { UserConfig } from "../../../constants/userConfig";
-import { ADMIN } from "../../api_constants";
+import { ADMIN } from "../../constants";
 import { IUser } from "../../db/tables";
 import { Program } from "../data/program";
 
+import type { UserConfig } from "../../../constants/userConfig";
 registerEnumType(UserType, {
   name: "UserType",
   description: "Possible options of an user type",
@@ -41,7 +42,7 @@ export class User implements Partial<IUser> {
   locked: boolean;
 
   @Authorized([ADMIN])
-  @Field()
+  @Field(() => Int)
   tries: number;
 
   @Authorized([ADMIN])
@@ -61,7 +62,7 @@ export class UserProgram {
   email: string;
 
   @Field(() => String)
-  program: number;
+  program: string;
 }
 
 @InputType()
@@ -89,7 +90,7 @@ export class UpsertedUser implements Partial<User> {
   })
   config?: UserConfig;
 
-  @Field({ defaultValue: 0 })
+  @Field(() => Int, { defaultValue: 0 })
   tries: number;
 
   @Field({ defaultValue: "" })

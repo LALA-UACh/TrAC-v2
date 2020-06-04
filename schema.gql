@@ -22,8 +22,10 @@ type Course {
   flow: [Course!]!
   historicalDistribution: [DistributionValue!]!
 
-  """Course-Semester-Curriculum-Program ID """
-  id: Float!
+  """
+  Course-Semester-Curriculum-Program ID
+  """
+  id: Int!
   mention: String!
   name: String!
   requisites: [Course!]!
@@ -51,15 +53,76 @@ type DistributionValue {
 
 type Dropout {
   active: Boolean!
-  model_accuracy: Float!
-  prob_dropout: Float!
+  explanation: String
+  model_accuracy: Float
+  prob_dropout: Float
 }
 
 """
-A field whose value conforms to the standard internet email address format as
-specified in RFC822: https://www.w3.org/Protocols/rfc822/.
+A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/.
 """
 scalar EmailAddress
+
+type FeedbackAnswer {
+  answer: String!
+  question: FeedbackQuestion!
+}
+
+input FeedbackAnswerInput {
+  form: Int!
+  questions: [FeedbackAnswerQuestionInput!]!
+}
+
+input FeedbackAnswerQuestionInput {
+  answer: String!
+  question: Int!
+}
+
+type FeedbackForm {
+  id: Int!
+  name: String!
+  priority: Int!
+  questions: [FeedbackQuestion!]!
+}
+
+type FeedbackQuestion {
+  id: Int!
+  options: [FeedbackQuestionOption!]!
+  priority: Int!
+  question: String!
+  type: FeedbackQuestionType!
+}
+
+type FeedbackQuestionOption {
+  text: String!
+  value: Int!
+}
+
+input FeedbackQuestionOptionInput {
+  text: String!
+  value: Int!
+}
+
+"""
+Type of question in a feedback form
+"""
+enum FeedbackQuestionType {
+  MultipleAnswer
+  OpenText
+  SingleAnswer
+}
+
+type FeedbackResult {
+  answers: [FeedbackAnswer!]!
+  form: FeedbackForm!
+  timestamp: DateTime!
+  user: User!
+}
+
+type IndirectTakeCourse {
+  course: Course!
+  requisitesUnmet: [String!]!
+}
 
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
@@ -78,17 +141,64 @@ type MultipleLockedUserResult {
 
 type Mutation {
   addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
+  answerFeedbackForm(answer: FeedbackAnswerInput!): Boolean!
   deleteUser(email: EmailAddress!): [User!]!
+  directTakeCourses(program_id: String, student_id: String): [Course!]!
+  editConfig(name: String!, value: String!): JSONObject!
+  feedbackResultsCsv: String!
+  indirectTakeCourses(
+    program_id: String
+    student_id: String
+  ): [IndirectTakeCourse!]!
   lockMailUser(email: EmailAddress!): LockedUserResult!
   login(email: EmailAddress!, password: String!): AuthResult!
   logout: Boolean!
   mailAllLockedUsers: [JSONObject!]!
+  performanceLoadAdvices(
+    program_id: String
+    student_id: String
+  ): [PerformanceByLoad!]!
   program(id: String, student_id: String): Program!
+  resetDataLoadersCache: Int!
+  resetPersistence(user: String!): Int!
+  setPersistenceValue(data: JSONObject!, key: String!): Persistence!
   student(program_id: String, student_id: String): Student
   track(data: String!, datetime_client: DateTime!): Boolean!
-  unlock(email: EmailAddress!, password: String!, unlockKey: String!): AuthResult!
+  unlock(
+    email: EmailAddress!
+    password: String!
+    unlockKey: String!
+  ): AuthResult!
   updateUserPrograms(userPrograms: UpdateUserPrograms!): [User!]!
   upsertUsers(users: [UpsertedUser!]!): [User!]!
+}
+
+type PerformanceByLoad {
+  adviceParagraph: String!
+  adviceTitle: String!
+  clusterLabel: String!
+  failRateHigh: Int!
+  failRateLow: Int!
+  failRateMid: Int!
+  id: Int!
+  isStudentCluster: Boolean!
+  loadUnit: PerformanceLoadUnit!
+  lowerBoundary: Float!
+  upperBoundary: Float!
+}
+
+"""
+Unit used to distinguish load in the foreplan
+"""
+enum PerformanceLoadUnit {
+  Credits
+}
+
+type Persistence {
+  data: JSONObject!
+  key: String!
+  timestamp: DateTime!
+  user: String!
 }
 
 type Program {
@@ -103,9 +213,13 @@ type Program {
 type Query {
   config: JSONObject!
   currentUser: AuthResult
+  feedbackResults(user_ids: [String!]): [FeedbackResult!]!
+  getPersistenceValue(key: String!): Persistence
   myPrograms: [Program!]!
   programs: [Program!]!
   students(last_n_years: Int = 1, program_id: String!): [Student!]!
+  unansweredForm: FeedbackForm
+  userPersistences(user: String!): [Persistence!]!
   users: [User!]!
 }
 
@@ -114,7 +228,9 @@ type Semester {
   id: Int!
 }
 
-"""Possible states of a taken course"""
+"""
+Possible states of a taken course
+"""
 enum StateCourse {
   Canceled
   Current
@@ -162,7 +278,9 @@ type Term {
   year: Int!
 }
 
-"""Possible states of a term, first semester, second semester or anual"""
+"""
+Possible states of a term, first semester, second semester or anual
+"""
 enum TermType {
   Anual
   First
@@ -174,7 +292,7 @@ type Track {
   data: String!
   datetime: DateTime!
   datetime_client: DateTime!
-  id: Float!
+  id: Int!
   user_id: String!
 }
 
@@ -191,7 +309,7 @@ input UpsertedUser {
   name: String = "default_name"
   oldEmail: EmailAddress
   student_id: String = ""
-  tries: Float = 0
+  tries: Int = 0
   type: UserType = Student
 }
 
@@ -203,7 +321,7 @@ type User {
   name: String!
   programs: [Program!]!
   student_id: String!
-  tries: Float!
+  tries: Int!
   type: UserType!
   unlockKey: String!
 }
@@ -213,7 +331,9 @@ input UserProgram {
   program: String!
 }
 
-"""Possible options of an user type"""
+"""
+Possible options of an user type
+"""
 enum UserType {
   Director
   Student

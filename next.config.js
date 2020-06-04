@@ -8,8 +8,6 @@ module.exports = withBundleAnalyzer({
   env: {
     DOMAIN: process.env.DOMAIN,
   },
-  webpack: (config, options) => {
-    return config;
-  },
   target: "serverless",
+  poweredByHeader: false,
 });

@@ -1,12 +1,13 @@
-import stringify from "json-stringify-safe";
 import nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/sendmail-transport";
+
+import { NODE_ENV } from "../../../constants";
 
 const GMAIL_USERNAME = process.env.GMAIL_USERNAME;
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
 
 const transporter = nodemailer.createTransport({
-  ...(process.env.NODE_ENV === "test"
+  ...(NODE_ENV === "test"
     ? {
         // host: "smtp.mailtrap.io",
         // port: 2525,
@@ -30,12 +31,7 @@ const mailOptions = {
   html: "",
 };
 
-export const sendMail = async (
-  opts: MailOptions,
-  success = (info: any) =>
-    console.log("Email sent successfully: " + stringify(info)),
-  failure = (err: any) => console.error("Error sending mail: " + stringify(err))
-) => {
+export const sendMail = async (opts: MailOptions) => {
   return await transporter.sendMail({
     ...mailOptions,
     ...opts,

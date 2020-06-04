@@ -1,13 +1,12 @@
-import { uniqBy } from "lodash";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 import { $PropertyType } from "utility-types";
 
 import { defaultTermType } from "../../../constants";
 import {
-  ProgramTable,
-  StudentCourseTable,
-  StudentTermTable,
-} from "../../db/tables";
+  ProgramGradeDataLoader,
+  TakenCoursesDataLoader,
+  TermDataLoader,
+} from "../../dataloaders/term";
 import { Term } from "../../entities/data/term";
 import { assertIsDefined } from "../../utils/assert";
 import { PartialTakenCourse } from "./takenCourse";
@@ -22,10 +21,7 @@ export class TermResolver {
     { id }: PartialTerm
   ): Promise<$PropertyType<Term, "student_id">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
-    const studentData = await StudentTermTable()
-      .select("student_id")
-      .where({ id })
-      .first();
+    const studentData = await TermDataLoader.load(id);
     assertIsDefined(
       studentData,
       `student_id could not be found for ${id} term`
@@ -39,10 +35,7 @@ export class TermResolver {
     { id }: PartialTerm
   ): Promise<$PropertyType<Term, "year">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
-    const yearData = await StudentTermTable()
-      .select("year")
-      .where({ id })
-      .first();
+    const yearData = await TermDataLoader.load(id);
     assertIsDefined(yearData, `year could not be found for ${id} term`);
     return yearData.year;
   }
@@ -53,10 +46,8 @@ export class TermResolver {
     { id }: PartialTerm
   ): Promise<$PropertyType<Term, "term">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
-    const termData = await StudentTermTable()
-      .select("term")
-      .where({ id })
-      .first();
+    const termData = await TermDataLoader.load(id);
+
     assertIsDefined(termData, `term could not be found for ${id} term`);
     return defaultTermType(termData.term);
   }
@@ -67,10 +58,7 @@ export class TermResolver {
     { id }: PartialTerm
   ): Promise<$PropertyType<Term, "comments">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
-    const termData = await StudentTermTable()
-      .select("comments")
-      .where({ id })
-      .first();
+    const termData = await TermDataLoader.load(id);
     assertIsDefined(termData, `comments could not be found for ${id} term`);
     return termData.comments;
   }
@@ -81,10 +69,7 @@ export class TermResolver {
     { id }: PartialTerm
   ): Promise<$PropertyType<Term, "situation">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
-    const situationData = await StudentTermTable()
-      .select("situation")
-      .where({ id })
-      .first();
+    const situationData = await TermDataLoader.load(id);
     assertIsDefined(
       situationData,
       `situation could not be found for ${id} term`
@@ -98,10 +83,7 @@ export class TermResolver {
     { id }: PartialTerm
   ): Promise<$PropertyType<Term, "semestral_grade">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
-    const pspData = await StudentTermTable()
-      .select("t_gpa")
-      .where({ id })
-      .first();
+    const pspData = await TermDataLoader.load(id);
     assertIsDefined(
       pspData,
       `Semestral grade could not be found for ${id} term`
@@ -115,9 +97,7 @@ export class TermResolver {
     { id }: PartialTerm
   ): Promise<$PropertyType<Term, "cumulated_grade">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
-    const pgaData = await StudentTermTable()
-      .where({ id })
-      .first();
+    const pgaData = await TermDataLoader.load(id);
     assertIsDefined(
       pgaData,
       `Cumulated grade could not be found for ${id} term`
@@ -132,23 +112,14 @@ export class TermResolver {
   ): Promise<$PropertyType<Term, "program_grade">> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
 
-    const programPGAData = await ProgramTable()
-      .select("last_gpa")
-      .where(
-        "id",
-        StudentTermTable()
-          .select("program_id")
-          .where({ id })
-          .first()
-      )
-      .first();
+    const programPGA = await ProgramGradeDataLoader.load(id);
 
     assertIsDefined(
-      programPGAData,
+      programPGA,
       `Program grade could not be found for ${id} term`
     );
 
-    return programPGAData.last_gpa;
+    return programPGA;
   }
 
   @FieldResolver()
@@ -157,33 +128,19 @@ export class TermResolver {
     { id }: PartialTerm
   ): Promise<PartialTakenCourse[]> {
     assertIsDefined(id, `id needs to be available for Terms field resolvers`);
-    const studentTermData = await StudentTermTable()
-      .select("student_id", "year", "term")
-      .where({ id })
-      .first();
+    const studentTermData = await TermDataLoader.load(id);
     assertIsDefined(
       studentTermData,
       `Taken courses could not be found for ${id} term`
     );
-    // TODO: Optimize in a single SQL query
-    const takenCoursesData = await StudentCourseTable()
-      .select("id", "course_taken", "course_equiv", "elect_equiv")
-      .where({
-        year: studentTermData.year,
-        term: studentTermData.term,
-        student_id: studentTermData.student_id,
-      })
-      .orderBy([
-        { column: "course_taken", order: "desc" },
-        { column: "year", order: "desc" },
-        { column: "term", order: "desc" },
-        {
-          column: "state",
-          order: "asc",
-        },
-      ]);
 
-    return uniqBy(takenCoursesData, ({ course_taken }) => course_taken).map(
+    const takenCoursesData = await TakenCoursesDataLoader.load({
+      year: studentTermData.year,
+      term: studentTermData.term,
+      student_id: studentTermData.student_id,
+    });
+
+    return takenCoursesData.map(
       ({ id, course_taken, course_equiv, elect_equiv }) => {
         return { id, code: course_taken, equiv: course_equiv || elect_equiv };
       }

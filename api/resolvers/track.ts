@@ -9,7 +9,7 @@ import { anonService } from "../utils/anonymization";
 @Resolver(() => Track)
 export class TrackResolver {
   @Authorized()
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, { complexity: 0 })
   async track(
     @Args() { datetime_client, data }: TrackInput,
     @Ctx() { user }: IContext
@@ -37,7 +37,7 @@ export class TrackResolver {
         data,
       })
       .then(() => {})
-      .catch(err => {
+      .catch((err) => {
         console.error(
           `Error on tracking insert! `,
           JSON.stringify(err, null, 2)

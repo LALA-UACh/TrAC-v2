@@ -32,8 +32,8 @@ const gitPolling = setInterval(async () => {
     // If there is a change in the remote repository, fetch it and reset the local repository to it's head
     clearInterval(gitPolling);
     Shell.exec("git fetch");
-    Shell.exec("git reset --hard origin/master");
-    Shell.exec("yarn --frozen-lockfile --production=false && yarn build");
+    Shell.exec(`git reset --hard origin/${branch}`);
+    Shell.exec("yarn --frozen-lockfile --prod=false && yarn build");
     Shell.exec("pm2 start ecosystem-dev.yaml", { async: true });
   }
 }, ms("30 seconds"));

@@ -1,4 +1,4 @@
-import { defaultsDeep, intersectionWith } from "lodash";
+import { intersectionWith } from "lodash";
 import {
   Arg,
   Authorized,
@@ -20,13 +20,15 @@ import {
 } from "../../../constants";
 import { IContext } from "../../../interfaces";
 import { ArrayPropertyType, IfImplements } from "../../../interfaces/utils";
-import { ADMIN } from "../../api_constants";
+import { ADMIN } from "../../constants";
 import {
-  ProgramStructureTable,
-  ProgramTable,
-  StudentProgramTable,
-  UserProgramsTable,
-} from "../../db/tables";
+  CurriculumsDataLoader,
+  ProgramDataByStudentDataLoader,
+  ProgramDataLoader,
+  StudentProgramCurriculumsDataLoader,
+  StudentProgramDataLoader,
+} from "../../dataloaders/program";
+import { ProgramTable, UserProgramsTable } from "../../db/tables";
 import { Program } from "../../entities/data/program";
 import { anonService } from "../../utils/anonymization";
 import { assertIsDefined } from "../../utils/assert";
@@ -52,14 +54,9 @@ export class ProgramResolver {
     if (defaultUserType(user.type) === UserType.Student) {
       student_id = await anonService.getAnonymousIdOrGetItBack(user.student_id);
 
-      const studentProgram = await StudentProgramTable()
-        .distinct("program_id", "curriculum", "start_year")
-        .where({
-          student_id,
-        })
-        .orderBy("start_year", "desc");
+      const studentProgram = await StudentProgramDataLoader.load(student_id);
 
-      assertIsDefined(studentProgram[0], STUDENT_NOT_FOUND);
+      assertIsDefined(studentProgram[0], PROGRAM_NOT_FOUND);
 
       id = studentProgram[0].program_id;
       const curriculums = studentProgram.map(({ curriculum }) => {
@@ -89,26 +86,11 @@ export class ProgramResolver {
         student_id = await anonService.getAnonymousIdOrGetItBack(student_id);
 
         const [programData, curriculums] = await Promise.all([
-          ProgramTable()
-            .select("id", "name", "desc", "active")
-            .where({
-              id,
-            })
-            .whereIn(
-              "id",
-              StudentProgramTable()
-                .distinct("program_id")
-                .where({
-                  student_id,
-                })
-            )
-            .first(),
-          StudentProgramTable()
-            .distinct("curriculum", "start_year")
-            .where({
-              student_id,
-            })
-            .orderBy("start_year", "desc"),
+          ProgramDataByStudentDataLoader.load({
+            program_id: id,
+            student_id,
+          }),
+          StudentProgramCurriculumsDataLoader.load(student_id),
         ]);
 
         assertIsDefined(programData, STUDENT_NOT_FOUND);
@@ -145,11 +127,9 @@ export class ProgramResolver {
     assertIsDefined(user, `Authorization in context is broken`);
 
     const [userPrograms, allPrograms] = await Promise.all([
-      UserProgramsTable()
-        .select("program")
-        .where({
-          email: user.email,
-        }),
+      UserProgramsTable().select("program").where({
+        email: user.email,
+      }),
       ProgramTable().select("id"),
     ]);
 
@@ -180,10 +160,7 @@ export class ProgramResolver {
       "The id needs to be available for the program fields resolvers"
     );
 
-    const nameData = await ProgramTable()
-      .select("name")
-      .where({ id })
-      .first();
+    const nameData = await ProgramDataLoader.load(id);
 
     assertIsDefined(nameData, `Name could not be found for program ${name}`);
 
@@ -203,10 +180,7 @@ export class ProgramResolver {
       "The id needs to be available for the program fields resolvers"
     );
 
-    const descData = await ProgramTable()
-      .select("desc")
-      .where({ id })
-      .first();
+    const descData = await ProgramDataLoader.load(id);
 
     assertIsDefined(
       descData,
@@ -229,10 +203,7 @@ export class ProgramResolver {
       "The id needs to be available for the program fields resolvers"
     );
 
-    const activeData = await ProgramTable()
-      .select("active")
-      .where({ id })
-      .first();
+    const activeData = await ProgramDataLoader.load(id);
 
     assertIsDefined(activeData, `State could not be found for program ${id}`);
 
@@ -252,10 +223,7 @@ export class ProgramResolver {
       "The id needs to be available for the program fields resolvers"
     );
 
-    const last_gpa_data = await ProgramTable()
-      .select("last_gpa")
-      .where({ id })
-      .first();
+    const last_gpa_data = await ProgramDataLoader.load(id);
 
     assertIsDefined(
       last_gpa_data,
@@ -289,65 +257,11 @@ export class ProgramResolver {
       "The id needs to be available for the program fields resolvers"
     );
 
-    const data = curriculumsIds
-      ? await ProgramStructureTable()
-          .select("id", "curriculum", "semester", "course_id")
-          .where({ program_id })
-          .whereIn(
-            "curriculum",
-            curriculumsIds.map(({ id }) => id)
-          )
-      : await ProgramStructureTable()
-          .select("id", "curriculum", "semester", "course_id")
-          .where({ program_id });
-
-    const curriculums = data.reduce<
-      Record<
-        string /*Curriculum id (program_structure => curriculum)*/,
-        {
-          id: string /*Curriculum id (program_structure => curriculum)*/;
-          semesters: Record<
-            number /*Semester id (program_structure => semester) (1-12)*/,
-            {
-              id: number /*Semester id (program_structure => semester)*/;
-              courses: {
-                id: number /* Course-semester-curriculum id (program_structure => id) */;
-                code: string /* Course id (program_structure => course_id) */;
-              }[];
-            }
-          >;
-        }
-      >
-    >((acum, { curriculum, semester, course_id, id }) => {
-      defaultsDeep(acum, {
-        [curriculum]: {
-          id: curriculum,
-          semesters: {
-            [semester]: {
-              id: semester,
-              courses: [],
-            },
-          },
-        },
-      });
-
-      acum[curriculum].semesters[semester].courses.push({
-        id,
-        code: course_id,
-      });
-      return acum;
-    }, {});
-
-    return Object.values(curriculums).map(({ id, semesters }) => {
-      return {
-        id,
-        semesters: Object.values(semesters).map(({ id, courses }) => {
-          return {
-            id,
-            courses,
-          };
-        }),
-      };
+    const data = await CurriculumsDataLoader.load({
+      program_id,
+      curriculumsIds,
     });
+
+    return data;
   }
 }

@@ -13,8 +13,8 @@ import {
   TextArea,
 } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
-import { isJSON } from "validator";
 import isEmail from "validator/lib/isEmail";
+import isJSON from "validator/lib/isJSON";
 
 import { useMutation } from "@apollo/react-hooks";
 
@@ -22,6 +22,7 @@ import {
   ALL_USERS_ADMIN,
   UPSERT_USERS_ADMIN,
 } from "../../../graphql/adminQueries";
+import { width45em } from "../../../utils/cssConstants";
 
 export const ImportUsers: FC = () => {
   const [data, setData] = useRememberState("AdminImportUsersData", "email\n");
@@ -108,8 +109,8 @@ export const ImportUsers: FC = () => {
               onDrop={(acceptedFiles, _rejectedFiles) => {
                 acceptedFiles.forEach(async (file, _key) => {
                   fetch(URL.createObjectURL(file))
-                    .then(response => response.text())
-                    .then(text => {
+                    .then((response) => response.text())
+                    .then((text) => {
                       setData(data + text);
                     });
                 });
@@ -169,14 +170,13 @@ export const ImportUsers: FC = () => {
                 Upsert
               </Form.Button>
               <TextArea
-                ref={ref => {
+                ref={(ref) => {
                   if (ref) ref.focus();
                 }}
                 onChange={(_event, { value }) => {
                   setData(toString(value));
                 }}
-                rows={(data.match(/\n/g) || []).length + 3}
-                style={{ width: "45em" }}
+                css={width45em}
                 placeholder=".json o .csv"
                 value={data}
               />

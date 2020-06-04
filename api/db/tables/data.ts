@@ -129,6 +129,7 @@ export interface IStudentDropout {
   weight_per_semester?: string;
   active: boolean;
   model_accuracy?: number;
+  explanation?: string;
 }
 
 export const STUDENT_DROPOUT_TABLE = "student_dropout";
@@ -174,3 +175,43 @@ export interface IStudentTerm {
 export const STUDENT_TERM_TABLE = "student_term";
 
 export const StudentTermTable = () => dbData<IStudentTerm>(STUDENT_TERM_TABLE);
+
+// -------------------------------------------------------------------------------------
+
+export interface IPerformanceByLoad {
+  id: number;
+  program_id: string;
+  student_cluster: number;
+  courseload_unit: string;
+  courseload_lb: number;
+  courseload_ub: number;
+  hp_value: number;
+  mp_value: number;
+  lp_value: number;
+  message_title: string;
+  message_text: string;
+  cluster_label: string;
+  hp_count?: number;
+  mp_count?: number;
+  lp_count?: number;
+  courseload_label: string;
+  n_total?: number;
+}
+
+export const PERFORMANCE_BY_LOAD_TABLE = "performance_by_load";
+
+export const PerformanceByLoadTable = () =>
+  dbData<IPerformanceByLoad>(PERFORMANCE_BY_LOAD_TABLE);
+
+// -------------------------------------------------------------------------------------
+
+export interface IStudentCluster {
+  student_id: string;
+  program_id: string;
+  cluster: number;
+}
+
+export const STUDENT_CLUSTER_TABLE = "student_cluster";
+
+export const StudentClusterTable = () =>
+  dbData<IStudentCluster>(STUDENT_CLUSTER_TABLE);

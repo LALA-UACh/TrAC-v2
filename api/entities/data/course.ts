@@ -13,7 +13,7 @@ class Credit {
 @ObjectType({ simpleResolvers: true })
 export class Course {
   // program_structure => id
-  @Field({ description: "Course-Semester-Curriculum-Program ID " })
+  @Field(() => Int, { description: "Course-Semester-Curriculum-Program ID " })
   id: number;
 
   // course => id, program_structure => course_id

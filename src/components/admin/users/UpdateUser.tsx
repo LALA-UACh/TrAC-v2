@@ -1,5 +1,5 @@
-import { isEqual, toInteger } from "lodash";
-import React, { cloneElement, FC, useEffect, useState } from "react";
+import { isEqual, sortBy, toInteger } from "lodash";
+import React, { FC, Fragment, memo, useEffect, useMemo, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {
   Button,
@@ -8,37 +8,165 @@ import {
   Grid,
   Icon,
   Input,
+  Label,
   Message,
   Modal,
 } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
-import { isEmail, isInt } from "validator";
+import isEmail from "validator/lib/isEmail";
+import isInt from "validator/lib/isInt";
 
-import { useMutation } from "@apollo/react-hooks";
-import { Box, Flex } from "@chakra-ui/core";
+import { useMutation, useQuery } from "@apollo/react-hooks";
+import {
+  Box,
+  Divider,
+  Flex,
+  Spinner,
+  Stack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/core";
+import { css } from "@emotion/core";
 
 import { UserType } from "../../../../constants";
-import { UserConfig } from "../../../../constants/userConfig";
 import {
   ALL_USERS_ADMIN,
   DELETE_USER_ADMIN,
   LOCK_MAIL_USER_ADMIN,
+  RESET_PERSISTENCE,
   UPSERT_USERS_ADMIN,
+  USER_PERSISTENCES,
 } from "../../../graphql/adminQueries";
+import { whiteSpacePreLine } from "../../../utils/cssConstants";
+import { ThemeStore } from "../../../context/Theme";
 import { Confirm } from "../../Confirm";
 import { useUpdateUserConfigModal } from "./UpdateUserConfig";
 
+export interface IUserConfig {
+  email: string;
+  name: string;
+  tries: number;
+  type: UserType;
+  student_id?: string;
+  config: Record<string, unknown>;
+  locked: boolean;
+}
+
+const UserPersistence: FC<{ user: string }> = memo(({ user }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { data, loading, refetch } = useQuery(USER_PERSISTENCES, {
+    variables: {
+      user,
+    },
+    skip: !isOpen,
+    fetchPolicy: "cache-and-network",
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const theme = ThemeStore.hooks.useTheme();
+
+  const [resetPersistence, { loading: loadingReset }] = useMutation(
+    RESET_PERSISTENCE,
+    {
+      onCompleted: () => {
+        refetch();
+      },
+    }
+  );
+
+  const dataComp = useMemo(() => {
+    return (
+      <Stack>
+        {sortBy(data?.userPersistences, ({ key }) => key).map((persistence) => {
+          return (
+            <Fragment key={persistence.key}>
+              <Box
+                width="fit-content"
+                border="2px solid white !important"
+                margin="2px"
+                padding="4px"
+              >
+                <Label basic color="black">
+                  <Icon name="key" />
+                  {persistence.key}
+                </Label>
+                <Label basic color="black">
+                  <Icon name="clock" />
+                  {persistence.timestamp}
+                </Label>
+                <Text margin="2px" padding="2px" whiteSpace="pre">
+                  {JSON.stringify(persistence.data, null, 2)}
+                </Text>
+              </Box>
+              <Divider color="white" />
+            </Fragment>
+          );
+        })}
+      </Stack>
+    );
+  }, [data]);
+
+  return (
+    <Modal
+      trigger={
+        <Button icon color="brown" labelPosition="left" type="button">
+          <Icon name="database" />
+          Persistence
+        </Button>
+      }
+      open={isOpen}
+      onOpen={onOpen}
+      onClose={onClose}
+    >
+      <Modal.Header>{user} Persistence Data</Modal.Header>
+
+      <Modal.Content>
+        <Stack>
+          <Box>
+            <Confirm
+              header={`You are going to reset ${user} persistence data`}
+              confirmButton="Yes, i'm sure"
+            >
+              <Button
+                inverted={theme === "dark"}
+                basic
+                negative
+                icon
+                labelPosition="left"
+                onClick={() => {
+                  resetPersistence({
+                    variables: {
+                      user,
+                    },
+                  });
+                }}
+                disabled={loadingReset}
+                loading={loadingReset}
+              >
+                <Icon name="refresh" /> Reset Data
+              </Button>
+            </Confirm>
+          </Box>
+          <Box>{loading && <Spinner />}</Box>
+          <Box>{isOpen ? dataComp : null}</Box>
+        </Stack>
+      </Modal.Content>
+    </Modal>
+  );
+});
+
+const resetFormButtonCSS = css`
+  position: absolute;
+  right: 0.5em;
+  top: 0.5em;
+`;
+
 export const UpdateUser: FC<{
-  user: {
-    email: string;
-    name: string;
-    tries: number;
-    type: UserType;
-    student_id?: string;
-    config: UserConfig;
-    locked: boolean;
-  };
-  children: JSX.Element;
+  user: IUserConfig;
+  children: FC<{
+    setOpen: (open: boolean, defaultOpenUserConfig?: boolean) => void;
+  }>;
 }> = ({ children, user }) => {
   const [open, setOpen] = useRememberState(
     `AdminUpdateUser.${user.email}`,
@@ -46,11 +174,15 @@ export const UpdateUser: FC<{
   );
 
   useEffect(() => {
-    setOpen(
-      JSON.parse(
-        localStorage.getItem(`AdminUpdateUser.${user.email}`) || "false"
-      )
-    );
+    try {
+      setOpen(
+        Boolean(
+          JSON.parse(
+            localStorage.getItem(`AdminUpdateUser.${user.email}`) || "false"
+          )
+        )
+      );
+    } catch (err) {}
   }, [user.email]);
 
   const [
@@ -117,15 +249,22 @@ export const UpdateUser: FC<{
     }
   );
 
-  const { userConfigModal, config } = useUpdateUserConfigModal({
+  const { userConfigModal, config, onOpen } = useUpdateUserConfigModal({
     email: user.email,
     config: user.config,
   });
 
   return (
     <Modal
-      trigger={cloneElement(children, {
-        onClick: () => setOpen(true),
+      trigger={children({
+        setOpen: (open, defaultOpenUserConfig) => {
+          if (defaultOpenUserConfig) {
+            setTimeout(() => {
+              onOpen();
+            }, 0);
+          }
+          setOpen(open);
+        },
       })}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
@@ -190,11 +329,7 @@ export const UpdateUser: FC<{
                   circular
                   icon
                   secondary
-                  style={{
-                    position: "absolute",
-                    right: "0.5em",
-                    top: "0.5em",
-                  }}
+                  css={resetFormButtonCSS}
                   disabled={pristine}
                   onClick={() => reset()}
                 >
@@ -207,7 +342,7 @@ export const UpdateUser: FC<{
                   <Field
                     name="email"
                     initialValue={user.email}
-                    validate={email => !isEmail(email ?? "")}
+                    validate={(email) => !isEmail(email ?? "")}
                   >
                     {({ input, meta: { error } }) => {
                       return (
@@ -228,7 +363,7 @@ export const UpdateUser: FC<{
                   <Field
                     name="name"
                     initialValue={user.name}
-                    validate={name => (name?.length ?? 0) < 2}
+                    validate={(name) => (name?.length ?? 0) < 2}
                   >
                     {({ input, meta: { error } }) => (
                       <FormSemantic.Field>
@@ -251,8 +386,8 @@ export const UpdateUser: FC<{
                   <Field
                     name="tries"
                     initialValue={user.tries}
-                    validate={tries => !isInt(tries?.toString() ?? "")}
-                    parse={tries => tries && toInteger(tries)}
+                    validate={(tries) => !isInt(tries?.toString() ?? "")}
+                    parse={(tries) => tries && toInteger(tries)}
                   >
                     {({ input, meta: { error } }) => (
                       <FormSemantic.Field>
@@ -344,6 +479,8 @@ export const UpdateUser: FC<{
                     Save
                   </Button>
 
+                  <UserPersistence user={user.email} />
+
                   {userConfigModal}
 
                   <Confirm
@@ -414,7 +551,7 @@ export const UpdateUser: FC<{
                       icon
                       compact
                       size="small"
-                      style={{ whiteSpace: "pre-line" }}
+                      css={whiteSpacePreLine}
                     >
                       <Icon
                         name="close"

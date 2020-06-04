@@ -3,8 +3,8 @@ import React, { FC, memo, useContext, useMemo } from "react";
 import { Badge, BadgeProps, Box, Stack } from "@chakra-ui/core";
 
 import { termTypeToNumber } from "../../../constants";
-import { ConfigContext } from "../Config";
-import { CoursesDashboardContext } from "./CoursesDashboardContext";
+import { ConfigContext } from "../../context/Config";
+import { CoursesDashboardStore } from "../../context/CoursesDashboard";
 
 export const TakenSemesterBox: FC<{
   year: number;
@@ -12,23 +12,33 @@ export const TakenSemesterBox: FC<{
   comments: string;
 }> = memo(({ year, term, comments }) => {
   const config = useContext(ConfigContext);
-  const {
-    dispatch,
-    checkExplicitSemester,
-    semestersTaken,
-    explicitSemester,
-  } = useContext(CoursesDashboardContext);
+
+  const semestersTaken = CoursesDashboardStore.hooks.useActiveSemestersTaken();
+
+  const explicitSemester = CoursesDashboardStore.hooks.useExplicitSemester();
+
+  const isExplicitSemester = CoursesDashboardStore.hooks.useCheckExplicitSemester(
+    { term, year },
+    [term, year]
+  );
 
   const borderColor = useMemo(() => {
     if (
-      checkExplicitSemester({ year, term }) ||
+      isExplicitSemester ||
       (explicitSemester === undefined &&
-        semestersTaken?.find(v => year === v.year && term == v.term))
+        semestersTaken?.find((v) => year === v.year && term == v.term))
     ) {
       return config.TAKEN_SEMESTER_BOX_ACTIVE;
     }
     return config.TAKEN_SEMESTER_BOX_INACTIVE;
-  }, [term, year, checkExplicitSemester, semestersTaken, config]);
+  }, [
+    explicitSemester,
+    term,
+    year,
+    isExplicitSemester,
+    semestersTaken,
+    config,
+  ]);
 
   const badgeProps = useMemo<BadgeProps>(() => {
     if (!comments) {
@@ -63,30 +73,28 @@ export const TakenSemesterBox: FC<{
   return (
     <Box
       textAlign="center"
-      border="3px solid"
+      border={config.TAKEN_SEMESTER_BOX_BORDER}
       borderColor={borderColor}
-      borderRadius="8px"
+      borderRadius={config.TAKEN_SEMESTER_BOX_BORDER_RADIUS}
       backgroundColor={config.TAKEN_SEMESTER_BOX_BACKGROUND_COLOR}
-      p="6px"
-      mt={0}
-      mb={3}
-      ml={3}
-      mr={3}
-      fontSize="1.2em"
+      p={config.TAKEN_SEMESTER_BOX_PADDING}
+      ml={config.TAKEN_SEMESTER_BOX_MARGIN_SIDES}
+      mr={config.TAKEN_SEMESTER_BOX_MARGIN_SIDES}
+      fontSize={config.TAKEN_SEMESTER_BOX_FONT_SIZE}
       cursor="pointer"
       className="unselectable"
-      transition="0.4s all ease-in-out"
+      transition={config.TAKEN_SEMESTER_BOX_TRANSITION}
       whiteSpace="nowrap"
       alignItems="center"
       display="flex"
       onClick={() => {
-        dispatch({
-          type: "toggleExplicitSemester",
-          payload: { term, year },
+        CoursesDashboardStore.actions.toggleExplicitSemester({
+          term,
+          year,
         });
       }}
       color={config.TAKEN_SEMESTER_BOX_TEXT_COLOR}
-      height="3em"
+      height={config.TAKEN_SEMESTER_BOX_HEIGHT}
     >
       {comments ? (
         <Stack spacing={0}>

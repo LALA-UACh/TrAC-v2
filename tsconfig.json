@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es6",
     "module": "esnext",
     "strict": true,
     "esModuleInterop": true,
@@ -16,7 +16,13 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "sourceMap": true,
-    "noUnusedLocals": true
+    "pretty": true,
+    // "noUnusedLocals": true,
+    "types": [
+      "@emotion/core",
+      "@types/jest",
+      "@types/testing-library__jest-dom"
+    ]
   },
   "exclude": ["node_modules", "api/*"],
   "include": ["**/*.ts", "**/*.tsx"]

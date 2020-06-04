@@ -1,0 +1,11 @@
+schema: http://localhost:4000/api/graphql
+generates:
+  typings/graphql.d.ts:
+    - typescript
+plugins:
+  - typescript
+config:
+  scalars:
+    DateTime: string
+    EmailAddress: string
+    JSONObject: Record<string,any>

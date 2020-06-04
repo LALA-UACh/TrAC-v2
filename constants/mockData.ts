@@ -1,5 +1,6 @@
 import { IProgramData, IStudentData } from "../src/graphql/queries";
-import { StateCourse, TermType } from "./";
+import { PerformanceByLoad } from "../typings/graphql";
+import { PerformanceLoadUnit, StateCourse, TermType } from "./";
 
 const data: {
   searchProgramData: {
@@ -8,6 +9,7 @@ const data: {
   searchStudentData: {
     student: IStudentData;
   };
+  performanceByLoad: PerformanceByLoad[];
 } = {
   searchProgramData: {
     program: {
@@ -4004,7 +4006,7 @@ const data: {
               name: "ARQUITECTURA DE SOFTWARE",
               registration: "REGISTRADA",
               grade: 0,
-              state: StateCourse.Current,
+              state: StateCourse.Pending,
               parallelGroup: 0,
               currentDistribution: [],
               bandColors: [],
@@ -4163,8 +4165,8 @@ const data: {
               equiv: "",
               name: "TEORÍA DE AUTÓMATAS",
               registration: "CURSADA",
-              grade: 4.6,
-              state: StateCourse.Passed,
+              grade: 3.6,
+              state: StateCourse.Failed,
               parallelGroup: 0,
               currentDistribution: [
                 {
@@ -4221,8 +4223,8 @@ const data: {
               equiv: "",
               name: "BASE DE DATOS",
               registration: "CURSADA",
-              grade: 4.8,
-              state: StateCourse.Passed,
+              grade: 2.8,
+              state: StateCourse.Failed,
               parallelGroup: 0,
               currentDistribution: [
                 {
@@ -5200,8 +5202,8 @@ const data: {
               equiv: "",
               name: "TALLER DE INGENIERÍA: PROGRAMACIÓN APLICADA",
               registration: "CURSADA",
-              grade: 6,
-              state: StateCourse.Passed,
+              grade: 1,
+              state: StateCourse.Failed,
               parallelGroup: 1,
               currentDistribution: [
                 {
@@ -5913,6 +5915,190 @@ const data: {
       },
     },
   },
+
+  performanceByLoad: [
+    {
+      // LOW CREDITS - LOW PERFORMANCE
+      id: 0,
+      lowerBoundary: 0,
+      upperBoundary: 20,
+      adviceTitle: "¡Tu carga de estudio no es alta!",
+      adviceParagraph:
+        "Sólo un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado dos o más.",
+      failRateLow: 23,
+      failRateMid: 21,
+      failRateHigh: 56,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "pga <= 4.38",
+      isStudentCluster: false,
+    },
+    {
+      // MID CREDITS - LOW PERFORMANCE
+      id: 1,
+      lowerBoundary: 21,
+      upperBoundary: 26,
+      adviceTitle: "¡Tu carga planeada parece moderada!",
+      adviceParagraph:
+        "Sólo un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 10,
+      failRateMid: 15,
+      failRateHigh: 75,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "pga <= 4.38",
+      isStudentCluster: false,
+    },
+    {
+      // HIGH CREDITS - LOW PERFORMANCE
+      id: 2,
+      lowerBoundary: 27,
+      upperBoundary: 30,
+      adviceTitle: "¡Tu carga de estudio es alta!",
+      adviceParagraph:
+        "Sólo un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 14,
+      failRateMid: 8,
+      failRateHigh: 78,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "pga <= 4.38",
+      isStudentCluster: false,
+    },
+    {
+      // VERY HIGH CREDITS - LOW PERFORMANCE
+      id: 3,
+      lowerBoundary: 31,
+      upperBoundary: 9999,
+      adviceTitle: "¡Tu carga de estudio es muy alta!",
+      adviceParagraph:
+        "Sólo un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 9,
+      failRateMid: 10,
+      failRateHigh: 81,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "pga <= 4.38",
+      isStudentCluster: false,
+    },
+    {
+      // LOW CREDITS - MID PERFORMANCE
+      id: 4,
+      lowerBoundary: 0,
+      upperBoundary: 20,
+      adviceTitle: "¡Tu carga de estudio parece algo baja!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y sólo <HighFailRate /> han reprobado más de uno.",
+
+      failRateLow: 40,
+      failRateMid: 32,
+      failRateHigh: 28,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "4.38 < pga <= 4.82",
+      isStudentCluster: false,
+    },
+    {
+      // MID CREDITS - MID PERFORMANCE
+      id: 5,
+      lowerBoundary: 20,
+      upperBoundary: 26,
+      adviceTitle: "¡Tu carga planeada parece moderada!",
+      adviceParagraph:
+        "Sólo un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 26,
+      failRateMid: 26,
+      failRateHigh: 48,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "4.38 < pga <= 4.82",
+      isStudentCluster: false,
+    },
+    {
+      // HIGH CREDITS - MID PERFORMANCE
+      id: 6,
+      lowerBoundary: 27,
+      upperBoundary: 30,
+      adviceTitle: "¡Tu carga de estudio es alta!",
+      adviceParagraph:
+        "Sólo un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 27,
+      failRateMid: 24,
+      failRateHigh: 49,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "4.38 < pga <= 4.82",
+      isStudentCluster: false,
+    },
+    {
+      // VERY HIGH CREDITS - MID PERFORMANCE
+      id: 7,
+      lowerBoundary: 31,
+      upperBoundary: 9999,
+      adviceTitle: "¡Tu carga de estudio es muy alta!",
+      adviceParagraph:
+        "Sólo un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 33,
+      failRateMid: 21,
+      failRateHigh: 46,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "4.38 < pga <= 4.82",
+      isStudentCluster: false,
+    },
+    {
+      // LOW CREDITS - GOOD PERFORMANCE
+      id: 8,
+      lowerBoundary: 0,
+      upperBoundary: 20,
+      adviceTitle: "¡Tu carga de estudio parece algo baja!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 66,
+      failRateMid: 21,
+      failRateHigh: 13,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "pga > 4.82",
+      isStudentCluster: true,
+    },
+    {
+      // MID CREDITS - GOOD PERFORMANCE
+      id: 9,
+      lowerBoundary: 20,
+      upperBoundary: 26,
+      adviceTitle: "¡Tu carga planeada parece moderada!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 60,
+      failRateMid: 21,
+      failRateHigh: 19,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "pga > 4.82",
+      isStudentCluster: true,
+    },
+    {
+      // HIGH CREDITS - GOOD PERFORMANCE
+      id: 10,
+      lowerBoundary: 27,
+      upperBoundary: 30,
+      adviceTitle: "¡Tu carga de estudio es alta!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 64,
+      failRateMid: 18,
+      failRateHigh: 18,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "pga > 4.82",
+      isStudentCluster: true,
+    },
+    {
+      // VERY HIGH CREDITS - GOOD PERFORMANCE
+      id: 11,
+      lowerBoundary: 31,
+      upperBoundary: 9999,
+      adviceTitle: "¡Tu carga de estudio es muy alta!",
+      adviceParagraph:
+        "Un <LowFailRate /> de estudiantes con promedios similares al tuyo que han tomado una carga similar han pasado todos los cursos. Un <MidFailRate /> de ellos han reprobado 1 curso, y <HighFailRate /> han reprobado más de uno.",
+      failRateLow: 70,
+      failRateMid: 16,
+      failRateHigh: 14,
+      loadUnit: PerformanceLoadUnit.Credits,
+      clusterLabel: "pga > 4.82",
+      isStudentCluster: true,
+    },
+  ],
 };
 
 export default data;

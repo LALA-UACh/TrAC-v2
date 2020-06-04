@@ -4,6 +4,7 @@ import { generate } from "randomstring";
 import {
   Arg,
   Authorized,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -14,8 +15,9 @@ import { $PropertyType } from "utility-types";
 
 import { defaultUserType } from "../../../constants";
 import { baseUserConfig } from "../../../constants/userConfig";
+import { IContext } from "../../../interfaces";
 import { ArrayPropertyType } from "../../../interfaces/utils";
-import { ADMIN } from "../../api_constants";
+import { ADMIN } from "../../constants";
 import { dbAuth } from "../../db";
 import {
   IUser,
@@ -36,6 +38,7 @@ import {
 import { assertIsDefined } from "../../utils/assert";
 import { sendMail, UnlockMail } from "../../utils/mail";
 
+export type PartialUser = Pick<User, "email"> & Partial<User>;
 @Resolver(() => User)
 export class UserResolver {
   @Authorized([ADMIN])
@@ -67,7 +70,7 @@ export class UserResolver {
         });
 
       await trx<IUserPrograms>(USER_PROGRAMS_TABLE).insert(
-        programs.map(program => ({
+        programs.map((program) => ({
           email,
           program: program.toString(),
         }))
@@ -135,6 +138,7 @@ export class UserResolver {
   @Authorized([ADMIN])
   @Mutation(() => [User])
   async upsertUsers(
+    @Ctx() { UserConfigDataLoader }: IContext,
     @Arg("users", () => [UpsertedUser])
     users: UpsertedUser[]
   ): Promise<User[]> {
@@ -156,10 +160,9 @@ export class UserResolver {
                 return resolve();
               }
               try {
-                const userConfig = await UserConfigurationTable()
-                  .select("config")
-                  .where({ email: oldEmail ?? email })
-                  .first();
+                const userConfig = await UserConfigDataLoader.load(
+                  oldEmail ?? email
+                );
                 if (!userConfig) {
                   await UserConfigurationTable().insert({
                     email,
@@ -241,10 +244,7 @@ export class UserResolver {
   async lockMailUser(
     @Arg("email", () => EmailAddress) email: string
   ): Promise<LockedUserResult> {
-    const user = await UserTable()
-      .select("email")
-      .where({ email })
-      .first();
+    const user = await UserTable().select("email").where({ email }).first();
 
     assertIsDefined(user, `User ${email} not found`);
 
@@ -286,15 +286,11 @@ export class UserResolver {
   @Authorized([ADMIN])
   @Mutation(() => [GraphQLJSONObject])
   async mailAllLockedUsers(): Promise<Record<string, any>> {
-    const users = await UserTable()
-      .select("email")
-      .where({ locked: true });
+    const users = await UserTable().select("email").where({ locked: true });
     const mailResults: Record<string, any>[] = [];
     for (const { email } of users) {
       const unlockKey = generate();
-      await UserTable()
-        .update({ unlockKey })
-        .where({ email });
+      await UserTable().update({ unlockKey }).where({ email });
 
       const result = await sendMail({
         to: email,
@@ -314,9 +310,7 @@ export class UserResolver {
   async deleteUser(
     @Arg("email", () => EmailAddress) email: string
   ): Promise<User[]> {
-    await UserTable()
-      .delete()
-      .where({ email });
+    await UserTable().delete().where({ email });
 
     return (await UserTable().select("*")).map(({ type, ...rest }) => {
       return {
@@ -329,28 +323,85 @@ export class UserResolver {
   }
 
   @FieldResolver()
+  async name(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return restUser.name ?? (await UserDataLoader.load(email))?.name;
+  }
+
+  @FieldResolver()
+  async admin(
+    @Root() { email, ...restUser }: PartialUser,
+    @Ctx() { UserDataLoader }: IContext
+  ) {
+    return restUser.admin ?? (await UserDataLoader.load(email))?.admin;
+  }
+
+  @FieldResolver()
+  async type(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return defaultUserType(
+      restUser.type ?? (await UserDataLoader.load(email))?.type
+    );
+  }
+
+  @FieldResolver()
+  async student_id(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return (
+      restUser.student_id ?? (await UserDataLoader.load(email))?.student_id
+    );
+  }
+
+  @FieldResolver()
+  async locked(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return restUser.locked ?? (await UserDataLoader.load(email))?.locked;
+  }
+
+  @FieldResolver()
+  async tries(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return restUser.tries ?? (await UserDataLoader.load(email))?.tries;
+  }
+
+  @FieldResolver()
+  async unlockKey(
+    @Ctx() { UserDataLoader }: IContext,
+    @Root() { email, ...restUser }: PartialUser
+  ) {
+    return restUser.unlockKey ?? (await UserDataLoader.load(email))?.unlockKey;
+  }
+
+  @FieldResolver()
   async programs(
     @Root()
-    { email }: Pick<User, "email">
+    { email }: PartialUser
   ): Promise<Pick<ArrayPropertyType<User, "programs">, "id">[]> {
-    return (
-      await UserProgramsTable()
-        .select("program")
-        .where({ email })
-    ).map(({ program }) => {
-      return { id: program };
-    });
+    return (await UserProgramsTable().select("program").where({ email })).map(
+      ({ program }) => {
+        return { id: program };
+      }
+    );
   }
 
   @FieldResolver()
   async config(
-    @Root() { email }: Pick<User, "email">
+    @Ctx() { UserConfigDataLoader }: IContext,
+    @Root() { email }: PartialUser
   ): Promise<Pick<User, "config">["config"]> {
-    const configRow = await UserConfigurationTable()
-      .select("config")
-      .where({ email })
-      .first();
-
-    return { ...baseUserConfig, ...(configRow?.config ?? {}) };
+    return {
+      ...baseUserConfig,
+      ...((await UserConfigDataLoader.load(email))?.config ?? {}),
+    };
   }
 }

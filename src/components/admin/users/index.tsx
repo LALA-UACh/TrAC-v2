@@ -1,14 +1,21 @@
 import { sortBy, truncate } from "lodash";
 import React, { FC, useEffect, useState } from "react";
-import { Button, Grid, Icon, Message, Table } from "semantic-ui-react";
+import { Button, Icon, Message, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
 import { useMutation } from "@apollo/react-hooks";
+import { Flex, Stack } from "@chakra-ui/core";
 
 import { UserType } from "../../../../constants";
 import { UserConfig } from "../../../../constants/userConfig";
 import { MAIL_LOCKED_USERS_ADMIN } from "../../../graphql/adminQueries";
+import {
+  cursorPointer,
+  whiteSpacePreLine,
+  width50percent,
+} from "../../../utils/cssConstants";
 import { Confirm } from "../../Confirm";
+import { usePagination } from "../Pagination";
 import { ImportUsers } from "./ImportUsers";
 import { UpdateUser } from "./UpdateUser";
 
@@ -19,7 +26,7 @@ export const Users: FC<{
     tries: number;
     type: UserType;
     student_id?: string;
-    config: UserConfig;
+    config: Record<string, unknown>;
     locked: boolean;
   }[];
 }> = ({ users }) => {
@@ -63,14 +70,20 @@ export const Users: FC<{
     },
   ] = useMutation(MAIL_LOCKED_USERS_ADMIN);
 
+  const { pagination, selectedData } = usePagination({
+    name: "admin_sorted_users",
+    data: sortedUsers,
+    n: 15,
+  });
+
   return (
-    <Grid centered>
-      <Grid.Row>
+    <Stack alignItems="center" spacing="1em">
+      <Flex>
         <ImportUsers />
-      </Grid.Row>
-      <Grid.Row>
-        <Grid centered>
-          <Grid.Row>
+      </Flex>
+      <Flex>
+        <Stack>
+          <>
             <Confirm
               header="Are you sure you want to send a new email to all currently locked users?"
               content="It will be given to them a new unlock key in their email"
@@ -94,16 +107,16 @@ export const Users: FC<{
                 New unlock key to locked users
               </Button>
             </Confirm>
-          </Grid.Row>
+          </>
           {openMailMessage && (
-            <Grid.Row>
+            <Flex>
               <Message
                 success={!errorMailLockedUsers ? true : undefined}
                 error={!!errorMailLockedUsers ? true : undefined}
                 icon
                 compact
                 size="small"
-                style={{ whiteSpace: "pre-line" }}
+                css={whiteSpacePreLine}
               >
                 <Icon name="close" onClick={() => setOpenMailMessage(false)} />
                 <Message.Content>
@@ -117,7 +130,7 @@ export const Users: FC<{
                       {dataMailLockedUsers.mailAllLockedUsers.map(
                         (value, key) => {
                           return (
-                            <Message.Item style={{ width: "50%" }} key={key}>
+                            <Message.Item css={width50percent} key={key}>
                               {JSON.stringify(value, null, 2)}
                             </Message.Item>
                           );
@@ -129,12 +142,14 @@ export const Users: FC<{
                   )}
                 </Message.Content>
               </Message>
-            </Grid.Row>
+            </Flex>
           )}
-        </Grid>
-      </Grid.Row>
+        </Stack>
+      </Flex>
 
-      <Grid.Row>
+      <Flex>{pagination}</Flex>
+
+      <Flex>
         <Table
           padded
           selectable
@@ -142,6 +157,7 @@ export const Users: FC<{
           size="large"
           textAlign="center"
           sortable
+          stackable
         >
           <Table.Header>
             <Table.Row>
@@ -163,12 +179,7 @@ export const Users: FC<{
               >
                 locked
               </Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={column === "tries" ? direction : undefined}
-                onClick={handleSort("tries")}
-              >
-                tries
-              </Table.HeaderCell>
+
               <Table.HeaderCell
                 sorted={column === "type" ? direction : undefined}
                 onClick={handleSort("type")}
@@ -197,11 +208,17 @@ export const Users: FC<{
               >
                 show_student_list
               </Table.HeaderCell>
+              <Table.HeaderCell
+                sorted={column === "config.FOREPLAN" ? direction : undefined}
+                onClick={handleSort("config.FOREPLAN")}
+              >
+                foreplan
+              </Table.HeaderCell>
             </Table.Row>
           </Table.Header>
 
           <Table.Body>
-            {sortedUsers.map(
+            {selectedData.map(
               (
                 { email, name, locked, tries, type, student_id, config },
                 key
@@ -219,45 +236,71 @@ export const Users: FC<{
                       config,
                     }}
                   >
-                    <Table.Row style={{ cursor: "pointer" }}>
-                      <Table.Cell>{email}</Table.Cell>
-                      <Table.Cell>{name}</Table.Cell>
-                      <Table.Cell>
-                        <Icon circular name={locked ? "lock" : "lock open"} />
-                      </Table.Cell>
-                      <Table.Cell>{tries}</Table.Cell>
-                      <Table.Cell>{type}</Table.Cell>
-                      <Table.Cell>
-                        {truncate(student_id, { length: 10 })}
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Icon
-                          circular
-                          name={
-                            config?.SHOW_DROPOUT
-                              ? "check circle outline"
-                              : "times circle outline"
-                          }
-                        />
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Icon
-                          circular
-                          name={
-                            config?.SHOW_STUDENT_LIST
-                              ? "check circle outline"
-                              : "times circle outline"
-                          }
-                        />
-                      </Table.Cell>
-                    </Table.Row>
+                    {({ setOpen }) => {
+                      const configObj = config as UserConfig;
+                      const configOnClick = (ev: React.MouseEvent) => {
+                        ev.stopPropagation();
+                        setOpen(true, true);
+                      };
+                      return (
+                        <Table.Row
+                          css={cursorPointer}
+                          onClick={() => {
+                            setOpen(true);
+                          }}
+                        >
+                          <Table.Cell>{email}</Table.Cell>
+                          <Table.Cell>{name}</Table.Cell>
+                          <Table.Cell width={1}>
+                            <Icon
+                              circular
+                              name={locked ? "lock" : "lock open"}
+                            />
+                          </Table.Cell>
+                          <Table.Cell width={1}>{type}</Table.Cell>
+                          <Table.Cell>
+                            {truncate(student_id, { length: 10 })}
+                          </Table.Cell>
+                          <Table.Cell onClick={configOnClick} width={1}>
+                            <Icon
+                              circular
+                              name={
+                                configObj?.SHOW_DROPOUT
+                                  ? "check circle outline"
+                                  : "times circle outline"
+                              }
+                            />
+                          </Table.Cell>
+                          <Table.Cell onClick={configOnClick} width={1}>
+                            <Icon
+                              circular
+                              name={
+                                configObj?.SHOW_STUDENT_LIST
+                                  ? "check circle outline"
+                                  : "times circle outline"
+                              }
+                            />
+                          </Table.Cell>
+                          <Table.Cell onClick={configOnClick} width={1}>
+                            <Icon
+                              circular
+                              name={
+                                configObj?.FOREPLAN
+                                  ? "check circle outline"
+                                  : "times circle outline"
+                              }
+                            />
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    }}
                   </UpdateUser>
                 );
               }
             )}
           </Table.Body>
         </Table>
-      </Grid.Row>
-    </Grid>
+      </Flex>
+    </Stack>
   );
 };

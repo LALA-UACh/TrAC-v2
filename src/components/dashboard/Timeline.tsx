@@ -6,16 +6,22 @@ import React, {
   FC,
   memo,
   ReactElement,
+  useCallback,
   useContext,
   useMemo,
   useState,
 } from "react";
 import pixelWidth from "string-pixel-width";
 
+import { css } from "@emotion/core";
 import { AxisLeft } from "@vx/axis";
 
-import { ConfigContext } from "../Config";
-import { CoursesDashboardContext } from "./CoursesDashboardContext";
+import { SVG_TEXT } from "../../../constants";
+import { ConfigContext } from "../../context/Config";
+import {
+  checkExplicitSemesterCallback,
+  CoursesDashboardStore,
+} from "../../context/CoursesDashboard";
 
 const TimeLineTooltip: FC<{
   children: ReactElement;
@@ -63,6 +69,7 @@ const TimeLineTooltip: FC<{
               x={(children.props?.cx ?? children.props?.x ?? 0) + 11}
               y={(children.props?.cy ?? children.props?.y ?? 0) - 5}
               fill={TIMELINE_TOOLTIP_TEXT_COLOR}
+              className={SVG_TEXT}
             >
               {grade}
             </text>
@@ -85,6 +92,10 @@ export const GradeScale = scaleLinear();
 
 export const YAxisScale = scaleLinear();
 
+const transitionCSS = css`
+  transition: "all 0.4s ease-in-out";
+`;
+
 export const TimeLine: FC<{
   cumulatedGrades: number[];
   semestralGrades: number[];
@@ -98,7 +109,11 @@ export const TimeLine: FC<{
     semestersTaken,
   }) => {
     const config = useContext(ConfigContext);
-    const { checkExplicitSemester } = useContext(CoursesDashboardContext);
+    const explicitSemester = CoursesDashboardStore.hooks.useExplicitSemester();
+    const checkExplicitSemester = useCallback(
+      checkExplicitSemesterCallback(explicitSemester),
+      [explicitSemester]
+    );
 
     const { cumulatedGrades, semestralGrades } = useMemo(() => {
       if (
@@ -108,15 +123,15 @@ export const TimeLine: FC<{
         return {
           cumulatedGrades: cumulatedGradesProp
             .slice(0, -1)
-            .map(n => round(n, 2)),
+            .map((n) => round(n, 2)),
           semestralGrades: semestralGradesProp
             .slice(0, -1)
-            .map(n => round(n, 2)),
+            .map((n) => round(n, 2)),
         };
       }
       return {
-        cumulatedGrades: cumulatedGradesProp.map(n => round(n, 2)),
-        semestralGrades: semestralGradesProp.map(n => round(n, 2)),
+        cumulatedGrades: cumulatedGradesProp.map((n) => round(n, 2)),
+        semestralGrades: semestralGradesProp.map((n) => round(n, 2)),
       };
     }, [cumulatedGradesProp, semestralGradesProp]);
 
@@ -133,6 +148,7 @@ export const TimeLine: FC<{
                   cx={key * 70 + 70}
                   r={5}
                   fill={config.CUMULATED_GRADE_COLOR}
+                  css={transitionCSS}
                 />
               </TimeLineTooltip>
               <TimeLineTooltip grade={programGrades[key]}>
@@ -141,6 +157,7 @@ export const TimeLine: FC<{
                   cx={key * 70 + 70}
                   r={5}
                   fill={config.PROGRAM_GRADE_COLOR}
+                  css={transitionCSS}
                 />
               </TimeLineTooltip>
               <TimeLineTooltip grade={semestralGrades[key]}>
@@ -156,18 +173,18 @@ export const TimeLine: FC<{
                       ? config.TIMELINE_EXPLICIT_CIRCLE_COLOR
                       : config.SEMESTRAL_GRADE_COLOR
                   }
-                  style={{ transition: "0.4s all ease-in-out" }}
+                  css={transitionCSS}
                 />
               </TimeLineTooltip>
             </g>
           );
         }),
       [
+        checkExplicitSemester,
         semestralGrades,
         cumulatedGrades,
         programGrades,
         semestersTaken,
-        checkExplicitSemester,
         config,
       ]
     );
@@ -184,6 +201,7 @@ export const TimeLine: FC<{
                   y1={GradeScale(semestralGrades[key])}
                   x2={(key + 1) * 70 + 70}
                   y2={GradeScale(semestralGrades[key + 1])}
+                  css={transitionCSS}
                 />
               )}
               {cumulatedGrades[key + 1] !== undefined && (
@@ -193,6 +211,7 @@ export const TimeLine: FC<{
                   y1={GradeScale(cumulatedGrades[key])}
                   x2={(key + 1) * 70 + 70}
                   y2={GradeScale(cumulatedGrades[key + 1])}
+                  css={transitionCSS}
                 />
               )}
               {cumulatedGrades[key + 1] !== undefined &&
@@ -203,6 +222,7 @@ export const TimeLine: FC<{
                     y1={GradeScale(programGrades[key])}
                     x2={(key + 1) * 70 + 70}
                     y2={GradeScale(programGrades[key + 1])}
+                    css={transitionCSS}
                   />
                 )}
             </g>
@@ -214,7 +234,14 @@ export const TimeLine: FC<{
     const LabelAxisComponent = useMemo(
       () => (
         <>
-          <text y={20} x={10} fontSize="1em" fontWeight="bold">
+          <text
+            y={20}
+            x={10}
+            fontSize="1em"
+            fontWeight="bold"
+            className={SVG_TEXT}
+            css={transitionCSS}
+          >
             {config.GRADES_SCALES}
           </text>
           <AxisLeft
@@ -240,6 +267,7 @@ export const TimeLine: FC<{
             x2={cumulatedGrades.length * 100 + 160}
             y2={40 + 130}
             stroke={config.TIMELINE_AXIS_COLOR}
+            css={transitionCSS}
           />
           <line
             x1={39}
@@ -248,19 +276,38 @@ export const TimeLine: FC<{
             y2={GradeScale(config.PASS_GRADE)}
             stroke={config.TIMELINE_PASS_LINE_COLOR}
             strokeDasharray="2"
+            css={transitionCSS}
           />
 
-          <circle cx={150} cy={12} r={5} fill={config.SEMESTRAL_GRADE_COLOR} />
+          <circle
+            cx={150}
+            cy={12}
+            r={5}
+            fill={config.SEMESTRAL_GRADE_COLOR}
+            css={transitionCSS}
+          />
 
-          <text x={160} y={20}>
+          <text x={160} y={20} className={SVG_TEXT} css={transitionCSS}>
             {config.SEMESTRAL_GRADE_LABEL}
           </text>
-          <circle cx={250} cy={12} r={5} fill={config.CUMULATED_GRADE_COLOR} />
-          <text x={260} y={20}>
+          <circle
+            cx={250}
+            cy={12}
+            r={5}
+            fill={config.CUMULATED_GRADE_COLOR}
+            css={transitionCSS}
+          />
+          <text x={260} y={20} className={SVG_TEXT} css={transitionCSS}>
             {config.CUMULATED_GRADE_LABEL}
           </text>
-          <circle cx={350} cy={12} r={5} fill={config.PROGRAM_GRADE_COLOR} />
-          <text x={360} y={20}>
+          <circle
+            cx={350}
+            cy={12}
+            r={5}
+            fill={config.PROGRAM_GRADE_COLOR}
+            css={transitionCSS}
+          />
+          <text x={360} y={20} className={SVG_TEXT} css={transitionCSS}>
             {config.PROGRAM_GRADE_LABEL}
           </text>
         </>

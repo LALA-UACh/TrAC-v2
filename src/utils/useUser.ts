@@ -1,9 +1,11 @@
 import { WatchQueryFetchPolicy } from "apollo-client";
 import Router from "next/router";
+import { useEffect, useMemo } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
 
-import { CURRENT_USER, IUserData } from "../graphql/queries";
+import { baseUserConfig, UserConfig } from "../../constants/userConfig";
+import { CURRENT_USER, IUserFragment } from "../graphql/queries";
 
 export function useUser(
   {
@@ -19,29 +21,52 @@ export function useUser(
     requireAdmin: false,
     requireAuth: false,
   }
-): { user?: IUserData; loading?: boolean } {
-  const { loading, error, data } = useQuery(CURRENT_USER, {
+): {
+  user?: (IUserFragment & { config: UserConfig }) | null;
+  loading?: boolean;
+  refetch: () => Promise<unknown>;
+} {
+  const { loading, error, data, refetch } = useQuery(CURRENT_USER, {
     ssr: false,
     fetchPolicy,
   });
 
-  const user = data?.currentUser?.user;
+  const user = useMemo(() => {
+    if (data?.currentUser?.user) {
+      return {
+        ...data.currentUser.user,
+        config: {
+          ...baseUserConfig,
+          ...data.currentUser.user.config,
+        },
+      };
+    }
+    return undefined;
+  }, [data]);
 
   if (error) {
     console.error(JSON.stringify(error, null, 2));
     throw error;
   }
 
-  if ((requireAuth && !user) || (requireAdmin && !user?.admin)) {
-    if (!loading) {
-      if (user) {
-        Router.push("/");
-      } else {
-        Router.push("/login");
+  useEffect(() => {
+    if (
+      process.env.NODE_ENV !== "test" &&
+      ((requireAuth && !user) || (requireAdmin && !user?.admin))
+    ) {
+      if (!loading) {
+        if (user) {
+          Router.push("/");
+        } else {
+          Router.push("/login");
+        }
       }
     }
-    return { user: undefined, loading: true };
+  }, [loading, requireAuth, user, requireAdmin]);
+
+  if ((requireAuth && !user) || (requireAdmin && !user?.admin)) {
+    return { user: undefined, loading: true, refetch };
   }
 
-  return { user, loading };
+  return { user, loading, refetch };
 }

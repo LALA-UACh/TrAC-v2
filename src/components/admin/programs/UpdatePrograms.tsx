@@ -26,13 +26,6 @@ export const UpdatePrograms: FC<{
   }, [program.programs]);
 
   const [updateProgram] = useMutation(UPDATE_USER_PROGRAMS_ADMIN, {
-    variables: {
-      update_user: {
-        oldPrograms: program.programs,
-        email: program.email,
-        programs: selectedPrograms,
-      },
-    },
     update: (cache, { data }) => {
       if (data?.updateUserPrograms) {
         cache.writeQuery({
@@ -47,7 +40,7 @@ export const UpdatePrograms: FC<{
   const deletePrograms = () => {
     updateProgram({
       variables: {
-        update_user: {
+        userPrograms: {
           email: program.email,
           oldPrograms: program.programs,
           programs: [],

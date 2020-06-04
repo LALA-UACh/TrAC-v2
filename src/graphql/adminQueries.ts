@@ -1,9 +1,23 @@
 import gql, { DocumentNode } from "graphql-tag-ts";
 
 import { UserType } from "../../constants";
-import { UserConfig } from "../../constants/userConfig";
+import {
+  FeedbackQuestionType,
+  Mutation,
+  MutationAddUsersProgramsArgs,
+  MutationDeleteUserArgs,
+  MutationEditConfigArgs,
+  MutationLockMailUserArgs,
+  MutationResetPersistenceArgs,
+  MutationUpdateUserProgramsArgs,
+  MutationUpsertUsersArgs,
+  Program,
+  Query,
+  QueryFeedbackResultsArgs,
+  QueryUserPersistencesArgs,
+  User,
+} from "../../typings/graphql";
 import { IfImplements } from "../../typings/utils";
-import { Program, User } from "./medium";
 
 type IUsersAdmin = IfImplements<
   {
@@ -14,7 +28,7 @@ type IUsersAdmin = IfImplements<
     student_id?: string;
     locked: boolean;
     programs: { id: string }[];
-    config: UserConfig;
+    config: Record<string, unknown>;
   },
   User
 >;
@@ -34,9 +48,12 @@ const UserAdminFragment = gql`
   }
 `;
 
-export const ALL_USERS_ADMIN: DocumentNode<{
-  users: IUsersAdmin[];
-}> = gql`
+export const ALL_USERS_ADMIN: DocumentNode<IfImplements<
+  {
+    users: IUsersAdmin[];
+  },
+  Query
+>> = gql`
   query {
     users {
       ...UserAdminFragment
@@ -45,9 +62,12 @@ export const ALL_USERS_ADMIN: DocumentNode<{
   ${UserAdminFragment}
 `;
 
-export const ALL_PROGRAMS_ADMIN: DocumentNode<{
-  programs: IfImplements<{ id: string }, Program>[];
-}> = gql`
+export const ALL_PROGRAMS_ADMIN: DocumentNode<IfImplements<
+  {
+    programs: IfImplements<{ id: string }, Program>[];
+  },
+  Query
+>> = gql`
   query {
     programs {
       id
@@ -56,15 +76,13 @@ export const ALL_PROGRAMS_ADMIN: DocumentNode<{
 `;
 
 export const ADD_USERS_PROGRAMS_ADMIN: DocumentNode<
-  {
-    addUsersPrograms: IUsersAdmin[];
-  },
-  {
-    user_programs: {
-      email: string;
-      program: string;
-    }[];
-  }
+  IfImplements<
+    {
+      addUsersPrograms: IUsersAdmin[];
+    },
+    Mutation
+  >,
+  MutationAddUsersProgramsArgs
 > = gql`
   mutation($user_programs: [UserProgram!]!) {
     addUsersPrograms(user_programs: $user_programs) {
@@ -75,19 +93,16 @@ export const ADD_USERS_PROGRAMS_ADMIN: DocumentNode<
 `;
 
 export const UPDATE_USER_PROGRAMS_ADMIN: DocumentNode<
-  {
-    updateUserPrograms: IUsersAdmin[];
-  },
-  {
-    update_user: {
-      email: string;
-      programs: string[];
-      oldPrograms: string[];
-    };
-  }
+  IfImplements<
+    {
+      updateUserPrograms: IUsersAdmin[];
+    },
+    Mutation
+  >,
+  MutationUpdateUserProgramsArgs
 > = gql`
-  mutation($update_user: UpdateUserPrograms!) {
-    updateUserPrograms(userPrograms: $update_user) {
+  mutation($userPrograms: UpdateUserPrograms!) {
+    updateUserPrograms(userPrograms: $userPrograms) {
       ...UserAdminFragment
     }
   }
@@ -95,21 +110,13 @@ export const UPDATE_USER_PROGRAMS_ADMIN: DocumentNode<
 `;
 
 export const UPSERT_USERS_ADMIN: DocumentNode<
-  {
-    upsertUsers: IUsersAdmin[];
-  },
-  {
-    users: {
-      oldEmail?: string;
-      email: string;
-      name?: string;
-      type?: UserType;
-      tries?: number;
-      student_id?: string;
-      config?: UserConfig;
-      locked?: boolean;
-    }[];
-  }
+  IfImplements<
+    {
+      upsertUsers: IUsersAdmin[];
+    },
+    Mutation
+  >,
+  MutationUpsertUsersArgs
 > = gql`
   mutation($users: [UpsertedUser!]!) {
     upsertUsers(users: $users) {
@@ -120,12 +127,13 @@ export const UPSERT_USERS_ADMIN: DocumentNode<
 `;
 
 export const DELETE_USER_ADMIN: DocumentNode<
-  {
-    deleteUser: IUsersAdmin[];
-  },
-  {
-    email: string;
-  }
+  IfImplements<
+    {
+      deleteUser: IUsersAdmin[];
+    },
+    Mutation
+  >,
+  MutationDeleteUserArgs
 > = gql`
   mutation($email: EmailAddress!) {
     deleteUser(email: $email) {
@@ -136,13 +144,16 @@ export const DELETE_USER_ADMIN: DocumentNode<
 `;
 
 export const LOCK_MAIL_USER_ADMIN: DocumentNode<
-  {
-    lockMailUser: {
-      mailResult: Record<string, any>;
-      users: IUsersAdmin[];
-    };
-  },
-  { email: string }
+  IfImplements<
+    {
+      lockMailUser: {
+        mailResult: Record<string, any>;
+        users: IUsersAdmin[];
+      };
+    },
+    Mutation
+  >,
+  MutationLockMailUserArgs
 > = gql`
   mutation($email: EmailAddress!) {
     lockMailUser(email: $email) {
@@ -155,10 +166,121 @@ export const LOCK_MAIL_USER_ADMIN: DocumentNode<
   ${UserAdminFragment}
 `;
 
-export const MAIL_LOCKED_USERS_ADMIN: DocumentNode<{
-  mailAllLockedUsers: Record<string, any>[];
-}> = gql`
+export const MAIL_LOCKED_USERS_ADMIN: DocumentNode<Pick<
+  Mutation,
+  "mailAllLockedUsers"
+>> = gql`
   mutation {
     mailAllLockedUsers
+  }
+`;
+
+export const EDIT_CONFIG: DocumentNode<
+  Pick<Mutation, "editConfig">,
+  MutationEditConfigArgs
+> = gql`
+  mutation($name: String!, $value: String!) {
+    editConfig(name: $name, value: $value)
+  }
+`;
+
+export const USER_PERSISTENCES: DocumentNode<
+  IfImplements<
+    {
+      userPersistences: {
+        key: string;
+        data: Record<string, any>;
+        timestamp: string;
+      }[];
+    },
+    Query
+  >,
+  QueryUserPersistencesArgs
+> = gql`
+  query($user: String!) {
+    userPersistences(user: $user) {
+      key
+      data
+      timestamp
+    }
+  }
+`;
+
+export const RESET_PERSISTENCE: DocumentNode<
+  Pick<Mutation, "resetPersistence">,
+  MutationResetPersistenceArgs
+> = gql`
+  mutation($user: String!) {
+    resetPersistence(user: $user)
+  }
+`;
+
+export const RESET_DATALOADERS_CACHE: DocumentNode<Pick<
+  Mutation,
+  "resetDataLoadersCache"
+>> = gql`
+  mutation {
+    resetDataLoadersCache
+  }
+`;
+
+export const FEEDBACK_RESULTS_CSV: DocumentNode<Pick<
+  Mutation,
+  "feedbackResultsCsv"
+>> = gql`
+  mutation {
+    feedbackResultsCsv
+  }
+`;
+
+export const FEEDBACK_RESULTS: DocumentNode<
+  IfImplements<
+    {
+      feedbackResults: {
+        user: {
+          email: string;
+        };
+        form: {
+          name: string;
+        };
+        answers: {
+          answer: string;
+          question: {
+            question: string;
+            type: FeedbackQuestionType;
+            options: {
+              text: string;
+              value: number;
+            }[];
+          };
+        }[];
+        timestamp: string;
+      }[];
+    },
+    Query
+  >,
+  QueryFeedbackResultsArgs
+> = gql`
+  query($user_ids: [String!]) {
+    feedbackResults(user_ids: $user_ids) {
+      user {
+        email
+      }
+      form {
+        name
+      }
+      answers {
+        answer
+        question {
+          question
+          type
+          options {
+            text
+            value
+          }
+        }
+      }
+      timestamp
+    }
   }
 `;

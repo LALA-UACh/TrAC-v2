@@ -1,8 +1,12 @@
 import { sortBy, truncate } from "lodash";
 import React, { FC, useEffect } from "react";
-import { Grid, Table } from "semantic-ui-react";
+import { Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
+import { Flex, Stack } from "@chakra-ui/core";
+
+import { cursorPointer } from "../../../utils/cssConstants";
+import { usePagination } from "../Pagination";
 import { ImportPrograms } from "./ImportPrograms";
 import { UpdatePrograms } from "./UpdatePrograms";
 
@@ -34,13 +38,21 @@ export const Programs: FC<{
     }
   };
 
-  return (
-    <Grid>
-      <Grid.Row centered>
-        <ImportPrograms />
-      </Grid.Row>
+  const { pagination, selectedData } = usePagination({
+    name: "trac_admin_sorted_programs",
+    data: sortedPrograms,
+    n: 15,
+  });
 
-      <Grid.Row centered>
+  return (
+    <Stack alignItems="center" spacing="1em">
+      <Flex>
+        <ImportPrograms />
+      </Flex>
+
+      <Flex>{pagination}</Flex>
+
+      <Flex>
         <Table
           padded
           selectable
@@ -67,9 +79,9 @@ export const Programs: FC<{
           </Table.Header>
 
           <Table.Body>
-            {sortedPrograms.map(({ email = "", programs = [] }, key) => (
+            {selectedData.map(({ email = "", programs = [] }, key) => (
               <UpdatePrograms key={key} program={{ email, programs }}>
-                <Table.Row style={{ cursor: "pointer" }}>
+                <Table.Row css={cursorPointer}>
                   <Table.Cell>{email}</Table.Cell>
                   <Table.Cell>
                     {truncate(programs.join(" | "), { length: 50 })}
@@ -79,7 +91,7 @@ export const Programs: FC<{
             ))}
           </Table.Body>
         </Table>
-      </Grid.Row>
-    </Grid>
+      </Flex>
+    </Stack>
   );
 };

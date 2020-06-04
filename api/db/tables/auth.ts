@@ -14,8 +14,6 @@ export interface IUser {
   admin: boolean;
   type: string;
   student_id: string;
-  show_dropout: boolean;
-  show_student_list: boolean;
 }
 
 export const UserTable = () => dbAuth<IUser>(USERS_TABLE);

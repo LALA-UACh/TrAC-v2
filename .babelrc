@@ -1,7 +1,16 @@
 {
-  "presets": ["next/babel"],
+  "presets": ["next/babel", "@emotion/babel-preset-css-prop"],
   "plugins": [
     ["lodash"],
-    ["babel-plugin-graphql-tag", { "importName": "graphql-tag-ts" }]
+    ["babel-plugin-graphql-tag", { "importName": "graphql-tag-ts" }],
+    [
+      "import",
+      {
+        "libraryName": "validator",
+        "libraryDirectory": "lib",
+        "camel2DashComponentName": false
+      },
+      "validator"
+    ]
   ]
 }

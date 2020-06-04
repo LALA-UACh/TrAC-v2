@@ -1,9 +1,11 @@
 import requireEnv from "require-env-variable";
 
+import { NODE_ENV } from "../../../constants";
+
 const GMAIL_USERNAME = process.env.GMAIL_USERNAME;
 
 const DOMAIN =
-  process.env.NODE_ENV === "production"
+  NODE_ENV === "production"
     ? requireEnv("DOMAIN").DOMAIN
     : "http://localhost:3000";
 

@@ -3,7 +3,7 @@ import { Confirm as ConfirmSemantic } from "semantic-ui-react";
 
 export const Confirm: FC<{
   children: JSX.Element;
-  content?: string;
+  content?: string | null;
   confirmButton?: string;
   cancelButton?: string;
   header?: string;
