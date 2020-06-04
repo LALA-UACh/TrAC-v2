@@ -44,5 +44,3 @@ export const dbConfig = knex({
   }),
   // debug: true,
 });
-
-import("./migration");
