@@ -23,7 +23,7 @@ export const Config: FC = ({ children }) => {
   const [configState, setConfigState] =
     NODE_ENV === "development"
       ? useState(baseConfig)
-      : useRememberState("baseConfig", baseConfig);
+      : useRememberState(`baseConfig=${baseConfig.VERSION_CONFIG}`, baseConfig);
 
   const { data, loading } = useQuery(CONFIG_QUERY);
 

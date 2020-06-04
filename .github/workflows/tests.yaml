@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ["13", "10"]
+        node: ["14", "12"]
     name: Node ${{ matrix.node }} test
     steps:
       - uses: actions/checkout@v1
@@ -25,5 +25,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn --frozen-lockfile
+        env:
+          NODE_ENV: test
       - run: yarn build
       - run: yarn test --coverage

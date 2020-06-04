@@ -2,37 +2,15 @@ import knex, { Config } from "knex";
 import { merge } from "lodash/fp";
 import pg from "pg";
 
-import { NODE_ENV } from "../../constants";
+import { baseDBConfig, dbNames } from "./config";
 
 pg.types.setTypeParser(20, "text", parseInt);
 pg.types.setTypeParser(1700, parseFloat);
 
-const dbPassword = process.env.POSTGRES_PASSWORD;
-const dbHost = process.env.POSTGRES_HOST || "localhost";
-
-const authDbName = "auth-lala";
-const dataDbName = "data-lala";
-const trackingDbName = "tracking";
-const configDbName = "config";
-
-const baseDBConfig: Config =
-  NODE_ENV !== "test"
-    ? {
-        client: "pg",
-        connection: {
-          user: "postgres",
-          host: dbHost,
-          password: dbPassword,
-        },
-      }
-    : {
-        client: "pg",
-      };
-
 export const dbAuth = knex({
   ...merge<Config, Config>(baseDBConfig, {
     connection: {
-      database: authDbName,
+      database: dbNames.auth,
     },
   }),
 
@@ -42,7 +20,7 @@ export const dbAuth = knex({
 export const dbData = knex({
   ...merge<Config, Config>(baseDBConfig, {
     connection: {
-      database: dataDbName,
+      database: dbNames.data,
     },
   }),
 
@@ -52,7 +30,7 @@ export const dbData = knex({
 export const dbTracking = knex({
   ...merge<Config, Config>(baseDBConfig, {
     connection: {
-      database: trackingDbName,
+      database: dbNames.tracking,
     },
   }),
   // debug: true,
@@ -61,10 +39,10 @@ export const dbTracking = knex({
 export const dbConfig = knex({
   ...merge<Config, Config>(baseDBConfig, {
     connection: {
-      database: configDbName,
+      database: dbNames.config,
     },
   }),
   // debug: true,
 });
 
-import("./mockData/migration");
+import("./migration");

@@ -30,7 +30,6 @@ import {
   ANSWER_FEEDBACK_FORM,
   UNANSWERED_FEEDBACK_FORM,
 } from "../../graphql/queries";
-import { useUser } from "../../utils/useUser";
 
 export interface IDisclosure {
   isOpen: boolean;

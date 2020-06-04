@@ -17,6 +17,6 @@ export const schema = buildSchemaSync({
     EmailAddressResolver.toString(),
   ] as any,
   authChecker,
-  emitSchemaFile: NODE_ENV !== "production",
+  emitSchemaFile: NODE_ENV === "development",
   validate: true,
 });

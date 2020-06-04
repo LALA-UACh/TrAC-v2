@@ -174,11 +174,15 @@ export const UpdateUser: FC<{
   );
 
   useEffect(() => {
-    setOpen(
-      JSON.parse(
-        localStorage.getItem(`AdminUpdateUser.${user.email}`) || "false"
-      )
-    );
+    try {
+      setOpen(
+        Boolean(
+          JSON.parse(
+            localStorage.getItem(`AdminUpdateUser.${user.email}`) || "false"
+          )
+        )
+      );
+    } catch (err) {}
   }, [user.email]);
 
   const [

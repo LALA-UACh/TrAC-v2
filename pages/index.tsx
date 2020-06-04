@@ -566,6 +566,7 @@ const Dashboard: FC = () => {
     ERROR_STUDENT_NOT_FOUND_MESSAGE,
     ERROR_PROGRAM_UNAUTHORIZED_MESSAGE,
     ERROR_PROGRAM_NOT_FOUND,
+    FEEDBACK_ENABLED,
   } = useContext(ConfigContext);
 
   useEffect(() => {
@@ -725,7 +726,7 @@ const Dashboard: FC = () => {
 
       <TrackingManager />
 
-      <Feedback />
+      {FEEDBACK_ENABLED && user?.config.FEEDBACK && <Feedback />}
 
       {user?.config.FOREPLAN && <ForeplanContextManager />}
 

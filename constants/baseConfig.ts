@@ -30,6 +30,7 @@ export const baseConfig = {
   FAIL_RATE_COLOR_SCALE_NEGATIVE_MIN_COLOR: "rgb(245,132,66)",
   FAIL_RATE_COLOR_SCALE_POSITIVE_MAX_COLOR: "#5bff3b",
   FAIL_RATE_COLOR_SCALE_POSITIVE_MIN_COLOR: "#b0ffa1",
+  FEEDBACK_ENABLED: false,
   FEEDBACK_OPEN_TEXT_REQUIRED_ERROR_MESSAGE: "Ingrese su opinión",
   FEEDBACK_SINGLE_ANSWER_REQUIRED_ERROR_MESSAGE: "Eliga una opción",
   FEEDBACK_MULTIPLE_ANSWER_REQUIRED_ERROR_MESSAGE:
@@ -282,6 +283,7 @@ export const baseConfig = {
     "Usuario ingresado no está bloqueado o el código ingresado es erróneo.",
   HELP_POPOVER_HOVER_TEXT: "Ayuda",
   HELP_MODAL_HEADER_TEXT: "Ayuda",
+  VERSION_CONFIG: "1",
 };
 
 export const baseConfigAdmin: typeof baseConfig &

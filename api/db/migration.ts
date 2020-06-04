@@ -1,17 +1,16 @@
 import sha1 from "crypto-js/sha1";
 import { chunk, sample } from "lodash";
 
-import { dbAuth, dbConfig, dbData, dbTracking } from "../";
-import { FeedbackQuestionType, NODE_ENV, UserType } from "../../../constants";
-import { baseUserConfig } from "../../../constants/userConfig";
-import { FeedbackQuestionOption } from "../../entities/feedback";
+import { FeedbackQuestionType, NODE_ENV, UserType } from "../../constants";
+import { baseUserConfig } from "../../constants/userConfig";
+import { FeedbackQuestionOption } from "../entities/feedback";
 import {
   joinFeedbackQuestionOptions,
   splitFeedbackQuestionOptions,
-} from "../../resolvers";
+} from "../resolvers";
+import { dbAuth, dbConfig, dbData, dbTracking } from "./index";
 import {
   CONFIGURATION_TABLE,
-  ConfigurationTable,
   COURSE_STATS_TABLE,
   COURSE_TABLE,
   CourseStatsTable,
@@ -50,7 +49,7 @@ import {
   UserProgramsTable,
   USERS_TABLE,
   UserTable,
-} from "../tables";
+} from "./tables";
 
 const dataImport = async () => {
   dbAuth.schema.hasTable(USERS_TABLE).then(async (exists) => {
@@ -80,7 +79,7 @@ const dataImport = async () => {
         locked: false,
         admin: true,
         type: UserType.Director,
-        student_id: (await import("./student.json")).default[0].id,
+        student_id: (await import("./mockData/student.json")).default[0].id,
       });
     }
   });
@@ -93,7 +92,7 @@ const dataImport = async () => {
         table.primary(["email", "program"]);
       });
       await UserProgramsTable().insert(
-        (await import("./program.json")).default.map(({ id }) => {
+        (await import("./mockData/program.json")).default.map(({ id }) => {
           return {
             email: "admin@admin.dev",
             program: id.toString(),
@@ -157,7 +156,9 @@ const dataImport = async () => {
         table.float("grade_pass_min", 4).notNullable();
       });
 
-      await CourseTable().insert((await import("./course.json")).default);
+      await CourseTable().insert(
+        (await import("./mockData/course.json")).default
+      );
     }
   });
 
@@ -182,7 +183,7 @@ const dataImport = async () => {
       });
 
       const dataToInsert = chunk(
-        (await import("./course_stats.json")).default,
+        (await import("./mockData/course_stats.json")).default,
         500
       );
 
@@ -199,7 +200,7 @@ const dataImport = async () => {
         table.timestamp("loading_date");
       });
       await ParameterTable().insert(
-        (await import("./parameter.json")).default.map(
+        (await import("./mockData/parameter.json")).default.map(
           ({ passing_grade, loading_date }) => {
             return {
               passing_grade,
@@ -222,12 +223,14 @@ const dataImport = async () => {
         table.float("last_gpa", 4).notNullable().defaultTo(0);
       });
       await ProgramTable().insert(
-        (await import("./program.json")).default.map(({ id, ...rest }) => {
-          return {
-            ...rest,
-            id: id.toString(),
-          };
-        })
+        (await import("./mockData/program.json")).default.map(
+          ({ id, ...rest }) => {
+            return {
+              ...rest,
+              id: id.toString(),
+            };
+          }
+        )
       );
     }
   });
@@ -249,7 +252,7 @@ const dataImport = async () => {
         table.text("tags").notNullable().defaultTo("");
       });
       await ProgramStructureTable().insert(
-        (await import("./program_structure.json")).default.map(
+        (await import("./mockData/program_structure.json")).default.map(
           ({ program_id, curriculum, ...rest }) => {
             return {
               ...rest,
@@ -269,7 +272,9 @@ const dataImport = async () => {
         table.text("name").notNullable();
         table.text("state").notNullable();
       });
-      await StudentTable().insert((await import("./student.json")).default);
+      await StudentTable().insert(
+        (await import("./mockData/student.json")).default
+      );
     }
   });
 
@@ -292,7 +297,7 @@ const dataImport = async () => {
         table.integer("duplicates", 8).notNullable();
       });
       await StudentCourseTable().insert(
-        (await import("./student_course.json")).default
+        (await import("./mockData/student_course.json")).default
       );
     }
   });
@@ -308,7 +313,7 @@ const dataImport = async () => {
         table.text("explanation");
       });
       await StudentDropoutTable().insert(
-        (await import("./student_dropout.json")).default.map(
+        (await import("./mockData/student_dropout.json")).default.map(
           ({ weight_per_semester, ...rest }) => {
             return {
               ...rest,
@@ -335,7 +340,7 @@ const dataImport = async () => {
         table.float("completion", 4).notNullable();
       });
       await StudentProgramTable().insert(
-        (await import("./student_program.json")).default.map(
+        (await import("./mockData/student_program.json")).default.map(
           ({ program_id, curriculum, ...rest }) => {
             return {
               ...rest,
@@ -365,7 +370,7 @@ const dataImport = async () => {
         table.text("mention").notNullable().defaultTo("");
       });
       await StudentTermTable().insert(
-        (await import("./student_term.json")).default.map(
+        (await import("./mockData/student_term.json")).default.map(
           ({ comments, program_id, curriculum, ...rest }) => {
             return {
               ...rest,
@@ -402,7 +407,7 @@ const dataImport = async () => {
       });
 
       await PerformanceByLoadTable().insert(
-        (await import("./performance_by_load.json")).default
+        (await import("./mockData/performance_by_load.json")).default
       );
     }
   });
@@ -418,7 +423,7 @@ const dataImport = async () => {
       });
 
       await StudentClusterTable().insert(
-        (await import("./student_program.json")).default.map(
+        (await import("./mockData/student_program.json")).default.map(
           ({ student_id, program_id }, index) => {
             return {
               student_id,

@@ -13,7 +13,7 @@ export const NODE_ENV = (() => {
     case "test":
       return process.env.NODE_ENV;
     default:
-      console.warn("Environment not specified!");
+      console.warn(`Environment not specified! "production" set by default.`);
       return "production";
   }
 })();

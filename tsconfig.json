@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "esnext",
     "strict": true,
     "esModuleInterop": true,
@@ -16,7 +16,6 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "sourceMap": true,
-    // "assumeChangesOnlyAffectDirectDependencies": true,
     "pretty": true,
     // "noUnusedLocals": true,
     "types": [
