@@ -178,6 +178,10 @@ export class UserResolver {
                       email: oldEmail ?? email,
                     });
                 }
+                UserConfigDataLoader.clear(email).prime(email, {
+                  email,
+                  config,
+                });
                 resolve();
               } catch (err) {
                 reject(err);

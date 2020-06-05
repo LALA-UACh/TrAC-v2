@@ -26,6 +26,7 @@ import {
   PopoverTrigger,
   Stack,
   Text,
+  Tooltip,
   useDisclosure,
 } from "@chakra-ui/core";
 
@@ -362,71 +363,89 @@ const Waffle: FC<{
     const rectSize = config.FOREPLAN_SUMMARY_WAFFLE_SQUARE_SIZE;
     const separation = config.FOREPLAN_SUMMARY_WAFFLE_RECT_SEPARATION;
     const [tooltip, setTooltip] = useState("");
+    const [tooltipBg, setTooltipBg] = useState("");
 
     return (
       <Stack alignItems="center">
-        <Flex
-          padding={config.FOREPLAN_SUMMARY_WAFFLE_PADDING}
-          border={
-            shouldHighlight
-              ? `${config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_BORDER} !important`
-              : undefined
-          }
-          borderColor="white !important"
-          marginTop={`${config.FOREPLAN_SUMMARY_WAFFLE_MARGIN_TOP} !important`}
-          marginBottom={0}
-          margin={0}
-          borderWidth={
-            shouldHighlight
-              ? config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_BORDER_WIDTH
-              : undefined
-          }
-          direction="column"
-          alignItems="center"
-          justifyContent="center"
-          className="waffleContainer"
-          width="fit-content"
-          height="fit-content"
-          title={tooltip ? tooltip : undefined}
+        <Tooltip
+          label={tooltip}
+          aria-label={tooltip}
+          zIndex={1000}
+          placement="left"
+          visibility={tooltip ? undefined : "hidden"}
+          bg={tooltipBg || undefined}
+          color="black"
+          borderRadius="5px"
+          fontSize="1.3rem"
+          fontWeight="bold"
+          textShadow="-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white"
         >
-          <svg
-            width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
-            height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+          <Flex
+            padding={config.FOREPLAN_SUMMARY_WAFFLE_PADDING}
+            border={
+              shouldHighlight
+                ? `${config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_BORDER} !important`
+                : undefined
+            }
+            borderColor="white !important"
+            marginTop={`${config.FOREPLAN_SUMMARY_WAFFLE_MARGIN_TOP} !important`}
+            marginBottom={0}
+            margin={0}
+            borderWidth={
+              shouldHighlight
+                ? config.FOREPLAN_SUMMARY_WAFFLE_HIGHLIGHT_BORDER_WIDTH
+                : undefined
+            }
+            direction="column"
+            alignItems="center"
+            justifyContent="center"
+            className="waffleContainer"
+            width="fit-content"
+            height="fit-content"
           >
-            {flatMap(rowRange, (key1) => {
-              return rowRange.map((key2) => {
-                const n = key1 * 10 + key2;
-                let fill: string;
-                let data_tip: string;
-                if (n < nLow) {
-                  fill = colors.low;
-                  data_tip = failRateLow + "%";
-                } else if (n < nMid) {
-                  fill = colors.mid;
-                  data_tip = failRateMid + "%";
-                } else {
-                  fill = colors.high;
-                  data_tip = failRateHigh + "%";
-                }
-                return (
-                  <rect
-                    key={n}
-                    x={rectSize * key2 * separation}
-                    y={rectSize * key1 * separation}
-                    onMouseOver={() => {
-                      if (tooltip !== data_tip) {
-                        setTooltip(data_tip);
-                      }
-                    }}
-                    width={rectSize}
-                    height={rectSize}
-                    fill={fill}
-                  />
-                );
-              });
-            })}
-          </svg>
-        </Flex>
+            <svg
+              width={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+              height={config.FOREPLAN_SUMMARY_WAFFLE_SIZE}
+            >
+              {flatMap(rowRange, (key1) => {
+                return rowRange.map((key2) => {
+                  const n = key1 * 10 + key2;
+                  let fill: string;
+                  let data_tip: string;
+                  if (n < nLow) {
+                    fill = colors.low;
+                    data_tip = failRateLow + "%";
+                  } else if (n < nMid) {
+                    fill = colors.mid;
+                    data_tip = failRateMid + "%";
+                  } else {
+                    fill = colors.high;
+                    data_tip = failRateHigh + "%";
+                  }
+                  return (
+                    <rect
+                      key={n}
+                      x={rectSize * key2 * separation}
+                      y={rectSize * key1 * separation}
+                      cursor="help"
+                      onMouseOver={() => {
+                        if (tooltip !== data_tip) {
+                          setTooltip(data_tip);
+                        }
+                        if (tooltipBg !== fill) {
+                          setTooltipBg(fill);
+                        }
+                      }}
+                      width={rectSize}
+                      height={rectSize}
+                      fill={fill}
+                    />
+                  );
+                });
+              })}
+            </svg>
+          </Flex>
+        </Tooltip>
         <Text
           marginBottom={0}
           textAlign="center"

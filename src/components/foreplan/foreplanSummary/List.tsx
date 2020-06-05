@@ -3,7 +3,7 @@ import { map, truncate } from "lodash";
 import React, { FC, memo, useContext } from "react";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 
-import { Box, Flex, Text } from "@chakra-ui/core";
+import { Box, Flex, Text, Tooltip } from "@chakra-ui/core";
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";
@@ -43,17 +43,32 @@ const ForeplanContentRowListItem: FC<
         >
           {code}
         </Text>
-        <Text
-          m={0}
-          textAlign="start"
-          width={config.FOREPLAN_SUMMARY_LIST_NAME_WIDTH}
-          cursor={shouldTruncate ? "help" : undefined}
-          title={shouldTruncate ? name : undefined}
-        >
-          {truncate(name, {
-            length: config.FOREPLAN_SUMMARY_LIST_NAME_TRUNCATE_LENGTH,
-          })}
-        </Text>
+        {shouldTruncate ? (
+          <Tooltip label={name} aria-label={name} zIndex={1000}>
+            <Text
+              m={0}
+              textAlign="start"
+              width={config.FOREPLAN_SUMMARY_LIST_NAME_WIDTH}
+              cursor={shouldTruncate ? "help" : undefined}
+            >
+              {truncate(name, {
+                length: config.FOREPLAN_SUMMARY_LIST_NAME_TRUNCATE_LENGTH,
+              })}
+            </Text>
+          </Tooltip>
+        ) : (
+          <Text
+            m={0}
+            textAlign="start"
+            width={config.FOREPLAN_SUMMARY_LIST_NAME_WIDTH}
+            cursor={shouldTruncate ? "help" : undefined}
+          >
+            {truncate(name, {
+              length: config.FOREPLAN_SUMMARY_LIST_NAME_TRUNCATE_LENGTH,
+            })}
+          </Text>
+        )}
+
         <Text justifySelf="flex-end" textAlign="end" m={0}>
           {config.CREDITS_LABEL.toLowerCase().slice(0, 4)}: <b>{credits}</b>
         </Text>
