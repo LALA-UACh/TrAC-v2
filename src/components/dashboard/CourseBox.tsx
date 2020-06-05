@@ -456,7 +456,11 @@ const GradeComponent: FC<Pick<CurrentTakenData, "state" | "grade">> = memo(
     const config = useContext(ConfigContext);
 
     return (
-      <Text mb={2} pt={1}>
+      <Text
+        mb={2}
+        pt={1}
+        textShadow="-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white"
+      >
         <b>
           {(() => {
             if (grade) {

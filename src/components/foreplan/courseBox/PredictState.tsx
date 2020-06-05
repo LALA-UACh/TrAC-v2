@@ -98,6 +98,7 @@ export const PredictState: FC<
             paddingRight={1}
             borderRadius="5px"
             border="1px solid black"
+            textShadow="-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white"
           >
             {FOREPLAN_STATE_PREDICTION_APPROVED_SYMBOL}
           </Text>
@@ -116,6 +117,7 @@ export const PredictState: FC<
             paddingRight={1}
             borderRadius="5px"
             border="1px solid black"
+            textShadow="-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white"
           >
             {FOREPLAN_STATE_PREDICTION_FAILED_SYMBOL}
           </Text>
@@ -133,6 +135,7 @@ export const PredictState: FC<
             paddingRight={1}
             borderRadius="5px"
             border="1px solid black"
+            textShadow="-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white"
           >
             {FOREPLAN_STATE_PREDICTION_UNKNOWN_SYMBOL}
           </Text>
