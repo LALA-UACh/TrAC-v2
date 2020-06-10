@@ -29,11 +29,12 @@ const TimeLineTooltip: FC<{
 }> = ({ children, grade }) => {
   const { TIMELINE_TOOLTIP_TEXT_COLOR } = useContext(ConfigContext);
 
+  const gradeString = grade.toFixed(2);
+
   const [show, setShow] = useState(false);
-  const rectWidth = useMemo(
-    () => pixelWidth(grade.toString(10), { size: 15.5 }) + 1,
-    [grade]
-  );
+  const rectWidth = useMemo(() => {
+    return pixelWidth(gradeString, { size: 15.5 }) + 1;
+  }, [grade]);
   const Children = useMemo(
     () =>
       cloneElement(children, {
@@ -71,7 +72,7 @@ const TimeLineTooltip: FC<{
               fill={TIMELINE_TOOLTIP_TEXT_COLOR}
               className={SVG_TEXT}
             >
-              {grade}
+              {gradeString}
             </text>
           </motion.g>
         )}
@@ -160,22 +161,24 @@ export const TimeLine: FC<{
                   css={transitionCSS}
                 />
               </TimeLineTooltip>
-              <TimeLineTooltip grade={semestralGrades[key]}>
-                <circle
-                  cy={GradeScale(semestralGrades[key])}
-                  cx={key * 70 + 70}
-                  r={5}
-                  fill={
-                    checkExplicitSemester({
-                      term: semestersTaken[key].term,
-                      year: semestersTaken[key].year,
-                    })
-                      ? config.TIMELINE_EXPLICIT_CIRCLE_COLOR
-                      : config.SEMESTRAL_GRADE_COLOR
-                  }
-                  css={transitionCSS}
-                />
-              </TimeLineTooltip>
+              {semestralGrades[key] ? (
+                <TimeLineTooltip grade={semestralGrades[key]}>
+                  <circle
+                    cy={GradeScale(semestralGrades[key])}
+                    cx={key * 70 + 70}
+                    r={5}
+                    fill={
+                      checkExplicitSemester({
+                        term: semestersTaken[key].term,
+                        year: semestersTaken[key].year,
+                      })
+                        ? config.TIMELINE_EXPLICIT_CIRCLE_COLOR
+                        : config.SEMESTRAL_GRADE_COLOR
+                    }
+                    css={transitionCSS}
+                  />
+                </TimeLineTooltip>
+              ) : null}
             </g>
           );
         }),
@@ -192,15 +195,24 @@ export const TimeLine: FC<{
     const StrokesComponent = useMemo(
       () =>
         cumulatedGrades.map((_, key) => {
+          const nextSemestralGrade = semestralGrades
+            .slice(key + 1)
+            .find((semestralGrade) => Boolean(semestralGrade));
+          const nextSemestralGradeKey = semestralGrades
+            .slice(key + 1)
+            .findIndex((semestralGrade) => Boolean(semestralGrade));
+
+          const currentSemestralGrade = semestralGrades[key];
+
           return (
             <g key={key}>
-              {semestralGrades[key + 1] !== undefined && (
+              {!!(nextSemestralGrade && currentSemestralGrade) && (
                 <line
                   stroke={config.SEMESTRAL_GRADE_COLOR}
                   x1={key * 70 + 70}
-                  y1={GradeScale(semestralGrades[key])}
-                  x2={(key + 1) * 70 + 70}
-                  y2={GradeScale(semestralGrades[key + 1])}
+                  y1={GradeScale(currentSemestralGrade)}
+                  x2={(nextSemestralGradeKey + key + 1) * 70 + 70}
+                  y2={GradeScale(nextSemestralGrade)}
                   css={transitionCSS}
                 />
               )}
