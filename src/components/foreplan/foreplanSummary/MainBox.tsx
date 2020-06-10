@@ -36,7 +36,11 @@ import {
   ForeplanHelperStore,
 } from "../../../context/ForeplanContext";
 import { setTrackingData, track } from "../../../context/Tracking";
-import { customColor, zIndex700 } from "../../../utils/cssConstants";
+import {
+  customColor,
+  TEXT_WHITE_SHADOW,
+  zIndex700,
+} from "../../../utils/cssConstants";
 import { useUser } from "../../../utils/useUser";
 
 const ForeplanContentRowList = dynamic(() => import("./List"));
@@ -378,9 +382,11 @@ const Waffle: FC<{
           borderRadius="5px"
           fontSize="1.3rem"
           fontWeight="bold"
-          textShadow="-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white"
+          textShadow={TEXT_WHITE_SHADOW}
+          textAlign="center"
         >
           <Flex
+            cursor="help"
             padding={config.FOREPLAN_SUMMARY_WAFFLE_PADDING}
             border={
               shouldHighlight
@@ -427,7 +433,6 @@ const Waffle: FC<{
                       key={n}
                       x={rectSize * key2 * separation}
                       y={rectSize * key1 * separation}
-                      cursor="help"
                       onMouseOver={() => {
                         if (tooltip !== data_tip) {
                           setTooltip(data_tip);

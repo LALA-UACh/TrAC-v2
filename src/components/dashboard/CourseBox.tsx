@@ -30,10 +30,11 @@ import {
   ForeplanActiveStore,
   ForeplanHelperStore,
 } from "../../context/ForeplanContext";
-import { track } from "../../context/Tracking";
-import { width100percent } from "../../utils/cssConstants";
 import { Theme, ThemeStore } from "../../context/Theme";
+import { track } from "../../context/Tracking";
+import { width100percent, TEXT_WHITE_SHADOW } from "../../utils/cssConstants";
 import { useUser } from "../../utils/useUser";
+
 import { PredictState } from "../foreplan/courseBox/PredictState";
 import styles from "./CourseBox.module.css";
 import { Histogram } from "./Histogram";
@@ -456,11 +457,7 @@ const GradeComponent: FC<Pick<CurrentTakenData, "state" | "grade">> = memo(
     const config = useContext(ConfigContext);
 
     return (
-      <Text
-        mb={2}
-        pt={1}
-        textShadow="-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white"
-      >
+      <Text mb={2} pt={1} textShadow={TEXT_WHITE_SHADOW}>
         <b>
           {(() => {
             if (grade) {

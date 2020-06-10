@@ -51,3 +51,6 @@ export const customColor = (color: string) => css`
 export const zIndex700 = css`
   z-index: 700;
 `;
+
+export const TEXT_WHITE_SHADOW =
+  "-1px 0 0.5px white, 0 1px 0.5px white, 1px 0 0.5px white, 0 -1px 0.5px white";

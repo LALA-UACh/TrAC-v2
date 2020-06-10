@@ -32,7 +32,7 @@ import { ConfigContext } from "../../../context/Config";
 import { CoursesDashboardStore } from "../../../context/CoursesDashboard";
 import { ForeplanActiveStore } from "../../../context/ForeplanContext";
 import { track } from "../../../context/Tracking";
-import { customColor } from "../../../utils/cssConstants";
+import { customColor, TEXT_WHITE_SHADOW } from "../../../utils/cssConstants";
 
 export const PredictState: FC<
   Pick<ICourse, "code"> & { isCourseOpen: boolean }
@@ -98,7 +98,7 @@ export const PredictState: FC<
             paddingRight={1}
             borderRadius="5px"
             border="1px solid black"
-            textShadow="-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white"
+            textShadow={TEXT_WHITE_SHADOW}
           >
             {FOREPLAN_STATE_PREDICTION_APPROVED_SYMBOL}
           </Text>
@@ -117,7 +117,7 @@ export const PredictState: FC<
             paddingRight={1}
             borderRadius="5px"
             border="1px solid black"
-            textShadow="-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white"
+            textShadow={TEXT_WHITE_SHADOW}
           >
             {FOREPLAN_STATE_PREDICTION_FAILED_SYMBOL}
           </Text>
@@ -135,7 +135,7 @@ export const PredictState: FC<
             paddingRight={1}
             borderRadius="5px"
             border="1px solid black"
-            textShadow="-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white"
+            textShadow={TEXT_WHITE_SHADOW}
           >
             {FOREPLAN_STATE_PREDICTION_UNKNOWN_SYMBOL}
           </Text>
