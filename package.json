@@ -7,7 +7,7 @@
   "scripts": {
     "analyze-build": "cross-env ANALYZE=true next build",
     "api-inspect": "kill-port 27050 && node --inspect=27050 ./api/dist/api/index.js",
-    "build": "run-p build-*",
+    "build": "run-p -l build-*",
     "build-api": "tsc -P api",
     "build-client": "next build",
     "clean": "rm -rf logs/*",
@@ -34,9 +34,11 @@
   },
   "resolutions": {
     "@babel/core": "^7.10.2",
-    "apollo-server-core": "2.14.2",
-    "apollo-server-express": "^2.14.2",
-    "class-validator": "^0.12.2"
+    "apollo-server-core": "2.14.3",
+    "apollo-server-express": "2.14.3",
+    "class-validator": "^0.12.2",
+    "graphql": "15.1.0",
+    "validator": "13.1.0"
   },
   "dependencies": {
     "@apollo/react-common": "^3.1.4",
@@ -52,7 +54,7 @@
     "apollo-link": "^1.2.14",
     "apollo-link-batch-http": "^1.2.14",
     "apollo-link-http": "^1.5.17",
-    "apollo-server-express": "^2.14.2",
+    "apollo-server-express": "^2.14.3",
     "apollo-utilities": "^1.3.4",
     "axios": "^0.19.2",
     "class-validator": "^0.12.2",
@@ -72,12 +74,12 @@
     "file-saver": "^2.0.2",
     "final-form": "^4.20.0",
     "framer-motion": "^1.11.0",
-    "graphql": "^15.0.0",
+    "graphql": "^15.1.0",
     "graphql-query-complexity": "^0.6.0",
     "graphql-scalars": "^1.1.5",
     "graphql-tag": "^2.10.3",
     "graphql-tag-ts": "^0.1.15",
-    "graphql-type-json": "^0.3.1",
+    "graphql-type-json": "^0.3.2",
     "graphql-voyager": "^1.0.0-rc.31",
     "helmet": "^3.22.0",
     "http-proxy-middleware": "^1.0.4",
@@ -112,7 +114,7 @@
     "react-state-selector": "^1.0.7",
     "react-toastify": "^6.0.5",
     "react-toggle-theme": "^1.0.0",
-    "react-use": "^15.1.1",
+    "react-use": "^15.2.2",
     "react-useportal": "^1.0.13",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
@@ -123,17 +125,17 @@
     "type-graphql": "^1.0.0-rc.2",
     "use-remember-state": "^1.2.0",
     "utility-types": "^3.10.0",
-    "validator": "^13.0.0"
+    "validator": "^13.1.0"
   },
   "devDependencies": {
     "@apollo/react-testing": "^3.1.4",
     "@babel/helper-call-delegate": "^7.10.1",
-    "@graphql-codegen/cli": "^1.15.1",
-    "@graphql-codegen/typescript": "^1.15.1",
-    "@graphql-codegen/typescript-document-nodes": "^1.15.1",
+    "@graphql-codegen/cli": "^1.15.2",
+    "@graphql-codegen/typescript": "^1.15.2",
+    "@graphql-codegen/typescript-document-nodes": "^1.15.2",
     "@next/bundle-analyzer": "^9.4.4",
     "@testing-library/jest-dom": "^5.9.0",
-    "@testing-library/react": "^10.2.0",
+    "@testing-library/react": "^10.2.1",
     "@types/classnames": "^2.2.10",
     "@types/connect": "^3.4.33",
     "@types/cookie-parser": "^1.4.2",
@@ -145,7 +147,7 @@
     "@types/graphql-type-json": "^0.3.2",
     "@types/helmet": "^0.0.47",
     "@types/http-proxy-middleware": "^0.19.3",
-    "@types/jest": "^25.2.3",
+    "@types/jest": "^26.0.0",
     "@types/js-cookie": "^2.2.6",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/json2csv": "^5.0.1",
@@ -154,7 +156,7 @@
     "@types/markdown-to-jsx": "^6.11.0",
     "@types/mock-knex": "^0.4.3",
     "@types/ms": "^0.7.31",
-    "@types/node": "^14.0.11",
+    "@types/node": "^14.0.13",
     "@types/node-fetch": "^2.5.7",
     "@types/nodemailer": "^6.4.0",
     "@types/nprogress": "^0.2.0",
@@ -198,6 +200,6 @@
     "typescript": "^3.9.5",
     "waait": "^1.0.5",
     "wait-for-expect": "^3.0.2",
-    "wait-on": "^5.0.0"
+    "wait-on": "^5.0.1"
   }
 }

@@ -5015,7 +5015,7 @@ const data: {
               equiv: "",
               name: "CÁLCULO EN VARIAS VARIABLES",
               registration: "CURSADA",
-              grade: 2.3,
+              grade: 0,
               state: StateCourse.Failed,
               parallelGroup: 3,
               currentDistribution: [

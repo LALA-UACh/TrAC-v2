@@ -580,6 +580,9 @@ const HistoricalCirclesComponent: FC<
           case StateCourse.Failed:
             tooltipType = "error";
             color = (failColorScale(grade || 0) as unknown) as string;
+            if (!tooltipLabel) {
+              tooltipLabel = config.STATE_FAILED_LABEL_MINI;
+            }
             break;
           case StateCourse.Current:
             tooltipType = "info";
