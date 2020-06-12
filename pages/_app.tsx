@@ -67,7 +67,9 @@ export default withSecureHeaders({
         "'unsafe-inline'",
       ],
       scriptSrc:
-        NODE_ENV !== "development" ? ["'self'"] : ["'self'", "'unsafe-inline'"],
+        NODE_ENV !== "development"
+          ? ["'self'"]
+          : ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       fontSrc: [
         "'self'",
         "https://fonts.gstatic.com",
