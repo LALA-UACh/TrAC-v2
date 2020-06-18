@@ -1,0 +1,108 @@
+fragment UserAdminFragment on User {
+  email
+  name
+  tries
+  type
+  student_id
+  config
+  locked
+  programs {
+    id
+  }
+}
+
+query usersAdmin {
+  users {
+    ...UserAdminFragment
+  }
+}
+
+query programsAdmin {
+  programs {
+    id
+  }
+}
+
+mutation addUsersProgramsAdmin($user_programs: [UserProgram!]!) {
+  addUsersPrograms(user_programs: $user_programs) {
+    ...UserAdminFragment
+  }
+}
+
+mutation updateUserProgramsAdmin($userPrograms: UpdateUserPrograms!) {
+  updateUserPrograms(userPrograms: $userPrograms) {
+    ...UserAdminFragment
+  }
+}
+
+mutation upsertUsersAdmin($users: [UpsertedUser!]!) {
+  upsertUsers(users: $users) {
+    ...UserAdminFragment
+  }
+}
+
+mutation deleteUserAdmin($email: EmailAddress!) {
+  deleteUser(email: $email) {
+    ...UserAdminFragment
+  }
+}
+
+mutation lockMailUserAdmin($email: EmailAddress!) {
+  lockMailUser(email: $email) {
+    mailResult
+    users {
+      ...UserAdminFragment
+    }
+  }
+}
+
+mutation mailAllLockedUsersAdmin {
+  mailAllLockedUsers
+}
+
+mutation editConfigAdmin($name: String!, $value: String!) {
+  editConfig(name: $name, value: $value)
+}
+
+query userPersistencesAdmin($user: String!) {
+  userPersistences(user: $user) {
+    key
+    data
+    timestamp
+  }
+}
+
+mutation resetPersistenceAdmin($user: String!) {
+  resetPersistence(user: $user)
+}
+
+mutation resetDataLoadersCacheAdmin {
+  resetDataLoadersCache
+}
+
+mutation feedbackResultsCsvAdmin {
+  feedbackResultsCsv
+}
+
+query feedbackResultsAdmin($user_ids: [String!]) {
+  feedbackResults(user_ids: $user_ids) {
+    user {
+      email
+    }
+    form {
+      name
+    }
+    answers {
+      answer
+      question {
+        question
+        type
+        options {
+          text
+          value
+        }
+      }
+    }
+    timestamp
+  }
+}

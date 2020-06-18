@@ -1,0 +1,224 @@
+fragment UserFragment on User {
+  email
+  name
+  admin
+  type
+  config
+  student_id
+}
+
+mutation login($email: EmailAddress!, $password: String!) {
+  login(email: $email, password: $password) {
+    user {
+      ...UserFragment
+    }
+    error
+  }
+}
+
+query currentUser {
+  currentUser {
+    user {
+      ...UserFragment
+    }
+  }
+}
+
+mutation unlock(
+  $email: EmailAddress!
+  $password: String!
+  $unlockKey: String!
+) {
+  unlock(email: $email, password: $password, unlockKey: $unlockKey) {
+    user {
+      ...UserFragment
+    }
+    error
+  }
+}
+
+mutation logout {
+  logout
+}
+
+mutation searchProgram($id: String, $student_id: String) {
+  program(id: $id, student_id: $student_id) {
+    id
+    name
+    desc
+    active
+    curriculums {
+      id
+      semesters {
+        id
+        courses {
+          code
+          name
+          credits {
+            label
+            value
+          }
+          mention
+          flow {
+            code
+          }
+          requisites {
+            code
+          }
+          historicalDistribution {
+            label
+            value
+          }
+          bandColors {
+            min
+            max
+            color
+          }
+        }
+      }
+    }
+  }
+}
+
+mutation searchStudent($student_id: String, $program_id: String) {
+  student(student_id: $student_id, program_id: $program_id) {
+    id
+    programs {
+      id
+      name
+    }
+    curriculums
+    start_year
+    mention
+    terms {
+      id
+      student_id
+      year
+      term
+      situation
+      semestral_grade
+      cumulated_grade
+      program_grade
+      comments
+      takenCourses {
+        id
+        code
+        equiv
+        name
+        registration
+        grade
+        state
+        parallelGroup
+        currentDistribution {
+          label
+          value
+        }
+        bandColors {
+          min
+          max
+          color
+        }
+      }
+    }
+    dropout {
+      prob_dropout
+      model_accuracy
+      active
+    }
+  }
+}
+
+query myPrograms {
+  myPrograms {
+    id
+    name
+  }
+}
+
+mutation track($data: String!, $datetime_client: DateTime!) {
+  track(data: $data, datetime_client: $datetime_client)
+}
+
+query config {
+  config
+}
+
+query students($program_id: String!) {
+  students(program_id: $program_id) {
+    id
+    progress
+    start_year
+    dropout {
+      prob_dropout
+      explanation
+    }
+  }
+}
+
+mutation performanceLoadAdvices($student_id: String, $program_id: String) {
+  performanceLoadAdvices(student_id: $student_id, program_id: $program_id) {
+    id
+    loadUnit
+    lowerBoundary
+    upperBoundary
+    failRateLow
+    failRateMid
+    failRateHigh
+    adviceTitle
+    adviceParagraph
+    clusterLabel
+    isStudentCluster
+  }
+}
+
+mutation directTakeCourses($student_id: String, $program_id: String) {
+  directTakeCourses(student_id: $student_id, program_id: $program_id) {
+    id
+    code
+  }
+}
+
+mutation indirectTakeCourses($student_id: String, $program_id: String) {
+  indirectTakeCourses(student_id: $student_id, program_id: $program_id) {
+    course {
+      id
+      code
+    }
+    requisitesUnmet
+  }
+}
+
+query getPersistenceValue($key: String!) {
+  getPersistenceValue(key: $key) {
+    key
+    data
+  }
+}
+
+mutation setPersistenceValue($key: String!, $data: JSONObject!) {
+  setPersistenceValue(key: $key, data: $data) {
+    __typename
+  }
+}
+
+query unansweredForm {
+  unansweredForm {
+    id
+    name
+    priority
+    questions {
+      id
+      question
+      type
+      priority
+      options {
+        text
+        value
+      }
+    }
+  }
+}
+
+mutation answerFeedbackForm($answer: FeedbackAnswerInput!) {
+  answerFeedbackForm(answer: $answer)
+}
