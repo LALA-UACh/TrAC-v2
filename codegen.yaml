@@ -14,3 +14,6 @@ generates:
         DateTime: string
         EmailAddress: string
         JSONObject: Record<string,any>
+hooks:
+  afterAllFileWrite:
+    - prettier --write src/graphql/index.ts
