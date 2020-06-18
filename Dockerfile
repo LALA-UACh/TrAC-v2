@@ -1,17 +1,15 @@
-FROM node:13-alpine
+FROM node:14-alpine
 
 WORKDIR /home/trac
 
-RUN npm add -g pnpm
+COPY package.json yarn.lock ./
 
-COPY package.json pnpm-lock.yaml ./
+RUN yarn --frozen-lockfile
 
-RUN pnpm install --prefer-frozen-lockfile
-
-EXPOSE 3000 4000
+EXPOSE 3000
 
 COPY . .
 
-RUN pnpm run build
+RUN yarn build
 
-CMD ["pnpm", "start"]
+CMD ["yarn", "start"]
