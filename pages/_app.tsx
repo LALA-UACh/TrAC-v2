@@ -18,7 +18,7 @@ import { ToastContainer } from "react-toastify";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { theme, ThemeProvider } from "@chakra-ui/core";
 
-import { GRAPHQL_URL, NODE_ENV } from "../constants";
+import { GRAPHQL_URL, IS_NOT_PRODUCTION, NODE_ENV } from "../constants";
 import { RefreshToken } from "../src/components/RefreshToken";
 import { Config } from "../src/context/Config";
 import { DarkMode } from "../src/utils/dynamicDarkMode";
@@ -90,7 +90,7 @@ export default withSecureHeaders({
         credentials: "same-origin",
       }),
       cache: new InMemoryCache({}).restore(initialState || {}),
-      connectToDevTools: NODE_ENV !== "production",
+      connectToDevTools: IS_NOT_PRODUCTION,
     });
   })(App)
 );

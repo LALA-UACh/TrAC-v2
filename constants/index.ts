@@ -7,7 +7,7 @@ export const PROGRAM_UNAUTHORIZED = "PROGRAM_UNAUTHORIZED";
 export const PROGRAM_NOT_FOUND = "PROGRAM_NOT_FOUND";
 
 export const NODE_ENV = (() => {
-  switch (process?.env?.NODE_ENV) {
+  switch (process.env.NODE_ENV) {
     case "development":
     case "production":
     case "test":
@@ -18,9 +18,11 @@ export const NODE_ENV = (() => {
   }
 })();
 
+export const IS_NOT_PRODUCTION = NODE_ENV !== "production";
+
 export const GRAPHQL_URL =
   typeof window === "undefined"
-    ? `${process?.env?.DOMAIN ?? "http://localhost:3000"}/api/graphql`
+    ? `${process.env.DOMAIN || "http://localhost:3000"}/api/graphql`
     : "/api/graphql";
 
 export enum StateCourse {
@@ -114,8 +116,6 @@ export const termTypeToNumber = (type?: string): number => {
       return 0;
   }
 };
-
-export const LAST_TIME_USED = "last_time_used";
 
 export const SVG_TEXT = "svg_text";
 

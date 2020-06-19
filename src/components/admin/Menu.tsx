@@ -1,6 +1,7 @@
 import React, { Dispatch, FC, SetStateAction } from "react";
 import { Icon, Menu, MenuItemProps } from "semantic-ui-react";
 
+import { IS_NOT_PRODUCTION } from "../../../constants";
 import { AdminMenuTypes } from "../../../pages/admin";
 
 export const AdminMenu: FC<{
@@ -21,7 +22,7 @@ export const AdminMenu: FC<{
         return;
       }
       default: {
-        if (process.env.NODE_ENV !== "production") {
+        if (IS_NOT_PRODUCTION) {
           throw new Error("Invalid name!");
         }
       }

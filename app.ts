@@ -7,8 +7,8 @@ import helmet from "helmet";
 import { toInteger } from "lodash";
 import Next from "next";
 
-import { NODE_ENV } from "./constants";
 import { apolloServer } from "./api/apollo/server";
+import { IS_NOT_PRODUCTION, NODE_ENV } from "./constants";
 
 export const app = express();
 
@@ -18,25 +18,27 @@ app.use(helmet.hsts());
 
 app.use(cookieParser());
 
+app.get("/api/graphql", (_req, res) => {
+  res.redirect("/");
+});
+
 apolloServer.applyMiddleware({
   app,
   path: "/api/graphql",
 });
 
-const dev = NODE_ENV !== "production";
-
 const nextApp = Next({
-  dev,
+  dev: IS_NOT_PRODUCTION,
   customServer: true,
 });
 
 const nextHandler = nextApp.getRequestHandler();
 
 nextApp.prepare().then(() => {
-  if (process.env.SHOW_GRAPHQL_API || dev) {
+  if (process.env.SHOW_GRAPHQL_API || IS_NOT_PRODUCTION) {
     console.log("Showing GraphQL API through /api/voyager");
 
-    app.use("/api/voyager", voyagerMiddleware({ endpointUrl: "/api/graphql" }));
+    app.get("/api/voyager", voyagerMiddleware({ endpointUrl: "/api/graphql" }));
   }
 
   app.use((req, res) => {
@@ -50,7 +52,7 @@ nextApp.prepare().then(() => {
       console.log(`🚀 Server ready at http://localhost:${port}`);
     });
 
-    if (dev) {
+    if (IS_NOT_PRODUCTION) {
       import("axios").then(({ default: { get } }) => {
         get(`http://localhost:${port}/`).catch(console.error);
       });
