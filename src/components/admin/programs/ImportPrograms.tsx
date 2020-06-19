@@ -16,13 +16,12 @@ import { useRememberState } from "use-remember-state";
 import isEmail from "validator/lib/isEmail";
 import isJSON from "validator/lib/isJSON";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
-
 import {
-  ADD_USERS_PROGRAMS_ADMIN,
-  ALL_PROGRAMS_ADMIN,
-  ALL_USERS_ADMIN,
-} from "../../../graphql/adminQueries";
+  AllUsersAdminDocument,
+  useAddUsersProgramsAdminMutation,
+  useAllProgramsAdminQuery,
+  UserProgram,
+} from "../../../graphql";
 import { width45em } from "../../../utils/cssConstants";
 
 export const ImportPrograms: FC = () => {
@@ -30,14 +29,12 @@ export const ImportPrograms: FC = () => {
     "AdminImportProgramsData",
     "email,program\n"
   );
-  const { data: allPrograms } = useQuery(ALL_PROGRAMS_ADMIN);
+  const { data: allPrograms } = useAllProgramsAdminQuery();
   const [open, setOpen] = useRememberState("AdminImportProgramsOpen", false);
 
   const [isEnabled, setIsEnabled] = useState(false);
 
-  const [parsedData, setParsedData] = useState<
-    { email?: string; program?: number }[]
-  >([]);
+  const [parsedData, setParsedData] = useState<UserProgram[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -48,10 +45,12 @@ export const ImportPrograms: FC = () => {
         return await csv({ ignoreEmpty: true }).fromString(data);
       })();
       setParsedData(
-        parsedData.map(({ email, program }) => ({
-          email,
-          program: program ? toInteger(program) : undefined,
-        }))
+        parsedData
+          .filter(({ email, program }) => email && program)
+          .map(({ email, program }) => ({
+            email,
+            program: toInteger(program).toString(10),
+          }))
       );
     })();
   }, [data, setParsedData]);
@@ -77,24 +76,24 @@ export const ImportPrograms: FC = () => {
     })();
   }, [parsedData, allPrograms]);
 
-  const [importPrograms, { error: errorImportPrograms, loading }] = useMutation(
-    ADD_USERS_PROGRAMS_ADMIN,
-    {
-      variables: {
-        user_programs: parsedData,
-      },
-      update: (cache, { data }) => {
-        if (data?.addUsersPrograms) {
-          cache.writeQuery({
-            query: ALL_USERS_ADMIN,
-            data: {
-              users: data.addUsersPrograms,
-            },
-          });
-        }
-      },
-    }
-  );
+  const [
+    importPrograms,
+    { error: errorImportPrograms, loading },
+  ] = useAddUsersProgramsAdminMutation({
+    variables: {
+      user_programs: parsedData,
+    },
+    update: (cache, { data }) => {
+      if (data?.addUsersPrograms) {
+        cache.writeQuery({
+          query: AllUsersAdminDocument,
+          data: {
+            users: data.addUsersPrograms,
+          },
+        });
+      }
+    },
+  });
 
   return (
     <Modal

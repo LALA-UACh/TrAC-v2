@@ -19,7 +19,6 @@ import {
 } from "@chakra-ui/core";
 
 import { StateCourse, termTypeToNumber } from "../../../constants";
-import { ICourse, ITakenCourse, ITakenSemester } from "../../../interfaces";
 import { ConfigContext } from "../../context/Config";
 import {
   CoursesDashboardStore,
@@ -32,13 +31,17 @@ import {
 } from "../../context/ForeplanContext";
 import { Theme, ThemeStore } from "../../context/Theme";
 import { track } from "../../context/Tracking";
-import { width100percent, TEXT_WHITE_SHADOW } from "../../utils/cssConstants";
+import { TEXT_WHITE_SHADOW, width100percent } from "../../utils/cssConstants";
 import { useUser } from "../../utils/useUser";
-
 import { PredictState } from "../foreplan/courseBox/PredictState";
 import styles from "./CourseBox.module.css";
 import { Histogram } from "./Histogram";
 
+import type {
+  ICourse,
+  ITakenCourse,
+  ITakenSemester,
+} from "../../../interfaces";
 const ForeplanCourseCheckbox = dynamic(() =>
   import("../foreplan/courseBox/Checkbox")
 );

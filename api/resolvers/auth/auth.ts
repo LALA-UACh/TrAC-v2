@@ -12,13 +12,13 @@ import {
   WRONG_INFO,
 } from "../../../constants";
 import { baseUserConfig } from "../../../constants/userConfig";
-import { IContext } from "../../../interfaces";
 import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../../constants";
 import { StudentTable, UserTable } from "../../db/tables";
 import { AuthResult, LoginInput, UnlockInput } from "../../entities/auth/auth";
 import { anonService } from "../../utils/anonymization";
 import { sendMail, UnlockMail } from "../../utils/mail";
 
+import type { IContext } from "../../../interfaces";
 import type { Request, Response } from "express-serve-static-core";
 @Resolver()
 export class AuthResolver {

@@ -19,27 +19,24 @@ export type Scalars = {
 };
 
 export type AuthResult = {
-  __typename?: "AuthResult";
   error?: Maybe<Scalars["String"]>;
   token?: Maybe<Scalars["String"]>;
   user?: Maybe<User>;
 };
 
 export type BandColor = {
-  __typename?: "BandColor";
   color: Scalars["String"];
   max: Scalars["Float"];
   min: Scalars["Float"];
 };
 
 export type Course = {
-  __typename?: "Course";
   bandColors: Array<BandColor>;
   code: Scalars["String"];
   credits: Array<Credit>;
   flow: Array<Course>;
   historicalDistribution: Array<DistributionValue>;
-  /** Course-Semester-Curriculum-Program ID */
+  /** Course-Semester-Curriculum-Program ID  */
   id: Scalars["Int"];
   mention: Scalars["String"];
   name: Scalars["String"];
@@ -47,25 +44,21 @@ export type Course = {
 };
 
 export type Credit = {
-  __typename?: "Credit";
   label: Scalars["String"];
   value: Scalars["Int"];
 };
 
 export type Curriculum = {
-  __typename?: "Curriculum";
   id: Scalars["String"];
   semesters: Array<Semester>;
 };
 
 export type DistributionValue = {
-  __typename?: "DistributionValue";
   label: Scalars["String"];
   value: Scalars["Int"];
 };
 
 export type Dropout = {
-  __typename?: "Dropout";
   active: Scalars["Boolean"];
   explanation?: Maybe<Scalars["String"]>;
   model_accuracy?: Maybe<Scalars["Float"]>;
@@ -73,7 +66,6 @@ export type Dropout = {
 };
 
 export type FeedbackAnswer = {
-  __typename?: "FeedbackAnswer";
   answer: Scalars["String"];
   question: FeedbackQuestion;
 };
@@ -89,7 +81,6 @@ export type FeedbackAnswerQuestionInput = {
 };
 
 export type FeedbackForm = {
-  __typename?: "FeedbackForm";
   id: Scalars["Int"];
   name: Scalars["String"];
   priority: Scalars["Int"];
@@ -97,7 +88,6 @@ export type FeedbackForm = {
 };
 
 export type FeedbackQuestion = {
-  __typename?: "FeedbackQuestion";
   id: Scalars["Int"];
   options: Array<FeedbackQuestionOption>;
   priority: Scalars["Int"];
@@ -106,7 +96,6 @@ export type FeedbackQuestion = {
 };
 
 export type FeedbackQuestionOption = {
-  __typename?: "FeedbackQuestionOption";
   text: Scalars["String"];
   value: Scalars["Int"];
 };
@@ -124,7 +113,6 @@ export enum FeedbackQuestionType {
 }
 
 export type FeedbackResult = {
-  __typename?: "FeedbackResult";
   answers: Array<FeedbackAnswer>;
   form: FeedbackForm;
   timestamp: Scalars["DateTime"];
@@ -132,25 +120,21 @@ export type FeedbackResult = {
 };
 
 export type IndirectTakeCourse = {
-  __typename?: "IndirectTakeCourse";
   course: Course;
   requisitesUnmet: Array<Scalars["String"]>;
 };
 
 export type LockedUserResult = {
-  __typename?: "LockedUserResult";
   mailResult: Scalars["JSONObject"];
   users: Array<User>;
 };
 
 export type MultipleLockedUserResult = {
-  __typename?: "MultipleLockedUserResult";
   mailResults: Array<Scalars["JSONObject"]>;
   users: Array<User>;
 };
 
 export type Mutation = {
-  __typename?: "Mutation";
   addUsersPrograms: Array<User>;
   answerFeedbackForm: Scalars["Boolean"];
   deleteUser: Array<User>;
@@ -254,7 +238,6 @@ export type MutationUpsertUsersArgs = {
 };
 
 export type PerformanceByLoad = {
-  __typename?: "PerformanceByLoad";
   adviceParagraph: Scalars["String"];
   adviceTitle: Scalars["String"];
   clusterLabel: Scalars["String"];
@@ -274,7 +257,6 @@ export enum PerformanceLoadUnit {
 }
 
 export type Persistence = {
-  __typename?: "Persistence";
   data: Scalars["JSONObject"];
   key: Scalars["String"];
   timestamp: Scalars["DateTime"];
@@ -282,7 +264,6 @@ export type Persistence = {
 };
 
 export type Program = {
-  __typename?: "Program";
   active: Scalars["Boolean"];
   curriculums: Array<Curriculum>;
   desc: Scalars["String"];
@@ -292,7 +273,6 @@ export type Program = {
 };
 
 export type Query = {
-  __typename?: "Query";
   config: Scalars["JSONObject"];
   currentUser?: Maybe<AuthResult>;
   feedbackResults: Array<FeedbackResult>;
@@ -323,7 +303,6 @@ export type QueryUserPersistencesArgs = {
 };
 
 export type Semester = {
-  __typename?: "Semester";
   courses: Array<Course>;
   id: Scalars["Int"];
 };
@@ -338,7 +317,6 @@ export enum StateCourse {
 }
 
 export type Student = {
-  __typename?: "Student";
   curriculums: Array<Scalars["String"]>;
   dropout?: Maybe<Dropout>;
   id: Scalars["ID"];
@@ -352,7 +330,6 @@ export type Student = {
 };
 
 export type TakenCourse = {
-  __typename?: "TakenCourse";
   bandColors: Array<BandColor>;
   code: Scalars["String"];
   currentDistribution: Array<DistributionValue>;
@@ -366,7 +343,6 @@ export type TakenCourse = {
 };
 
 export type Term = {
-  __typename?: "Term";
   comments: Scalars["String"];
   cumulated_grade: Scalars["Float"];
   id: Scalars["Int"];
@@ -387,7 +363,6 @@ export enum TermType {
 }
 
 export type Track = {
-  __typename?: "Track";
   app_id: Scalars["String"];
   data: Scalars["String"];
   datetime: Scalars["DateTime"];
@@ -414,7 +389,6 @@ export type UpsertedUser = {
 };
 
 export type User = {
-  __typename?: "User";
   admin: Scalars["Boolean"];
   config: Scalars["JSONObject"];
   email: Scalars["EmailAddress"];
@@ -438,153 +412,130 @@ export enum UserType {
   Student = "Student",
 }
 
-export type UserAdminFragmentFragment = { __typename?: "User" } & Pick<
+export type UserAdminFragmentFragment = Pick<
   User,
   "email" | "name" | "tries" | "type" | "student_id" | "config" | "locked"
-> & { programs: Array<{ __typename?: "Program" } & Pick<Program, "id">> };
+> & { programs: Array<Pick<Program, "id">> };
 
-export type UsersAdminQueryVariables = Exact<{ [key: string]: never }>;
+export type AllUsersAdminQueryVariables = Exact<{ [key: string]: never }>;
 
-export type UsersAdminQuery = { __typename?: "Query" } & {
-  users: Array<{ __typename?: "User" } & UserAdminFragmentFragment>;
-};
+export type AllUsersAdminQuery = { users: Array<UserAdminFragmentFragment> };
 
-export type ProgramsAdminQueryVariables = Exact<{ [key: string]: never }>;
+export type AllProgramsAdminQueryVariables = Exact<{ [key: string]: never }>;
 
-export type ProgramsAdminQuery = { __typename?: "Query" } & {
-  programs: Array<{ __typename?: "Program" } & Pick<Program, "id">>;
-};
+export type AllProgramsAdminQuery = { programs: Array<Pick<Program, "id">> };
 
 export type AddUsersProgramsAdminMutationVariables = Exact<{
   user_programs: Array<UserProgram>;
 }>;
 
-export type AddUsersProgramsAdminMutation = { __typename?: "Mutation" } & {
-  addUsersPrograms: Array<{ __typename?: "User" } & UserAdminFragmentFragment>;
+export type AddUsersProgramsAdminMutation = {
+  addUsersPrograms: Array<UserAdminFragmentFragment>;
 };
 
 export type UpdateUserProgramsAdminMutationVariables = Exact<{
   userPrograms: UpdateUserPrograms;
 }>;
 
-export type UpdateUserProgramsAdminMutation = { __typename?: "Mutation" } & {
-  updateUserPrograms: Array<
-    { __typename?: "User" } & UserAdminFragmentFragment
-  >;
+export type UpdateUserProgramsAdminMutation = {
+  updateUserPrograms: Array<UserAdminFragmentFragment>;
 };
 
 export type UpsertUsersAdminMutationVariables = Exact<{
   users: Array<UpsertedUser>;
 }>;
 
-export type UpsertUsersAdminMutation = { __typename?: "Mutation" } & {
-  upsertUsers: Array<{ __typename?: "User" } & UserAdminFragmentFragment>;
+export type UpsertUsersAdminMutation = {
+  upsertUsers: Array<UserAdminFragmentFragment>;
 };
 
 export type DeleteUserAdminMutationVariables = Exact<{
   email: Scalars["EmailAddress"];
 }>;
 
-export type DeleteUserAdminMutation = { __typename?: "Mutation" } & {
-  deleteUser: Array<{ __typename?: "User" } & UserAdminFragmentFragment>;
+export type DeleteUserAdminMutation = {
+  deleteUser: Array<UserAdminFragmentFragment>;
 };
 
 export type LockMailUserAdminMutationVariables = Exact<{
   email: Scalars["EmailAddress"];
 }>;
 
-export type LockMailUserAdminMutation = { __typename?: "Mutation" } & {
-  lockMailUser: { __typename?: "LockedUserResult" } & Pick<
-    LockedUserResult,
-    "mailResult"
-  > & { users: Array<{ __typename?: "User" } & UserAdminFragmentFragment> };
+export type LockMailUserAdminMutation = {
+  lockMailUser: Pick<LockedUserResult, "mailResult"> & {
+    users: Array<UserAdminFragmentFragment>;
+  };
 };
 
 export type MailAllLockedUsersAdminMutationVariables = Exact<{
   [key: string]: never;
 }>;
 
-export type MailAllLockedUsersAdminMutation = {
-  __typename?: "Mutation";
-} & Pick<Mutation, "mailAllLockedUsers">;
+export type MailAllLockedUsersAdminMutation = Pick<
+  Mutation,
+  "mailAllLockedUsers"
+>;
 
 export type EditConfigAdminMutationVariables = Exact<{
   name: Scalars["String"];
   value: Scalars["String"];
 }>;
 
-export type EditConfigAdminMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "editConfig"
->;
+export type EditConfigAdminMutation = Pick<Mutation, "editConfig">;
 
 export type UserPersistencesAdminQueryVariables = Exact<{
   user: Scalars["String"];
 }>;
 
-export type UserPersistencesAdminQuery = { __typename?: "Query" } & {
-  userPersistences: Array<
-    { __typename?: "Persistence" } & Pick<
-      Persistence,
-      "key" | "data" | "timestamp"
-    >
-  >;
+export type UserPersistencesAdminQuery = {
+  userPersistences: Array<Pick<Persistence, "key" | "data" | "timestamp">>;
 };
 
 export type ResetPersistenceAdminMutationVariables = Exact<{
   user: Scalars["String"];
 }>;
 
-export type ResetPersistenceAdminMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "resetPersistence"
->;
+export type ResetPersistenceAdminMutation = Pick<Mutation, "resetPersistence">;
 
 export type ResetDataLoadersCacheAdminMutationVariables = Exact<{
   [key: string]: never;
 }>;
 
-export type ResetDataLoadersCacheAdminMutation = {
-  __typename?: "Mutation";
-} & Pick<Mutation, "resetDataLoadersCache">;
+export type ResetDataLoadersCacheAdminMutation = Pick<
+  Mutation,
+  "resetDataLoadersCache"
+>;
 
 export type FeedbackResultsCsvAdminMutationVariables = Exact<{
   [key: string]: never;
 }>;
 
-export type FeedbackResultsCsvAdminMutation = {
-  __typename?: "Mutation";
-} & Pick<Mutation, "feedbackResultsCsv">;
+export type FeedbackResultsCsvAdminMutation = Pick<
+  Mutation,
+  "feedbackResultsCsv"
+>;
 
 export type FeedbackResultsAdminQueryVariables = Exact<{
   user_ids?: Maybe<Array<Scalars["String"]>>;
 }>;
 
-export type FeedbackResultsAdminQuery = { __typename?: "Query" } & {
+export type FeedbackResultsAdminQuery = {
   feedbackResults: Array<
-    { __typename?: "FeedbackResult" } & Pick<FeedbackResult, "timestamp"> & {
-        user: { __typename?: "User" } & Pick<User, "email">;
-        form: { __typename?: "FeedbackForm" } & Pick<FeedbackForm, "name">;
-        answers: Array<
-          { __typename?: "FeedbackAnswer" } & Pick<FeedbackAnswer, "answer"> & {
-              question: { __typename?: "FeedbackQuestion" } & Pick<
-                FeedbackQuestion,
-                "question" | "type"
-              > & {
-                  options: Array<
-                    { __typename?: "FeedbackQuestionOption" } & Pick<
-                      FeedbackQuestionOption,
-                      "text" | "value"
-                    >
-                  >;
-                };
-            }
-        >;
-      }
+    Pick<FeedbackResult, "timestamp"> & {
+      user: Pick<User, "email">;
+      form: Pick<FeedbackForm, "name">;
+      answers: Array<
+        Pick<FeedbackAnswer, "answer"> & {
+          question: Pick<FeedbackQuestion, "question" | "type"> & {
+            options: Array<Pick<FeedbackQuestionOption, "text" | "value">>;
+          };
+        }
+      >;
+    }
   >;
 };
 
-export type UserFragmentFragment = { __typename?: "User" } & Pick<
+export type UserFragmentFragment = Pick<
   User,
   "email" | "name" | "admin" | "type" | "config" | "student_id"
 >;
@@ -594,20 +545,14 @@ export type LoginMutationVariables = Exact<{
   password: Scalars["String"];
 }>;
 
-export type LoginMutation = { __typename?: "Mutation" } & {
-  login: { __typename?: "AuthResult" } & Pick<AuthResult, "error"> & {
-      user?: Maybe<{ __typename?: "User" } & UserFragmentFragment>;
-    };
+export type LoginMutation = {
+  login: Pick<AuthResult, "error"> & { user?: Maybe<UserFragmentFragment> };
 };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never }>;
 
-export type CurrentUserQuery = { __typename?: "Query" } & {
-  currentUser?: Maybe<
-    { __typename?: "AuthResult" } & {
-      user?: Maybe<{ __typename?: "User" } & UserFragmentFragment>;
-    }
-  >;
+export type CurrentUserQuery = {
+  currentUser?: Maybe<{ user?: Maybe<UserFragmentFragment> }>;
 };
 
 export type UnlockMutationVariables = Exact<{
@@ -616,69 +561,41 @@ export type UnlockMutationVariables = Exact<{
   unlockKey: Scalars["String"];
 }>;
 
-export type UnlockMutation = { __typename?: "Mutation" } & {
-  unlock: { __typename?: "AuthResult" } & Pick<AuthResult, "error"> & {
-      user?: Maybe<{ __typename?: "User" } & UserFragmentFragment>;
-    };
+export type UnlockMutation = {
+  unlock: Pick<AuthResult, "error"> & { user?: Maybe<UserFragmentFragment> };
 };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
 
-export type LogoutMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "logout"
->;
+export type LogoutMutation = Pick<Mutation, "logout">;
 
 export type SearchProgramMutationVariables = Exact<{
   id?: Maybe<Scalars["String"]>;
   student_id?: Maybe<Scalars["String"]>;
 }>;
 
-export type SearchProgramMutation = { __typename?: "Mutation" } & {
-  program: { __typename?: "Program" } & Pick<
-    Program,
-    "id" | "name" | "desc" | "active"
-  > & {
-      curriculums: Array<
-        { __typename?: "Curriculum" } & Pick<Curriculum, "id"> & {
-            semesters: Array<
-              { __typename?: "Semester" } & Pick<Semester, "id"> & {
-                  courses: Array<
-                    { __typename?: "Course" } & Pick<
-                      Course,
-                      "code" | "name" | "mention"
-                    > & {
-                        credits: Array<
-                          { __typename?: "Credit" } & Pick<
-                            Credit,
-                            "label" | "value"
-                          >
-                        >;
-                        flow: Array<
-                          { __typename?: "Course" } & Pick<Course, "code">
-                        >;
-                        requisites: Array<
-                          { __typename?: "Course" } & Pick<Course, "code">
-                        >;
-                        historicalDistribution: Array<
-                          { __typename?: "DistributionValue" } & Pick<
-                            DistributionValue,
-                            "label" | "value"
-                          >
-                        >;
-                        bandColors: Array<
-                          { __typename?: "BandColor" } & Pick<
-                            BandColor,
-                            "min" | "max" | "color"
-                          >
-                        >;
-                      }
-                  >;
-                }
+export type SearchProgramMutation = {
+  program: Pick<Program, "id" | "name" | "desc" | "active"> & {
+    curriculums: Array<
+      Pick<Curriculum, "id"> & {
+        semesters: Array<
+          Pick<Semester, "id"> & {
+            courses: Array<
+              Pick<Course, "code" | "name" | "mention"> & {
+                credits: Array<Pick<Credit, "label" | "value">>;
+                flow: Array<Pick<Course, "code">>;
+                requisites: Array<Pick<Course, "code">>;
+                historicalDistribution: Array<
+                  Pick<DistributionValue, "label" | "value">
+                >;
+                bandColors: Array<Pick<BandColor, "min" | "max" | "color">>;
+              }
             >;
           }
-      >;
-    };
+        >;
+      }
+    >;
+  };
 };
 
 export type SearchStudentMutationVariables = Exact<{
@@ -686,70 +603,54 @@ export type SearchStudentMutationVariables = Exact<{
   program_id?: Maybe<Scalars["String"]>;
 }>;
 
-export type SearchStudentMutation = { __typename?: "Mutation" } & {
+export type SearchStudentMutation = {
   student?: Maybe<
-    { __typename?: "Student" } & Pick<
-      Student,
-      "id" | "curriculums" | "start_year" | "mention"
-    > & {
-        programs: Array<
-          { __typename?: "Program" } & Pick<Program, "id" | "name">
-        >;
-        terms: Array<
-          { __typename?: "Term" } & Pick<
-            Term,
-            | "id"
-            | "student_id"
-            | "year"
-            | "term"
-            | "situation"
-            | "semestral_grade"
-            | "cumulated_grade"
-            | "program_grade"
-            | "comments"
-          > & {
-              takenCourses: Array<
-                { __typename?: "TakenCourse" } & Pick<
-                  TakenCourse,
-                  | "id"
-                  | "code"
-                  | "equiv"
-                  | "name"
-                  | "registration"
-                  | "grade"
-                  | "state"
-                  | "parallelGroup"
-                > & {
-                    currentDistribution: Array<
-                      { __typename?: "DistributionValue" } & Pick<
-                        DistributionValue,
-                        "label" | "value"
-                      >
-                    >;
-                    bandColors: Array<
-                      { __typename?: "BandColor" } & Pick<
-                        BandColor,
-                        "min" | "max" | "color"
-                      >
-                    >;
-                  }
+    Pick<Student, "id" | "curriculums" | "start_year" | "mention"> & {
+      programs: Array<Pick<Program, "id" | "name">>;
+      terms: Array<
+        Pick<
+          Term,
+          | "id"
+          | "student_id"
+          | "year"
+          | "term"
+          | "situation"
+          | "semestral_grade"
+          | "cumulated_grade"
+          | "program_grade"
+          | "comments"
+        > & {
+          takenCourses: Array<
+            Pick<
+              TakenCourse,
+              | "id"
+              | "code"
+              | "equiv"
+              | "name"
+              | "registration"
+              | "grade"
+              | "state"
+              | "parallelGroup"
+            > & {
+              currentDistribution: Array<
+                Pick<DistributionValue, "label" | "value">
               >;
+              bandColors: Array<Pick<BandColor, "min" | "max" | "color">>;
             }
-        >;
-        dropout?: Maybe<
-          { __typename?: "Dropout" } & Pick<
-            Dropout,
-            "prob_dropout" | "model_accuracy" | "active"
-          >
-        >;
-      }
+          >;
+        }
+      >;
+      dropout?: Maybe<
+        Pick<Dropout, "prob_dropout" | "model_accuracy" | "active">
+      >;
+    }
   >;
 };
 
 export type MyProgramsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type MyProgramsQuery = { __typename?: "Query" } & {
-  myPrograms: Array<{ __typename?: "Program" } & Pick<Program, "id" | "name">>;
+export type MyProgramsQuery = {
+  myPrograms: Array<Pick<Program, "id" | "name">>;
 };
 
 export type TrackMutationVariables = Exact<{
@@ -757,32 +658,21 @@ export type TrackMutationVariables = Exact<{
   datetime_client: Scalars["DateTime"];
 }>;
 
-export type TrackMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "track"
->;
+export type TrackMutation = Pick<Mutation, "track">;
 
 export type ConfigQueryVariables = Exact<{ [key: string]: never }>;
 
-export type ConfigQuery = { __typename?: "Query" } & Pick<Query, "config">;
+export type ConfigQuery = Pick<Query, "config">;
 
-export type StudentsQueryVariables = Exact<{
+export type StudentsListQueryVariables = Exact<{
   program_id: Scalars["String"];
 }>;
 
-export type StudentsQuery = { __typename?: "Query" } & {
+export type StudentsListQuery = {
   students: Array<
-    { __typename?: "Student" } & Pick<
-      Student,
-      "id" | "progress" | "start_year"
-    > & {
-        dropout?: Maybe<
-          { __typename?: "Dropout" } & Pick<
-            Dropout,
-            "prob_dropout" | "explanation"
-          >
-        >;
-      }
+    Pick<Student, "id" | "progress" | "start_year"> & {
+      dropout?: Maybe<Pick<Dropout, "prob_dropout" | "explanation">>;
+    }
   >;
 };
 
@@ -791,9 +681,9 @@ export type PerformanceLoadAdvicesMutationVariables = Exact<{
   program_id?: Maybe<Scalars["String"]>;
 }>;
 
-export type PerformanceLoadAdvicesMutation = { __typename?: "Mutation" } & {
+export type PerformanceLoadAdvicesMutation = {
   performanceLoadAdvices: Array<
-    { __typename?: "PerformanceByLoad" } & Pick<
+    Pick<
       PerformanceByLoad,
       | "id"
       | "loadUnit"
@@ -815,10 +705,8 @@ export type DirectTakeCoursesMutationVariables = Exact<{
   program_id?: Maybe<Scalars["String"]>;
 }>;
 
-export type DirectTakeCoursesMutation = { __typename?: "Mutation" } & {
-  directTakeCourses: Array<
-    { __typename?: "Course" } & Pick<Course, "id" | "code">
-  >;
+export type DirectTakeCoursesMutation = {
+  directTakeCourses: Array<Pick<Course, "id" | "code">>;
 };
 
 export type IndirectTakeCoursesMutationVariables = Exact<{
@@ -826,12 +714,11 @@ export type IndirectTakeCoursesMutationVariables = Exact<{
   program_id?: Maybe<Scalars["String"]>;
 }>;
 
-export type IndirectTakeCoursesMutation = { __typename?: "Mutation" } & {
+export type IndirectTakeCoursesMutation = {
   indirectTakeCourses: Array<
-    { __typename?: "IndirectTakeCourse" } & Pick<
-      IndirectTakeCourse,
-      "requisitesUnmet"
-    > & { course: { __typename?: "Course" } & Pick<Course, "id" | "code"> }
+    Pick<IndirectTakeCourse, "requisitesUnmet"> & {
+      course: Pick<Course, "id" | "code">;
+    }
   >;
 };
 
@@ -839,10 +726,8 @@ export type GetPersistenceValueQueryVariables = Exact<{
   key: Scalars["String"];
 }>;
 
-export type GetPersistenceValueQuery = { __typename?: "Query" } & {
-  getPersistenceValue?: Maybe<
-    { __typename?: "Persistence" } & Pick<Persistence, "key" | "data">
-  >;
+export type GetPersistenceValueQuery = {
+  getPersistenceValue?: Maybe<Pick<Persistence, "key" | "data">>;
 };
 
 export type SetPersistenceValueMutationVariables = Exact<{
@@ -850,32 +735,21 @@ export type SetPersistenceValueMutationVariables = Exact<{
   data: Scalars["JSONObject"];
 }>;
 
-export type SetPersistenceValueMutation = { __typename?: "Mutation" } & {
+export type SetPersistenceValueMutation = {
   setPersistenceValue: { __typename: "Persistence" };
 };
 
 export type UnansweredFormQueryVariables = Exact<{ [key: string]: never }>;
 
-export type UnansweredFormQuery = { __typename?: "Query" } & {
+export type UnansweredFormQuery = {
   unansweredForm?: Maybe<
-    { __typename?: "FeedbackForm" } & Pick<
-      FeedbackForm,
-      "id" | "name" | "priority"
-    > & {
-        questions: Array<
-          { __typename?: "FeedbackQuestion" } & Pick<
-            FeedbackQuestion,
-            "id" | "question" | "type" | "priority"
-          > & {
-              options: Array<
-                { __typename?: "FeedbackQuestionOption" } & Pick<
-                  FeedbackQuestionOption,
-                  "text" | "value"
-                >
-              >;
-            }
-        >;
-      }
+    Pick<FeedbackForm, "id" | "name" | "priority"> & {
+      questions: Array<
+        Pick<FeedbackQuestion, "id" | "question" | "type" | "priority"> & {
+          options: Array<Pick<FeedbackQuestionOption, "text" | "value">>;
+        }
+      >;
+    }
   >;
 };
 
@@ -883,10 +757,7 @@ export type AnswerFeedbackFormMutationVariables = Exact<{
   answer: FeedbackAnswerInput;
 }>;
 
-export type AnswerFeedbackFormMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "answerFeedbackForm"
->;
+export type AnswerFeedbackFormMutation = Pick<Mutation, "answerFeedbackForm">;
 
 export const UserAdminFragmentFragmentDoc = gql`
   fragment UserAdminFragment on User {
@@ -912,8 +783,8 @@ export const UserFragmentFragmentDoc = gql`
     student_id
   }
 `;
-export const UsersAdminDocument = gql`
-  query usersAdmin {
+export const AllUsersAdminDocument = gql`
+  query allUsersAdmin {
     users {
       ...UserAdminFragment
     }
@@ -922,52 +793,54 @@ export const UsersAdminDocument = gql`
 `;
 
 /**
- * __useUsersAdminQuery__
+ * __useAllUsersAdminQuery__
  *
- * To run a query within a React component, call `useUsersAdminQuery` and pass it any options that fit your needs.
- * When your component renders, `useUsersAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useAllUsersAdminQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllUsersAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useUsersAdminQuery({
+ * const { data, loading, error } = useAllUsersAdminQuery({
  *   variables: {
  *   },
  * });
  */
-export function useUsersAdminQuery(
+export function useAllUsersAdminQuery(
   baseOptions?: ApolloReactHooks.QueryHookOptions<
-    UsersAdminQuery,
-    UsersAdminQueryVariables
+    AllUsersAdminQuery,
+    AllUsersAdminQueryVariables
   >
 ) {
-  return ApolloReactHooks.useQuery<UsersAdminQuery, UsersAdminQueryVariables>(
-    UsersAdminDocument,
-    baseOptions
-  );
+  return ApolloReactHooks.useQuery<
+    AllUsersAdminQuery,
+    AllUsersAdminQueryVariables
+  >(AllUsersAdminDocument, baseOptions);
 }
-export function useUsersAdminLazyQuery(
+export function useAllUsersAdminLazyQuery(
   baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    UsersAdminQuery,
-    UsersAdminQueryVariables
+    AllUsersAdminQuery,
+    AllUsersAdminQueryVariables
   >
 ) {
   return ApolloReactHooks.useLazyQuery<
-    UsersAdminQuery,
-    UsersAdminQueryVariables
-  >(UsersAdminDocument, baseOptions);
+    AllUsersAdminQuery,
+    AllUsersAdminQueryVariables
+  >(AllUsersAdminDocument, baseOptions);
 }
-export type UsersAdminQueryHookResult = ReturnType<typeof useUsersAdminQuery>;
-export type UsersAdminLazyQueryHookResult = ReturnType<
-  typeof useUsersAdminLazyQuery
+export type AllUsersAdminQueryHookResult = ReturnType<
+  typeof useAllUsersAdminQuery
 >;
-export type UsersAdminQueryResult = ApolloReactCommon.QueryResult<
-  UsersAdminQuery,
-  UsersAdminQueryVariables
+export type AllUsersAdminLazyQueryHookResult = ReturnType<
+  typeof useAllUsersAdminLazyQuery
 >;
-export const ProgramsAdminDocument = gql`
-  query programsAdmin {
+export type AllUsersAdminQueryResult = ApolloReactCommon.QueryResult<
+  AllUsersAdminQuery,
+  AllUsersAdminQueryVariables
+>;
+export const AllProgramsAdminDocument = gql`
+  query allProgramsAdmin {
     programs {
       id
     }
@@ -975,51 +848,51 @@ export const ProgramsAdminDocument = gql`
 `;
 
 /**
- * __useProgramsAdminQuery__
+ * __useAllProgramsAdminQuery__
  *
- * To run a query within a React component, call `useProgramsAdminQuery` and pass it any options that fit your needs.
- * When your component renders, `useProgramsAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useAllProgramsAdminQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllProgramsAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useProgramsAdminQuery({
+ * const { data, loading, error } = useAllProgramsAdminQuery({
  *   variables: {
  *   },
  * });
  */
-export function useProgramsAdminQuery(
+export function useAllProgramsAdminQuery(
   baseOptions?: ApolloReactHooks.QueryHookOptions<
-    ProgramsAdminQuery,
-    ProgramsAdminQueryVariables
+    AllProgramsAdminQuery,
+    AllProgramsAdminQueryVariables
   >
 ) {
   return ApolloReactHooks.useQuery<
-    ProgramsAdminQuery,
-    ProgramsAdminQueryVariables
-  >(ProgramsAdminDocument, baseOptions);
+    AllProgramsAdminQuery,
+    AllProgramsAdminQueryVariables
+  >(AllProgramsAdminDocument, baseOptions);
 }
-export function useProgramsAdminLazyQuery(
+export function useAllProgramsAdminLazyQuery(
   baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    ProgramsAdminQuery,
-    ProgramsAdminQueryVariables
+    AllProgramsAdminQuery,
+    AllProgramsAdminQueryVariables
   >
 ) {
   return ApolloReactHooks.useLazyQuery<
-    ProgramsAdminQuery,
-    ProgramsAdminQueryVariables
-  >(ProgramsAdminDocument, baseOptions);
+    AllProgramsAdminQuery,
+    AllProgramsAdminQueryVariables
+  >(AllProgramsAdminDocument, baseOptions);
 }
-export type ProgramsAdminQueryHookResult = ReturnType<
-  typeof useProgramsAdminQuery
+export type AllProgramsAdminQueryHookResult = ReturnType<
+  typeof useAllProgramsAdminQuery
 >;
-export type ProgramsAdminLazyQueryHookResult = ReturnType<
-  typeof useProgramsAdminLazyQuery
+export type AllProgramsAdminLazyQueryHookResult = ReturnType<
+  typeof useAllProgramsAdminLazyQuery
 >;
-export type ProgramsAdminQueryResult = ApolloReactCommon.QueryResult<
-  ProgramsAdminQuery,
-  ProgramsAdminQueryVariables
+export type AllProgramsAdminQueryResult = ApolloReactCommon.QueryResult<
+  AllProgramsAdminQuery,
+  AllProgramsAdminQueryVariables
 >;
 export const AddUsersProgramsAdminDocument = gql`
   mutation addUsersProgramsAdmin($user_programs: [UserProgram!]!) {
@@ -2187,8 +2060,8 @@ export type ConfigQueryResult = ApolloReactCommon.QueryResult<
   ConfigQuery,
   ConfigQueryVariables
 >;
-export const StudentsDocument = gql`
-  query students($program_id: String!) {
+export const StudentsListDocument = gql`
+  query studentsList($program_id: String!) {
     students(program_id: $program_id) {
       id
       progress
@@ -2202,50 +2075,52 @@ export const StudentsDocument = gql`
 `;
 
 /**
- * __useStudentsQuery__
+ * __useStudentsListQuery__
  *
- * To run a query within a React component, call `useStudentsQuery` and pass it any options that fit your needs.
- * When your component renders, `useStudentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useStudentsListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStudentsListQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useStudentsQuery({
+ * const { data, loading, error } = useStudentsListQuery({
  *   variables: {
  *      program_id: // value for 'program_id'
  *   },
  * });
  */
-export function useStudentsQuery(
+export function useStudentsListQuery(
   baseOptions?: ApolloReactHooks.QueryHookOptions<
-    StudentsQuery,
-    StudentsQueryVariables
+    StudentsListQuery,
+    StudentsListQueryVariables
   >
 ) {
-  return ApolloReactHooks.useQuery<StudentsQuery, StudentsQueryVariables>(
-    StudentsDocument,
-    baseOptions
-  );
+  return ApolloReactHooks.useQuery<
+    StudentsListQuery,
+    StudentsListQueryVariables
+  >(StudentsListDocument, baseOptions);
 }
-export function useStudentsLazyQuery(
+export function useStudentsListLazyQuery(
   baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    StudentsQuery,
-    StudentsQueryVariables
+    StudentsListQuery,
+    StudentsListQueryVariables
   >
 ) {
-  return ApolloReactHooks.useLazyQuery<StudentsQuery, StudentsQueryVariables>(
-    StudentsDocument,
-    baseOptions
-  );
+  return ApolloReactHooks.useLazyQuery<
+    StudentsListQuery,
+    StudentsListQueryVariables
+  >(StudentsListDocument, baseOptions);
 }
-export type StudentsQueryHookResult = ReturnType<typeof useStudentsQuery>;
-export type StudentsLazyQueryHookResult = ReturnType<
-  typeof useStudentsLazyQuery
+export type StudentsListQueryHookResult = ReturnType<
+  typeof useStudentsListQuery
 >;
-export type StudentsQueryResult = ApolloReactCommon.QueryResult<
-  StudentsQuery,
-  StudentsQueryVariables
+export type StudentsListLazyQueryHookResult = ReturnType<
+  typeof useStudentsListLazyQuery
+>;
+export type StudentsListQueryResult = ApolloReactCommon.QueryResult<
+  StudentsListQuery,
+  StudentsListQueryVariables
 >;
 export const PerformanceLoadAdvicesDocument = gql`
   mutation performanceLoadAdvices($student_id: String, $program_id: String) {

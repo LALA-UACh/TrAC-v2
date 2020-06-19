@@ -6,12 +6,13 @@ import { Button, Checkbox, Icon, Input, Modal } from "semantic-ui-react";
 import { Box, Stack, useDisclosure } from "@chakra-ui/core";
 
 import { baseUserConfig, UserConfig } from "../../../../constants/userConfig";
-import { IUserFragment } from "../../../graphql/queries";
+
+import type { UserFragmentFragment } from "../../../graphql";
 
 export const useUpdateUserConfigModal = ({
   email,
   config: oldConfig,
-}: Pick<IUserFragment, "email" | "config">) => {
+}: Pick<UserFragmentFragment, "email" | "config">) => {
   const { isOpen, onOpen, onClose } = useDisclosure(false);
 
   const [config, setConfig] = useSetState<UserConfig>({

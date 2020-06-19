@@ -2,7 +2,6 @@ import { toInteger } from "lodash";
 import React, { FC, memo, useContext } from "react";
 import { useForm } from "react-hook-form";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
   Box,
   Button,
@@ -27,9 +26,9 @@ import {
 } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import {
-  ANSWER_FEEDBACK_FORM,
-  UNANSWERED_FEEDBACK_FORM,
-} from "../../graphql/queries";
+  useAnswerFeedbackFormMutation,
+  useUnansweredFormQuery,
+} from "../../graphql";
 
 export interface IDisclosure {
   isOpen: boolean;
@@ -41,10 +40,10 @@ export interface IDisclosure {
 export const Feedback: FC<{
   children?: FC<IDisclosure>;
 }> = memo(({ children: Children }) => {
-  const { data, loading, refetch } = useQuery(UNANSWERED_FEEDBACK_FORM, {
+  const { data, loading, refetch } = useUnansweredFormQuery({
     notifyOnNetworkStatusChange: true,
   });
-  const [answerFeedback] = useMutation(ANSWER_FEEDBACK_FORM);
+  const [answerFeedback] = useAnswerFeedbackFormMutation();
   const modalDisclosure = useDisclosure(false);
   const config = useContext(ConfigContext);
   const { register, handleSubmit, errors, watch } = useForm();

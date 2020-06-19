@@ -1,4 +1,4 @@
-import { PluginDefinition } from "apollo-server-core";
+import type { PluginDefinition } from "apollo-server-core";
 import { separateOperations } from "graphql";
 import {
   fieldExtensionsEstimator,
@@ -7,9 +7,9 @@ import {
 } from "graphql-query-complexity";
 
 import { NODE_ENV } from "../../constants";
-import { IContext } from "../../interfaces";
 import { schema } from "../apollo/schema";
 
+import type { IContext } from "../../interfaces";
 const complexityLimit = 40;
 
 export const ComplexityPlugin: PluginDefinition = {

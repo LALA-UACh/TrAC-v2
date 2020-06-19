@@ -16,12 +16,10 @@ import { useRememberState } from "use-remember-state";
 import isEmail from "validator/lib/isEmail";
 import isJSON from "validator/lib/isJSON";
 
-import { useMutation } from "@apollo/react-hooks";
-
 import {
-  ALL_USERS_ADMIN,
-  UPSERT_USERS_ADMIN,
-} from "../../../graphql/adminQueries";
+  AllUsersAdminDocument,
+  useUpsertUsersAdminMutation,
+} from "../../../graphql";
 import { width45em } from "../../../utils/cssConstants";
 
 export const ImportUsers: FC = () => {
@@ -60,11 +58,11 @@ export const ImportUsers: FC = () => {
     );
   });
 
-  const [importUsers, { error, loading }] = useMutation(UPSERT_USERS_ADMIN, {
+  const [importUsers, { error, loading }] = useUpsertUsersAdminMutation({
     update: (cache, { data }) => {
       if (data?.upsertUsers) {
         cache.writeQuery({
-          query: ALL_USERS_ADMIN,
+          query: AllUsersAdminDocument,
           data: {
             users: data.upsertUsers,
           },

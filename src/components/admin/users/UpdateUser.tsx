@@ -16,7 +16,6 @@ import { useRememberState } from "use-remember-state";
 import isEmail from "validator/lib/isEmail";
 import isInt from "validator/lib/isInt";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
   Box,
   Divider,
@@ -29,16 +28,16 @@ import {
 import { css } from "@emotion/core";
 
 import { UserType } from "../../../../constants";
-import {
-  ALL_USERS_ADMIN,
-  DELETE_USER_ADMIN,
-  LOCK_MAIL_USER_ADMIN,
-  RESET_PERSISTENCE,
-  UPSERT_USERS_ADMIN,
-  USER_PERSISTENCES,
-} from "../../../graphql/adminQueries";
-import { whiteSpacePreLine } from "../../../utils/cssConstants";
 import { ThemeStore } from "../../../context/Theme";
+import {
+  AllUsersAdminDocument,
+  useDeleteUserAdminMutation,
+  useLockMailUserAdminMutation,
+  useResetPersistenceAdminMutation,
+  useUpsertUsersAdminMutation,
+  useUserPersistencesAdminQuery,
+} from "../../../graphql";
+import { whiteSpacePreLine } from "../../../utils/cssConstants";
 import { Confirm } from "../../Confirm";
 import { useUpdateUserConfigModal } from "./UpdateUserConfig";
 
@@ -55,7 +54,7 @@ export interface IUserConfig {
 const UserPersistence: FC<{ user: string }> = memo(({ user }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { data, loading, refetch } = useQuery(USER_PERSISTENCES, {
+  const { data, loading, refetch } = useUserPersistencesAdminQuery({
     variables: {
       user,
     },
@@ -66,14 +65,14 @@ const UserPersistence: FC<{ user: string }> = memo(({ user }) => {
 
   const theme = ThemeStore.hooks.useTheme();
 
-  const [resetPersistence, { loading: loadingReset }] = useMutation(
-    RESET_PERSISTENCE,
-    {
-      onCompleted: () => {
-        refetch();
-      },
-    }
-  );
+  const [
+    resetPersistence,
+    { loading: loadingReset },
+  ] = useResetPersistenceAdminMutation({
+    onCompleted: () => {
+      refetch();
+    },
+  });
 
   const dataComp = useMemo(() => {
     return (
@@ -188,11 +187,11 @@ export const UpdateUser: FC<{
   const [
     updateUser,
     { error: errorUpdate, loading: loadingUpdateUser },
-  ] = useMutation(UPSERT_USERS_ADMIN, {
+  ] = useUpsertUsersAdminMutation({
     update: (cache, { data }) => {
       if (data?.upsertUsers) {
         cache.writeQuery({
-          query: ALL_USERS_ADMIN,
+          query: AllUsersAdminDocument,
           data: {
             users: data.upsertUsers,
           },
@@ -212,14 +211,14 @@ export const UpdateUser: FC<{
       error: errorLockMailUser,
       data: dataLockMailUser,
     },
-  ] = useMutation(LOCK_MAIL_USER_ADMIN, {
+  ] = useLockMailUserAdminMutation({
     variables: {
       email: user.email,
     },
     update: (cache, { data }) => {
       if (data) {
         cache.writeQuery({
-          query: ALL_USERS_ADMIN,
+          query: AllUsersAdminDocument,
           data: {
             users: data.lockMailUser.users,
           },
@@ -230,24 +229,24 @@ export const UpdateUser: FC<{
 
   const [openMailMessage, setOpenMailMessage] = useState(false);
 
-  const [deleteUser, { loading: loadingDeleteUser }] = useMutation(
-    DELETE_USER_ADMIN,
-    {
-      variables: {
-        email: user.email,
-      },
-      update: (cache, { data }) => {
-        if (data?.deleteUser) {
-          cache.writeQuery({
-            query: ALL_USERS_ADMIN,
-            data: {
-              users: data.deleteUser,
-            },
-          });
-        }
-      },
-    }
-  );
+  const [
+    deleteUser,
+    { loading: loadingDeleteUser },
+  ] = useDeleteUserAdminMutation({
+    variables: {
+      email: user.email,
+    },
+    update: (cache, { data }) => {
+      if (data?.deleteUser) {
+        cache.writeQuery({
+          query: AllUsersAdminDocument,
+          data: {
+            users: data.deleteUser,
+          },
+        });
+      }
+    },
+  });
 
   const { userConfigModal, config, onOpen } = useUpdateUserConfigModal({
     email: user.email,

@@ -1,5 +1,4 @@
 import { FieldResolver, Resolver, Root } from "type-graphql";
-import { $PropertyType } from "utility-types";
 
 import { defaultTermType } from "../../../constants";
 import {
@@ -9,7 +8,10 @@ import {
 } from "../../dataloaders/term";
 import { Term } from "../../entities/data/term";
 import { assertIsDefined } from "../../utils/assert";
-import { PartialTakenCourse } from "./takenCourse";
+
+import type { $PropertyType } from "utility-types";
+
+import type { PartialTakenCourse } from "./takenCourse";
 
 export type PartialTerm = Pick<Term, "id">;
 

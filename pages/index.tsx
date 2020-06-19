@@ -11,7 +11,6 @@ import React, {
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useUpdateEffect } from "react-use";
 
-import { useMutation } from "@apollo/react-hooks";
 import { Box, Flex, Stack } from "@chakra-ui/core";
 
 import {
@@ -22,7 +21,6 @@ import {
   STUDENT_NOT_FOUND,
   UserType,
 } from "../constants";
-import { ITakenCourse } from "../interfaces";
 import { SearchBar } from "../src/components/dashboard/SearchBar";
 import { SemestersList } from "../src/components/dashboard/SemestersList";
 import { TakenSemesterBox } from "../src/components/dashboard/TakenSemesterBox";
@@ -42,21 +40,23 @@ import {
   ForeplanContextManager,
   ForeplanHelperStore,
 } from "../src/context/ForeplanContext";
+import { useIsPersistenceLoading } from "../src/context/PersistenceLoading";
 import {
   setTrackingData,
   track,
   TrackingManager,
 } from "../src/context/Tracking";
 import {
-  DIRECT_TAKE_COURSES,
-  INDIRECT_TAKE_COURSES,
-  PERFORMANCE_BY_LOAD_ADVICES,
-  SEARCH_PROGRAM,
-  SEARCH_STUDENT,
-} from "../src/graphql/queries";
+  useDirectTakeCoursesMutation,
+  useIndirectTakeCoursesMutation,
+  usePerformanceLoadAdvicesMutation,
+  useSearchProgramMutation,
+  useSearchStudentMutation,
+} from "../src/graphql";
 import { DarkMode } from "../src/utils/dynamicDarkMode";
-import { useIsPersistenceLoading } from "../src/context/PersistenceLoading";
 import { useUser } from "../src/utils/useUser";
+
+import type { ITakenCourse } from "../interfaces";
 
 const Dropout = dynamic(() => import("../src/components/dashboard/Dropout"));
 const ForeplanModeSwitch = dynamic(() =>
@@ -88,15 +88,15 @@ const Dashboard: FC = () => {
   const [
     searchPerformanceByLoad,
     { data: dataPerformanceByLoad, error: errorPerformanceByLoad },
-  ] = useMutation(PERFORMANCE_BY_LOAD_ADVICES);
+  ] = usePerformanceLoadAdvicesMutation();
   const [
     searchDirectTakeCourses,
     { data: dataDirectTakeCourses, error: errorDirectTakeCourses },
-  ] = useMutation(DIRECT_TAKE_COURSES);
+  ] = useDirectTakeCoursesMutation();
   const [
     searchIndirectTakeCourses,
     { data: dataIndirectTakeCourses, error: errorIndirectTakeCourses },
-  ] = useMutation(INDIRECT_TAKE_COURSES);
+  ] = useIndirectTakeCoursesMutation();
 
   useEffect(() => {
     if (errorDirectTakeCourses) {
@@ -121,7 +121,7 @@ const Dashboard: FC = () => {
       loading: searchProgramLoading,
       error: searchProgramError,
     },
-  ] = useMutation(SEARCH_PROGRAM);
+  ] = useSearchProgramMutation();
 
   const [
     searchStudent,
@@ -130,7 +130,7 @@ const Dashboard: FC = () => {
       loading: searchStudentLoading,
       error: searchStudentError,
     },
-  ] = useMutation(SEARCH_STUDENT);
+  ] = useSearchStudentMutation();
 
   useUpdateEffect(() => {
     if (NODE_ENV !== "test" && user?.admin) {

@@ -9,7 +9,6 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { $PropertyType } from "utility-types";
 
 import {
   defaultUserType,
@@ -18,8 +17,6 @@ import {
   STUDENT_NOT_FOUND,
   UserType,
 } from "../../../constants";
-import { IContext } from "../../../interfaces";
-import { ArrayPropertyType, IfImplements } from "../../../interfaces/utils";
 import { ADMIN } from "../../constants";
 import {
   CurriculumsDataLoader,
@@ -32,7 +29,15 @@ import { ProgramTable, UserProgramsTable } from "../../db/tables";
 import { Program } from "../../entities/data/program";
 import { anonService } from "../../utils/anonymization";
 import { assertIsDefined } from "../../utils/assert";
-import { PartialCourse } from "./course";
+
+import type { $PropertyType } from "utility-types";
+
+import type { IContext } from "../../../interfaces";
+import type {
+  ArrayPropertyType,
+  IfImplements,
+} from "../../../interfaces/utils";
+import type { PartialCourse } from "./course";
 
 export type PartialProgram = Pick<Program, "id">;
 

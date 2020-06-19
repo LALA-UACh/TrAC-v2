@@ -1,8 +1,6 @@
 import { createContext, createElement, FC, useEffect, useState } from "react";
 import { useRememberState } from "use-remember-state";
 
-import { useQuery } from "@apollo/react-hooks";
-
 import { NODE_ENV } from "../../constants";
 import { baseConfig } from "../../constants/baseConfig";
 import {
@@ -15,7 +13,7 @@ import {
   failRateColorScaleNegative,
   failRateColorScalePositive,
 } from "../components/foreplan/courseBox/Stats";
-import { CONFIG_QUERY } from "../graphql/queries";
+import { useConfigQuery } from "../graphql";
 
 export const ConfigContext = createContext(baseConfig);
 
@@ -25,7 +23,7 @@ export const Config: FC = ({ children }) => {
       ? useState(baseConfig)
       : useRememberState(`baseConfig=${baseConfig.VERSION_CONFIG}`, baseConfig);
 
-  const { data, loading } = useQuery(CONFIG_QUERY);
+  const { data, loading } = useConfigQuery();
 
   useEffect(() => {
     if (!loading && data) {

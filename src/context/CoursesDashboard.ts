@@ -1,18 +1,16 @@
-import { assign, isEqual, uniq, uniqWith, throttle } from "lodash";
+import { assign, isEqual, throttle, uniq, uniqWith } from "lodash";
 import { FC, memo, useEffect, useState } from "react";
 import { createStore } from "react-state-selector";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
-
 import { ITakenSemester } from "../../interfaces";
 import {
-  GET_PERSISTENCE_VALUE,
-  SET_PERSISTENCE_VALUE,
-} from "../graphql/queries";
+  useGetPersistenceValueQuery,
+  useSetPersistenceValueMutation,
+} from "../graphql";
 import { stringListToBooleanMap } from "../utils";
-import { setIsDashboardLoading } from "./PersistenceLoading";
 import { useDashboardInputState } from "./DashboardInput";
+import { setIsDashboardLoading } from "./PersistenceLoading";
 import { setTrackingData, track } from "./Tracking";
 
 const emDash = "—";
@@ -236,7 +234,7 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = memo(
     const {
       data: dataRememberDashboard,
       loading: loadingDataRememberDashboard,
-    } = useQuery(GET_PERSISTENCE_VALUE, {
+    } = useGetPersistenceValueQuery({
       variables: {
         key,
       },
@@ -261,7 +259,7 @@ export const CoursesDashbordManager: FC<{ distinct?: string }> = memo(
       }
     }, [dataRememberDashboard, loadingDataRememberDashboard]);
 
-    const [setRememberDashboard] = useMutation(SET_PERSISTENCE_VALUE, {
+    const [setRememberDashboard] = useSetPersistenceValueMutation({
       ignoreResults: true,
     });
 

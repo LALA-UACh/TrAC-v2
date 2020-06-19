@@ -12,8 +12,7 @@ import { baseUserConfig } from "../constants/userConfig";
 import AdminPage from "../pages/admin";
 import LoginPage from "../pages/login";
 import UnlockPage from "../pages/unlock/[email]/[unlockKey]";
-import { ALL_USERS_ADMIN } from "../src/graphql/adminQueries";
-import { CURRENT_USER } from "../src/graphql/queries";
+import { AllUsersAdminDocument, CurrentUserDocument } from "../src/graphql";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
@@ -41,7 +40,7 @@ describe("unlock", () => {
           mocks={[
             {
               request: {
-                query: CURRENT_USER,
+                query: CurrentUserDocument,
               },
               result: {
                 data: {
@@ -77,7 +76,7 @@ describe("login", () => {
           mocks={[
             {
               request: {
-                query: CURRENT_USER,
+                query: CurrentUserDocument,
               },
               result: {
                 data: {
@@ -112,7 +111,7 @@ describe("admin", () => {
           mocks={[
             {
               request: {
-                query: CURRENT_USER,
+                query: CurrentUserDocument,
               },
               result: {
                 data: {
@@ -133,7 +132,7 @@ describe("admin", () => {
             },
             {
               request: {
-                query: ALL_USERS_ADMIN,
+                query: AllUsersAdminDocument,
               },
               result: {
                 data: {

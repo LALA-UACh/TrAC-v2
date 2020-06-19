@@ -27,31 +27,32 @@ import {
 } from "semantic-ui-react";
 import isJSON from "validator/lib/isJSON";
 
-import { useMutation } from "@apollo/react-hooks";
 import { Flex, Stack } from "@chakra-ui/core";
 
 import { baseConfigAdmin } from "../../../constants/baseConfig";
 import { configValueToString } from "../../../constants/validation";
 import { ConfigContext } from "../../context/Config";
-import { EDIT_CONFIG } from "../../graphql/adminQueries";
-import { CONFIG_QUERY } from "../../graphql/queries";
-import { Confirm } from "../Confirm";
 import {
-  wordBreakAll,
-  width300,
+  EditConfigAdminDocument,
+  useEditConfigAdminMutation,
+} from "../../graphql";
+import {
   marginLeft5px,
+  width300,
+  wordBreakAll,
 } from "../../utils/cssConstants";
+import { Confirm } from "../Confirm";
 
 const baseConfigKeys = Object.keys(baseConfigAdmin);
 
 const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
   ({ configKey, configValue }) => {
     const [state, setState] = useState(configValue);
-    const [editConfig, { error, loading }] = useMutation(EDIT_CONFIG, {
+    const [editConfig, { error, loading }] = useEditConfigAdminMutation({
       update: (cache, { data }) => {
         if (data?.editConfig) {
           cache.writeQuery({
-            query: CONFIG_QUERY,
+            query: EditConfigAdminDocument,
             data: {
               config: data.editConfig,
             },

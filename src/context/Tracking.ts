@@ -2,9 +2,7 @@ import { assign, reduce } from "lodash";
 import { FC, memo, useCallback, useEffect, useMemo } from "react";
 import { createStore } from "react-state-selector";
 
-import { useMutation } from "@apollo/react-hooks";
-
-import { TRACK } from "../graphql/queries";
+import { useTrackMutation } from "../graphql";
 import { useUser } from "../utils/useUser";
 
 type TrackingTemplateData = {
@@ -101,7 +99,7 @@ export const TrackingManager: FC = memo(() => {
     [userConfig]
   );
 
-  const [trackMutate] = useMutation(TRACK, {
+  const [trackMutate] = useTrackMutation({
     ignoreResults: true,
   });
 

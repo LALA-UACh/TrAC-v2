@@ -1,4 +1,4 @@
-import { $NonMaybeType } from "utility-types";
+import type { $NonMaybeType } from "utility-types";
 
 export function assertIsDefined<T = unknown>(
   value: T,

@@ -1,16 +1,16 @@
 import React, { FC } from "react";
 import { Button, Icon } from "semantic-ui-react";
 
-import { useMutation } from "@apollo/react-hooks";
 import { Stack } from "@chakra-ui/core";
 
-import { RESET_DATALOADERS_CACHE } from "../../../graphql/adminQueries";
+import { useResetDataLoadersCacheAdminMutation } from "../../../graphql";
 import { Confirm } from "../../Confirm";
 
 export const AdminData: FC = () => {
-  const [resetDataLoadersCache, { loading }] = useMutation(
-    RESET_DATALOADERS_CACHE
-  );
+  const [
+    resetDataLoadersCache,
+    { loading },
+  ] = useResetDataLoadersCacheAdminMutation();
 
   return (
     <Stack>

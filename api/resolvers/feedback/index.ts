@@ -7,7 +7,6 @@ import {
   NO_ANSWER,
   OPTIONS_FEEDBACK_SPLIT_CHAR,
 } from "../../../constants";
-import { IContext } from "../../../interfaces";
 import { ADMIN } from "../../constants";
 import {
   FeedbackFormQuestionTable,
@@ -26,9 +25,10 @@ import {
   FeedbackResult,
 } from "../../entities/feedback";
 import { assertIsDefined } from "../../utils/assert";
-import { PartialUser } from "../auth/user";
 import { splitFeedbackQuestionOptions } from "./utils";
 
+import type { IContext } from "../../../interfaces";
+import type { PartialUser } from "../auth/user";
 type PartialFeedbackResult = Pick<
   FeedbackResult,
   "answers" | "form" | "timestamp"

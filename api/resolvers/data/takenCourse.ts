@@ -1,6 +1,5 @@
 import { compact, toInteger, toNumber } from "lodash";
 import { FieldResolver, Resolver, Root } from "type-graphql";
-import { $PropertyType } from "utility-types";
 
 import { defaultStateCourse } from "../../../constants";
 import { CourseDataLoader } from "../../dataloaders/course";
@@ -12,6 +11,8 @@ import {
 import { TakenCourse } from "../../entities/data/takenCourse";
 import { assertIsDefined } from "../../utils/assert";
 import { clearErrorArray } from "../../utils/clearErrorArray";
+
+import type { $PropertyType } from "utility-types";
 
 export type PartialTakenCourse = Pick<TakenCourse, "id" | "code" | "equiv">;
 

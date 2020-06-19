@@ -1,7 +1,9 @@
-import { AuthChecker } from "type-graphql";
+import "reflect-metadata";
 
-import { IContext } from "../../interfaces";
 import { ADMIN } from "../constants";
+
+import type { IContext } from "../../interfaces";
+import type { AuthChecker } from "type-graphql";
 
 export const authChecker: AuthChecker<IContext> = async (
   { context: { req, res, user } },

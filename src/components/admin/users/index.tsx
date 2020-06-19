@@ -3,12 +3,11 @@ import React, { FC, useEffect, useState } from "react";
 import { Button, Icon, Message, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import { useMutation } from "@apollo/react-hooks";
 import { Flex, Stack } from "@chakra-ui/core";
 
 import { UserType } from "../../../../constants";
 import { UserConfig } from "../../../../constants/userConfig";
-import { MAIL_LOCKED_USERS_ADMIN } from "../../../graphql/adminQueries";
+import { useMailAllLockedUsersAdminMutation } from "../../../graphql";
 import {
   cursorPointer,
   whiteSpacePreLine,
@@ -68,7 +67,7 @@ export const Users: FC<{
       error: errorMailLockedUsers,
       loading: loadingMailLockedUsers,
     },
-  ] = useMutation(MAIL_LOCKED_USERS_ADMIN);
+  ] = useMailAllLockedUsersAdminMutation();
 
   const { pagination, selectedData } = usePagination({
     name: "admin_sorted_users",

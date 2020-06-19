@@ -1,5 +1,6 @@
 import { dbTracking } from "../";
-import { FeedbackQuestionType } from "../../../constants";
+
+import type { FeedbackQuestionType } from "../../../constants";
 
 export interface ITrack {
   id: number;

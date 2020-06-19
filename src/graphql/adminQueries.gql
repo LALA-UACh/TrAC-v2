@@ -11,13 +11,13 @@ fragment UserAdminFragment on User {
   }
 }
 
-query usersAdmin {
+query allUsersAdmin {
   users {
     ...UserAdminFragment
   }
 }
 
-query programsAdmin {
+query allProgramsAdmin {
   programs {
     id
   }

@@ -1,9 +1,7 @@
 import { ApolloServer } from "apollo-server-express";
 
 import { NODE_ENV } from "../../constants";
-
 import { ComplexityPlugin } from "../utils/complexity";
-
 import { buildContext } from "./buildContext";
 import { schema } from "./schema";
 

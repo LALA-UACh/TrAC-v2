@@ -1,7 +1,8 @@
 import nodemailer from "nodemailer";
-import { MailOptions } from "nodemailer/lib/sendmail-transport";
 
 import { NODE_ENV } from "../../../constants";
+
+import type { MailOptions } from "nodemailer/lib/sendmail-transport";
 
 const GMAIL_USERNAME = process.env.GMAIL_USERNAME;
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;

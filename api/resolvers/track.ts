@@ -1,11 +1,11 @@
 import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
 
 import { UserType } from "../../constants";
-import { IContext } from "../../interfaces";
 import { TrackingTable } from "../db/tables";
 import { Track, TrackInput } from "../entities/track";
 import { anonService } from "../utils/anonymization";
 
+import type { IContext } from "../../interfaces";
 @Resolver(() => Track)
 export class TrackResolver {
   @Authorized()

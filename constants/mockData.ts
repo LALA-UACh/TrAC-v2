@@ -1,13 +1,17 @@
-import { IProgramData, IStudentData } from "../src/graphql/queries";
-import { PerformanceByLoad } from "../typings/graphql";
 import { PerformanceLoadUnit, StateCourse, TermType } from "./";
+
+import type {
+  SearchProgramMutation,
+  SearchStudentMutation,
+  PerformanceByLoad,
+} from "../src/graphql";
 
 const data: {
   searchProgramData: {
-    program: IProgramData;
+    program: SearchProgramMutation["program"];
   };
   searchStudentData: {
-    student: IStudentData;
+    student: NonNullable<SearchStudentMutation["student"]>;
   };
   performanceByLoad: PerformanceByLoad[];
 } = {

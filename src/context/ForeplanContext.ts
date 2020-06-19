@@ -1,22 +1,21 @@
 import { assign, reduce, size } from "lodash";
 import { FC, memo, useEffect, useState } from "react";
-import { createStore, createSelector } from "react-state-selector";
+import { createSelector, createStore } from "react-state-selector";
 import { useDebounce } from "react-use";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
-
 import { StateCourse } from "../../constants";
-import { ICourse } from "../../interfaces";
-import { PerformanceByLoad } from "../../typings/graphql";
 import {
-  GET_PERSISTENCE_VALUE,
-  SET_PERSISTENCE_VALUE,
-} from "../graphql/queries";
+  PerformanceByLoad,
+  useGetPersistenceValueQuery,
+  useSetPersistenceValueMutation,
+} from "../graphql";
 import { stringListToBooleanMap } from "../utils";
-import { setIsForeplanLoading } from "./PersistenceLoading";
 import { useUser } from "../utils/useUser";
 import { useDashboardInputState } from "./DashboardInput";
+import { setIsForeplanLoading } from "./PersistenceLoading";
 import { setTrackingData } from "./Tracking";
+
+import type { ICourse } from "../../interfaces";
 
 const emptyObject = Object.freeze({});
 const emptyArray = Object.freeze([]) as [];
@@ -258,7 +257,7 @@ export const ForeplanContextManager: FC = memo(() => {
     fetchPolicy: "cache-only",
   });
 
-  const [setRememberForeplan] = useMutation(SET_PERSISTENCE_VALUE, {
+  const [setRememberForeplan] = useSetPersistenceValueMutation({
     ignoreResults: true,
   });
 
@@ -283,7 +282,7 @@ export const ForeplanContextManager: FC = memo(() => {
   const {
     data: dataRememberForeplan,
     loading: loadingRememberForeplan,
-  } = useQuery(GET_PERSISTENCE_VALUE, {
+  } = useGetPersistenceValueQuery({
     variables: {
       key,
     },

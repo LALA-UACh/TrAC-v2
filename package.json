@@ -20,9 +20,11 @@
     "start-pm2-dev": "pm2 start ecosystem-dev.yaml",
     "stop": "pm2 delete ecosystem-dev.yaml",
     "test": "jest",
-    "typecheck": "tsc --noUnusedLocals --noEmit",
-    "watch-app": "tsc-watch --noClear -P api --onSuccess \"run-s app-inspect\"",
-    "watch-graphql": "graphql-codegen --watch"
+    "typecheck": "run-p -l typecheck-*",
+    "typecheck-api": "tsc -P api --noUnusedLocals --noEmit --incremental false",
+    "typecheck-client": "tsc --noUnusedLocals --noEmit",
+    "watch-app": "tsc-watch --noUnusedLocals --noClear -P api --onSuccess \"run-s app-inspect\"",
+    "watch-gql": "graphql-codegen --watch"
   },
   "husky": {
     "hooks": {

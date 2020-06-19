@@ -11,12 +11,9 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { $PropertyType } from "utility-types";
 
 import { defaultUserType } from "../../../constants";
 import { baseUserConfig } from "../../../constants/userConfig";
-import { IContext } from "../../../interfaces";
-import { ArrayPropertyType } from "../../../interfaces/utils";
 import { ADMIN } from "../../constants";
 import { dbAuth } from "../../db";
 import {
@@ -38,6 +35,10 @@ import {
 import { assertIsDefined } from "../../utils/assert";
 import { sendMail, UnlockMail } from "../../utils/mail";
 
+import type { $PropertyType } from "utility-types";
+
+import type { IContext } from "../../../interfaces";
+import type { ArrayPropertyType } from "../../../interfaces/utils";
 export type PartialUser = Pick<User, "email"> & Partial<User>;
 @Resolver(() => User)
 export class UserResolver {

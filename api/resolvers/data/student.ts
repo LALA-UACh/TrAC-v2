@@ -10,7 +10,6 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { $PropertyType } from "utility-types";
 
 import {
   defaultUserType,
@@ -19,7 +18,6 @@ import {
   STUDENT_NOT_FOUND,
   UserType,
 } from "../../../constants";
-import { IContext } from "../../../interfaces";
 import {
   StudentDataLoader,
   StudentDropoutDataLoader,
@@ -29,12 +27,16 @@ import {
   StudentTermsDataLoader,
 } from "../../dataloaders/student";
 import { StudentProgramTable, UserProgramsTable } from "../../db/tables";
-import { Dropout } from "../../entities/data/dropout";
 import { Student } from "../../entities/data/student";
 import { anonService } from "../../utils/anonymization";
 import { assertIsDefined } from "../../utils/assert";
-import { PartialProgram } from "./program";
-import { PartialTerm } from "./term";
+
+import type { $PropertyType } from "utility-types";
+
+import type { IContext } from "../../../interfaces";
+import type { Dropout } from "../../entities/data/dropout";
+import type { PartialProgram } from "./program";
+import type { PartialTerm } from "./term";
 
 export type PartialStudent = Pick<Student, "id" | "name" | "state"> & {
   programs?: PartialProgram[];

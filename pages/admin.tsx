@@ -2,7 +2,6 @@ import React, { FC, useEffect, useMemo } from "react";
 import { Message } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import { useQuery } from "@apollo/react-hooks";
 import { Flex, Stack } from "@chakra-ui/core";
 
 import { NODE_ENV } from "../constants";
@@ -13,7 +12,7 @@ import { AdminMenu } from "../src/components/admin/Menu";
 import { Programs } from "../src/components/admin/programs";
 import { Users } from "../src/components/admin/users";
 import { LoadingPage } from "../src/components/Loading";
-import { ALL_USERS_ADMIN } from "../src/graphql/adminQueries";
+import { useAllUsersAdminQuery } from "../src/graphql";
 import { DarkMode } from "../src/utils/dynamicDarkMode";
 import { useUser } from "../src/utils/useUser";
 
@@ -31,7 +30,7 @@ const Admin: FC = () => {
     AdminMenuTypes.users
   );
 
-  const { data, loading, error } = useQuery(ALL_USERS_ADMIN);
+  const { data, loading, error } = useAllUsersAdminQuery();
 
   useEffect(() => {
     if (NODE_ENV !== "test" && data) {

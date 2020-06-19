@@ -18,13 +18,12 @@ import {
 import isEmail from "validator/lib/isEmail";
 import isLength from "validator/lib/isLength";
 
-import { useMutation } from "@apollo/react-hooks";
 import { Image } from "@chakra-ui/core";
 
 import { LOCKED_USER, WRONG_INFO } from "../constants";
 import { LoadingPage } from "../src/components/Loading";
 import { ConfigContext } from "../src/context/Config";
-import { CURRENT_USER, LOGIN } from "../src/graphql/queries";
+import { CurrentUserDocument, useLoginMutation } from "../src/graphql";
 import { DarkMode } from "../src/utils/dynamicDarkMode";
 import { useUser } from "../src/utils/useUser";
 
@@ -41,11 +40,11 @@ const Login: FC = () => {
     }
   }, [session]);
 
-  const [login, { data, loading, error: errorMutation }] = useMutation(LOGIN, {
+  const [login, { data, loading, error: errorMutation }] = useLoginMutation({
     update: (cache, { data }) => {
       if (data?.login.user) {
         cache.writeQuery({
-          query: CURRENT_USER,
+          query: CurrentUserDocument,
           data: {
             currentUser: data.login,
           },

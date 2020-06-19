@@ -15,12 +15,11 @@ import {
 import isEmail from "validator/lib/isEmail";
 import matches from "validator/lib/matches";
 
-import { useMutation } from "@apollo/react-hooks";
 import { Image } from "@chakra-ui/core";
 
 import { USED_OLD_PASSWORD, WRONG_INFO } from "../../../constants";
 import { ConfigContext } from "../../../src/context/Config";
-import { CURRENT_USER, UNLOCK } from "../../../src/graphql/queries";
+import { CurrentUserDocument, useUnlockMutation } from "../../../src/graphql";
 import { DarkMode } from "../../../src/utils/dynamicDarkMode";
 
 const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
@@ -30,11 +29,11 @@ const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
   const [
     unlock,
     { error: errorUnlock, loading: loadingUnlock, data: dataUnlock },
-  ] = useMutation(UNLOCK, {
+  ] = useUnlockMutation({
     update: (cache, { data }) => {
       if (data?.unlock?.user) {
         cache.writeQuery({
-          query: CURRENT_USER,
+          query: CurrentUserDocument,
           data: {
             currentUser: data.unlock,
           },

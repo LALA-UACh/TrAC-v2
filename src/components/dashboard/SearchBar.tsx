@@ -17,9 +17,7 @@ import Select from "react-select";
 import { Button, Icon } from "semantic-ui-react";
 import pixelWidth from "string-pixel-width";
 import { useRememberState } from "use-remember-state";
-import { $ElementType } from "utility-types";
 
-import { useQuery } from "@apollo/react-hooks";
 import {
   Alert,
   AlertIcon,
@@ -40,10 +38,12 @@ import {
   useIsMockActive,
 } from "../../context/DashboardInput";
 import { setTrackingData, track } from "../../context/Tracking";
-import { MY_PROGRAMS } from "../../graphql/queries";
+import { useMyProgramsQuery } from "../../graphql";
 import { marginLeft5px } from "../../utils/cssConstants";
 import { useUser } from "../../utils/useUser";
 import { Help } from "../Help";
+
+import type { $ElementType } from "utility-types";
 
 const StudentList = dynamic(() => import("./StudentList"));
 
@@ -110,13 +110,13 @@ export const SearchBar: FC<{
     HELP_ENABLED,
   } = useContext(ConfigContext);
 
-  const { data: myProgramsData, loading: myProgramsLoading } = useQuery(
-    MY_PROGRAMS,
-    {
-      ssr: false,
-      skip: !isDirector,
-    }
-  );
+  const {
+    data: myProgramsData,
+    loading: myProgramsLoading,
+  } = useMyProgramsQuery({
+    ssr: false,
+    skip: !isDirector,
+  });
 
   const [student_id, setStudentId] = useRememberState<string>(
     "student_input",

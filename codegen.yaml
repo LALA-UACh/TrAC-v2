@@ -10,6 +10,8 @@ generates:
       withHOC: false
       withHooks: true
       withComponent: false
+      skipTypename: true
+      reactApolloVersion: 2
       scalars:
         DateTime: string
         EmailAddress: string

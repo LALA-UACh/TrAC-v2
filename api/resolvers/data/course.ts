@@ -1,6 +1,5 @@
 import { compact, toInteger, toNumber } from "lodash";
 import { FieldResolver, Resolver, Root } from "type-graphql";
-import { $PropertyType } from "utility-types";
 
 import { baseConfig } from "../../../constants/baseConfig";
 import {
@@ -11,6 +10,8 @@ import {
 } from "../../dataloaders/course";
 import { Course } from "../../entities/data/course";
 import { assertIsDefined } from "../../utils/assert";
+
+import type { $PropertyType } from "utility-types";
 
 const creditsFormat = ({
   credits,

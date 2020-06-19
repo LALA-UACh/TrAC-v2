@@ -1,9 +1,9 @@
 import { Field, Int, ObjectType, registerEnumType } from "type-graphql";
 
 import { StateCourse } from "../../../constants";
-import { Course } from "./course";
 import { BandColor, DistributionValue } from "./distribution";
 
+import type { Course } from "./course";
 registerEnumType(StateCourse, {
   name: "StateCourse",
   description: "Possible states of a taken course",

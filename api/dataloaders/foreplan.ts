@@ -9,7 +9,8 @@ import {
   StudentClusterTable,
   StudentCourseTable,
 } from "../db/tables";
-import { PerformanceByLoad } from "../entities/data/foreplan";
+
+import type { PerformanceByLoad } from "../entities/data/foreplan";
 
 export const PerformanceLoadAdvicesDataLoader = new DataLoader(
   async (keys: readonly { student_id: string; program_id: string }[]) => {

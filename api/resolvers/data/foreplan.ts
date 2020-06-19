@@ -7,7 +7,6 @@ import {
   STUDENT_NOT_FOUND,
   UserType,
 } from "../../../constants";
-import { IContext, IfImplements } from "../../../interfaces";
 import {
   AllApprovedCoursesDataLoader,
   AllCoursesOfProgramCurriculumDataLoader,
@@ -23,7 +22,9 @@ import {
 } from "../../entities/data/foreplan";
 import { anonService } from "../../utils/anonymization";
 import { assertIsDefined } from "../../utils/assert";
-import { PartialCourse } from "./course";
+
+import type { IContext, IfImplements } from "../../../interfaces";
+import type { PartialCourse } from "./course";
 
 @Resolver()
 export class ForeplanResolver {

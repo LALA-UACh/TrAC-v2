@@ -14,7 +14,6 @@ import { useUpdateEffect } from "react-use";
 import { Pagination, Progress, Table, TableCell } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import { useQuery } from "@apollo/react-hooks";
 import {
   Button,
   Drawer,
@@ -41,7 +40,7 @@ import { css } from "@emotion/core";
 import { NODE_ENV } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import { track } from "../../context/Tracking";
-import { STUDENT_LIST } from "../../graphql/queries";
+import { useStudentsListQuery } from "../../graphql";
 import { marginZero, textAlignCenter } from "../../utils/cssConstants";
 import { useUser } from "../../utils/useUser";
 
@@ -138,15 +137,12 @@ export const StudentList: FC<{
   program_id?: string;
   searchStudent: (student: string) => Promise<void>;
 }> = ({ mockData, program_id, searchStudent }) => {
-  const { data: dataStudentList, loading: loadingData } = useQuery(
-    STUDENT_LIST,
-    {
-      variables: {
-        program_id,
-      },
-      skip: !program_id,
-    }
-  );
+  const { data: dataStudentList, loading: loadingData } = useStudentsListQuery({
+    variables: {
+      program_id: program_id || "",
+    },
+    skip: !program_id,
+  });
 
   const studentListData = useMemo(() => {
     return (

@@ -11,9 +11,9 @@ import {
 
 import { UserType } from "../../../constants";
 import { ADMIN } from "../../constants";
-import { IUser } from "../../db/tables";
 import { Program } from "../data/program";
 
+import type { IUser } from "../../db/tables";
 import type { UserConfig } from "../../../constants/userConfig";
 registerEnumType(UserType, {
   name: "UserType",

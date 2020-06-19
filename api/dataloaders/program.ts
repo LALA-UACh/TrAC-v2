@@ -7,7 +7,8 @@ import {
   ProgramTable,
   StudentProgramTable,
 } from "../db/tables";
-import { Curriculum } from "../entities/data/program";
+
+import type { Curriculum } from "../entities/data/program";
 
 export const ProgramDataLoader = new DataLoader(
   async (ids: readonly string[]) => {

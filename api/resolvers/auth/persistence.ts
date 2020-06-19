@@ -9,13 +9,13 @@ import {
   Resolver,
 } from "type-graphql";
 
-import { IContext } from "../../../interfaces";
 import { ADMIN } from "../../constants";
 import * as localDataLoaders from "../../dataloaders";
 import { PersistenceTable } from "../../db/tables";
 import { Persistence } from "../../entities/auth/persistence";
 import { assertIsDefined } from "../../utils/assert";
 
+import type { IContext } from "../../../interfaces";
 @Resolver(() => Persistence)
 export class PersistenceResolver {
   @Authorized()

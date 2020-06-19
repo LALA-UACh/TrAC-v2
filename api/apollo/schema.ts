@@ -6,7 +6,6 @@ import { buildSchemaSync } from "type-graphql";
 
 import { NODE_ENV } from "../../constants";
 import * as resolvers from "../resolvers";
-
 import { authChecker } from "./authChecker";
 
 export const schema = buildSchemaSync({

@@ -143,7 +143,7 @@ query config {
   config
 }
 
-query students($program_id: String!) {
+query studentsList($program_id: String!) {
   students(program_id: $program_id) {
     id
     progress

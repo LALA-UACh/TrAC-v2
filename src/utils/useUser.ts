@@ -2,10 +2,8 @@ import { WatchQueryFetchPolicy } from "apollo-client";
 import Router from "next/router";
 import { useEffect, useMemo } from "react";
 
-import { useQuery } from "@apollo/react-hooks";
-
 import { baseUserConfig, UserConfig } from "../../constants/userConfig";
-import { CURRENT_USER, IUserFragment } from "../graphql/queries";
+import { useCurrentUserQuery, UserFragmentFragment } from "../graphql";
 
 export function useUser(
   {
@@ -22,11 +20,11 @@ export function useUser(
     requireAuth: false,
   }
 ): {
-  user?: (IUserFragment & { config: UserConfig }) | null;
+  user?: (UserFragmentFragment & { config: UserConfig }) | null;
   loading?: boolean;
   refetch: () => Promise<unknown>;
 } {
-  const { loading, error, data, refetch } = useQuery(CURRENT_USER, {
+  const { loading, error, data, refetch } = useCurrentUserQuery({
     ssr: false,
     fetchPolicy,
   });

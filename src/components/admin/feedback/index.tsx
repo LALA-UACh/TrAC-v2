@@ -5,7 +5,6 @@ import { useWindowSize } from "react-use";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 import { Button, Icon, Label } from "semantic-ui-react";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
 import {
   Box,
   Modal,
@@ -20,15 +19,15 @@ import {
 
 import { FeedbackQuestionType } from "../../../../constants";
 import {
-  FEEDBACK_RESULTS,
-  FEEDBACK_RESULTS_CSV,
-} from "../../../graphql/adminQueries";
+  useFeedbackResultsAdminQuery,
+  useFeedbackResultsCsvAdminMutation,
+} from "../../../graphql";
 
 const dateFormatStringTemplate = "d MMMM yyyy HH:mm:ss (z)";
 
 const ResultsModal: FC = memo(() => {
   const disclosure = useDisclosure();
-  const { data, refetch, loading } = useQuery(FEEDBACK_RESULTS, {
+  const { data, refetch, loading } = useFeedbackResultsAdminQuery({
     skip: !disclosure.isOpen,
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
@@ -158,9 +157,10 @@ const ResultsModal: FC = memo(() => {
 });
 
 export const AdminFeedback: FC = () => {
-  const [getResultsCsv, { loading: loadingResultsCsv }] = useMutation(
-    FEEDBACK_RESULTS_CSV
-  );
+  const [
+    getResultsCsv,
+    { loading: loadingResultsCsv },
+  ] = useFeedbackResultsCsvAdminMutation();
 
   const onDownloadClick = useCallback(async () => {
     const result = await getResultsCsv();
