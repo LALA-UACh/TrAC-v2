@@ -4001,7 +4001,7 @@ const data: {
           semestral_grade: 0,
           cumulated_grade: 0,
           program_grade: 4.31,
-          comments: "PENDIENTE",
+          comments: "",
           takenCourses: [
             {
               id: 647897,
@@ -4534,7 +4534,7 @@ const data: {
           semestral_grade: 5.25,
           cumulated_grade: 5.66,
           program_grade: 4.31,
-          comments: "",
+          comments: "REINCORP",
           takenCourses: [
             {
               id: 455472,
