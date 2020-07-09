@@ -8,7 +8,7 @@ import { toInteger } from "lodash";
 import Next from "next";
 
 import { apolloServer } from "./api/apollo/server";
-import { IS_NOT_PRODUCTION, NODE_ENV } from "./constants";
+import { IS_NOT_PRODUCTION, NODE_ENV, IS_PRODUCTION } from "./constants";
 
 export const app = express();
 
@@ -18,9 +18,11 @@ app.use(helmet.hsts());
 
 app.use(cookieParser());
 
-app.get("/api/graphql", (_req, res) => {
-  res.redirect("/");
-});
+if (IS_PRODUCTION) {
+  app.get("/api/graphql", (_req, res) => {
+    res.redirect("/");
+  });
+}
 
 apolloServer.applyMiddleware({
   app,
@@ -50,12 +52,12 @@ nextApp.prepare().then(() => {
   if (NODE_ENV !== "test") {
     app.listen({ port }, () => {
       console.log(`🚀 Server ready at http://localhost:${port}`);
-    });
 
-    if (IS_NOT_PRODUCTION) {
-      import("axios").then(({ default: { get } }) => {
-        get(`http://localhost:${port}/`).catch(console.error);
-      });
-    }
+      if (IS_NOT_PRODUCTION) {
+        import("axios").then(({ default: { get } }) => {
+          get(`http://localhost:${port}/`).catch(console.error);
+        });
+      }
+    });
   }
 });

@@ -3,7 +3,7 @@ import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
 import { UserType } from "../../constants";
 import { TrackingTable } from "../db/tables";
 import { Track, TrackInput } from "../entities/track";
-import { anonService } from "../utils/anonymization";
+import { anonService } from "../services/anonymization";
 
 import type { IContext } from "../../interfaces";
 @Resolver(() => Track)

@@ -18,7 +18,8 @@ export const NODE_ENV = (() => {
   }
 })();
 
-export const IS_NOT_PRODUCTION = NODE_ENV !== "production";
+export const IS_PRODUCTION = NODE_ENV === "production";
+export const IS_NOT_PRODUCTION = !IS_PRODUCTION;
 
 export const GRAPHQL_URL =
   typeof window === "undefined"

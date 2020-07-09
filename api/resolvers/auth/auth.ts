@@ -15,8 +15,8 @@ import { baseUserConfig } from "../../../constants/userConfig";
 import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../../constants";
 import { StudentTable, UserTable } from "../../db/tables";
 import { AuthResult, LoginInput, UnlockInput } from "../../entities/auth/auth";
-import { anonService } from "../../utils/anonymization";
-import { sendMail, UnlockMail } from "../../utils/mail";
+import { anonService } from "../../services/anonymization";
+import { sendMail, UnlockMail } from "../../services/mail";
 
 import type { IContext } from "../../../interfaces";
 import type { Request, Response } from "express-serve-static-core";
@@ -147,7 +147,7 @@ export class AuthResolver {
 
           await sendMail({
             to: email,
-            html: UnlockMail({
+            message: UnlockMail({
               email,
               unlockKey,
             }),

@@ -32,8 +32,8 @@ import {
   User,
   UserProgram,
 } from "../../entities/auth/user";
+import { sendMail, UnlockMail } from "../../services/mail";
 import { assertIsDefined } from "../../utils/assert";
-import { sendMail, UnlockMail } from "../../utils/mail";
 
 import type { $PropertyType } from "utility-types";
 
@@ -266,7 +266,7 @@ export class UserResolver {
     >([
       sendMail({
         to: email,
-        html: UnlockMail({
+        message: UnlockMail({
           email,
           unlockKey,
         }),
@@ -299,7 +299,7 @@ export class UserResolver {
 
       const result = await sendMail({
         to: email,
-        html: UnlockMail({
+        message: UnlockMail({
           email,
           unlockKey,
         }),

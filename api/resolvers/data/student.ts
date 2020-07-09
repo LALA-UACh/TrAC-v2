@@ -28,7 +28,7 @@ import {
 } from "../../dataloaders/student";
 import { StudentProgramTable, UserProgramsTable } from "../../db/tables";
 import { Student } from "../../entities/data/student";
-import { anonService } from "../../utils/anonymization";
+import { anonService } from "../../services/anonymization";
 import { assertIsDefined } from "../../utils/assert";
 
 import type { $PropertyType } from "utility-types";

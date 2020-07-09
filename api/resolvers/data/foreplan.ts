@@ -20,7 +20,7 @@ import {
   IndirectTakeCourse,
   PerformanceByLoad,
 } from "../../entities/data/foreplan";
-import { anonService } from "../../utils/anonymization";
+import { anonService } from "../../services/anonymization";
 import { assertIsDefined } from "../../utils/assert";
 
 import type { IContext, IfImplements } from "../../../interfaces";
