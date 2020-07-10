@@ -4,7 +4,7 @@ import requireEnv from "require-env-variable";
 
 import { NODE_ENV } from "../../../constants";
 
-const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
+const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS_REPLY_TO;
 
 const DOMAIN =
   NODE_ENV === "production"
