@@ -18,6 +18,7 @@ import { Button, Icon } from "semantic-ui-react";
 import pixelWidth from "string-pixel-width";
 import { useRememberState } from "use-remember-state";
 
+import { useApolloClient } from "@apollo/react-hooks";
 import {
   Alert,
   AlertIcon,
@@ -44,7 +45,6 @@ import { useUser } from "../../utils/useUser";
 import { Help } from "../Help";
 
 import type { $ElementType } from "utility-types";
-
 const StudentList = dynamic(() => import("./StudentList"));
 
 const MockingMode: FC = memo(() => {
@@ -180,6 +180,8 @@ export const SearchBar: FC<{
       setProgram(programsOptions[0]);
     }
   }, [program, setProgram, programsOptions, myProgramsData]);
+
+  const apolloClient = useApolloClient();
 
   useEffect(() => {
     setTrackingData({
@@ -502,6 +504,8 @@ export const SearchBar: FC<{
             if (!confirmed) return;
 
             setLogoutLoading(true);
+
+            apolloClient.clearStore().catch(console.error);
 
             track({
               action: "click",
