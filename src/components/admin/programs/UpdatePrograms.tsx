@@ -34,7 +34,15 @@ export const UpdatePrograms: FC<{
         });
       }
     },
+    variables: {
+      userPrograms: {
+        email: program.email,
+        oldPrograms: program.programs,
+        programs: selectedPrograms,
+      },
+    },
   });
+
   const deletePrograms = () => {
     updateProgram({
       variables: {
