@@ -11,7 +11,7 @@ apps:
     combine_logs: true
     time: true
   - name: trac_worker
-    script: dist/worker.js
+    script: worker.js
     out_file: logs/out_worker.log
     error_file: logs/error_worker.log
     combine_logs: true

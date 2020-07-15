@@ -3,7 +3,8 @@ import { format, utcToZonedTime } from "date-fns-tz";
 import { saveAs } from "file-saver";
 import { Parser } from "json2csv";
 import { uniqBy } from "lodash";
-import React, { FC, useMemo, useState } from "react";
+import { reverse } from "lodash/fp";
+import React, { FC, useMemo } from "react";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 import { Button, Icon } from "semantic-ui-react";
@@ -59,7 +60,15 @@ export const AdminTrack: FC = () => {
   const startDate = new Date(minDate);
   const endDate = new Date(maxDate);
 
-  const [usersFilter, setUsersFilter] = useState<string[]>([]);
+  const [usersFilter, setUsersFilter] = useRememberState<string[]>(
+    "trac-track-info-users-filter",
+    []
+  );
+
+  const [descending, setDescending] = useRememberState(
+    "trac-track-info-descending",
+    true
+  );
 
   const { data, loading } = useTrackInfoQuery({
     variables: {
@@ -76,15 +85,18 @@ export const AdminTrack: FC = () => {
   }, [data]);
 
   const filteredData = useMemo(() => {
-    if (usersFilter.length) {
-      return (
-        data?.trackInfo.filter((row) => {
-          return usersFilter.includes(row.user_id);
-        }) || []
-      );
+    let trackInfo = data?.trackInfo || [];
+    if (!descending) {
+      trackInfo = reverse(trackInfo);
     }
-    return data?.trackInfo || [];
-  }, [usersFilter, data]);
+
+    if (usersFilter.length) {
+      return trackInfo.filter((row) => {
+        return usersFilter.includes(row.user_id);
+      });
+    }
+    return trackInfo;
+  }, [descending, usersFilter, data]);
 
   const { pagination, selectedData } = usePagination({
     name: "admin-tracking-pagination",
@@ -168,6 +180,9 @@ export const AdminTrack: FC = () => {
         icon
         labelPosition="left"
         color="green"
+        css={css`
+          margin-bottom: 1em !important;
+        `}
         onClick={() => {
           const dataStr = TrackerParser.parse(filteredData);
 
@@ -199,6 +214,21 @@ export const AdminTrack: FC = () => {
       </Button>
 
       {pagination}
+
+      <Button
+        icon
+        labelPosition="left"
+        color="orange"
+        onClick={() => {
+          setDescending((desc) => !desc);
+        }}
+        css={css`
+          margin-top: 1em !important;
+        `}
+      >
+        <Icon name={descending ? "arrow down" : "arrow up"} />
+        {descending ? "Newest first" : "Oldest first"}
+      </Button>
 
       {loading ? (
         <Spinner color="black" marginTop="1em" size="xl" />
