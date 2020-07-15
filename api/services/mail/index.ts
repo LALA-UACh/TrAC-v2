@@ -1,5 +1,5 @@
 import type { EmailJSON } from "@sendgrid/helpers/classes/email-address";
-import requireEnv from "require-env-variable";
+import { requireEnv } from "require-env-variable";
 
 import sgMail from "@sendgrid/mail";
 

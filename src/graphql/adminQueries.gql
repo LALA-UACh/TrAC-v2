@@ -106,3 +106,13 @@ query feedbackResultsAdmin($user_ids: [String!]) {
     timestamp
   }
 }
+
+query trackInfo($minDate: DateTime!, $maxDate: DateTime!) {
+  trackInfo(minDate: $minDate, maxDate: $maxDate) {
+    id
+    user_id
+    data
+    app_id
+    datetime
+  }
+}

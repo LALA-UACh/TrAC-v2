@@ -1,6 +1,6 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import requireEnv from "require-env-variable";
+import { requireEnv } from "require-env-variable";
 
 import { NODE_ENV } from "../../../constants";
 

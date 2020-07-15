@@ -9,6 +9,7 @@ import React, {
   useState,
 } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
+import { toast } from "react-toastify";
 import { useUpdateEffect } from "react-use";
 
 import { Box, Flex, Stack } from "@chakra-ui/core";
@@ -57,7 +58,6 @@ import { DarkMode } from "../src/utils/dynamicDarkMode";
 import { useUser } from "../src/utils/useUser";
 
 import type { ITakenCourse } from "../interfaces";
-
 const Dropout = dynamic(() => import("../src/components/dashboard/Dropout"));
 const ForeplanModeSwitch = dynamic(() =>
   import("../src/components/foreplan/ModeSwitch")
@@ -738,9 +738,17 @@ const Dashboard: FC = () => {
 };
 
 export default () => {
-  const { loading } = useUser({
+  const { loading, user } = useUser({
     requireAuth: true,
   });
+
+  useEffect(() => {
+    if (user) {
+      toast.success(`${user.name} - ${user.email}`, {
+        position: "bottom-right",
+      });
+    }
+  }, [user]);
 
   if (loading) {
     return <LoadingPage />;

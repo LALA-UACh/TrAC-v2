@@ -301,10 +301,10 @@ export const UpdateUser: FC<{
                 users: [
                   {
                     oldEmail: user.email,
-                    email,
-                    name,
+                    email: email.trim(),
+                    name: name.trim(),
                     tries,
-                    student_id,
+                    student_id: student_id?.trim(),
                     type,
                     locked,
                     config,

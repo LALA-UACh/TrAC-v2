@@ -2,6 +2,7 @@
   "presets": ["next/babel", "@emotion/babel-preset-css-prop"],
   "plugins": [
     ["lodash"],
+    ["date-fns"],
     ["babel-plugin-graphql-tag", { "importName": "graphql-tag" }],
     [
       "import",

@@ -36,7 +36,7 @@ export type Course = {
   credits: Array<Credit>;
   flow: Array<Course>;
   historicalDistribution: Array<DistributionValue>;
-  /** Course-Semester-Curriculum-Program ID  */
+  /** Course-Semester-Curriculum-Program ID */
   id: Scalars["Int"];
   mention: Scalars["String"];
   name: Scalars["String"];
@@ -280,6 +280,7 @@ export type Query = {
   myPrograms: Array<Program>;
   programs: Array<Program>;
   students: Array<Student>;
+  trackInfo: Array<Track>;
   unansweredForm?: Maybe<FeedbackForm>;
   userPersistences: Array<Persistence>;
   users: Array<User>;
@@ -296,6 +297,11 @@ export type QueryGetPersistenceValueArgs = {
 export type QueryStudentsArgs = {
   last_n_years?: Maybe<Scalars["Int"]>;
   program_id: Scalars["String"];
+};
+
+export type QueryTrackInfoArgs = {
+  maxDate: Scalars["DateTime"];
+  minDate: Scalars["DateTime"];
 };
 
 export type QueryUserPersistencesArgs = {
@@ -532,6 +538,17 @@ export type FeedbackResultsAdminQuery = {
         }
       >;
     }
+  >;
+};
+
+export type TrackInfoQueryVariables = Exact<{
+  minDate: Scalars["DateTime"];
+  maxDate: Scalars["DateTime"];
+}>;
+
+export type TrackInfoQuery = {
+  trackInfo: Array<
+    Pick<Track, "id" | "user_id" | "data" | "app_id" | "datetime">
   >;
 };
 
@@ -1520,6 +1537,65 @@ export type FeedbackResultsAdminLazyQueryHookResult = ReturnType<
 export type FeedbackResultsAdminQueryResult = ApolloReactCommon.QueryResult<
   FeedbackResultsAdminQuery,
   FeedbackResultsAdminQueryVariables
+>;
+export const TrackInfoDocument = gql`
+  query trackInfo($minDate: DateTime!, $maxDate: DateTime!) {
+    trackInfo(minDate: $minDate, maxDate: $maxDate) {
+      id
+      user_id
+      data
+      app_id
+      datetime
+    }
+  }
+`;
+
+/**
+ * __useTrackInfoQuery__
+ *
+ * To run a query within a React component, call `useTrackInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTrackInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTrackInfoQuery({
+ *   variables: {
+ *      minDate: // value for 'minDate'
+ *      maxDate: // value for 'maxDate'
+ *   },
+ * });
+ */
+export function useTrackInfoQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TrackInfoQuery,
+    TrackInfoQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<TrackInfoQuery, TrackInfoQueryVariables>(
+    TrackInfoDocument,
+    baseOptions
+  );
+}
+export function useTrackInfoLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TrackInfoQuery,
+    TrackInfoQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<TrackInfoQuery, TrackInfoQueryVariables>(
+    TrackInfoDocument,
+    baseOptions
+  );
+}
+export type TrackInfoQueryHookResult = ReturnType<typeof useTrackInfoQuery>;
+export type TrackInfoLazyQueryHookResult = ReturnType<
+  typeof useTrackInfoLazyQuery
+>;
+export type TrackInfoQueryResult = ApolloReactCommon.QueryResult<
+  TrackInfoQuery,
+  TrackInfoQueryVariables
 >;
 export const LoginDocument = gql`
   mutation login($email: EmailAddress!, $password: String!) {

@@ -1,11 +1,22 @@
-import { Args, Authorized, Ctx, Mutation, Resolver } from "type-graphql";
+import { isValid } from "date-fns";
+import {
+  Arg,
+  Args,
+  Authorized,
+  Ctx,
+  Mutation,
+  Query,
+  Resolver,
+} from "type-graphql";
 
-import { UserType } from "../../constants";
-import { TrackingTable } from "../db/tables";
-import { Track, TrackInput } from "../entities/track";
-import { anonService } from "../services/anonymization";
+import { UserType } from "../../../constants";
+import { ADMIN } from "../../constants";
+import { TrackingTable } from "../../db/tables";
+import { Track, TrackInput } from "../../entities/track";
+import { anonService } from "../../services/anonymization";
+import { assertIsValidDate } from "../../utils/assert";
 
-import type { IContext } from "../../interfaces";
+import type { IContext } from "../../../interfaces";
 @Resolver(() => Track)
 export class TrackResolver {
   @Authorized()
@@ -32,8 +43,10 @@ export class TrackResolver {
         app_id:
           user?.type === UserType.Director ? "TrAC-director" : "TrAC-student",
         user_id: user?.email,
+        datetime_client: isValid(datetime_client)
+          ? datetime_client
+          : new Date(),
         datetime: new Date(),
-        datetime_client,
         data,
       })
       .then(() => {})
@@ -44,5 +57,17 @@ export class TrackResolver {
         );
       });
     return true;
+  }
+
+  @Authorized([ADMIN])
+  @Query(() => [Track])
+  trackInfo(@Arg("minDate") minDate: Date, @Arg("maxDate") maxDate: Date) {
+    assertIsValidDate(minDate, "minDate");
+    assertIsValidDate(maxDate, "maxDate");
+
+    return TrackingTable()
+      .select("*")
+      .orderBy("datetime", "desc")
+      .whereBetween("datetime", [minDate, maxDate]);
   }
 }

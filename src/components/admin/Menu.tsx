@@ -17,6 +17,7 @@ export const AdminMenu: FC<{
       case AdminMenuTypes.users:
       case AdminMenuTypes.data:
       case AdminMenuTypes.feedback:
+      case AdminMenuTypes.track:
       case AdminMenuTypes.programs: {
         setActive(name);
         return;
@@ -54,6 +55,14 @@ export const AdminMenu: FC<{
       >
         <Icon name="settings" />
         Base Config
+      </Menu.Item>
+      <Menu.Item
+        name={AdminMenuTypes.track}
+        active={active === AdminMenuTypes.track}
+        onClick={handleClick}
+      >
+        <Icon name="chart bar" />
+        Tracking
       </Menu.Item>
       <Menu.Item
         name={AdminMenuTypes.data}

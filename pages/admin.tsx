@@ -10,6 +10,7 @@ import { AdminData } from "../src/components/admin/data/index";
 import { AdminFeedback } from "../src/components/admin/feedback";
 import { AdminMenu } from "../src/components/admin/Menu";
 import { Programs } from "../src/components/admin/programs";
+import { AdminTrack } from "../src/components/admin/track";
 import { Users } from "../src/components/admin/users";
 import { LoadingPage } from "../src/components/Loading";
 import { useAllUsersAdminQuery } from "../src/graphql";
@@ -22,6 +23,7 @@ export enum AdminMenuTypes {
   baseConfig = "baseConfig",
   data = "data",
   feedback = "feedback",
+  track = "track",
 }
 
 const Admin: FC = () => {
@@ -58,6 +60,8 @@ const Admin: FC = () => {
         return <AdminData />;
       case AdminMenuTypes.feedback:
         return <AdminFeedback />;
+      case AdminMenuTypes.track:
+        return <AdminTrack />;
       default:
         return null;
     }
