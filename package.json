@@ -75,6 +75,7 @@
     "file-saver": "^2.0.2",
     "final-form": "^4.20.1",
     "framer-motion": "^1.11.1",
+    "git-polling-worker-ci": "^0.0.1",
     "graphql": "^15.3.0",
     "graphql-query-complexity": "^0.6.0",
     "graphql-scalars": "^1.2.2",

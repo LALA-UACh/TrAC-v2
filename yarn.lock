@@ -7054,6 +7054,16 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
+git-polling-worker-ci@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/git-polling-worker-ci/-/git-polling-worker-ci-0.0.1.tgz#bd63b2e7ec20734bc8df4a0c533e01b6a18b7b5d"
+  integrity sha512-KnfFaL3l4HzjsBFkjifhH0rEVoljaLlo4fJPaOg7r5T6V1UvoNswg2zlsu+rzjaBb5NV3T2+FahCkzREd93OpQ==
+  dependencies:
+    commander "^5.1.0"
+    ms "^2.1.2"
+    shelljs "^0.8.4"
+    simple-git "^2.12.0"
+
 glob-parent@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-3.1.0.tgz#9e6af6299d8d3bd2bd40430832bd113df906c5ae"
@@ -12551,6 +12561,15 @@ simple-git@2.11.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/simple-git/-/simple-git-2.11.0.tgz#5bd99fe3465dcbcb82f0eb23ab3c1615cb947374"
   integrity sha512-wFePCEQYY6BzVOg/BuUVEhr3jZPF/cPG/BN2UXgax6NHc3bJ9UrDc5AME281gs2C7J1UZ6BGRJYT64khx9T+ng==
+  dependencies:
+    "@kwsites/file-exists" "^1.1.1"
+    "@kwsites/promise-deferred" "^1.0.1"
+    debug "^4.1.1"
+
+simple-git@^2.12.0:
+  version "2.12.0"
+  resolved "https://registry.yarnpkg.com/simple-git/-/simple-git-2.12.0.tgz#b5978ec12cd56883185ef1475ec62e9207c1e1dc"
+  integrity sha512-64YrHYqHskWDumxM4thMGCkAd7rek4FEnxcugnpKzJZH6vCkietblsp7TUNdt9qU0pHAnJAanAmjyyQLE46k/Q==
   dependencies:
     "@kwsites/file-exists" "^1.1.1"
     "@kwsites/promise-deferred" "^1.0.1"
