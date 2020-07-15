@@ -3,7 +3,7 @@ import { format, utcToZonedTime } from "date-fns-tz";
 import { saveAs } from "file-saver";
 import { Parser } from "json2csv";
 import { uniqBy } from "lodash";
-import { FC, useMemo, useState } from "react";
+import React, { FC, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 import { Button, Icon } from "semantic-ui-react";
