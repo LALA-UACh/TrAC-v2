@@ -14,11 +14,14 @@ const migration = async () => {
     try {
       await knexDB.raw(`CREATE DATABASE "${dbName}";`);
     } catch (err) {
-      const message: string = err.message;
-      if (message.includes("already exists")) {
+      // Expected possible error, duplicated database, database already exists.
+      // https://www.postgresql.org/docs/8.2/errcodes-appendix.html
+      if (err.code === "42P04") {
         createdDatabases.splice(createdDatabases.indexOf(dbName), 1);
       } else {
-        console.error(message);
+        const { serializeError } = await import("serialize-error");
+
+        console.error(serializeError(err));
         await knexDB.destroy();
         process.exit(1);
       }

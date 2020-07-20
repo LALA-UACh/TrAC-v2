@@ -2,7 +2,7 @@ apps:
   - name: trac_app
     script: dist/app.js
     exec_mode: cluster
-    instances: 4
+    instances: -1
     wait_ready: true
     env:
       NODE_ENV: production

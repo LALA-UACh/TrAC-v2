@@ -13,3 +13,8 @@ export const SECRET =
 export const ONE_DAY = ms("1 day");
 export const THIRTY_MINUTES = ms("30 mins");
 export const ADMIN = "admin";
+export const IS_PM2 =
+  "PM2_HOME" in process.env ||
+  "PM2_JSON_PROCESSING" in process.env ||
+  "PM2_CLI" in process.env;
+export const PM2_APP_NAME = "trac_app";

@@ -1,4 +1,5 @@
 import { GraphQLJSONObject } from "graphql-type-json";
+import shell from "shelljs";
 import {
   Arg,
   Authorized,
@@ -9,13 +10,36 @@ import {
   Resolver,
 } from "type-graphql";
 
-import { ADMIN } from "../../constants";
+import { ADMIN, IS_PM2, PM2_APP_NAME } from "../../constants";
 import * as localDataLoaders from "../../dataloaders";
 import { PersistenceTable } from "../../db/tables";
 import { Persistence } from "../../entities/auth/persistence";
 import { assertIsDefined } from "../../utils/assert";
 
 import type { IContext } from "../../../interfaces";
+
+const resetDataLoadersCachePM2Action = "resetDataLoadersCache";
+
+function resetDataLoadersCache() {
+  const dataLoaders = Object.values(localDataLoaders);
+  dataLoaders.forEach((dataLoader) => {
+    dataLoader.clearAll();
+  });
+
+  return dataLoaders.length;
+}
+
+if (IS_PM2) {
+  import("@pm2/io").then(({ default: pmx }) => {
+    pmx.action(resetDataLoadersCachePM2Action, (reply: Function) => {
+      const nReseted = resetDataLoadersCache();
+      reply({
+        nReseted,
+      });
+    });
+  });
+}
+
 @Resolver(() => Persistence)
 export class PersistenceResolver {
   @Authorized()
@@ -121,11 +145,17 @@ export class PersistenceResolver {
   @Authorized([ADMIN])
   @Mutation(() => Int)
   async resetDataLoadersCache() {
-    const dataLoaders = Object.values(localDataLoaders);
-    dataLoaders.forEach((dataLoader) => {
-      dataLoader.clearAll();
-    });
+    if (IS_PM2) {
+      shell.exec(
+        `pm2 trigger ${PM2_APP_NAME} ${resetDataLoadersCachePM2Action}`,
+        {
+          async: true,
+        }
+      );
 
-    return dataLoaders.length;
+      return -1;
+    } else {
+      return resetDataLoadersCache();
+    }
   }
 }

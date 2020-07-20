@@ -15,7 +15,7 @@ export const AdminData: FC = () => {
   return (
     <Stack>
       <Confirm
-        header="You are going to reset this API instance DataLoaders cache"
+        header="You are going to reset all the API DataLoaders cache"
         content="This should only be done for testing response times or database runtime changes."
       >
         <Button
