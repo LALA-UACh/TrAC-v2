@@ -1,4 +1,4 @@
-import { WatchQueryFetchPolicy } from "apollo-client";
+import { WatchQueryFetchPolicy } from "@apollo/client";
 import Router from "next/router";
 import { useEffect, useMemo } from "react";
 

@@ -89,7 +89,7 @@ const Admin: FC = () => {
   );
 };
 
-export default () => {
+const AdminPage = () => {
   const { loading } = useUser({
     requireAuth: true,
     requireAdmin: true,
@@ -101,3 +101,5 @@ export default () => {
 
   return <Admin />;
 };
+
+export default AdminPage;

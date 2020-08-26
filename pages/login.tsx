@@ -210,7 +210,7 @@ const Login: FC = () => {
   );
 };
 
-export default () => {
+const LoginPage = () => {
   const { loading, user } = useUser();
 
   useEffect(() => {
@@ -224,3 +224,5 @@ export default () => {
   }
   return <Login />;
 };
+
+export default LoginPage;

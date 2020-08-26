@@ -59,11 +59,11 @@ import { useUser } from "../src/utils/useUser";
 
 import type { ITakenCourse } from "../interfaces";
 const Dropout = dynamic(() => import("../src/components/dashboard/Dropout"));
-const ForeplanModeSwitch = dynamic(() =>
-  import("../src/components/foreplan/ModeSwitch")
+const ForeplanModeSwitch = dynamic(
+  () => import("../src/components/foreplan/ModeSwitch")
 );
-const ForeplanSummary = dynamic(() =>
-  import("../src/components/foreplan/foreplanSummary/MainBox")
+const ForeplanSummary = dynamic(
+  () => import("../src/components/foreplan/foreplanSummary/MainBox")
 );
 
 const Dashboard: FC = () => {
@@ -737,7 +737,7 @@ const Dashboard: FC = () => {
   );
 };
 
-export default () => {
+const IndexPage = () => {
   const { loading, user } = useUser({
     requireAuth: true,
   });
@@ -756,3 +756,5 @@ export default () => {
 
   return <Dashboard />;
 };
+
+export default IndexPage;

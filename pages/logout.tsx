@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { LoadingPage } from "../src/components/Loading";
 import { CurrentUserDocument, useLogoutMutation } from "../src/graphql";
 
-export default () => {
+const LogoutPage = () => {
   const [logout] = useLogoutMutation({
     ignoreResults: true,
     update: (cache) => {
@@ -22,3 +22,5 @@ export default () => {
   }, []);
   return <LoadingPage />;
 };
+
+export default LogoutPage;

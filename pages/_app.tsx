@@ -9,7 +9,7 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ToastContainer } from "react-toastify";
 
 import {
@@ -29,25 +29,17 @@ Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 
+export const client = new ApolloClient({
+  link: new HttpLink({
+    uri: GRAPHQL_URL,
+    includeExtensions: true,
+    credentials: "same-origin",
+  }),
+  cache: new InMemoryCache(),
+  connectToDevTools: IS_NOT_PRODUCTION,
+});
+
 const App: NextPage<AppProps> = ({ Component, pageProps }) => {
-  const [client, setClient] = useState<ApolloClient<any>>();
-
-  useEffect(() => {
-    setClient(
-      new ApolloClient({
-        link: new HttpLink({
-          uri: GRAPHQL_URL,
-          includeExtensions: true,
-          credentials: "same-origin",
-        }),
-        cache: new InMemoryCache(),
-        connectToDevTools: IS_NOT_PRODUCTION,
-      })
-    );
-  }, []);
-
-  if (client == null) return null;
-
   return (
     <ApolloProvider client={client}>
       <Head>
