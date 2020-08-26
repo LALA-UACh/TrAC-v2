@@ -11,7 +11,7 @@ generates:
       withHooks: true
       withComponent: false
       skipTypename: true
-      reactApolloVersion: 2
+      reactApolloVersion: 3
       scalars:
         DateTime: string
         EmailAddress: string

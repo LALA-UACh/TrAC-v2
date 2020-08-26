@@ -3,20 +3,21 @@ import "../public/nprogress.css";
 import "react-toastify/dist/ReactToastify.min.css";
 import "react-datepicker/dist/react-datepicker.min.css";
 
-import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
-import { HttpLink } from "apollo-link-http";
 import { NextPage } from "next";
-import withSecureHeaders from "next-secure-headers";
-import withApollo, { WithApolloProps } from "next-with-apollo";
+import { withSecureHeaders } from "next-secure-headers";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 
-import { ApolloProvider } from "@apollo/react-hooks";
+import {
+  ApolloClient,
+  ApolloProvider,
+  HttpLink,
+  InMemoryCache,
+} from "@apollo/client";
 import { theme, ThemeProvider } from "@chakra-ui/core";
 
 import { GRAPHQL_URL, IS_NOT_PRODUCTION, NODE_ENV } from "../constants";
@@ -28,19 +29,27 @@ Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 
-declare module "next" {
-  export interface NextPageContext {
-    apolloClient: ApolloClient<NormalizedCacheObject>;
-  }
-}
+const App: NextPage<AppProps> = ({ Component, pageProps }) => {
+  const [client, setClient] = useState<ApolloClient<any>>();
 
-const App: NextPage<AppProps & WithApolloProps<NormalizedCacheObject>> = ({
-  Component,
-  pageProps,
-  apollo,
-}) => {
+  useEffect(() => {
+    setClient(
+      new ApolloClient({
+        link: new HttpLink({
+          uri: GRAPHQL_URL,
+          includeExtensions: true,
+          credentials: "same-origin",
+        }),
+        cache: new InMemoryCache(),
+        connectToDevTools: IS_NOT_PRODUCTION,
+      })
+    );
+  }, []);
+
+  if (client == null) return null;
+
   return (
-    <ApolloProvider client={apollo}>
+    <ApolloProvider client={client}>
       <Head>
         <title>TrAC</title>
       </Head>
@@ -57,7 +66,7 @@ const App: NextPage<AppProps & WithApolloProps<NormalizedCacheObject>> = ({
   );
 };
 
-export default withSecureHeaders({
+const AppPage = withSecureHeaders({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
@@ -82,16 +91,6 @@ export default withSecureHeaders({
     },
     // reportOnly: true,
   },
-})(
-  withApollo(({ initialState }) => {
-    return new ApolloClient({
-      link: new HttpLink({
-        uri: GRAPHQL_URL,
-        includeExtensions: true,
-        credentials: "same-origin",
-      }),
-      cache: new InMemoryCache({}).restore(initialState || {}),
-      connectToDevTools: IS_NOT_PRODUCTION,
-    });
-  })(App)
-);
+})(App);
+
+export default AppPage;

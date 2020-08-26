@@ -18,7 +18,6 @@ import { Button, Icon } from "semantic-ui-react";
 import pixelWidth from "string-pixel-width";
 import { useRememberState } from "use-remember-state";
 
-import { useApolloClient } from "@apollo/react-hooks";
 import {
   Alert,
   AlertIcon,
@@ -45,6 +44,7 @@ import { useUser } from "../../utils/useUser";
 import { Help } from "../Help";
 
 import type { $ElementType } from "utility-types";
+import { useApolloClient } from "@apollo/client";
 const StudentList = dynamic(() => import("./StudentList"));
 
 const MockingMode: FC = memo(() => {

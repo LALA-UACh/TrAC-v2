@@ -3,7 +3,7 @@
   "plugins": [
     ["lodash"],
     ["date-fns"],
-    ["babel-plugin-graphql-tag", { "importName": "graphql-tag" }],
+    ["babel-plugin-graphql-tag"],
     [
       "import",
       {

@@ -110,7 +110,7 @@ export const AdminTrack: FC = () => {
         selected={startDate}
         inline
         onChange={(date) => {
-          if (date) {
+          if (date && !Array.isArray(date)) {
             setMinDate(date.toISOString());
           }
         }}
@@ -126,7 +126,7 @@ export const AdminTrack: FC = () => {
         inline
         selected={endDate}
         onChange={(date) => {
-          if (date) {
+          if (date && !Array.isArray(date)) {
             setMaxDate(date.toISOString());
           }
         }}
