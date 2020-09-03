@@ -117,8 +117,9 @@ const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
           border-color: white !important;
           border-width: 1px !important;
         } 
-        
         `,
+            ignoreImageAnalysis: [],
+            ignoreInlineStyle: [],
           }
         );
       } else {

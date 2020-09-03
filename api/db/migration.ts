@@ -89,7 +89,7 @@ const migration = async () => {
     UserTable,
   } = await import("./tables");
 
-  await dbAuth.schema.hasTable(USERS_TABLE).then(async (exists) => {
+  const users = dbAuth.schema.hasTable(USERS_TABLE).then(async (exists) => {
     if (!exists) {
       await dbAuth.schema.createTable(USERS_TABLE, (table) => {
         table.text("email").primary();
@@ -121,25 +121,27 @@ const migration = async () => {
     }
   });
 
-  await dbAuth.schema.hasTable(USER_PROGRAMS_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbAuth.schema.createTable(USER_PROGRAMS_TABLE, (table) => {
-        table.text("email");
-        table.text("program");
-        table.primary(["email", "program"]);
-      });
-      await UserProgramsTable().insert(
-        (await import("./mockData/program.json")).default.map(({ id }) => {
-          return {
-            email: "admin@admin.dev",
-            program: id.toString(),
-          };
-        })
-      );
-    }
-  });
+  const usersPrograms = dbAuth.schema
+    .hasTable(USER_PROGRAMS_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbAuth.schema.createTable(USER_PROGRAMS_TABLE, (table) => {
+          table.text("email");
+          table.text("program");
+          table.primary(["email", "program"]);
+        });
+        await UserProgramsTable().insert(
+          (await import("./mockData/program.json")).default.map(({ id }) => {
+            return {
+              email: "admin@admin.dev",
+              program: id.toString(),
+            };
+          })
+        );
+      }
+    });
 
-  await dbConfig.schema
+  const userConfig = dbConfig.schema
     .hasTable(USER_CONFIGURATION_TABLE)
     .then(async (exists) => {
       if (!exists) {
@@ -160,29 +162,33 @@ const migration = async () => {
       }
     });
 
-  await dbConfig.schema.hasTable(CONFIGURATION_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbConfig.schema.createTable(CONFIGURATION_TABLE, (table) => {
-        table.text("name").primary().defaultTo("");
-        table.text("value").defaultTo("").notNullable();
-      });
-    }
-  });
+  const config = dbConfig.schema
+    .hasTable(CONFIGURATION_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbConfig.schema.createTable(CONFIGURATION_TABLE, (table) => {
+          table.text("name").primary().defaultTo("");
+          table.text("value").defaultTo("").notNullable();
+        });
+      }
+    });
 
-  await dbTracking.schema.hasTable(TRACKING_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbTracking.schema.createTable(TRACKING_TABLE, (table) => {
-        table.bigIncrements("id").primary().unsigned();
-        table.text("app_id").notNullable().defaultTo("undefined");
-        table.text("user_id").notNullable();
-        table.timestamp("datetime", { useTz: true }).notNullable();
-        table.timestamp("datetime_client", { useTz: true }).notNullable();
-        table.text("data").notNullable();
-      });
-    }
-  });
+  const track = dbTracking.schema
+    .hasTable(TRACKING_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbTracking.schema.createTable(TRACKING_TABLE, (table) => {
+          table.bigIncrements("id").primary().unsigned();
+          table.text("app_id").notNullable().defaultTo("undefined");
+          table.text("user_id").notNullable();
+          table.timestamp("datetime", { useTz: true }).notNullable();
+          table.timestamp("datetime_client", { useTz: true }).notNullable();
+          table.text("data").notNullable();
+        });
+      }
+    });
 
-  await dbData.schema.hasTable(COURSE_TABLE).then(async (exists) => {
+  const course = dbData.schema.hasTable(COURSE_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(COURSE_TABLE, (table) => {
         table.text("id").notNullable().primary();
@@ -201,38 +207,40 @@ const migration = async () => {
     }
   });
 
-  await dbData.schema.hasTable(COURSE_STATS_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbData.schema.createTable(COURSE_STATS_TABLE, (table) => {
-        table.text("course_taken").notNullable();
-        table.integer("year", 4).notNullable();
-        table.integer("term", 4).notNullable();
-        table.integer("p_group", 2).notNullable();
-        table.integer("n_total", 8).notNullable();
-        table.integer("n_finished", 8).notNullable();
-        table.integer("n_pass", 8).notNullable();
-        table.integer("n_fail", 8).notNullable();
-        table.integer("n_drop", 8).notNullable();
-        table.text("histogram").notNullable();
-        table.float("avg_grade").notNullable();
-        table.integer("n_grades", 4).notNullable();
-        table.integer("id", 8).primary().notNullable();
-        table.text("histogram_labels").notNullable();
-        table.text("color_bands").notNullable();
-      });
+  const courseStats = dbData.schema
+    .hasTable(COURSE_STATS_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbData.schema.createTable(COURSE_STATS_TABLE, (table) => {
+          table.text("course_taken").notNullable();
+          table.integer("year", 4).notNullable();
+          table.integer("term", 4).notNullable();
+          table.integer("p_group", 2).notNullable();
+          table.integer("n_total", 8).notNullable();
+          table.integer("n_finished", 8).notNullable();
+          table.integer("n_pass", 8).notNullable();
+          table.integer("n_fail", 8).notNullable();
+          table.integer("n_drop", 8).notNullable();
+          table.text("histogram").notNullable();
+          table.float("avg_grade").notNullable();
+          table.integer("n_grades", 4).notNullable();
+          table.integer("id", 8).primary().notNullable();
+          table.text("histogram_labels").notNullable();
+          table.text("color_bands").notNullable();
+        });
 
-      const dataToInsert = chunk(
-        (await import("./mockData/course_stats.json")).default,
-        500
-      );
+        const dataToInsert = chunk(
+          (await import("./mockData/course_stats.json")).default,
+          500
+        );
 
-      for (const chunkData of dataToInsert) {
-        await CourseStatsTable().insert(chunkData);
+        for (const chunkData of dataToInsert) {
+          await CourseStatsTable().insert(chunkData);
+        }
       }
-    }
-  });
+    });
 
-  await dbData.schema.hasTable(PARAMETER_TABLE).then(async (exists) => {
+  const param = dbData.schema.hasTable(PARAMETER_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(PARAMETER_TABLE, (table) => {
         table.float("passing_grade", 8);
@@ -251,7 +259,7 @@ const migration = async () => {
     }
   });
 
-  await dbData.schema.hasTable(PROGRAM_TABLE).then(async (exists) => {
+  const program = dbData.schema.hasTable(PROGRAM_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(PROGRAM_TABLE, (table) => {
         table.text("id").notNullable().primary();
@@ -274,37 +282,39 @@ const migration = async () => {
     }
   });
 
-  await dbData.schema.hasTable(PROGRAM_STRUCTURE_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbData.schema.createTable(PROGRAM_STRUCTURE_TABLE, (table) => {
-        table.integer("id", 8).notNullable().primary();
-        table.text("program_id").notNullable();
-        table.text("curriculum").notNullable();
-        table.integer("semester", 4).notNullable();
-        table.text("course_id").notNullable();
-        table.float("credits", 8).notNullable();
-        table.text("requisites").defaultTo("").notNullable();
-        table.text("mention").defaultTo("").notNullable();
-        table.text("course_cat").defaultTo("").notNullable();
-        table.text("mode").defaultTo("semestral").notNullable();
-        table.float("credits_sct", 8).notNullable();
-        table.text("tags").notNullable().defaultTo("");
-      });
-      await ProgramStructureTable().insert(
-        (await import("./mockData/program_structure.json")).default.map(
-          ({ program_id, curriculum, ...rest }) => {
-            return {
-              ...rest,
-              program_id: program_id.toString(),
-              curriculum: curriculum.toString(),
-            };
-          }
-        )
-      );
-    }
-  });
+  const programStructure = dbData.schema
+    .hasTable(PROGRAM_STRUCTURE_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbData.schema.createTable(PROGRAM_STRUCTURE_TABLE, (table) => {
+          table.integer("id", 8).notNullable().primary();
+          table.text("program_id").notNullable();
+          table.text("curriculum").notNullable();
+          table.integer("semester", 4).notNullable();
+          table.text("course_id").notNullable();
+          table.float("credits", 8).notNullable();
+          table.text("requisites").defaultTo("").notNullable();
+          table.text("mention").defaultTo("").notNullable();
+          table.text("course_cat").defaultTo("").notNullable();
+          table.text("mode").defaultTo("semestral").notNullable();
+          table.float("credits_sct", 8).notNullable();
+          table.text("tags").notNullable().defaultTo("");
+        });
+        await ProgramStructureTable().insert(
+          (await import("./mockData/program_structure.json")).default.map(
+            ({ program_id, curriculum, ...rest }) => {
+              return {
+                ...rest,
+                program_id: program_id.toString(),
+                curriculum: curriculum.toString(),
+              };
+            }
+          )
+        );
+      }
+    });
 
-  await dbData.schema.hasTable(STUDENT_TABLE).then(async (exists) => {
+  const student = dbData.schema.hasTable(STUDENT_TABLE).then(async (exists) => {
     if (!exists) {
       await dbData.schema.createTable(STUDENT_TABLE, (table) => {
         table.text("id").notNullable().primary();
@@ -317,113 +327,121 @@ const migration = async () => {
     }
   });
 
-  await dbData.schema.hasTable(STUDENT_COURSE_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbData.schema.createTable(STUDENT_COURSE_TABLE, (table) => {
-        table.integer("id", 8).notNullable().primary();
-        table.integer("year", 4).notNullable();
-        table.integer("term", 4).notNullable();
-        table.text("student_id").notNullable();
-        table.text("course_taken").notNullable();
-        table.text("course_equiv").notNullable();
-        table.text("elect_equiv").notNullable();
-        table.text("registration").notNullable();
-        table.text("state").notNullable();
-        table.float("grade", 8).notNullable();
-        table.integer("p_group", 2).notNullable();
-        table.text("comments").notNullable();
-        table.text("instructors").notNullable();
-        table.integer("duplicates", 8).notNullable();
-      });
-      await StudentCourseTable().insert(
-        (await import("./mockData/student_course.json")).default
-      );
-    }
-  });
+  const studentCourse = dbData.schema
+    .hasTable(STUDENT_COURSE_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbData.schema.createTable(STUDENT_COURSE_TABLE, (table) => {
+          table.integer("id", 8).notNullable().primary();
+          table.integer("year", 4).notNullable();
+          table.integer("term", 4).notNullable();
+          table.text("student_id").notNullable();
+          table.text("course_taken").notNullable();
+          table.text("course_equiv").notNullable();
+          table.text("elect_equiv").notNullable();
+          table.text("registration").notNullable();
+          table.text("state").notNullable();
+          table.float("grade", 8).notNullable();
+          table.integer("p_group", 2).notNullable();
+          table.text("comments").notNullable();
+          table.text("instructors").notNullable();
+          table.integer("duplicates", 8).notNullable();
+        });
+        await StudentCourseTable().insert(
+          (await import("./mockData/student_course.json")).default
+        );
+      }
+    });
 
-  await dbData.schema.hasTable(STUDENT_DROPOUT_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbData.schema.createTable(STUDENT_DROPOUT_TABLE, (table) => {
-        table.text("student_id").notNullable().primary();
-        table.float("prob_dropout", 4);
-        table.text("weight_per_semester");
-        table.boolean("active").defaultTo(false).notNullable();
-        table.float("model_accuracy", 4);
-        table.text("explanation");
-      });
-      await StudentDropoutTable().insert(
-        (await import("./mockData/student_dropout.json")).default.map(
-          ({ weight_per_semester, ...rest }) => {
-            return {
-              ...rest,
-              weight_per_semester: weight_per_semester.toString(),
-            };
-          }
-        )
-      );
-    }
-  });
+  const studentDropout = dbData.schema
+    .hasTable(STUDENT_DROPOUT_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbData.schema.createTable(STUDENT_DROPOUT_TABLE, (table) => {
+          table.text("student_id").notNullable().primary();
+          table.float("prob_dropout", 4);
+          table.text("weight_per_semester");
+          table.boolean("active").defaultTo(false).notNullable();
+          table.float("model_accuracy", 4);
+          table.text("explanation");
+        });
+        await StudentDropoutTable().insert(
+          (await import("./mockData/student_dropout.json")).default.map(
+            ({ weight_per_semester, ...rest }) => {
+              return {
+                ...rest,
+                weight_per_semester: weight_per_semester.toString(),
+              };
+            }
+          )
+        );
+      }
+    });
 
-  await dbData.schema.hasTable(STUDENT_PROGRAM_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbData.schema.createTable(STUDENT_PROGRAM_TABLE, (table) => {
-        table.text("student_id").notNullable();
-        table.text("program_id").notNullable();
-        table.text("curriculum").notNullable();
-        table.primary(["student_id", "program_id", "curriculum"]);
-        table.integer("start_year", 4).notNullable();
-        table.text("mention").notNullable();
-        table.integer("last_term", 4).notNullable();
-        table.integer("n_courses", 8).notNullable();
-        table.integer("n_passed_courses", 8).notNullable();
-        table.float("completion", 4).notNullable();
-      });
-      await StudentProgramTable().insert(
-        (await import("./mockData/student_program.json")).default.map(
-          ({ program_id, curriculum, ...rest }) => {
-            return {
-              ...rest,
-              program_id: program_id.toString(),
-              curriculum: curriculum.toString(),
-            };
-          }
-        )
-      );
-    }
-  });
+  const studentProgram = dbData.schema
+    .hasTable(STUDENT_PROGRAM_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbData.schema.createTable(STUDENT_PROGRAM_TABLE, (table) => {
+          table.text("student_id").notNullable();
+          table.text("program_id").notNullable();
+          table.text("curriculum").notNullable();
+          table.primary(["student_id", "program_id", "curriculum"]);
+          table.integer("start_year", 4).notNullable();
+          table.text("mention").notNullable();
+          table.integer("last_term", 4).notNullable();
+          table.integer("n_courses", 8).notNullable();
+          table.integer("n_passed_courses", 8).notNullable();
+          table.float("completion", 4).notNullable();
+        });
+        await StudentProgramTable().insert(
+          (await import("./mockData/student_program.json")).default.map(
+            ({ program_id, curriculum, ...rest }) => {
+              return {
+                ...rest,
+                program_id: program_id.toString(),
+                curriculum: curriculum.toString(),
+              };
+            }
+          )
+        );
+      }
+    });
 
-  await dbData.schema.hasTable(STUDENT_TERM_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbData.schema.createTable(STUDENT_TERM_TABLE, (table) => {
-        table.integer("id", 8).primary().notNullable();
-        table.text("student_id").notNullable();
-        table.integer("year", 4).notNullable();
-        table.integer("term", 4).notNullable();
-        table.text("situation").notNullable();
-        table.float("t_gpa", 8).notNullable();
-        table.float("c_gpa", 8).notNullable();
-        table.text("comments").notNullable().defaultTo("");
-        table.text("program_id").notNullable();
-        table.text("curriculum").notNullable();
-        table.integer("start_year", 4).notNullable();
-        table.text("mention").notNullable().defaultTo("");
-      });
-      await StudentTermTable().insert(
-        (await import("./mockData/student_term.json")).default.map(
-          ({ comments, program_id, curriculum, ...rest }) => {
-            return {
-              ...rest,
-              comments: comments.toString(),
-              program_id: program_id.toString(),
-              curriculum: curriculum.toString(),
-            };
-          }
-        )
-      );
-    }
-  });
+  const studentTerm = dbData.schema
+    .hasTable(STUDENT_TERM_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbData.schema.createTable(STUDENT_TERM_TABLE, (table) => {
+          table.integer("id", 8).primary().notNullable();
+          table.text("student_id").notNullable();
+          table.integer("year", 4).notNullable();
+          table.integer("term", 4).notNullable();
+          table.text("situation").notNullable();
+          table.float("t_gpa", 8).notNullable();
+          table.float("c_gpa", 8).notNullable();
+          table.text("comments").notNullable().defaultTo("");
+          table.text("program_id").notNullable();
+          table.text("curriculum").notNullable();
+          table.integer("start_year", 4).notNullable();
+          table.text("mention").notNullable().defaultTo("");
+        });
+        await StudentTermTable().insert(
+          (await import("./mockData/student_term.json")).default.map(
+            ({ comments, program_id, curriculum, ...rest }) => {
+              return {
+                ...rest,
+                comments: comments.toString(),
+                program_id: program_id.toString(),
+                curriculum: curriculum.toString(),
+              };
+            }
+          )
+        );
+      }
+    });
 
-  await dbData.schema
+  const performanceByLoad = dbData.schema
     .hasTable(PERFORMANCE_BY_LOAD_TABLE)
     .then(async (exists) => {
       if (!exists) {
@@ -453,43 +471,47 @@ const migration = async () => {
       }
     });
 
-  await dbData.schema.hasTable(STUDENT_CLUSTER_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbData.schema.createTable(STUDENT_CLUSTER_TABLE, (table) => {
-        table.text("student_id");
-        table.text("program_id");
-        table.integer("cluster", 2);
+  const studentcluster = dbData.schema
+    .hasTable(STUDENT_CLUSTER_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbData.schema.createTable(STUDENT_CLUSTER_TABLE, (table) => {
+          table.text("student_id");
+          table.text("program_id");
+          table.integer("cluster", 2);
 
-        table.primary(["student_id", "program_id"]);
-      });
+          table.primary(["student_id", "program_id"]);
+        });
 
-      await StudentClusterTable().insert(
-        (await import("./mockData/student_program.json")).default.map(
-          ({ student_id, program_id }, index) => {
-            return {
-              student_id,
-              program_id: program_id.toString(),
-              cluster: index % 3,
-            };
-          }
-        )
-      );
-    }
-  });
+        await StudentClusterTable().insert(
+          (await import("./mockData/student_program.json")).default.map(
+            ({ student_id, program_id }, index) => {
+              return {
+                student_id,
+                program_id: program_id.toString(),
+                cluster: index % 3,
+              };
+            }
+          )
+        );
+      }
+    });
 
-  await dbAuth.schema.hasTable(PERSISTENCE_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbAuth.schema.createTable(PERSISTENCE_TABLE, (table) => {
-        table.text("user").notNullable();
-        table.text("key").notNullable();
-        table.json("data").notNullable();
-        table.timestamp("timestamp", { useTz: true }).notNullable();
-        table.increments("id").primary();
+  const persistence = dbAuth.schema
+    .hasTable(PERSISTENCE_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbAuth.schema.createTable(PERSISTENCE_TABLE, (table) => {
+          table.text("user").notNullable();
+          table.text("key").notNullable();
+          table.json("data").notNullable();
+          table.timestamp("timestamp", { useTz: true }).notNullable();
+          table.increments("id").primary();
 
-        table.unique(["user", "key"]);
-      });
-    }
-  });
+          table.unique(["user", "key"]);
+        });
+      }
+    });
 
   const mockFeedbackForms = [
     {
@@ -502,19 +524,21 @@ const migration = async () => {
     },
   ];
 
-  await dbTracking.schema.hasTable(FEEDBACK_FORM_TABLE).then(async (exists) => {
-    if (!exists) {
-      await dbTracking.schema.createTable(FEEDBACK_FORM_TABLE, (table) => {
-        table.increments("id").primary();
+  const feedbackForm = dbTracking.schema
+    .hasTable(FEEDBACK_FORM_TABLE)
+    .then(async (exists) => {
+      if (!exists) {
+        await dbTracking.schema.createTable(FEEDBACK_FORM_TABLE, (table) => {
+          table.increments("id").primary();
 
-        table.text("name").notNullable();
+          table.text("name").notNullable();
 
-        table.integer("priority").notNullable().defaultTo(0);
-      });
+          table.integer("priority").notNullable().defaultTo(0);
+        });
 
-      await FeedbackFormTable().insert(mockFeedbackForms);
-    }
-  });
+        await FeedbackFormTable().insert(mockFeedbackForms);
+      }
+    });
 
   const mockFeedbackOptions: FeedbackQuestionOption[] = [
     {
@@ -576,7 +600,7 @@ const migration = async () => {
     },
   ];
 
-  await dbTracking.schema
+  const feedbackFormQuestion = dbTracking.schema
     .hasTable(FEEDBACK_FORM_QUESTION_TABLE)
     .then(async (exists) => {
       if (!exists) {
@@ -607,7 +631,7 @@ const migration = async () => {
       }
     });
 
-  await dbTracking.schema
+  const feedbackResult = dbTracking.schema
     .hasTable(FEEDBACK_RESULT_TABLE)
     .then(async (exists) => {
       if (!exists) {
@@ -650,15 +674,38 @@ const migration = async () => {
       }
     });
 
-  setTimeout(async () => {
-    await Promise.all([
-      dbAuth.destroy(),
-      dbConfig.destroy(),
-      dbData.destroy(),
-      dbTracking.destroy(),
-    ]);
-    console.info("DATABASE PREPARED!");
-  }, 2000);
+  await Promise.all([
+    users,
+    usersPrograms,
+    userConfig,
+    config,
+    track,
+    course,
+    courseStats,
+    param,
+    program,
+    programStructure,
+    student,
+    studentCourse,
+    studentDropout,
+    studentProgram,
+    studentTerm,
+    performanceByLoad,
+    studentcluster,
+    persistence,
+    feedbackForm,
+    feedbackFormQuestion,
+    feedbackResult,
+  ]);
+
+  await Promise.all([
+    dbAuth.destroy(),
+    dbConfig.destroy(),
+    dbData.destroy(),
+    dbTracking.destroy(),
+  ]);
+
+  console.info("DATABASE PREPARED!");
 };
 
 if (process.env.NODE_ENV === undefined) {
@@ -666,5 +713,8 @@ if (process.env.NODE_ENV === undefined) {
   process.env.NODE_ENV = "development";
 }
 if (process.env.NODE_ENV !== "test") {
-  migration();
+  migration().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
 }

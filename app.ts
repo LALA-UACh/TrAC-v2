@@ -8,7 +8,7 @@ import { toInteger } from "lodash";
 import Next from "next";
 
 import { apolloServer } from "./api/apollo/server";
-import { IS_NOT_PRODUCTION, NODE_ENV, IS_PRODUCTION } from "./constants";
+import { IS_NOT_PRODUCTION, IS_PRODUCTION, NODE_ENV } from "./constants";
 
 export const app = express();
 
@@ -54,8 +54,15 @@ nextApp.prepare().then(() => {
       console.log(`🚀 Server ready at http://localhost:${port}`);
 
       if (IS_NOT_PRODUCTION) {
+        const localPath = `http://localhost:${port}/`;
         import("axios").then(({ default: { get } }) => {
-          get(`http://localhost:${port}/`).catch(console.error);
+          get(localPath)
+            .then(() => {
+              import("open").then(({ default: open }) => {
+                open(localPath).catch(console.error);
+              });
+            })
+            .catch(console.error);
         });
       }
     });

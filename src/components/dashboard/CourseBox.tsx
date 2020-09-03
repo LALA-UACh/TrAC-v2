@@ -42,12 +42,12 @@ import type {
   ITakenCourse,
   ITakenSemester,
 } from "../../../interfaces";
-const ForeplanCourseCheckbox = dynamic(() =>
-  import("../foreplan/courseBox/Checkbox")
+const ForeplanCourseCheckbox = dynamic(
+  () => import("../foreplan/courseBox/Checkbox")
 );
 
-const ForeplanCourseStats = dynamic(() =>
-  import("../foreplan/courseBox/Stats")
+const ForeplanCourseStats = dynamic(
+  () => import("../foreplan/courseBox/Stats")
 );
 
 export const passColorScale = scaleLinear<string, number>();

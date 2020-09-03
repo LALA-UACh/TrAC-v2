@@ -1,6 +1,7 @@
-import { WatchQueryFetchPolicy } from "@apollo/client";
 import Router from "next/router";
 import { useEffect, useMemo } from "react";
+
+import { WatchQueryFetchPolicy } from "@apollo/client";
 
 import { baseUserConfig, UserConfig } from "../../constants/userConfig";
 import { useCurrentUserQuery, UserFragmentFragment } from "../graphql";
