@@ -10,8 +10,8 @@ import {
   USED_OLD_PASSWORD,
   UserType,
   WRONG_INFO,
-} from "../../../constants";
-import { baseUserConfig } from "../../../constants/userConfig";
+} from "../../../client/constants";
+import { baseUserConfig } from "../../../client/constants/userConfig";
 import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../../constants";
 import { StudentTable, UserTable } from "../../db/tables";
 import { AuthResult, LoginInput, UnlockInput } from "../../entities/auth/auth";
@@ -19,7 +19,7 @@ import { anonService } from "../../services/anonymization";
 import { sendMail, UnlockMail } from "../../services/mail";
 
 import type { IContext } from "../../../interfaces";
-import type { Request, Response } from "express-serve-static-core";
+import type { FastifyReply, FastifyRequest } from "fastify";
 @Resolver()
 export class AuthResolver {
   static authenticate({
@@ -27,15 +27,15 @@ export class AuthResolver {
     res,
     email,
   }: {
-    req: Request;
-    res: Response;
+    req: FastifyRequest;
+    res: FastifyReply;
     email: string;
   }) {
     const token = sign({ email }, SECRET, {
       expiresIn: req.cookies?.remember ? "1 day" : "30m",
     });
 
-    res.cookie("authorization", token, {
+    res.setCookie("authorization", token, {
       httpOnly: true,
       secure: NODE_ENV === "production",
       expires:

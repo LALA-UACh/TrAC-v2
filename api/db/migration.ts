@@ -1,10 +1,12 @@
 // This file is intented to be used simply calling "yarn" or "yarn migrate"
 
 import type { FeedbackQuestionOption } from "../entities/feedback";
-import type { FeedbackQuestionType } from "../../constants";
+import type { FeedbackQuestionType } from "../../client/constants";
 
 const migration = async () => {
-  const { FeedbackQuestionType, UserType } = await import("../../constants");
+  const { FeedbackQuestionType, UserType } = await import(
+    "../../client/constants"
+  );
   const { baseDBConfig, dbNames } = await import("./config");
 
   const knexDB = (await import("knex")).default(baseDBConfig);
@@ -41,7 +43,7 @@ const migration = async () => {
   const sha1 = (await import("crypto-js/sha1")).default;
   const { chunk, sample } = await import("lodash");
 
-  const { baseUserConfig } = await import("../../constants/userConfig");
+  const { baseUserConfig } = await import("../../client/constants/userConfig");
   const {
     joinFeedbackQuestionOptions,
     splitFeedbackQuestionOptions,

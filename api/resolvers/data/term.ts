@@ -1,6 +1,6 @@
 import { FieldResolver, Resolver, Root } from "type-graphql";
 
-import { defaultTermType } from "../../../constants";
+import { defaultTermType } from "../../../client/constants";
 import {
   ProgramGradeDataLoader,
   TakenCoursesDataLoader,

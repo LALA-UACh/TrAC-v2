@@ -6,7 +6,7 @@ import {
   registerEnumType,
 } from "type-graphql";
 
-import { PerformanceLoadUnit } from "../../../constants";
+import { PerformanceLoadUnit } from "../../../client/constants";
 import { Course } from "./course";
 
 registerEnumType(PerformanceLoadUnit, {

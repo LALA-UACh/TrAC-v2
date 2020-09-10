@@ -6,7 +6,7 @@ import {
   PROGRAM_UNAUTHORIZED,
   STUDENT_NOT_FOUND,
   UserType,
-} from "../../../constants";
+} from "../../../client/constants";
 import {
   AllApprovedCoursesDataLoader,
   AllCoursesOfProgramCurriculumDataLoader,

@@ -6,12 +6,12 @@ import waitForExpect from "wait-for-expect";
 import { MockedProvider } from "@apollo/react-testing";
 import { act, cleanup, render } from "@testing-library/react";
 
-import { UserType } from "../constants";
-import { baseConfig } from "../constants/baseConfig";
-import { baseUserConfig } from "../constants/userConfig";
-import AdminPage from "../pages/admin";
-import LoginPage from "../pages/login";
-import UnlockPage from "../pages/unlock/[email]/[unlockKey]";
+import { UserType } from "../client/constants";
+import { baseConfig } from "../client/constants/baseConfig";
+import { baseUserConfig } from "../client/constants/userConfig";
+import AdminPage from "../src/pages/admin";
+import LoginPage from "../src/pages/login";
+import UnlockPage from "../src/pages/unlock/[email]/[unlockKey]";
 import { AllUsersAdminDocument, CurrentUserDocument } from "../src/graphql";
 
 Object.defineProperty(window, "matchMedia", {

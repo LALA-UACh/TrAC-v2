@@ -9,12 +9,12 @@ import {
   registerEnumType,
 } from "type-graphql";
 
-import { UserType } from "../../../constants";
+import { UserType } from "../../../client/constants";
 import { ADMIN } from "../../constants";
 import { Program } from "../data/program";
 
 import type { IUser } from "../../db/tables";
-import type { UserConfig } from "../../../constants/userConfig";
+import type { UserConfig } from "../../../client/constants/userConfig";
 registerEnumType(UserType, {
   name: "UserType",
   description: "Possible options of an user type",

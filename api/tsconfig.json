@@ -66,6 +66,6 @@
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
     "importsNotUsedAsValues": "error"
   },
-  "include": ["**/*.ts", "../app.ts", "../worker.ts", "../*.d.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "../app.ts", "../*.d.ts", "**/*.tsx"],
   "exclude": ["node_modules/**", "client"]
 }

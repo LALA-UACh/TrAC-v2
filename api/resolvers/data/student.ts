@@ -17,7 +17,7 @@ import {
   STUDENT_LIST_UNAUTHORIZED,
   STUDENT_NOT_FOUND,
   UserType,
-} from "../../../constants";
+} from "../../../client/constants";
 import {
   StudentDataLoader,
   StudentDropoutDataLoader,

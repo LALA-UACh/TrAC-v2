@@ -2,7 +2,7 @@ import DataLoader from "dataloader";
 import { compact, sortBy, toInteger, trim } from "lodash";
 import { LRUMap } from "lru_map";
 
-import { defaultPerformanceLoadUnit } from "../../constants";
+import { defaultPerformanceLoadUnit } from "../../client/constants";
 import {
   PerformanceByLoadTable,
   ProgramStructureTable,

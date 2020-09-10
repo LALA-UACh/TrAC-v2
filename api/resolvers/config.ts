@@ -3,8 +3,8 @@ import { GraphQLJSONObject } from "graphql-type-json";
 import { isEqual, reduce } from "lodash";
 import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 
-import { baseConfig, baseConfigAdmin } from "../../constants/baseConfig";
-import { configStringToValue } from "../../constants/validation";
+import { baseConfig, baseConfigAdmin } from "../../client/constants/baseConfig";
+import { configStringToValue } from "../../client/constants/validation";
 import { ADMIN } from "../constants";
 import { ConfigurationTable } from "../db/tables";
 

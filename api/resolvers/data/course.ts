@@ -1,7 +1,7 @@
 import { compact, toInteger, toNumber } from "lodash";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 
-import { baseConfig } from "../../../constants/baseConfig";
+import { baseConfig } from "../../../client/constants/baseConfig";
 import {
   CourseAndStructureDataLoader,
   CourseFlowDataLoader,

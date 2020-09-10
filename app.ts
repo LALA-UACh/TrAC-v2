@@ -1,70 +1,112 @@
 import "dotenv/config";
+import "reflect-metadata";
 
-import cookieParser from "cookie-parser";
-import express from "express";
-import { express as voyagerMiddleware } from "graphql-voyager/middleware";
-import helmet from "helmet";
-import { toInteger } from "lodash";
-import Next from "next";
+import AltairFastify from "altair-fastify-plugin";
+import Fastify from "fastify";
+import FastifyCookie from "fastify-cookie";
+import GQL from "fastify-gql";
+import helmet from "fastify-helmet";
+import FastifyNextJS from "fastify-nextjs";
+import { renderVoyagerPage } from "graphql-voyager/middleware";
+import ms from "ms";
+import { resolve } from "path";
 
-import { apolloServer } from "./api/apollo/server";
-import { IS_NOT_PRODUCTION, IS_PRODUCTION, NODE_ENV } from "./constants";
+import { buildContext } from "./api/core/buildContext";
+import { COOKIE_SECRET, PORT, SHOW_GRAPHQL_API } from "./api/constants";
+import { schema } from "./api/core/schema";
+import { logger } from "./api/services/logger";
+import {
+  IS_DEVELOPMENT,
+  IS_NOT_PRODUCTION,
+  IS_NOT_TEST,
+} from "./client/constants";
 
-export const app = express();
+export const app = Fastify({
+  trustProxy: true,
+  pluginTimeout: ms("60 seconds"),
+  logger,
+});
 
-app.use(helmet.hidePoweredBy());
+app.register(helmet, {
+  contentSecurityPolicy: {
+    directives: {
+      "default-src": "'self'",
+      "style-src":
+        "'self' https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline'",
+      "script-src": IS_DEVELOPMENT
+        ? "'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net"
+        : "'self' https://cdn.jsdelivr.net",
+      "font-src":
+        "'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:",
+      "img-src": `'self' data:`,
+      "connect-src": "'self' https://cdn.jsdelivr.net",
+      "worker-src": "'self' blob:",
+    },
+  },
+});
 
-app.use(helmet.hsts());
+app.register(FastifyCookie, {
+  secret: COOKIE_SECRET,
+});
 
-app.use(cookieParser());
+if (SHOW_GRAPHQL_API || IS_NOT_PRODUCTION) {
+  app.get("/api/voyager", (_req, res) => {
+    res.type("text/html").send(
+      renderVoyagerPage({
+        endpointUrl: "/api/graphql",
+        displayOptions: {
+          rootType: undefined,
+          skipRelay: false,
+          skipDeprecated: true,
+          sortByAlphabet: true,
+          showLeafFields: true,
+          hideRoot: false,
+        },
+      })
+    );
+  });
 
-if (IS_PRODUCTION) {
-  app.get("/api/graphql", (_req, res) => {
-    res.redirect("/");
+  app.register(AltairFastify, {
+    endpointURL: "/api/graphql",
+    baseURL: "/api/altair/",
+    path: "/api/altair",
   });
 }
 
-apolloServer.applyMiddleware({
-  app,
+app.register(GQL, {
   path: "/api/graphql",
+  schema,
+  context: buildContext,
+  ide: false,
+  allowBatchedQueries: true,
+  graphiql: false,
+  jit: 1,
+  queryDepth: 7,
 });
 
-const nextApp = Next({
-  dev: IS_NOT_PRODUCTION,
-  customServer: true,
-});
-
-const nextHandler = nextApp.getRequestHandler();
-
-nextApp.prepare().then(() => {
-  if (process.env.SHOW_GRAPHQL_API || IS_NOT_PRODUCTION) {
-    console.log("Showing GraphQL API through /api/voyager");
-
-    app.get("/api/voyager", voyagerMiddleware({ endpointUrl: "/api/graphql" }));
-  }
-
-  app.use((req, res) => {
-    nextHandler(req, res);
+app
+  .register(FastifyNextJS, {
+    dir: resolve(process.cwd(), "./client"),
+  })
+  .after(() => {
+    app.next("/*");
   });
 
-  const port = process.env.PORT ? toInteger(process.env.PORT) : 3000;
+if (IS_NOT_TEST) {
+  app.listen(PORT, "0.0.0.0").then(() => {
+    process.send?.("ready");
 
-  if (NODE_ENV !== "test") {
-    app.listen({ port }, () => {
-      console.log(`🚀 Server ready at http://localhost:${port}`);
-
-      if (IS_NOT_PRODUCTION) {
-        const localPath = `http://localhost:${port}/`;
-        import("axios").then(({ default: { get } }) => {
-          get(localPath)
-            .then(() => {
-              import("open").then(({ default: open }) => {
-                open(localPath).catch(console.error);
-              });
-            })
-            .catch(console.error);
-        });
-      }
-    });
-  }
-});
+    if (IS_DEVELOPMENT) {
+      const localPath = `http://localhost:${PORT}/`;
+      import("axios").then(({ default: { get } }) => {
+        get(localPath)
+          .then(() => {
+            import("open").then(({ default: open }) => {
+              open(localPath).catch(console.error);
+            });
+          })
+          .catch(console.error);
+      });
+    }
+  });
+}

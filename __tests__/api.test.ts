@@ -3,15 +3,15 @@ import gql, { DocumentNode } from "graphql-tag-ts";
 import { update } from "lodash";
 import { getTracker, mock, Tracker } from "mock-knex";
 
-import { apolloTestClient } from "../api/apollo/apolloTestClient";
+import { testClient } from "../api/core/testClient";
 import { dbAuth, dbConfig, dbData, dbTracking } from "../api/db";
 import {
   LOCKED_USER,
   USED_OLD_PASSWORD,
   UserType,
   WRONG_INFO,
-} from "../constants";
-import { baseUserConfig } from "../constants/userConfig";
+} from "../client/constants";
+import { baseUserConfig } from "../client/constants/userConfig";
 
 const testingUserOk = {
   email: "test@test.test",
@@ -229,7 +229,7 @@ describe("authentication", () => {
   `;
 
   test("successful login and currentUser", async () => {
-    let { query, mutate, setOptions } = await apolloTestClient();
+    let { query, mutate, setHeaders } = await testClient();
 
     const currentUserEmpty = await query(currentUserGql);
 
@@ -264,12 +264,8 @@ describe("authentication", () => {
     expect(loginSuccess.data.login.token).toBeTruthy();
     expect(loginSuccess.data.login.error).toBeNull();
 
-    setOptions({
-      request: {
-        headers: {
-          authorization: loginSuccess.data.login.token,
-        },
-      },
+    setHeaders({
+      authorization: loginSuccess.data.login.token,
     });
 
     const {
@@ -282,7 +278,7 @@ describe("authentication", () => {
   }, 5000);
 
   test("lock and unlock user", async () => {
-    const { mutate, query, setOptions } = await apolloTestClient();
+    const { mutate, query, setHeaders } = await testClient();
 
     const wrongPassword = sha1("wrong").toString();
 
@@ -401,12 +397,8 @@ describe("authentication", () => {
     expect(testingUserLock.oldPassword2).toBe(oldTestingUserLock.oldPassword1);
     expect(testingUserLock.oldPassword3).toBe(oldTestingUserLock.oldPassword2);
 
-    setOptions({
-      request: {
-        headers: {
-          authorization: unlockTrySuccess.data.unlock.token,
-        },
-      },
+    setHeaders({
+      authorization: unlockTrySuccess.data.unlock.token,
     });
 
     const currentUser = await query(currentUserGql);

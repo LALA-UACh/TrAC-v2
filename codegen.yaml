@@ -1,7 +1,7 @@
 schema: schema.gql
-documents: src/graphql/*.gql
+documents: client/src/graphql/*.gql
 generates:
-  src/graphql/index.ts:
+  client/src/graphql/index.ts:
     plugins:
       - typescript
       - typescript-operations
@@ -18,4 +18,4 @@ generates:
         JSONObject: Record<string,any>
 hooks:
   afterAllFileWrite:
-    - prettier --write src/graphql/index.ts
+    - prettier --write client/src/graphql/index.ts

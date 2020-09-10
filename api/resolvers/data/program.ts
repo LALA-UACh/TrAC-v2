@@ -16,7 +16,7 @@ import {
   PROGRAM_UNAUTHORIZED,
   STUDENT_NOT_FOUND,
   UserType,
-} from "../../../constants";
+} from "../../../client/constants";
 import { ADMIN } from "../../constants";
 import {
   CurriculumsDataLoader,

@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { requireEnv } from "require-env-variable";
 
-import { NODE_ENV } from "../../../constants";
+import { NODE_ENV } from "../../../client/constants";
 
 const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS_REPLY_TO;
 

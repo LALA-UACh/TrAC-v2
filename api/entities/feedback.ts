@@ -6,7 +6,7 @@ import {
   registerEnumType,
 } from "type-graphql";
 
-import { FeedbackQuestionType } from "../../constants";
+import { FeedbackQuestionType } from "../../client/constants";
 import { User } from "./auth/user";
 
 registerEnumType(FeedbackQuestionType, {

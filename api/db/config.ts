@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import { NODE_ENV } from "../../constants";
+import { NODE_ENV } from "../../client/constants";
 
 import type { Config } from "knex";
 

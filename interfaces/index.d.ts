@@ -1,7 +1,7 @@
-import { PromiseType } from "utility-types";
+import type { PromiseType } from "utility-types";
 
-import { buildContext } from "../api/apollo/buildContext";
-import { StateCourse } from "../constants";
+import type { buildContext } from "../api/core/buildContext";
+import { StateCourse } from "../client/constants";
 
 export type IContext = PromiseType<ReturnType<typeof buildContext>>;
 export type ITakenSemester = {

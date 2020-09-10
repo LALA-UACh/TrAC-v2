@@ -9,7 +9,7 @@ import {
   Resolver,
 } from "type-graphql";
 
-import { UserType } from "../../../constants";
+import { UserType } from "../../../client/constants";
 import { ADMIN } from "../../constants";
 import { TrackingTable } from "../../db/tables";
 import { Track, TrackInput } from "../../entities/track";
@@ -20,7 +20,7 @@ import type { IContext } from "../../../interfaces";
 @Resolver(() => Track)
 export class TrackResolver {
   @Authorized()
-  @Mutation(() => Boolean, { complexity: 0 })
+  @Mutation(() => Boolean)
   async track(
     @Args() { datetime_client, data }: TrackInput,
     @Ctx() { user }: IContext

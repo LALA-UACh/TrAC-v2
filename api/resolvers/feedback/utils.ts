@@ -5,7 +5,7 @@ import { toInteger } from "lodash";
 import {
   OPTIONS_FEEDBACK_SPLIT_CHAR,
   OPTIONS_FEEDBACK_VALUE_SPLIT_CHAR,
-} from "../../../constants";
+} from "../../../client/constants";
 
 export function splitFeedbackQuestionOptions(
   options: string

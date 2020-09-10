@@ -6,7 +6,7 @@ import {
   FeedbackQuestionType,
   NO_ANSWER,
   OPTIONS_FEEDBACK_SPLIT_CHAR,
-} from "../../../constants";
+} from "../../../client/constants";
 import { ADMIN } from "../../constants";
 import {
   FeedbackFormQuestionTable,

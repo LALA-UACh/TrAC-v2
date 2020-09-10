@@ -12,8 +12,8 @@ import {
   Root,
 } from "type-graphql";
 
-import { defaultUserType } from "../../../constants";
-import { baseUserConfig } from "../../../constants/userConfig";
+import { defaultUserType } from "../../../client/constants";
+import { baseUserConfig } from "../../../client/constants/userConfig";
 import { ADMIN } from "../../constants";
 import { dbAuth } from "../../db";
 import {
