@@ -4,7 +4,7 @@ import DataLoader from "dataloader";
 import { verify } from "jsonwebtoken";
 import { keyBy } from "lodash";
 
-import { NODE_ENV } from "../../client/constants";
+import { IS_DEVELOPMENT } from "../../client/constants";
 import { SECRET } from "../constants";
 import { IUser, UserConfigurationTable, UserTable } from "../db/tables";
 import { AuthResolver } from "../resolvers/auth/auth";
@@ -19,7 +19,7 @@ export const buildContext = async (req: FastifyRequest, res: FastifyReply) => {
       req.cookies.authorization || req.headers.authorization;
     if (authorizationToken) {
       const userJWT = verify(authorizationToken, SECRET, {
-        ignoreExpiration: NODE_ENV === "development",
+        ignoreExpiration: IS_DEVELOPMENT,
       }) as {
         email: string;
       };

@@ -15,7 +15,7 @@ import { useUpdateEffect } from "react-use";
 import { Box, Flex, Stack } from "@chakra-ui/core";
 
 import {
-  NODE_ENV,
+  IS_NOT_TEST,
   PROGRAM_NOT_FOUND,
   PROGRAM_UNAUTHORIZED,
   StateCourse,
@@ -129,7 +129,7 @@ const Dashboard: FC = () => {
   ] = useSearchStudentMutation();
 
   useUpdateEffect(() => {
-    if (NODE_ENV !== "test" && user?.admin) {
+    if (IS_NOT_TEST && user?.admin) {
       console.log({
         searchProgramData,
         searchStudentData,

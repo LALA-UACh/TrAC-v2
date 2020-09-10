@@ -6,7 +6,7 @@
   "author": "PabloSz <pablosaez1995@gmail.com>",
   "scripts": {
     "analyze-build": "cross-env ANALYZE=true next build client",
-    "app-inspect": "kill-port 27050 && cross-env NODE_ENV=development node --inspect=27050 ./dist/appFastify.js",
+    "app-inspect": "kill-port 27050 && cross-env NODE_ENV=development node --inspect=27050 ./dist/app.js",
     "build": "run-p -l build-*",
     "build-api": "tsc -P api",
     "build-client": "next build client",

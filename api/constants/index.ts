@@ -1,21 +1,22 @@
 import { toInteger } from "lodash";
 import ms from "ms";
 
-import { NODE_ENV } from "../../client/constants";
+import { IS_NOT_TEST } from "../../client/constants";
+import { logger } from "../services/logger";
 
 export const SECRET =
   process.env.SECRET ??
   (() => {
-    if (NODE_ENV !== "test") {
-      console.warn('Please use the "SECRET" environment variable!');
+    if (IS_NOT_TEST) {
+      logger.warn('Please use the "SECRET" environment variable!');
     }
     return "Vzu93jvOF8huLwqw1u2JOZN1FYc5MRbxQgbKgId";
   })();
 export const COOKIE_SECRET =
   process.env.COOKIE_SECRET ??
   (() => {
-    if (NODE_ENV !== "test") {
-      console.warn('Please use the "COOKIE_SECRET" environment variable!');
+    if (IS_NOT_TEST) {
+      logger.warn('Please use the "COOKIE_SECRET" environment variable!');
     }
     return "XnYEnqAjpw68vqkG762y7BgX2WkJeG6euVoVWYBk8fHUzeia2W";
   })();

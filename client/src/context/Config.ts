@@ -1,7 +1,7 @@
 import { createContext, createElement, FC, useEffect, useState } from "react";
 import { useRememberState } from "use-remember-state";
 
-import { NODE_ENV } from "../../constants";
+import { IS_DEVELOPMENT } from "../../constants";
 import { baseConfig } from "../../constants/baseConfig";
 import {
   failColorScale,
@@ -18,10 +18,9 @@ import { useConfigQuery } from "../graphql";
 export const ConfigContext = createContext(baseConfig);
 
 export const Config: FC = ({ children }) => {
-  const [configState, setConfigState] =
-    NODE_ENV === "development"
-      ? useState(baseConfig)
-      : useRememberState(`baseConfig=${baseConfig.VERSION_CONFIG}`, baseConfig);
+  const [configState, setConfigState] = IS_DEVELOPMENT
+    ? useState(baseConfig)
+    : useRememberState(`baseConfig=${baseConfig.VERSION_CONFIG}`, baseConfig);
 
   const { data, loading } = useConfigQuery();
 

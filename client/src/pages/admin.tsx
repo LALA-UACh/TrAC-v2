@@ -4,7 +4,7 @@ import { useRememberState } from "use-remember-state";
 
 import { Flex, Stack } from "@chakra-ui/core";
 
-import { NODE_ENV } from "../../constants";
+import { IS_NOT_TEST } from "../../constants";
 import { AdminConfig } from "../components/admin/BaseConfig";
 import { AdminData } from "../components/admin/data/index";
 import { AdminFeedback } from "../components/admin/feedback";
@@ -35,7 +35,7 @@ const Admin: FC = () => {
   const { data, loading, error } = useAllUsersAdminQuery();
 
   useEffect(() => {
-    if (NODE_ENV !== "test" && data) {
+    if (IS_NOT_TEST && data) {
       console.log("data_all_users_admin", data);
     }
   }, [data]);

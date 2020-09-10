@@ -5,8 +5,10 @@ import { Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import {
   defaultUserType,
+  IS_DEVELOPMENT,
+  IS_NOT_TEST,
+  IS_PRODUCTION,
   LOCKED_USER,
-  NODE_ENV,
   USED_OLD_PASSWORD,
   UserType,
   WRONG_INFO,
@@ -36,15 +38,15 @@ export class AuthResolver {
     });
 
     res.setCookie("authorization", token, {
+      path: "/",
       httpOnly: true,
-      secure: NODE_ENV === "production",
-      expires:
-        NODE_ENV === "development"
-          ? addWeeks(Date.now(), 12)
-          : addMilliseconds(
-              Date.now(),
-              req.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
-            ),
+      secure: IS_PRODUCTION,
+      expires: IS_DEVELOPMENT
+        ? addWeeks(Date.now(), 12)
+        : addMilliseconds(
+            Date.now(),
+            req.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
+          ),
     });
 
     return token;
@@ -154,7 +156,7 @@ export class AuthResolver {
             subject: "Activación cuenta LALA TrAC",
           })
             .then((result) => {
-              if (NODE_ENV !== "test") {
+              if (IS_NOT_TEST) {
                 console.log(
                   `New locked user! ${email}`,
                   JSON.stringify(result, null, 2)
@@ -162,7 +164,7 @@ export class AuthResolver {
               }
             })
             .catch((err) => {
-              if (NODE_ENV !== "test") {
+              if (IS_NOT_TEST) {
                 console.error(
                   `Error trying to send an email to new locked user! ${email}`,
                   JSON.stringify(err, null, 2)
@@ -181,7 +183,11 @@ export class AuthResolver {
   @Mutation(() => Boolean)
   async logout(@Ctx() { user, res }: IContext) {
     if (user) {
-      res.clearCookie("authorization");
+      res.clearCookie("authorization", {
+        path: "/",
+        httpOnly: true,
+        secure: IS_PRODUCTION,
+      });
       return true;
     }
     return false;

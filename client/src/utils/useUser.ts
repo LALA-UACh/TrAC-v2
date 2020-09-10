@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react";
 
 import { WatchQueryFetchPolicy } from "@apollo/client";
 
+import { IS_NOT_TEST } from "../../constants";
 import { baseUserConfig, UserConfig } from "../../constants/userConfig";
 import { useCurrentUserQuery, UserFragmentFragment } from "../graphql";
 
@@ -50,7 +51,7 @@ export function useUser(
 
   useEffect(() => {
     if (
-      process.env.NODE_ENV !== "test" &&
+      IS_NOT_TEST &&
       ((requireAuth && !user) || (requireAdmin && !user?.admin))
     ) {
       if (!loading) {

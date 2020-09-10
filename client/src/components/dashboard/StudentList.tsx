@@ -37,7 +37,7 @@ import {
 } from "@chakra-ui/core";
 import { css } from "@emotion/core";
 
-import { NODE_ENV } from "../../../constants";
+import { IS_DEVELOPMENT } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import { track } from "../../context/Tracking";
 import { useStudentsListQuery } from "../../graphql";
@@ -115,7 +115,7 @@ const TableHeader: FC<{
 const nStudentPerChunk = 25;
 
 const initialOpen = (() => {
-  if (NODE_ENV === "development" && typeof window !== "undefined") {
+  if (IS_DEVELOPMENT && typeof window !== "undefined") {
     return !!localStorage.getItem("student_list_open");
   }
 
@@ -174,7 +174,7 @@ export const StudentList: FC<{
     });
   }, [isOpen]);
 
-  if (NODE_ENV === "development") {
+  if (IS_DEVELOPMENT) {
     useUpdateEffect(() => {
       if (isOpen) {
         localStorage.setItem("student_list_open", "1");

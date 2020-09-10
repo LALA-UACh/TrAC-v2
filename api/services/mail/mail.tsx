@@ -2,14 +2,13 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { requireEnv } from "require-env-variable";
 
-import { NODE_ENV } from "../../../client/constants";
+import { IS_PRODUCTION } from "../../../client/constants";
 
 const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS_REPLY_TO;
 
-const DOMAIN =
-  NODE_ENV === "production"
-    ? requireEnv("DOMAIN").DOMAIN
-    : "http://localhost:3000";
+const DOMAIN = IS_PRODUCTION
+  ? requireEnv("DOMAIN").DOMAIN
+  : "http://localhost:3000";
 
 export const UnlockMail = ({
   email,
