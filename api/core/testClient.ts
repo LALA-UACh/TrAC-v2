@@ -7,11 +7,10 @@ import type { IncomingHttpHeaders } from "http";
 export const testClient = async ({
   headers,
 }: { headers?: IncomingHttpHeaders } = {}) => {
-  const client = createFastifyGQLTestClient(app);
-
-  if (headers) {
-    client.setHeaders(headers);
-  }
+  const client = createFastifyGQLTestClient(app, {
+    headers,
+    url: "/api/graphql",
+  });
 
   return client;
 };

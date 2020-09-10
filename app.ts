@@ -84,13 +84,15 @@ app.register(GQL, {
   queryDepth: 7,
 });
 
-app
-  .register(FastifyNextJS, {
-    dir: resolve(process.cwd(), "./client"),
-  })
-  .after(() => {
-    app.next("/*");
-  });
+if (IS_NOT_TEST) {
+  app
+    .register(FastifyNextJS, {
+      dir: resolve(process.cwd(), "./client"),
+    })
+    .after(() => {
+      app.next("/*");
+    });
+}
 
 if (IS_NOT_TEST) {
   app.listen(PORT, "0.0.0.0").then(() => {
