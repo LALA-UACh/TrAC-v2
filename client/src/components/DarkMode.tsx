@@ -47,7 +47,11 @@ const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
           fill: white;
         }
          
-        [class^="react-select__option"] {
+        [class^="react-select"] {
+          color: white !important;
+        }
+
+        [id^="react-select"] {
           color: white !important;
         }
   
