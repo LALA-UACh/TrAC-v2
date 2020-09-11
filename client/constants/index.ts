@@ -6,6 +6,8 @@ export const STUDENT_LIST_UNAUTHORIZED = "STUDENT_LIST_UNAUTHORIZED";
 export const PROGRAM_UNAUTHORIZED = "PROGRAM_UNAUTHORIZED";
 export const PROGRAM_NOT_FOUND = "PROGRAM_NOT_FOUND";
 
+export const PERSISTENCE_VERSION_PREFIX = "TrAC_V2";
+
 export const NODE_ENV = (() => {
   switch (process.env.NODE_ENV) {
     case "development":

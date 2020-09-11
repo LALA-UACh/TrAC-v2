@@ -4,6 +4,7 @@ import { createStore } from "react-state-selector";
 import { useDebounce, usePreviousDistinct, useUpdateEffect } from "react-use";
 
 import { ITakenSemester } from "../../../interfaces";
+import { PERSISTENCE_VERSION_PREFIX } from "../../constants";
 import {
   useGetPersistenceValueQuery,
   useSetPersistenceValueMutation,
@@ -198,7 +199,8 @@ export const CoursesDashboardStore = createStore(defaultCourseDashboardData, {
   },
 });
 
-const rememberCourseDashboardDataKey = "TrAC_course_dashboard_data";
+const rememberCourseDashboardDataKey =
+  PERSISTENCE_VERSION_PREFIX + "course_dashboard_data";
 
 export const CoursesDashbordManager: FC<{ distinct?: string }> = memo(
   ({ distinct }) => {

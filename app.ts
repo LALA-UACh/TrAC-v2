@@ -11,15 +11,11 @@ import { renderVoyagerPage } from "graphql-voyager/middleware";
 import ms from "ms";
 import { resolve } from "path";
 
-import { buildContext } from "./api/core/buildContext";
 import { COOKIE_SECRET, PORT, SHOW_GRAPHQL_API } from "./api/constants";
+import { buildContext } from "./api/core/buildContext";
 import { schema } from "./api/core/schema";
 import { logger } from "./api/services/logger";
-import {
-  IS_DEVELOPMENT,
-  IS_NOT_PRODUCTION,
-  IS_NOT_TEST,
-} from "./client/constants";
+import { IS_DEVELOPMENT, IS_NOT_TEST } from "./client/constants";
 
 export const app = Fastify({
   trustProxy: true,
@@ -50,7 +46,7 @@ app.register(FastifyCookie, {
   secret: COOKIE_SECRET,
 });
 
-if (SHOW_GRAPHQL_API || IS_NOT_PRODUCTION) {
+if (SHOW_GRAPHQL_API || IS_DEVELOPMENT) {
   app.get("/api/voyager", (_req, res) => {
     res.type("text/html").send(
       renderVoyagerPage({
@@ -66,7 +62,9 @@ if (SHOW_GRAPHQL_API || IS_NOT_PRODUCTION) {
       })
     );
   });
+}
 
+if (IS_DEVELOPMENT) {
   app.register(AltairFastify, {
     endpointURL: "/api/graphql",
     baseURL: "/api/altair/",
@@ -79,7 +77,6 @@ app.register(GQL, {
   schema,
   context: buildContext,
   ide: false,
-  allowBatchedQueries: true,
   graphiql: false,
   jit: 1,
   queryDepth: 7,

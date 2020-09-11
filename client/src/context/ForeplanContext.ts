@@ -3,7 +3,7 @@ import { FC, memo, useEffect, useState } from "react";
 import { createSelector, createStore } from "react-state-selector";
 import { useDebounce } from "react-use";
 
-import { StateCourse } from "../../constants";
+import { PERSISTENCE_VERSION_PREFIX, StateCourse } from "../../constants";
 import {
   PerformanceByLoad,
   useGetPersistenceValueQuery,
@@ -246,7 +246,7 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
   },
 });
 
-const rememberForeplanDataKey = "TrAC_foreplan_data";
+const rememberForeplanDataKey = PERSISTENCE_VERSION_PREFIX + "foreplan_data";
 
 export const ForeplanContextManager: FC = memo(() => {
   const { program, student, mock, chosenCurriculum } = useDashboardInputState();
