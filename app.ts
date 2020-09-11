@@ -41,6 +41,7 @@ app.register(helmet, {
       "img-src": `'self' data:`,
       "connect-src": "'self' https://cdn.jsdelivr.net",
       "worker-src": "'self' blob:",
+      "object-src": "'self' data:",
     },
   },
 });

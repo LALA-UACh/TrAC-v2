@@ -47,6 +47,7 @@ export class AuthResolver {
             Date.now(),
             req.cookies?.remember ? ONE_DAY : THIRTY_MINUTES
           ),
+      signed: true,
     });
 
     return token;
