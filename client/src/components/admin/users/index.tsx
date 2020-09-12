@@ -24,7 +24,9 @@ export const Users: FC<{
     config: Record<string, unknown>;
     locked: boolean;
   }[];
-}> = ({ users }) => {
+  refetch: () => Promise<unknown>;
+  loading: boolean;
+}> = ({ users, refetch, loading }) => {
   const [column, setColumn] = useRememberState("TracAdminUsersColumn", "");
   const [direction, setDirection] = useRememberState(
     "TracAdminUsersDirection",
@@ -140,6 +142,22 @@ export const Users: FC<{
             </Flex>
           )}
         </Stack>
+      </Flex>
+
+      <Flex>
+        <Button
+          color="teal"
+          icon
+          labelPosition="left"
+          onClick={() => {
+            refetch().catch(console.error);
+          }}
+          loading={loading}
+          disabled={loading}
+        >
+          <Icon name="refresh" />
+          Refetch
+        </Button>
       </Flex>
 
       <Flex>{pagination}</Flex>

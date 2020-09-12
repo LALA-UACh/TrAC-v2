@@ -145,7 +145,7 @@ type MultipleLockedUserResult {
 type Mutation {
   addUsersPrograms(user_programs: [UserProgram!]!): [User!]!
   answerFeedbackForm(answer: FeedbackAnswerInput!): Boolean!
-  deleteUser(email: EmailAddress!): [User!]!
+  deleteUser(email: EmailAddress!): Int!
   directTakeCourses(program_id: String, student_id: String): [Course!]!
   editConfig(name: String!, value: String!): JSONObject!
   feedbackResultsCsv: String!

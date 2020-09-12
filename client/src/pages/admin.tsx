@@ -32,7 +32,9 @@ const Admin: FC = () => {
     AdminMenuTypes.users
   );
 
-  const { data, loading, error } = useAllUsersAdminQuery();
+  const { data, loading, error, refetch } = useAllUsersAdminQuery({
+    notifyOnNetworkStatusChange: true,
+  });
 
   useEffect(() => {
     if (IS_NOT_TEST && data) {
@@ -43,7 +45,13 @@ const Admin: FC = () => {
   const ActiveTab = useMemo(() => {
     switch (active) {
       case AdminMenuTypes.users:
-        return <Users users={data?.users ?? []} />;
+        return (
+          <Users
+            users={data?.users ?? []}
+            refetch={refetch}
+            loading={loading}
+          />
+        );
       case AdminMenuTypes.programs:
         return (
           <Programs
@@ -90,12 +98,12 @@ const Admin: FC = () => {
 };
 
 const AdminPage = () => {
-  const { loading } = useUser({
+  const { loading, user } = useUser({
     requireAuth: true,
     requireAdmin: true,
   });
 
-  if (loading) {
+  if (loading && !user) {
     return <LoadingPage />;
   }
 

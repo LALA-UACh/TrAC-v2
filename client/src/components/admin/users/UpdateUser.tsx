@@ -1,6 +1,7 @@
 import { isEqual, sortBy, toInteger } from "lodash";
 import React, { FC, Fragment, memo, useEffect, useMemo, useState } from "react";
 import { Field, Form } from "react-final-form";
+import { produce } from "react-state-selector";
 import {
   Button,
   Checkbox,
@@ -31,6 +32,7 @@ import { UserType } from "../../../../constants";
 import { useTheme } from "../../../context/Theme";
 import {
   AllUsersAdminDocument,
+  AllUsersAdminQuery,
   useDeleteUserAdminMutation,
   useLockMailUserAdminMutation,
   useResetPersistenceAdminMutation,
@@ -215,16 +217,6 @@ export const UpdateUser: FC<{
     variables: {
       email: user.email,
     },
-    update: (cache, { data }) => {
-      if (data) {
-        cache.writeQuery({
-          query: AllUsersAdminDocument,
-          data: {
-            users: data.lockMailUser.users,
-          },
-        });
-      }
-    },
   });
 
   const [openMailMessage, setOpenMailMessage] = useState(false);
@@ -237,13 +229,23 @@ export const UpdateUser: FC<{
       email: user.email,
     },
     update: (cache, { data }) => {
+      const userToDeleteEmail = user.email;
       if (data?.deleteUser) {
-        cache.writeQuery({
+        const data = cache.readQuery<AllUsersAdminQuery>({
           query: AllUsersAdminDocument,
-          data: {
-            users: data.deleteUser,
-          },
         });
+
+        if (data) {
+          cache.writeQuery<AllUsersAdminQuery>({
+            query: AllUsersAdminDocument,
+            data: produce(data, (draft) => {
+              draft.users.splice(
+                draft.users.findIndex((v) => v.email === userToDeleteEmail),
+                1
+              );
+            }),
+          });
+        }
       }
     },
   });

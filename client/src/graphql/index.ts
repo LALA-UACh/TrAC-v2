@@ -138,7 +138,7 @@ export type MultipleLockedUserResult = {
 export type Mutation = {
   addUsersPrograms: Array<User>;
   answerFeedbackForm: Scalars["Boolean"];
-  deleteUser: Array<User>;
+  deleteUser: Scalars["Int"];
   directTakeCourses: Array<Course>;
   editConfig: Scalars["JSONObject"];
   feedbackResultsCsv: Scalars["String"];
@@ -460,9 +460,7 @@ export type DeleteUserAdminMutationVariables = Exact<{
   email: Scalars["EmailAddress"];
 }>;
 
-export type DeleteUserAdminMutation = {
-  deleteUser: Array<UserAdminFragmentFragment>;
-};
+export type DeleteUserAdminMutation = Pick<Mutation, "deleteUser">;
 
 export type LockMailUserAdminMutationVariables = Exact<{
   email: Scalars["EmailAddress"];
@@ -1098,11 +1096,8 @@ export type UpsertUsersAdminMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const DeleteUserAdminDocument = gql`
   mutation deleteUserAdmin($email: EmailAddress!) {
-    deleteUser(email: $email) {
-      ...UserAdminFragment
-    }
+    deleteUser(email: $email)
   }
-  ${UserAdminFragmentFragmentDoc}
 `;
 export type DeleteUserAdminMutationFn = Apollo.MutationFunction<
   DeleteUserAdminMutation,

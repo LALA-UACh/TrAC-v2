@@ -17,7 +17,6 @@ import isEmail from "validator/lib/isEmail";
 import isJSON from "validator/lib/isJSON";
 
 import {
-  AllUsersAdminDocument,
   useAddUsersProgramsAdminMutation,
   useAllProgramsAdminQuery,
   UserProgram,
@@ -82,16 +81,6 @@ export const ImportPrograms: FC = () => {
   ] = useAddUsersProgramsAdminMutation({
     variables: {
       user_programs: parsedData,
-    },
-    update: (cache, { data }) => {
-      if (data?.addUsersPrograms) {
-        cache.writeQuery({
-          query: AllUsersAdminDocument,
-          data: {
-            users: data.addUsersPrograms,
-          },
-        });
-      }
     },
   });
 

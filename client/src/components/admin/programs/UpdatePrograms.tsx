@@ -5,7 +5,6 @@ import { Button, Dropdown, Grid, Icon, Label, Modal } from "semantic-ui-react";
 import { Confirm } from "../../../components/Confirm";
 import { useIsDark } from "../../../context/Theme";
 import {
-  AllUsersAdminDocument,
   useAllProgramsAdminQuery,
   useUpdateUserProgramsAdminMutation,
 } from "../../../graphql";
@@ -28,17 +27,7 @@ export const UpdatePrograms: FC<{
     return isEqual(selectedPrograms, program.programs);
   }, [selectedPrograms, program]);
 
-  const [updateProgram] = useUpdateUserProgramsAdminMutation({
-    update: (cache, { data }) => {
-      if (data?.updateUserPrograms) {
-        cache.writeQuery({
-          query: AllUsersAdminDocument,
-          data: {
-            users: data.updateUserPrograms,
-          },
-        });
-      }
-    },
+  const [updateProgram, { loading }] = useUpdateUserProgramsAdminMutation({
     variables: {
       userPrograms: {
         email: program.email,
@@ -127,13 +116,13 @@ export const UpdatePrograms: FC<{
         <Button
           type="submit"
           icon
+          loading={loading}
           labelPosition="left"
           primary
           onClick={() => {
-            updateProgram();
-            setOpen(false);
+            updateProgram().catch(console.error);
           }}
-          disabled={didNotChange}
+          disabled={didNotChange || loading}
         >
           <Icon name="save outline" />
           Save

@@ -6,6 +6,7 @@ import {
   Authorized,
   Ctx,
   FieldResolver,
+  Int,
   Mutation,
   Query,
   Resolver,
@@ -17,7 +18,6 @@ import { baseUserConfig } from "../../../client/constants/userConfig";
 import { ADMIN } from "../../constants";
 import { dbAuth } from "../../db";
 import {
-  IUser,
   IUserPrograms,
   ProgramTable,
   USER_PROGRAMS_TABLE,
@@ -34,8 +34,6 @@ import {
 } from "../../entities/auth/user";
 import { sendMail, UnlockMail } from "../../services/mail";
 import { assertIsDefined } from "../../utils/assert";
-
-import type { $PropertyType } from "utility-types";
 
 import type { IContext } from "../../../interfaces";
 import type { ArrayPropertyType } from "../../../interfaces/utils";
@@ -70,19 +68,25 @@ export class UserResolver {
           email,
         });
 
-      await trx<IUserPrograms>(USER_PROGRAMS_TABLE).insert(
-        programs.map((program) => ({
-          email,
-          program: program.toString(),
-        }))
-      );
+      await trx<IUserPrograms>(USER_PROGRAMS_TABLE)
+        .insert(
+          programs.map((program) => ({
+            email,
+            program: program.toString(),
+          }))
+        )
+        .returning("*");
       await trx.commit();
     } catch (err) {
       await trx.rollback();
       throw err;
     }
 
-    return (await UserTable().select("*")).map(({ type, ...rest }) => {
+    return (
+      await UserTable().select("*").where({
+        email,
+      })
+    ).map(({ type, ...rest }) => {
       return {
         ...rest,
         type: defaultUserType(type),
@@ -126,7 +130,14 @@ export class UserResolver {
       );
     }
 
-    return (await UserTable().select("*")).map(({ type, ...rest }) => {
+    return (
+      await UserTable()
+        .select("*")
+        .whereIn(
+          "email",
+          user_programs.map(({ email }) => email)
+        )
+    ).map(({ type, ...rest }) => {
       return {
         ...rest,
         type: defaultUserType(type),
@@ -254,27 +265,22 @@ export class UserResolver {
     assertIsDefined(user, `User ${email} not found`);
 
     const unlockKey = generate();
-    await UserTable()
+    const users = await UserTable()
       .update({
         locked: true,
         unlockKey,
       })
-      .where({ email });
-    const [mailResult, users] = await Promise.all<
-      $PropertyType<LockedUserResult, "mailResult">,
-      IUser[]
-    >([
-      sendMail({
-        to: email,
-        message: UnlockMail({
-          email,
-          unlockKey,
-        }),
-        subject: "Activación cuenta LALA TrAC",
-      }),
-      UserTable().select("*"),
-    ]);
+      .where({ email })
+      .returning("*");
 
+    const mailResult = await sendMail({
+      to: email,
+      message: UnlockMail({
+        email,
+        unlockKey,
+      }),
+      subject: "Activación cuenta LALA TrAC",
+    });
     return {
       mailResult,
       users: users.map(({ type, ...rest }) => {
@@ -311,20 +317,9 @@ export class UserResolver {
   }
 
   @Authorized([ADMIN])
-  @Mutation(() => [User])
-  async deleteUser(
-    @Arg("email", () => EmailAddress) email: string
-  ): Promise<User[]> {
-    await UserTable().delete().where({ email });
-
-    return (await UserTable().select("*")).map(({ type, ...rest }) => {
-      return {
-        ...rest,
-        type: defaultUserType(type),
-        programs: [],
-        config: baseUserConfig,
-      };
-    });
+  @Mutation(() => Int)
+  async deleteUser(@Arg("email", () => EmailAddress) email: string) {
+    return UserTable().delete().where({ email });
   }
 
   @FieldResolver()

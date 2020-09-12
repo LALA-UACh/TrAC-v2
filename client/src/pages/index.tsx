@@ -754,7 +754,7 @@ const IndexPage = () => {
     }
   }, [hasUser]);
 
-  if (loading) {
+  if (loading && !hasUser) {
     return <LoadingPage />;
   }
 

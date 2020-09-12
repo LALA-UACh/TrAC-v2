@@ -42,9 +42,7 @@ mutation upsertUsersAdmin($users: [UpsertedUser!]!) {
 }
 
 mutation deleteUserAdmin($email: EmailAddress!) {
-  deleteUser(email: $email) {
-    ...UserAdminFragment
-  }
+  deleteUser(email: $email)
 }
 
 mutation lockMailUserAdmin($email: EmailAddress!) {
