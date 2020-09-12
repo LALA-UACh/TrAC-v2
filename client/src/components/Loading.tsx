@@ -2,7 +2,10 @@ import React, { FC } from "react";
 
 import { Flex, Spinner } from "@chakra-ui/core";
 
+import { useIsDark } from "../context/Theme";
+
 export const LoadingPage: FC = () => {
+  const isDark = useIsDark();
   return (
     <Flex
       justifyContent="center"
@@ -10,7 +13,7 @@ export const LoadingPage: FC = () => {
       height="100vh"
       width="100vw"
     >
-      <Spinner size="xl" />
+      <Spinner color={isDark ? "black" : undefined} size="xl" />
     </Flex>
   );
 };

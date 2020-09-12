@@ -1,0 +1,33 @@
+mutation LoginTest($email: EmailAddress!, $password: String!) {
+  login(email: $email, password: $password) {
+    user {
+      email
+    }
+    token
+    error
+  }
+}
+
+mutation UnlockTest(
+  $email: EmailAddress!
+  $password: String!
+  $unlockKey: String!
+) {
+  unlock(email: $email, password: $password, unlockKey: $unlockKey) {
+    user {
+      email
+    }
+    token
+    error
+  }
+}
+
+query CurrentUserTest {
+  currentUser {
+    user {
+      email
+    }
+    token
+    error
+  }
+}

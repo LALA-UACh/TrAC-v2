@@ -7,11 +7,15 @@ export enum Theme {
   LIGHT = "light",
 }
 
-export const ThemeStore = createStore(
+export const {
+  hooks: { useTheme, useIsDark },
+  actions: { setTheme, checkLocalStorage },
+} = createStore(
   { theme: Theme.LIGHT, hasLocalStorage: false },
   {
     hooks: {
       useTheme: ({ theme }) => theme,
+      useIsDark: ({ theme }) => theme === Theme.DARK,
     },
     actions: {
       setTheme: (theme: Theme) => (draft) => {

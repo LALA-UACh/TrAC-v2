@@ -5,7 +5,6 @@ import { useRememberState } from "use-remember-state";
 
 import { Flex, Stack } from "@chakra-ui/core";
 
-import { cursorPointer } from "../../../utils/cssConstants";
 import { usePagination } from "../Pagination";
 import { ImportPrograms } from "./ImportPrograms";
 import { UpdatePrograms } from "./UpdatePrograms";
@@ -81,7 +80,7 @@ export const Programs: FC<{
           <Table.Body>
             {selectedData.map(({ email = "", programs = [] }, key) => (
               <UpdatePrograms key={key} program={{ email, programs }}>
-                <Table.Row css={cursorPointer}>
+                <Table.Row className="cursorPointer">
                   <Table.Cell>{email}</Table.Cell>
                   <Table.Cell>
                     {truncate(programs.join(" | "), { length: 50 })}

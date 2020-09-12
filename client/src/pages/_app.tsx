@@ -1,6 +1,5 @@
 import "../../public/style.css";
 import "../../public/nprogress.css";
-import "react-toastify/dist/ReactToastify.min.css";
 import "react-datepicker/dist/react-datepicker.min.css";
 
 import { NextPage } from "next";
@@ -9,11 +8,11 @@ import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
 import React from "react";
-import { ToastContainer } from "react-toastify";
 
 import {
   ApolloClient,
   ApolloProvider,
+  defaultDataIdFromObject,
   HttpLink,
   InMemoryCache,
 } from "@apollo/client";
@@ -34,7 +33,22 @@ export const client = new ApolloClient({
     includeExtensions: true,
     credentials: "same-origin",
   }),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      User: {
+        keyFields: ["email"],
+      },
+    },
+    dataIdFromObject(object) {
+      switch (object.__typename) {
+        case "AuthResult": {
+          return "UniqueAuthResult";
+        }
+        default:
+          return defaultDataIdFromObject(object);
+      }
+    },
+  }),
   connectToDevTools: IS_NOT_PRODUCTION,
 });
 
@@ -52,7 +66,6 @@ const App: NextPage<AppProps> = ({ Component, pageProps }) => {
       </ThemeProvider>
       <DarkMode render={false} />
       <RefreshToken />
-      <ToastContainer toastClassName="toast" />
     </ApolloProvider>
   );
 };

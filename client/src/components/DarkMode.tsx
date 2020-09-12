@@ -9,7 +9,13 @@ import ToggleTheme from "react-toggle-theme";
 import { Box, BoxProps } from "@chakra-ui/core";
 
 import { SVG_TEXT } from "../../constants";
-import { Theme, ThemeStore } from "../context/Theme";
+import {
+  checkLocalStorage,
+  setTheme,
+  Theme,
+  useIsDark,
+  useTheme,
+} from "../context/Theme";
 
 if (typeof window !== "undefined" && typeof window.fetch !== "undefined") {
   setFetchMethod(window.fetch);
@@ -17,21 +23,22 @@ if (typeof window !== "undefined" && typeof window.fetch !== "undefined") {
 
 const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
   ({ render = true, ...props }) => {
-    const theme = ThemeStore.hooks.useTheme();
+    const theme = useTheme();
+    const isDarkMode = useIsDark();
 
     useEffect(() => {
-      if (!ThemeStore.actions.checkLocalStorage().hasLocalStorage) {
+      if (!checkLocalStorage().hasLocalStorage) {
         if (
           typeof window !== "undefined" &&
           window?.matchMedia("(prefers-color-scheme: dark)")?.matches
         ) {
-          ThemeStore.actions.setTheme(Theme.DARK);
+          setTheme(Theme.DARK);
         }
       }
     }, []);
 
     useEffect(() => {
-      if (theme === Theme.DARK) {
+      if (isDarkMode) {
         enableDarkMode(
           {
             mode: 1,
@@ -73,6 +80,10 @@ const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
           color: white !important;
         }
 
+        table, th, td {
+          border: 1px solid white !important;
+        }
+
         .info_popover * {
           background: #3182CE !important;
           color: white !important;
@@ -103,6 +114,15 @@ const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
           fill: #fff !important;
         }
 
+        textarea {
+          background: white;
+          color: black;
+        }
+
+        h2 {
+          color: white;
+        }
+
         img {
           background-color: white !important;
           padding: 5px;
@@ -129,14 +149,14 @@ const DarkMode: FC<BoxProps & { render?: boolean }> = memo(
       } else {
         disableDarkMode();
       }
-    }, [theme]);
+    }, [isDarkMode]);
 
     return render ? (
       <Box {...props}>
         <ToggleTheme
           id="toggleTheme"
           selectedTheme={theme}
-          onChange={ThemeStore.actions.setTheme}
+          onChange={setTheme}
         />
       </Box>
     ) : null;

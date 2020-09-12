@@ -15,7 +15,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { toast } from "react-toastify";
 import { useDebounce } from "react-use";
 import {
   Button,
@@ -27,7 +26,7 @@ import {
 } from "semantic-ui-react";
 import isJSON from "validator/lib/isJSON";
 
-import { Flex, Stack } from "@chakra-ui/core";
+import { Flex, Stack, useToast } from "@chakra-ui/core";
 
 import { baseConfigAdmin } from "../../../constants/baseConfig";
 import { configValueToString } from "../../../constants/validation";
@@ -60,11 +59,15 @@ const ConfigInput: FC<{ configKey: string; configValue: any }> = memo(
         }
       },
     });
+    const toast = useToast();
     useEffect(() => {
       if (error) {
         console.error(JSON.stringify(error, null, 2));
-        toast(error.message, {
-          type: "error",
+        toast({
+          status: "error",
+          title: error.message,
+          duration: 5000,
+          isClosable: true,
         });
       }
     }, [error]);

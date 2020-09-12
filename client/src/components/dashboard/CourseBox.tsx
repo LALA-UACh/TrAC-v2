@@ -29,7 +29,7 @@ import {
   ForeplanActiveStore,
   ForeplanHelperStore,
 } from "../../context/ForeplanContext";
-import { Theme, ThemeStore } from "../../context/Theme";
+import { Theme, useTheme } from "../../context/Theme";
 import { track } from "../../context/Tracking";
 import { TEXT_WHITE_SHADOW, width100percent } from "../../utils/cssConstants";
 import { useUser } from "../../utils/useUser";
@@ -287,7 +287,7 @@ const SecondaryBlockOuter: FC<
 > = memo(({ children, taken, bandColors, borderColor, state, grade }) => {
   const config = useContext(ConfigContext);
 
-  const theme = ThemeStore.hooks.useTheme();
+  const theme = useTheme();
 
   const stateColor = useMemo(() => {
     const bandColorsCourse = taken?.[0]?.bandColors ?? bandColors;

@@ -9,10 +9,9 @@ import React, {
   useState,
 } from "react";
 import ScrollContainer from "react-indiana-drag-scroll";
-import { toast } from "react-toastify";
 import { useUpdateEffect } from "react-use";
 
-import { Box, Flex, Stack } from "@chakra-ui/core";
+import { Box, Flex, Stack, useToast } from "@chakra-ui/core";
 
 import {
   IS_NOT_TEST,
@@ -738,13 +737,22 @@ const IndexPage = () => {
     requireAuth: true,
   });
 
+  const toast = useToast();
+
+  const hasUser = Boolean(user);
+
   useEffect(() => {
-    if (user) {
-      toast.success(`${user.name} - ${user.email}`, {
-        position: "bottom-right",
-      });
+    if (hasUser && user) {
+      setTimeout(() => {
+        toast({
+          status: "success",
+          title: `${user.name} - ${user.email}`,
+          position: "bottom-right",
+          duration: 5000,
+        });
+      }, 500);
     }
-  }, [user]);
+  }, [hasUser]);
 
   if (loading) {
     return <LoadingPage />;

@@ -777,6 +777,37 @@ export type AnswerFeedbackFormMutationVariables = Exact<{
 
 export type AnswerFeedbackFormMutation = Pick<Mutation, "answerFeedbackForm">;
 
+export type LoginTestMutationVariables = Exact<{
+  email: Scalars["EmailAddress"];
+  password: Scalars["String"];
+}>;
+
+export type LoginTestMutation = {
+  login: Pick<AuthResult, "token" | "error"> & {
+    user?: Maybe<Pick<User, "email">>;
+  };
+};
+
+export type UnlockTestMutationVariables = Exact<{
+  email: Scalars["EmailAddress"];
+  password: Scalars["String"];
+  unlockKey: Scalars["String"];
+}>;
+
+export type UnlockTestMutation = {
+  unlock: Pick<AuthResult, "token" | "error"> & {
+    user?: Maybe<Pick<User, "email">>;
+  };
+};
+
+export type CurrentUserTestQueryVariables = Exact<{ [key: string]: never }>;
+
+export type CurrentUserTestQuery = {
+  currentUser?: Maybe<
+    Pick<AuthResult, "token" | "error"> & { user?: Maybe<Pick<User, "email">> }
+  >;
+};
+
 export const UserAdminFragmentFragmentDoc = gql`
   fragment UserAdminFragment on User {
     email
@@ -2572,4 +2603,176 @@ export type AnswerFeedbackFormMutationResult = Apollo.MutationResult<
 export type AnswerFeedbackFormMutationOptions = Apollo.BaseMutationOptions<
   AnswerFeedbackFormMutation,
   AnswerFeedbackFormMutationVariables
+>;
+export const LoginTestDocument = gql`
+  mutation LoginTest($email: EmailAddress!, $password: String!) {
+    login(email: $email, password: $password) {
+      user {
+        email
+      }
+      token
+      error
+    }
+  }
+`;
+export type LoginTestMutationFn = Apollo.MutationFunction<
+  LoginTestMutation,
+  LoginTestMutationVariables
+>;
+
+/**
+ * __useLoginTestMutation__
+ *
+ * To run a mutation, you first call `useLoginTestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginTestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginTestMutation, { data, loading, error }] = useLoginTestMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useLoginTestMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    LoginTestMutation,
+    LoginTestMutationVariables
+  >
+) {
+  return Apollo.useMutation<LoginTestMutation, LoginTestMutationVariables>(
+    LoginTestDocument,
+    baseOptions
+  );
+}
+export type LoginTestMutationHookResult = ReturnType<
+  typeof useLoginTestMutation
+>;
+export type LoginTestMutationResult = Apollo.MutationResult<LoginTestMutation>;
+export type LoginTestMutationOptions = Apollo.BaseMutationOptions<
+  LoginTestMutation,
+  LoginTestMutationVariables
+>;
+export const UnlockTestDocument = gql`
+  mutation UnlockTest(
+    $email: EmailAddress!
+    $password: String!
+    $unlockKey: String!
+  ) {
+    unlock(email: $email, password: $password, unlockKey: $unlockKey) {
+      user {
+        email
+      }
+      token
+      error
+    }
+  }
+`;
+export type UnlockTestMutationFn = Apollo.MutationFunction<
+  UnlockTestMutation,
+  UnlockTestMutationVariables
+>;
+
+/**
+ * __useUnlockTestMutation__
+ *
+ * To run a mutation, you first call `useUnlockTestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnlockTestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unlockTestMutation, { data, loading, error }] = useUnlockTestMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *      unlockKey: // value for 'unlockKey'
+ *   },
+ * });
+ */
+export function useUnlockTestMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UnlockTestMutation,
+    UnlockTestMutationVariables
+  >
+) {
+  return Apollo.useMutation<UnlockTestMutation, UnlockTestMutationVariables>(
+    UnlockTestDocument,
+    baseOptions
+  );
+}
+export type UnlockTestMutationHookResult = ReturnType<
+  typeof useUnlockTestMutation
+>;
+export type UnlockTestMutationResult = Apollo.MutationResult<
+  UnlockTestMutation
+>;
+export type UnlockTestMutationOptions = Apollo.BaseMutationOptions<
+  UnlockTestMutation,
+  UnlockTestMutationVariables
+>;
+export const CurrentUserTestDocument = gql`
+  query CurrentUserTest {
+    currentUser {
+      user {
+        email
+      }
+      token
+      error
+    }
+  }
+`;
+
+/**
+ * __useCurrentUserTestQuery__
+ *
+ * To run a query within a React component, call `useCurrentUserTestQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCurrentUserTestQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCurrentUserTestQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCurrentUserTestQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    CurrentUserTestQuery,
+    CurrentUserTestQueryVariables
+  >
+) {
+  return Apollo.useQuery<CurrentUserTestQuery, CurrentUserTestQueryVariables>(
+    CurrentUserTestDocument,
+    baseOptions
+  );
+}
+export function useCurrentUserTestLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    CurrentUserTestQuery,
+    CurrentUserTestQueryVariables
+  >
+) {
+  return Apollo.useLazyQuery<
+    CurrentUserTestQuery,
+    CurrentUserTestQueryVariables
+  >(CurrentUserTestDocument, baseOptions);
+}
+export type CurrentUserTestQueryHookResult = ReturnType<
+  typeof useCurrentUserTestQuery
+>;
+export type CurrentUserTestLazyQueryHookResult = ReturnType<
+  typeof useCurrentUserTestLazyQuery
+>;
+export type CurrentUserTestQueryResult = Apollo.QueryResult<
+  CurrentUserTestQuery,
+  CurrentUserTestQueryVariables
 >;

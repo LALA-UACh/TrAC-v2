@@ -9,13 +9,13 @@ import { act, cleanup, render } from "@testing-library/react";
 import { UserType } from "../client/constants";
 import { baseConfig } from "../client/constants/baseConfig";
 import { baseUserConfig } from "../client/constants/userConfig";
-import AdminPage from "../client/src/pages/admin";
-import LoginPage from "../client/src/pages/login";
-import UnlockPage from "../client/src/pages/unlock/[email]/[unlockKey]";
 import {
   AllUsersAdminDocument,
   CurrentUserDocument,
 } from "../client/src/graphql";
+import AdminPage from "../client/src/pages/admin";
+import LoginPage from "../client/src/pages/login";
+import UnlockPage from "../client/src/pages/unlock/[email]/[unlockKey]";
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,

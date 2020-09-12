@@ -13,6 +13,7 @@ import { useRememberState } from "use-remember-state";
 import { Box, Divider, Heading, Spinner, Stack, Text } from "@chakra-ui/core";
 import { css } from "@emotion/core";
 
+import { useIsDark } from "../../../context/Theme";
 import { TrackInfoQueryResult, useTrackInfoQuery } from "../../../graphql";
 import { trimEveryLine } from "../../../utils";
 import { usePagination } from "../Pagination";
@@ -102,6 +103,8 @@ export const AdminTrack: FC = () => {
     name: "admin-tracking-pagination",
     data: filteredData,
   });
+
+  const isDark = useIsDark();
 
   return (
     <Stack alignItems="center">
@@ -253,7 +256,7 @@ export const AdminTrack: FC = () => {
             textAlign="center"
             whiteSpace="pre-wrap"
             wordBreak="break-all"
-            color="black"
+            color={isDark ? "white" : "black"}
           >
             <span>
               <b>user: </b>

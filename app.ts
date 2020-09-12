@@ -62,9 +62,7 @@ if (SHOW_GRAPHQL_API || IS_DEVELOPMENT) {
       })
     );
   });
-}
 
-if (IS_DEVELOPMENT) {
   app.register(AltairFastify, {
     endpointURL: "/api/graphql",
     baseURL: "/api/altair/",

@@ -29,10 +29,11 @@ export const IS_NOT_DEVELOPMENT = !IS_DEVELOPMENT;
 export const IS_TEST = NODE_ENV === "test";
 export const IS_NOT_TEST = !IS_TEST;
 
-export const GRAPHQL_URL =
-  typeof window === "undefined"
-    ? `${process.env.DOMAIN || "http://localhost:3000"}/api/graphql`
-    : "/api/graphql";
+export const IS_BROWSER = typeof window !== "undefined";
+
+export const GRAPHQL_URL = IS_BROWSER
+  ? "/api/graphql"
+  : `${process.env.DOMAIN || "http://localhost:3000"}/api/graphql`;
 
 export enum StateCourse {
   Passed = "Passed",

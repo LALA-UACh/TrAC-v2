@@ -28,7 +28,7 @@ import {
 import { css } from "@emotion/core";
 
 import { UserType } from "../../../../constants";
-import { ThemeStore } from "../../../context/Theme";
+import { useTheme } from "../../../context/Theme";
 import {
   AllUsersAdminDocument,
   useDeleteUserAdminMutation,
@@ -63,7 +63,7 @@ const UserPersistence: FC<{ user: string }> = memo(({ user }) => {
     notifyOnNetworkStatusChange: true,
   });
 
-  const theme = ThemeStore.hooks.useTheme();
+  const theme = useTheme();
 
   const [
     resetPersistence,

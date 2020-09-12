@@ -1,8 +1,9 @@
-import { truncate } from "lodash";
-import React, { cloneElement, FC, useEffect, useState } from "react";
+import { isEqual, truncate } from "lodash";
+import React, { cloneElement, FC, useEffect, useMemo, useState } from "react";
 import { Button, Dropdown, Grid, Icon, Label, Modal } from "semantic-ui-react";
 
 import { Confirm } from "../../../components/Confirm";
+import { useIsDark } from "../../../context/Theme";
 import {
   AllUsersAdminDocument,
   useAllProgramsAdminQuery,
@@ -22,6 +23,10 @@ export const UpdatePrograms: FC<{
   useEffect(() => {
     setSelectedPrograms(program.programs);
   }, [program.programs]);
+
+  const didNotChange = useMemo(() => {
+    return isEqual(selectedPrograms, program.programs);
+  }, [selectedPrograms, program]);
 
   const [updateProgram] = useUpdateUserProgramsAdminMutation({
     update: (cache, { data }) => {
@@ -55,6 +60,8 @@ export const UpdatePrograms: FC<{
     });
   };
 
+  const isDark = useIsDark();
+
   return (
     <Modal
       trigger={cloneElement(children, {
@@ -78,9 +85,11 @@ export const UpdatePrograms: FC<{
               content="Any changes in those fields will be lost"
             >
               <Button
+                inverted={isDark}
                 circular
                 icon
                 secondary
+                disabled={didNotChange}
                 onClick={() => {
                   setSelectedPrograms(program.programs);
                 }}
@@ -124,6 +133,7 @@ export const UpdatePrograms: FC<{
             updateProgram();
             setOpen(false);
           }}
+          disabled={didNotChange}
         >
           <Icon name="save outline" />
           Save

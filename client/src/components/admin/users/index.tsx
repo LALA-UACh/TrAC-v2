@@ -8,11 +8,7 @@ import { Flex, Stack } from "@chakra-ui/core";
 import { UserType } from "../../../../constants";
 import { UserConfig } from "../../../../constants/userConfig";
 import { useMailAllLockedUsersAdminMutation } from "../../../graphql";
-import {
-  cursorPointer,
-  whiteSpacePreLine,
-  width50percent,
-} from "../../../utils/cssConstants";
+import { whiteSpacePreLine, width50percent } from "../../../utils/cssConstants";
 import { Confirm } from "../../Confirm";
 import { usePagination } from "../Pagination";
 import { ImportUsers } from "./ImportUsers";
@@ -243,7 +239,7 @@ export const Users: FC<{
                       };
                       return (
                         <Table.Row
-                          css={cursorPointer}
+                          className="cursorPointer"
                           onClick={() => {
                             setOpen(true);
                           }}

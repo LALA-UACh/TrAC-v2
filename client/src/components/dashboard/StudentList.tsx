@@ -449,7 +449,7 @@ export const StudentList: FC<{
           </DrawerBody>
           <DrawerFooter justifyContent="flex-start">
             <Icon
-              name={isOpen ? "chevron-left" : "chevron-right"}
+              name={isOpen ? "chevron-right" : "chevron-left"}
               size="35px"
               onClick={onClose}
               cursor="pointer"
