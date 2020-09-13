@@ -7,7 +7,6 @@ import { Field, Form } from "react-final-form";
 import { useUpdateEffect } from "react-use";
 import {
   Button,
-  Checkbox,
   Form as FormSemantic,
   Grid,
   Icon,
@@ -18,7 +17,7 @@ import {
 import isEmail from "validator/lib/isEmail";
 import isLength from "validator/lib/isLength";
 
-import { Image } from "@chakra-ui/core";
+import { Flex, FormLabel, Image, Switch } from "@chakra-ui/core";
 
 import {
   LOCKED_USER,
@@ -180,17 +179,18 @@ const Login: FC = () => {
                   )}
                 </Field>
               </Segment>
-              <Segment basic>
-                <Checkbox
-                  toggle
-                  label={LOGIN_REMEMBER_SESSION}
-                  onChange={() => {
-                    setSession(!session);
-                  }}
-                  checked={session}
-                  disabled={loading}
+              <Flex justify="center" align="center">
+                <FormLabel htmlFor="remember">
+                  {LOGIN_REMEMBER_SESSION}
+                </FormLabel>
+                <Switch
+                  id="remember"
+                  isChecked={session}
+                  isDisabled={loading}
+                  onChange={() => setSession((sess) => !sess)}
                 />
-              </Segment>
+              </Flex>
+
               <Segment basic>
                 <Button
                   as="button"
