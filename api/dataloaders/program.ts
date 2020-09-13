@@ -1,8 +1,9 @@
 import DataLoader from "dataloader";
-import { defaultsDeep } from "lodash";
+import { defaultsDeep, Dictionary, keyBy } from "lodash";
 import { LRUMap } from "lru_map";
 
 import {
+  IProgram,
   ProgramStructureTable,
   ProgramTable,
   StudentProgramTable,
@@ -12,11 +13,14 @@ import type { Curriculum } from "../entities/data/program";
 
 export const ProgramDataLoader = new DataLoader(
   async (ids: readonly string[]) => {
-    return await Promise.all(
-      ids.map((id) => {
-        return ProgramTable().select("*").where({ id }).first();
-      })
+    const dataDict: Dictionary<IProgram | undefined> = keyBy(
+      await ProgramTable().select("*").whereIn("id", ids),
+      "id"
     );
+
+    return ids.map((id) => {
+      return dataDict[id];
+    });
   },
   {
     cacheMap: new LRUMap(1000),

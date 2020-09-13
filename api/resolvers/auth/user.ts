@@ -13,7 +13,7 @@ import {
   Root,
 } from "type-graphql";
 
-import { defaultUserType } from "../../../client/constants";
+import { defaultUserType, UserType } from "../../../client/constants";
 import { baseUserConfig } from "../../../client/constants/userConfig";
 import { ADMIN } from "../../constants";
 import { dbAuth } from "../../db";
@@ -34,6 +34,7 @@ import {
 } from "../../entities/auth/user";
 import { sendMail, UnlockMail } from "../../services/mail";
 import { assertIsDefined } from "../../utils/assert";
+import { checkHasStudentData } from "./auth";
 
 import type { IContext } from "../../../interfaces";
 import type { ArrayPropertyType } from "../../../interfaces/utils";
@@ -403,5 +404,14 @@ export class UserResolver {
       ...baseUserConfig,
       ...((await UserConfigDataLoader.load(email))?.config ?? {}),
     };
+  }
+
+  @FieldResolver()
+  async studentIdValid(@Root() { type, student_id }: User) {
+    if (type === UserType.Student && student_id) {
+      return checkHasStudentData({ student_id });
+    }
+
+    return false;
   }
 }

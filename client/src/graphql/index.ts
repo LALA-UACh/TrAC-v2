@@ -37,7 +37,7 @@ export type Course = {
   credits: Array<Credit>;
   flow: Array<Course>;
   historicalDistribution: Array<DistributionValue>;
-  /** Course-Semester-Curriculum-Program ID  */
+  /** Course-Semester-Curriculum-Program ID */
   id: Scalars["Int"];
   mention: Scalars["String"];
   name: Scalars["String"];
@@ -274,6 +274,8 @@ export type Program = {
 };
 
 export type Query = {
+  /** Check unlockKey combination, if it's valid, returns null, if it's invalid, returns an error message. */
+  checkUnlockKey?: Maybe<Scalars["String"]>;
   config: Scalars["JSONObject"];
   currentUser?: Maybe<AuthResult>;
   feedbackResults: Array<FeedbackResult>;
@@ -285,6 +287,11 @@ export type Query = {
   unansweredForm?: Maybe<FeedbackForm>;
   userPersistences: Array<Persistence>;
   users: Array<User>;
+};
+
+export type QueryCheckUnlockKeyArgs = {
+  email: Scalars["EmailAddress"];
+  unlockKey: Scalars["String"];
 };
 
 export type QueryFeedbackResultsArgs = {
@@ -403,6 +410,7 @@ export type User = {
   name: Scalars["String"];
   programs: Array<Program>;
   student_id: Scalars["String"];
+  studentIdValid?: Maybe<Scalars["Boolean"]>;
   tries: Scalars["Int"];
   type: UserType;
   unlockKey: Scalars["String"];
@@ -419,14 +427,21 @@ export enum UserType {
   Student = "Student",
 }
 
-export type UserAdminFragmentFragment = Pick<
+export type UserAdminInfoFragment = Pick<
   User,
-  "email" | "name" | "tries" | "type" | "student_id" | "config" | "locked"
+  | "email"
+  | "name"
+  | "tries"
+  | "type"
+  | "student_id"
+  | "config"
+  | "locked"
+  | "studentIdValid"
 > & { programs: Array<Pick<Program, "id">> };
 
 export type AllUsersAdminQueryVariables = Exact<{ [key: string]: never }>;
 
-export type AllUsersAdminQuery = { users: Array<UserAdminFragmentFragment> };
+export type AllUsersAdminQuery = { users: Array<UserAdminInfoFragment> };
 
 export type AllProgramsAdminQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -437,7 +452,7 @@ export type AddUsersProgramsAdminMutationVariables = Exact<{
 }>;
 
 export type AddUsersProgramsAdminMutation = {
-  addUsersPrograms: Array<UserAdminFragmentFragment>;
+  addUsersPrograms: Array<UserAdminInfoFragment>;
 };
 
 export type UpdateUserProgramsAdminMutationVariables = Exact<{
@@ -445,7 +460,7 @@ export type UpdateUserProgramsAdminMutationVariables = Exact<{
 }>;
 
 export type UpdateUserProgramsAdminMutation = {
-  updateUserPrograms: Array<UserAdminFragmentFragment>;
+  updateUserPrograms: Array<UserAdminInfoFragment>;
 };
 
 export type UpsertUsersAdminMutationVariables = Exact<{
@@ -453,7 +468,7 @@ export type UpsertUsersAdminMutationVariables = Exact<{
 }>;
 
 export type UpsertUsersAdminMutation = {
-  upsertUsers: Array<UserAdminFragmentFragment>;
+  upsertUsers: Array<UserAdminInfoFragment>;
 };
 
 export type DeleteUserAdminMutationVariables = Exact<{
@@ -468,7 +483,7 @@ export type LockMailUserAdminMutationVariables = Exact<{
 
 export type LockMailUserAdminMutation = {
   lockMailUser: Pick<LockedUserResult, "mailResult"> & {
-    users: Array<UserAdminFragmentFragment>;
+    users: Array<UserAdminInfoFragment>;
   };
 };
 
@@ -551,7 +566,7 @@ export type TrackInfoQuery = {
   >;
 };
 
-export type UserFragmentFragment = Pick<
+export type UserInfoFragment = Pick<
   User,
   "email" | "name" | "admin" | "type" | "config" | "student_id"
 >;
@@ -562,14 +577,21 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 export type LoginMutation = {
-  login: Pick<AuthResult, "error"> & { user?: Maybe<UserFragmentFragment> };
+  login: Pick<AuthResult, "error"> & { user?: Maybe<UserInfoFragment> };
 };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never }>;
 
 export type CurrentUserQuery = {
-  currentUser?: Maybe<{ user?: Maybe<UserFragmentFragment> }>;
+  currentUser?: Maybe<{ user?: Maybe<UserInfoFragment> }>;
 };
+
+export type CheckUnlockQueryVariables = Exact<{
+  email: Scalars["EmailAddress"];
+  unlockKey: Scalars["String"];
+}>;
+
+export type CheckUnlockQuery = Pick<Query, "checkUnlockKey">;
 
 export type UnlockMutationVariables = Exact<{
   email: Scalars["EmailAddress"];
@@ -578,7 +600,7 @@ export type UnlockMutationVariables = Exact<{
 }>;
 
 export type UnlockMutation = {
-  unlock: Pick<AuthResult, "error"> & { user?: Maybe<UserFragmentFragment> };
+  unlock: Pick<AuthResult, "error"> & { user?: Maybe<UserInfoFragment> };
 };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
@@ -806,8 +828,8 @@ export type CurrentUserTestQuery = {
   >;
 };
 
-export const UserAdminFragmentFragmentDoc = gql`
-  fragment UserAdminFragment on User {
+export const UserAdminInfoFragmentDoc = gql`
+  fragment UserAdminInfo on User {
     email
     name
     tries
@@ -815,13 +837,14 @@ export const UserAdminFragmentFragmentDoc = gql`
     student_id
     config
     locked
+    studentIdValid
     programs {
       id
     }
   }
 `;
-export const UserFragmentFragmentDoc = gql`
-  fragment UserFragment on User {
+export const UserInfoFragmentDoc = gql`
+  fragment UserInfo on User {
     email
     name
     admin
@@ -833,10 +856,10 @@ export const UserFragmentFragmentDoc = gql`
 export const AllUsersAdminDocument = gql`
   query allUsersAdmin {
     users {
-      ...UserAdminFragment
+      ...UserAdminInfo
     }
   }
-  ${UserAdminFragmentFragmentDoc}
+  ${UserAdminInfoFragmentDoc}
 `;
 
 /**
@@ -944,10 +967,10 @@ export type AllProgramsAdminQueryResult = Apollo.QueryResult<
 export const AddUsersProgramsAdminDocument = gql`
   mutation addUsersProgramsAdmin($user_programs: [UserProgram!]!) {
     addUsersPrograms(user_programs: $user_programs) {
-      ...UserAdminFragment
+      ...UserAdminInfo
     }
   }
-  ${UserAdminFragmentFragmentDoc}
+  ${UserAdminInfoFragmentDoc}
 `;
 export type AddUsersProgramsAdminMutationFn = Apollo.MutationFunction<
   AddUsersProgramsAdminMutation,
@@ -995,10 +1018,10 @@ export type AddUsersProgramsAdminMutationOptions = Apollo.BaseMutationOptions<
 export const UpdateUserProgramsAdminDocument = gql`
   mutation updateUserProgramsAdmin($userPrograms: UpdateUserPrograms!) {
     updateUserPrograms(userPrograms: $userPrograms) {
-      ...UserAdminFragment
+      ...UserAdminInfo
     }
   }
-  ${UserAdminFragmentFragmentDoc}
+  ${UserAdminInfoFragmentDoc}
 `;
 export type UpdateUserProgramsAdminMutationFn = Apollo.MutationFunction<
   UpdateUserProgramsAdminMutation,
@@ -1046,10 +1069,10 @@ export type UpdateUserProgramsAdminMutationOptions = Apollo.BaseMutationOptions<
 export const UpsertUsersAdminDocument = gql`
   mutation upsertUsersAdmin($users: [UpsertedUser!]!) {
     upsertUsers(users: $users) {
-      ...UserAdminFragment
+      ...UserAdminInfo
     }
   }
-  ${UserAdminFragmentFragmentDoc}
+  ${UserAdminInfoFragmentDoc}
 `;
 export type UpsertUsersAdminMutationFn = Apollo.MutationFunction<
   UpsertUsersAdminMutation,
@@ -1147,11 +1170,11 @@ export const LockMailUserAdminDocument = gql`
     lockMailUser(email: $email) {
       mailResult
       users {
-        ...UserAdminFragment
+        ...UserAdminInfo
       }
     }
   }
-  ${UserAdminFragmentFragmentDoc}
+  ${UserAdminInfoFragmentDoc}
 `;
 export type LockMailUserAdminMutationFn = Apollo.MutationFunction<
   LockMailUserAdminMutation,
@@ -1625,12 +1648,12 @@ export const LoginDocument = gql`
   mutation login($email: EmailAddress!, $password: String!) {
     login(email: $email, password: $password) {
       user {
-        ...UserFragment
+        ...UserInfo
       }
       error
     }
   }
-  ${UserFragmentFragmentDoc}
+  ${UserInfoFragmentDoc}
 `;
 export type LoginMutationFn = Apollo.MutationFunction<
   LoginMutation,
@@ -1676,11 +1699,11 @@ export const CurrentUserDocument = gql`
   query currentUser {
     currentUser {
       user {
-        ...UserFragment
+        ...UserInfo
       }
     }
   }
-  ${UserFragmentFragmentDoc}
+  ${UserInfoFragmentDoc}
 `;
 
 /**
@@ -1728,6 +1751,59 @@ export type CurrentUserQueryResult = Apollo.QueryResult<
   CurrentUserQuery,
   CurrentUserQueryVariables
 >;
+export const CheckUnlockDocument = gql`
+  query checkUnlock($email: EmailAddress!, $unlockKey: String!) {
+    checkUnlockKey(email: $email, unlockKey: $unlockKey)
+  }
+`;
+
+/**
+ * __useCheckUnlockQuery__
+ *
+ * To run a query within a React component, call `useCheckUnlockQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCheckUnlockQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCheckUnlockQuery({
+ *   variables: {
+ *      email: // value for 'email'
+ *      unlockKey: // value for 'unlockKey'
+ *   },
+ * });
+ */
+export function useCheckUnlockQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    CheckUnlockQuery,
+    CheckUnlockQueryVariables
+  >
+) {
+  return Apollo.useQuery<CheckUnlockQuery, CheckUnlockQueryVariables>(
+    CheckUnlockDocument,
+    baseOptions
+  );
+}
+export function useCheckUnlockLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    CheckUnlockQuery,
+    CheckUnlockQueryVariables
+  >
+) {
+  return Apollo.useLazyQuery<CheckUnlockQuery, CheckUnlockQueryVariables>(
+    CheckUnlockDocument,
+    baseOptions
+  );
+}
+export type CheckUnlockQueryHookResult = ReturnType<typeof useCheckUnlockQuery>;
+export type CheckUnlockLazyQueryHookResult = ReturnType<
+  typeof useCheckUnlockLazyQuery
+>;
+export type CheckUnlockQueryResult = Apollo.QueryResult<
+  CheckUnlockQuery,
+  CheckUnlockQueryVariables
+>;
 export const UnlockDocument = gql`
   mutation unlock(
     $email: EmailAddress!
@@ -1736,12 +1812,12 @@ export const UnlockDocument = gql`
   ) {
     unlock(email: $email, password: $password, unlockKey: $unlockKey) {
       user {
-        ...UserFragment
+        ...UserInfo
       }
       error
     }
   }
-  ${UserFragmentFragmentDoc}
+  ${UserInfoFragmentDoc}
 `;
 export type UnlockMutationFn = Apollo.MutationFunction<
   UnlockMutation,

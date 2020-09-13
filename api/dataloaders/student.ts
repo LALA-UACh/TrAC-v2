@@ -1,18 +1,37 @@
 import DataLoader from "dataloader";
+import { Dictionary, keyBy } from "lodash";
 import { LRUMap } from "lru_map";
 
 import {
   IProgram,
   IStudent,
+  IStudentDropout,
   STUDENT_PROGRAM_TABLE,
   STUDENT_TABLE,
   StudentDropoutTable,
   StudentProgramTable,
+  StudentTable,
   StudentTermTable,
 } from "../db/tables";
 import { TermDataLoader } from "./term";
 
 export const StudentDataLoader = new DataLoader(
+  async (student_ids: readonly string[]) => {
+    const dataDict: Dictionary<IStudent | undefined> = keyBy(
+      await StudentTable().select("*").whereIn("id", student_ids),
+      "id"
+    );
+
+    return student_ids.map((id) => {
+      return dataDict[id];
+    });
+  },
+  {
+    cacheMap: new LRUMap(1000),
+  }
+);
+
+export const StudentViaProgramsDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
     return await Promise.all(
       student_ids.map((student_id) => {
@@ -114,11 +133,13 @@ export const StudentTermsDataLoader = new DataLoader(
 
 export const StudentDropoutDataLoader = new DataLoader(
   async (student_ids: readonly string[]) => {
-    return await Promise.all(
-      student_ids.map((student_id) => {
-        return StudentDropoutTable().where({ student_id }).first();
-      })
+    const dataDict: Dictionary<IStudentDropout | undefined> = keyBy(
+      await StudentDropoutTable().whereIn("student_id", student_ids),
+      "student_id"
     );
+    return student_ids.map((id) => {
+      return dataDict[id];
+    });
   },
   {
     cacheMap: new LRUMap(1000),

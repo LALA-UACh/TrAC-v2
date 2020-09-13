@@ -5,9 +5,12 @@ import { useRememberState } from "use-remember-state";
 
 import { Flex, Stack } from "@chakra-ui/core";
 
-import { UserType } from "../../../../constants";
 import { UserConfig } from "../../../../constants/userConfig";
-import { useMailAllLockedUsersAdminMutation } from "../../../graphql";
+import {
+  useMailAllLockedUsersAdminMutation,
+  UserAdminInfoFragment,
+  UserType,
+} from "../../../graphql";
 import { whiteSpacePreLine, width50percent } from "../../../utils/cssConstants";
 import { Confirm } from "../../Confirm";
 import { usePagination } from "../Pagination";
@@ -15,15 +18,7 @@ import { ImportUsers } from "./ImportUsers";
 import { UpdateUser } from "./UpdateUser";
 
 export const Users: FC<{
-  users: {
-    email: string;
-    name: string;
-    tries: number;
-    type: UserType;
-    student_id?: string;
-    config: Record<string, unknown>;
-    locked: boolean;
-  }[];
+  users: UserAdminInfoFragment[];
   refetch: () => Promise<unknown>;
   loading: boolean;
 }> = ({ users, refetch, loading }) => {
@@ -206,6 +201,12 @@ export const Users: FC<{
                 student_id
               </Table.HeaderCell>
               <Table.HeaderCell
+                sorted={column === "studentIdValid" ? direction : undefined}
+                onClick={handleSort("studentIdValid")}
+              >
+                studentIdValid
+              </Table.HeaderCell>
+              <Table.HeaderCell
                 sorted={
                   column === "config.SHOW_DROPOUT" ? direction : undefined
                 }
@@ -233,7 +234,17 @@ export const Users: FC<{
           <Table.Body>
             {selectedData.map(
               (
-                { email, name, locked, tries, type, student_id, config },
+                {
+                  email,
+                  name,
+                  locked,
+                  tries,
+                  type,
+                  student_id,
+                  studentIdValid,
+                  config,
+                  ...rest
+                },
                 key
               ) => {
                 return (
@@ -246,7 +257,9 @@ export const Users: FC<{
                       tries,
                       type,
                       student_id,
+                      studentIdValid,
                       config,
+                      ...rest,
                     }}
                   >
                     {({ setOpen }) => {
@@ -273,6 +286,20 @@ export const Users: FC<{
                           <Table.Cell width={1}>{type}</Table.Cell>
                           <Table.Cell>
                             {truncate(student_id, { length: 10 })}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {type === UserType.Student ? (
+                              <Icon
+                                circular
+                                name={
+                                  studentIdValid
+                                    ? "check circle outline"
+                                    : "ban"
+                                }
+                              />
+                            ) : (
+                              "-"
+                            )}
                           </Table.Cell>
                           <Table.Cell onClick={configOnClick} width={1}>
                             <Icon

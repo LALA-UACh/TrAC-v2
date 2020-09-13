@@ -9,19 +9,37 @@ import {
   IS_NOT_TEST,
   IS_PRODUCTION,
   LOCKED_USER,
+  STUDENT_DATA_NOT_FOUND,
   USED_OLD_PASSWORD,
   UserType,
   WRONG_INFO,
 } from "../../../client/constants";
 import { baseUserConfig } from "../../../client/constants/userConfig";
 import { ONE_DAY, SECRET, THIRTY_MINUTES } from "../../constants";
-import { StudentTable, UserTable } from "../../db/tables";
-import { AuthResult, LoginInput, UnlockInput } from "../../entities/auth/auth";
+import { StudentDataLoader } from "../../dataloaders";
+import { UserTable } from "../../db/tables";
+import {
+  AuthResult,
+  LoginInput,
+  UnlockCheck,
+  UnlockInput,
+} from "../../entities/auth/auth";
 import { anonService } from "../../services/anonymization";
 import { sendMail, UnlockMail } from "../../services/mail";
 
 import type { IContext } from "../../../interfaces";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import type { User } from "../../entities/auth/user";
+
+export async function checkHasStudentData(user: Pick<User, "student_id">) {
+  return Boolean(
+    (
+      await StudentDataLoader.load(
+        await anonService.getAnonymousIdOrGetItBack(user.student_id)
+      )
+    )?.id
+  );
+}
 @Resolver()
 export class AuthResolver {
   static authenticate({
@@ -60,15 +78,8 @@ export class AuthResolver {
         if (!user.student_id) {
           return {};
         }
-        const studentData = await StudentTable()
-          .select("id")
-          .where({
-            id: await anonService.getAnonymousIdOrGetItBack(user.student_id),
-          })
-          .first();
-        if (!studentData) {
-          return {};
-        }
+
+        if (!(await checkHasStudentData(user))) return {};
       }
 
       return {
@@ -99,17 +110,12 @@ export class AuthResolver {
       if (defaultUserType(user.type) === UserType.Student) {
         if (!user.student_id) {
           return {
-            error: WRONG_INFO,
+            error: STUDENT_DATA_NOT_FOUND,
           };
         }
-        const studentData = await StudentTable()
-          .select("id")
-          .where({
-            id: await anonService.getAnonymousIdOrGetItBack(user.student_id),
-          })
-          .first();
-        if (!studentData) {
-          return { error: WRONG_INFO };
+
+        if (!(await checkHasStudentData(user))) {
+          return { error: STUDENT_DATA_NOT_FOUND };
         }
       }
       if (user.locked) {
@@ -194,6 +200,33 @@ export class AuthResolver {
     return false;
   }
 
+  @Query(() => String, {
+    nullable: true,
+    description:
+      "Check unlockKey combination, if it's valid, returns null, if it's invalid, returns an error message.",
+  })
+  async checkUnlockKey(
+    @Args() { email, unlockKey }: UnlockCheck
+  ): Promise<string | null> {
+    const user = await UserTable()
+      .where({ email, unlockKey })
+      .select("email", "type", "student_id")
+      .first();
+
+    if (user) {
+      if (defaultUserType(user.type) === UserType.Student) {
+        if (!user.student_id) return STUDENT_DATA_NOT_FOUND;
+
+        if (!(await checkHasStudentData(user))) {
+          return STUDENT_DATA_NOT_FOUND;
+        }
+      }
+
+      return null;
+    }
+    return WRONG_INFO;
+  }
+
   @Mutation(() => AuthResult)
   async unlock(
     @Ctx() { req, res }: IContext,
@@ -208,18 +241,11 @@ export class AuthResolver {
       if (defaultUserType(user.type) === UserType.Student) {
         if (!user.student_id) {
           return {
-            error: WRONG_INFO,
+            error: STUDENT_DATA_NOT_FOUND,
           };
         }
-        const studentData = await StudentTable()
-          .select("id")
-          .where({
-            id: await anonService.getAnonymousIdOrGetItBack(user.student_id),
-          })
-          .first();
-        if (!studentData) {
-          return { error: WRONG_INFO };
-        }
+        if (!(await checkHasStudentData(user)))
+          return { error: STUDENT_DATA_NOT_FOUND };
       }
 
       switch (passwordInput) {

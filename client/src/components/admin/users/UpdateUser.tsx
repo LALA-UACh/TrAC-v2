@@ -35,6 +35,7 @@ import {
   AllUsersAdminQuery,
   useDeleteUserAdminMutation,
   useLockMailUserAdminMutation,
+  UserAdminInfoFragment,
   useResetPersistenceAdminMutation,
   useUpsertUsersAdminMutation,
   useUserPersistencesAdminQuery,
@@ -42,16 +43,6 @@ import {
 import { whiteSpacePreLine } from "../../../utils/cssConstants";
 import { Confirm } from "../../Confirm";
 import { useUpdateUserConfigModal } from "./UpdateUserConfig";
-
-export interface IUserConfig {
-  email: string;
-  name: string;
-  tries: number;
-  type: UserType;
-  student_id?: string;
-  config: Record<string, unknown>;
-  locked: boolean;
-}
 
 const UserPersistence: FC<{ user: string }> = memo(({ user }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -164,7 +155,7 @@ const resetFormButtonCSS = css`
 `;
 
 export const UpdateUser: FC<{
-  user: IUserConfig;
+  user: UserAdminInfoFragment;
   children: FC<{
     setOpen: (open: boolean, defaultOpenUserConfig?: boolean) => void;
   }>;

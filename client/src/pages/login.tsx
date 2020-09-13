@@ -20,7 +20,11 @@ import isLength from "validator/lib/isLength";
 
 import { Image } from "@chakra-ui/core";
 
-import { LOCKED_USER, WRONG_INFO } from "../../constants";
+import {
+  LOCKED_USER,
+  STUDENT_DATA_NOT_FOUND,
+  WRONG_INFO,
+} from "../../constants";
 import { LoadingPage } from "../components/Loading";
 import { ConfigContext } from "../context/Config";
 import { CurrentUserDocument, useLoginMutation } from "../graphql";
@@ -65,6 +69,7 @@ const Login: FC = () => {
     LOGIN_REMEMBER_SESSION,
     LOGIN_BUTTON,
     LOGIN_ERROR_TITLE,
+    ERROR_STUDENT_ACCOUNT_NO_DATA_MESSAGE,
   } = useContext(ConfigContext);
 
   return (
@@ -85,6 +90,8 @@ const Login: FC = () => {
             <Message.Header>{LOGIN_ERROR_TITLE}</Message.Header>
             {(() => {
               switch (data?.login?.error) {
+                case STUDENT_DATA_NOT_FOUND:
+                  return ERROR_STUDENT_ACCOUNT_NO_DATA_MESSAGE;
                 case WRONG_INFO:
                   return LOGIN_WRONG_INFO_MESSAGE;
                 case LOCKED_USER:

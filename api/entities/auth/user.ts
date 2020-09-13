@@ -37,6 +37,9 @@ export class User implements Partial<IUser> {
   @Field()
   student_id: string;
 
+  @Field({ nullable: true })
+  studentIdValid?: boolean;
+
   @Authorized([ADMIN])
   @Field()
   locked: boolean;

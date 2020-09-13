@@ -1,15 +1,24 @@
 import DataLoader from "dataloader";
+import { Dictionary, keyBy } from "lodash";
 import { LRUMap } from "lru_map";
 
-import { CourseStatsTable, StudentCourseTable } from "../db/tables";
+import {
+  CourseStatsTable,
+  ICourseStats,
+  IStudentCourse,
+  StudentCourseTable,
+} from "../db/tables";
 
 export const StudentCourseDataLoader = new DataLoader(
   async (ids: readonly number[]) => {
-    return await Promise.all(
-      ids.map((id) => {
-        return StudentCourseTable().select("*").where({ id }).first();
-      })
+    const dataDict: Dictionary<IStudentCourse | undefined> = keyBy(
+      await StudentCourseTable().select("*").whereIn("id", ids),
+      "id"
     );
+
+    return ids.map((id) => {
+      return dataDict[id];
+    });
   },
   {
     cacheMap: new LRUMap(1000),
@@ -49,16 +58,18 @@ export const CourseStatsByStateDataLoader = new DataLoader(
 
 export const CourseStatsByCourseTakenDataLoader = new DataLoader(
   async (codes: readonly string[]) => {
-    return await Promise.all(
-      codes.map((course_taken) => {
-        return CourseStatsTable()
-          .select("color_bands")
-          .where({
-            course_taken,
-          })
-          .first();
-      })
+    const dataDict: Dictionary<
+      Pick<ICourseStats, "course_taken" | "color_bands"> | undefined
+    > = keyBy(
+      await CourseStatsTable()
+        .select("color_bands", "course_taken")
+        .whereIn("course_taken", codes),
+      "course_taken"
     );
+
+    return codes.map((course_taken) => {
+      return dataDict[course_taken];
+    });
   },
   {
     cacheMap: new LRUMap(1000),

@@ -1,8 +1,9 @@
 import DataLoader from "dataloader";
-import { uniqBy } from "lodash";
+import { Dictionary, keyBy, uniqBy } from "lodash";
 import { LRUMap } from "lru_map";
 
 import {
+  IStudentTerm,
   ProgramTable,
   StudentCourseTable,
   StudentTermTable,
@@ -10,11 +11,14 @@ import {
 
 export const TermDataLoader = new DataLoader(
   async (ids: readonly number[]) => {
-    return await Promise.all(
-      ids.map((id) => {
-        return StudentTermTable().select("*").where({ id }).first();
-      })
+    const dataDict: Dictionary<IStudentTerm | undefined> = keyBy(
+      await StudentTermTable().select("*").whereIn("id", ids),
+      "id"
     );
+
+    return ids.map((id) => {
+      return dataDict[id];
+    });
   },
   {
     cacheMap: new LRUMap(1000),

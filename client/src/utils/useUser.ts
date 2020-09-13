@@ -5,7 +5,7 @@ import { WatchQueryFetchPolicy } from "@apollo/client";
 
 import { IS_NOT_TEST } from "../../constants";
 import { baseUserConfig, UserConfig } from "../../constants/userConfig";
-import { useCurrentUserQuery, UserFragmentFragment } from "../graphql";
+import { useCurrentUserQuery, UserInfoFragment } from "../graphql";
 
 export function useUser(
   {
@@ -22,7 +22,7 @@ export function useUser(
     requireAuth: false,
   }
 ): {
-  user?: (UserFragmentFragment & { config: UserConfig }) | null;
+  user?: (UserInfoFragment & { config: UserConfig }) | null;
   loading?: boolean;
   refetch: () => Promise<unknown>;
 } {

@@ -23,6 +23,16 @@ export class UnlockInput extends LoginInput {
   unlockKey: string;
 }
 
+@ArgsType()
+export class UnlockCheck {
+  @Field(() => EmailAddress)
+  email: string;
+
+  @Field()
+  @Length(32, 100)
+  unlockKey: string;
+}
+
 @ObjectType()
 export class AuthResult {
   @Field({ nullable: true })

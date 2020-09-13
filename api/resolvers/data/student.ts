@@ -19,12 +19,12 @@ import {
   UserType,
 } from "../../../client/constants";
 import {
-  StudentDataLoader,
   StudentDropoutDataLoader,
   StudentLastProgramDataLoader,
   StudentListDataLoader,
   StudentProgramsDataLoader,
   StudentTermsDataLoader,
+  StudentViaProgramsDataLoader,
 } from "../../dataloaders/student";
 import { StudentProgramTable, UserProgramsTable } from "../../db/tables";
 import { Student } from "../../entities/data/student";
@@ -59,7 +59,7 @@ export class StudentResolver {
         user.student_id
       );
 
-      const studentData = await StudentDataLoader.load(student_id);
+      const studentData = await StudentViaProgramsDataLoader.load(student_id);
 
       assertIsDefined(studentData, STUDENT_NOT_FOUND);
 
@@ -97,7 +97,7 @@ export class StudentResolver {
 
       assertIsDefined(IsAuthorized, STUDENT_NOT_FOUND);
 
-      const studentData = await StudentDataLoader.load(student_id);
+      const studentData = await StudentViaProgramsDataLoader.load(student_id);
 
       assertIsDefined(studentData, STUDENT_NOT_FOUND);
 

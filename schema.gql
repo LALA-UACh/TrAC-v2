@@ -214,6 +214,10 @@ type Program {
 }
 
 type Query {
+  """
+  Check unlockKey combination, if it's valid, returns null, if it's invalid, returns an error message.
+  """
+  checkUnlockKey(email: EmailAddress!, unlockKey: String!): String
   config: JSONObject!
   currentUser: AuthResult
   feedbackResults(user_ids: [String!]): [FeedbackResult!]!
@@ -325,6 +329,7 @@ type User {
   name: String!
   programs: [Program!]!
   student_id: String!
+  studentIdValid: Boolean
   tries: Int!
   type: UserType!
   unlockKey: String!

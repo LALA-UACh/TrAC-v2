@@ -1,4 +1,4 @@
-fragment UserFragment on User {
+fragment UserInfo on User {
   email
   name
   admin
@@ -10,7 +10,7 @@ fragment UserFragment on User {
 mutation login($email: EmailAddress!, $password: String!) {
   login(email: $email, password: $password) {
     user {
-      ...UserFragment
+      ...UserInfo
     }
     error
   }
@@ -19,9 +19,13 @@ mutation login($email: EmailAddress!, $password: String!) {
 query currentUser {
   currentUser {
     user {
-      ...UserFragment
+      ...UserInfo
     }
   }
+}
+
+query checkUnlock($email: EmailAddress!, $unlockKey: String!) {
+  checkUnlockKey(email: $email, unlockKey: $unlockKey)
 }
 
 mutation unlock(
@@ -31,7 +35,7 @@ mutation unlock(
 ) {
   unlock(email: $email, password: $password, unlockKey: $unlockKey) {
     user {
-      ...UserFragment
+      ...UserInfo
     }
     error
   }

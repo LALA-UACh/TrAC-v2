@@ -17,22 +17,45 @@ import matches from "validator/lib/matches";
 
 import { Image } from "@chakra-ui/core";
 
-import { USED_OLD_PASSWORD, WRONG_INFO } from "../../../../constants";
+import {
+  STUDENT_DATA_NOT_FOUND,
+  USED_OLD_PASSWORD,
+  WRONG_INFO,
+} from "../../../../constants";
+import { LoadingPage } from "../../../components/Loading";
 import { ConfigContext } from "../../../context/Config";
-import { CurrentUserDocument, useUnlockMutation } from "../../../graphql";
+import {
+  CurrentUserDocument,
+  CurrentUserQuery,
+  useCheckUnlockQuery,
+  useUnlockMutation,
+} from "../../../graphql";
 import { DarkMode } from "../../../utils/dynamicDarkMode";
 
-const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
-  email,
-  unlockKey,
-}) => {
+const UnlockPage: NextPage<{
+  email: string;
+  unlockKey: string;
+  isInvalid?: boolean;
+}> = ({ email, unlockKey, isInvalid }) => {
+  if (isInvalid) return <LoadingPage />;
+
+  const { data: dataCheck, loading: loadingCheck } = useCheckUnlockQuery({
+    variables: {
+      email,
+      unlockKey,
+    },
+    fetchPolicy: "no-cache",
+  });
+
+  const isCheckWrong = Boolean(dataCheck?.checkUnlockKey);
+
   const [
     unlock,
     { error: errorUnlock, loading: loadingUnlock, data: dataUnlock },
   ] = useUnlockMutation({
     update: (cache, { data }) => {
       if (data?.unlock?.user) {
-        cache.writeQuery({
+        cache.writeQuery<CurrentUserQuery>({
           query: CurrentUserDocument,
           data: {
             currentUser: data.unlock,
@@ -57,6 +80,7 @@ const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
     UNLOCK_ERROR_TITLE,
     UNLOCK_WRONG_INFO_MESSAGE,
     UNLOCK_USER_OLD_PASSWORD_MESSAGE,
+    ERROR_STUDENT_ACCOUNT_NO_DATA_MESSAGE,
   } = useContext(ConfigContext);
 
   if (errorUnlock) {
@@ -106,13 +130,8 @@ const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
     };
   };
 
-  if (
-    typeof email !== "string" ||
-    typeof unlockKey !== "string" ||
-    !isEmail(email)
-  ) {
-    return null;
-  }
+  if (loadingCheck) return <LoadingPage />;
+
   return (
     <Grid centered padded>
       <Grid.Row>
@@ -125,116 +144,135 @@ const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
         />
       </Grid.Row>
       <Divider hidden />
-      <Grid.Row>
-        <Message info>{email}</Message>
-      </Grid.Row>
-      <Form<{ password: string; confirm_password: string }>
-        onSubmit={({ password }) => {
-          unlock({
-            variables: {
-              email,
-              password: sha1(password).toString(),
-              unlockKey,
-            },
-          });
-        }}
-        validate={({ password, confirm_password }) => {
-          return validatePassword(password, confirm_password);
-        }}
-      >
-        {({ handleSubmit, dirty, valid, invalid, touched, errors }) => {
-          return (
-            <>
-              <Grid.Row>
-                <FormSemantic onSubmit={handleSubmit}>
-                  <Segment size="big" basic>
-                    <Field name="password" initialValue="">
-                      {({ input, meta: { invalid, touched } }) => {
-                        return (
-                          <FormSemantic.Field
-                            error={dirty || touched ? invalid : false}
-                          >
-                            <label>{UNLOCK_NEW_PASSWORD_LABEL}</label>
-                            <FormSemantic.Input
-                              {...input}
-                              type="password"
-                              placeholder={UNLOCK_NEW_PASSWORD_PLACEHOLDER}
-                              autoComplete="new-password"
-                            />
-                          </FormSemantic.Field>
-                        );
-                      }}
-                    </Field>
-                  </Segment>
-                  <Segment size="big" basic>
-                    <Field name="confirm_password" initialValue="">
-                      {({ input, meta: { invalid, touched } }) => (
-                        <FormSemantic.Field
-                          error={dirty || touched ? invalid : false}
-                        >
-                          <label>{UNLOCK_NEW_PASSWORD_REPEAT_LABEL}</label>
-                          <FormSemantic.Input
-                            {...input}
-                            type="password"
-                            placeholder={UNLOCK_NEW_PASSWORD_PLACEHOLDER}
-                            autoComplete="new-password"
-                          />
-                        </FormSemantic.Field>
-                      )}
-                    </Field>
-                  </Segment>
-                  <Segment size="big" basic>
-                    <FormSemantic.Button
-                      type="submit"
-                      icon
-                      primary
-                      labelPosition="left"
-                      disabled={invalid || loadingUnlock}
-                      size="big"
-                      loading={loadingUnlock}
-                    >
-                      <Icon name="lock open" />
-                      {UNLOCK_ACTIVE_ACCOUNT_LABEL}
-                    </FormSemantic.Button>
-                  </Segment>
-                </FormSemantic>
-              </Grid.Row>
 
-              <Grid.Row>
-                <Message warning hidden={dirty || some(touched) ? valid : true}>
-                  <Message.List>
-                    {Object.values<string>(errors).map((error, k) => {
-                      if (error)
-                        return error.split("\n").map((errorMessage, key) => {
-                          return (
-                            <Message.Item
-                              key={k + key}
-                              content={errorMessage}
-                            />
-                          );
-                        });
-                    })}
-                  </Message.List>
-                </Message>
-              </Grid.Row>
-            </>
-          );
-        }}
-      </Form>
-      {(errorUnlock || dataUnlock?.unlock?.error) && (
+      {!isCheckWrong && (
+        <>
+          <Grid.Row>
+            <Message info>{email}</Message>
+          </Grid.Row>
+          (
+          <Form<{ password: string; confirm_password: string }>
+            onSubmit={({ password }) => {
+              unlock({
+                variables: {
+                  email,
+                  password: sha1(password).toString(),
+                  unlockKey,
+                },
+              });
+            }}
+            validate={({ password, confirm_password }) => {
+              return validatePassword(password, confirm_password);
+            }}
+          >
+            {({ handleSubmit, dirty, valid, invalid, touched, errors }) => {
+              return (
+                <>
+                  <Grid.Row>
+                    <FormSemantic onSubmit={handleSubmit}>
+                      <Segment size="big" basic>
+                        <Field name="password" initialValue="">
+                          {({ input, meta: { invalid, touched } }) => {
+                            return (
+                              <FormSemantic.Field
+                                error={dirty || touched ? invalid : false}
+                              >
+                                <label>{UNLOCK_NEW_PASSWORD_LABEL}</label>
+                                <FormSemantic.Input
+                                  {...input}
+                                  disabled={loadingUnlock}
+                                  type="password"
+                                  placeholder={UNLOCK_NEW_PASSWORD_PLACEHOLDER}
+                                  autoComplete="new-password"
+                                />
+                              </FormSemantic.Field>
+                            );
+                          }}
+                        </Field>
+                      </Segment>
+                      <Segment size="big" basic>
+                        <Field name="confirm_password" initialValue="">
+                          {({ input, meta: { invalid, touched } }) => (
+                            <FormSemantic.Field
+                              error={dirty || touched ? invalid : false}
+                            >
+                              <label>{UNLOCK_NEW_PASSWORD_REPEAT_LABEL}</label>
+                              <FormSemantic.Input
+                                {...input}
+                                disabled={loadingUnlock}
+                                type="password"
+                                placeholder={UNLOCK_NEW_PASSWORD_PLACEHOLDER}
+                                autoComplete="new-password"
+                              />
+                            </FormSemantic.Field>
+                          )}
+                        </Field>
+                      </Segment>
+                      <Segment size="big" basic>
+                        <FormSemantic.Button
+                          type="submit"
+                          icon
+                          primary
+                          labelPosition="left"
+                          disabled={invalid || loadingUnlock}
+                          size="big"
+                          loading={loadingUnlock}
+                        >
+                          <Icon name="lock open" />
+                          {UNLOCK_ACTIVE_ACCOUNT_LABEL}
+                        </FormSemantic.Button>
+                      </Segment>
+                    </FormSemantic>
+                  </Grid.Row>
+
+                  <Grid.Row>
+                    <Message
+                      warning
+                      hidden={dirty || some(touched) ? valid : true}
+                    >
+                      <Message.List>
+                        {Object.values<string>(errors).map((error, k) => {
+                          if (error)
+                            return error
+                              .split("\n")
+                              .map((errorMessage, key) => {
+                                return (
+                                  <Message.Item
+                                    key={k + key}
+                                    content={errorMessage}
+                                  />
+                                );
+                              });
+                        })}
+                      </Message.List>
+                    </Message>
+                  </Grid.Row>
+                </>
+              );
+            }}
+          </Form>
+        </>
+      )}
+
+      {dataCheck?.checkUnlockKey || errorUnlock || dataUnlock?.unlock?.error ? (
         <Grid.Row>
           <Message error>
             <Message.Header>{UNLOCK_ERROR_TITLE}</Message.Header>
             <p>
               {(() => {
-                if (dataUnlock?.unlock?.error) {
-                  switch (dataUnlock.unlock.error) {
+                const errorMessage =
+                  dataUnlock?.unlock.error || dataCheck?.checkUnlockKey;
+
+                if (errorMessage) {
+                  switch (errorMessage) {
+                    case STUDENT_DATA_NOT_FOUND:
+                      return ERROR_STUDENT_ACCOUNT_NO_DATA_MESSAGE;
                     case WRONG_INFO:
                       return UNLOCK_WRONG_INFO_MESSAGE;
                     case USED_OLD_PASSWORD:
                       return UNLOCK_USER_OLD_PASSWORD_MESSAGE;
                     default:
-                      return dataUnlock.unlock.error;
+                      return errorMessage;
                   }
                 }
                 return errorUnlock?.message;
@@ -242,7 +280,7 @@ const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
             </p>
           </Message>
         </Grid.Row>
-      )}
+      ) : null}
       <Grid.Row>
         <DarkMode />
       </Grid.Row>
@@ -253,9 +291,13 @@ const UnlockPage: NextPage<{ email: string; unlockKey: string }> = ({
 UnlockPage.getInitialProps = (ctx) => {
   const { email, unlockKey } = ctx.query;
 
+  const unlockKeyLength = unlockKey?.length ?? 0;
+
   if (
     typeof email !== "string" ||
     typeof unlockKey !== "string" ||
+    unlockKeyLength < 32 ||
+    unlockKeyLength > 100 ||
     !isEmail(email)
   ) {
     if (ctx.res) {
@@ -267,7 +309,7 @@ UnlockPage.getInitialProps = (ctx) => {
     } else {
       Router.replace("/");
     }
-    return { email: "", unlockKey: "" };
+    return { email: "", unlockKey: "", isInvalid: true };
   }
   return { email, unlockKey };
 };

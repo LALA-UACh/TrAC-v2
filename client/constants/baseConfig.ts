@@ -23,6 +23,8 @@ export const baseConfig = {
   ERROR_PROGRAM_NOT_FOUND: "Programa especificado no pudo ser encontrado.",
   ERROR_PROGRAM_UNAUTHORIZED_MESSAGE:
     "No está autorizado para ver el programa especificado",
+  ERROR_STUDENT_ACCOUNT_NO_DATA_MESSAGE:
+    "Datos de estudiante no pudieron ser encontrados, favor de contactar a soporte.",
   ERROR_STUDENT_NOT_FOUND_MESSAGE:
     "Estudiante especificado no pudo ser encontrado en el programa especificado.",
   EXPLICIT_SEMESTER_COURSE_BOX_COLOR: "#ECC94B",

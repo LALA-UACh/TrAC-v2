@@ -18,4 +18,4 @@ generates:
         JSONObject: Record<string,any>
 hooks:
   afterAllFileWrite:
-    - prettier --write client/src/graphql/index.ts
+    - yarn pretty-quick

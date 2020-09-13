@@ -7,12 +7,12 @@ import { Box, Stack, useDisclosure } from "@chakra-ui/core";
 
 import { baseUserConfig, UserConfig } from "../../../../constants/userConfig";
 
-import type { UserFragmentFragment } from "../../../graphql";
+import type { UserAdminInfoFragment } from "../../../graphql";
 
 export const useUpdateUserConfigModal = ({
   email,
   config: oldConfig,
-}: Pick<UserFragmentFragment, "email" | "config">) => {
+}: Pick<UserAdminInfoFragment, "email" | "config">) => {
   const { isOpen, onOpen, onClose } = useDisclosure(false);
 
   const [config, setConfig] = useSetState<UserConfig>({

@@ -1,10 +1,11 @@
 import DataLoader from "dataloader";
-import { keyBy, trim } from "lodash";
+import { Dictionary, groupBy, keyBy, trim } from "lodash";
 import { LRUMap } from "lru_map";
 
 import {
   CourseStatsTable,
   CourseTable,
+  ICourse,
   ProgramStructureTable,
 } from "../db/tables";
 import { clearErrorArray } from "../utils/clearErrorArray";
@@ -80,16 +81,13 @@ export const CourseFlowDataLoader = new DataLoader(
 
 export const CourseDataLoader = new DataLoader(
   async (ids: readonly string[]) => {
-    return await Promise.all(
-      ids.map((id) => {
-        return CourseTable()
-          .select("*")
-          .where({
-            id,
-          })
-          .first();
-      })
+    const dataDict: Dictionary<ICourse | undefined> = keyBy(
+      await CourseTable().select("*").whereIn("id", ids),
+      "id"
     );
+    return ids.map((id) => {
+      return dataDict[id];
+    });
   },
   {
     cacheMap: new LRUMap(1000),
@@ -129,13 +127,14 @@ export const CourseAndStructureDataLoader = new DataLoader(
 
 export const CourseStatsDataLoader = new DataLoader(
   async (codes: readonly string[]) => {
-    return await Promise.all(
-      codes.map((code) => {
-        return CourseStatsTable().select("*").where({
-          course_taken: code,
-        });
-      })
+    const groupedData = groupBy(
+      await CourseStatsTable().select("*").whereIn("course_taken", codes),
+      "course_taken"
     );
+
+    return codes.map((code) => {
+      return groupedData[code] ?? [];
+    });
   },
   {
     cacheMap: new LRUMap(1000),
