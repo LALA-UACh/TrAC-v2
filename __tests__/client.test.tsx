@@ -11,6 +11,7 @@ import { baseConfig } from "../client/constants/baseConfig";
 import { baseUserConfig } from "../client/constants/userConfig";
 import {
   AllUsersAdminDocument,
+  CheckUnlockDocument,
   CurrentUserDocument,
 } from "../client/src/graphql";
 import AdminPage from "../client/src/pages/admin";
@@ -53,10 +54,27 @@ describe("unlock", () => {
                 },
               },
             },
+            {
+              request: {
+                query: CheckUnlockDocument,
+                variables: {
+                  email: "asd@gmail.com",
+                  unlockKey: "XwPp9xazJ0ku5CZnlmgAx2Dld8SHkAeT",
+                },
+              },
+              result: {
+                data: {
+                  checkUnlockKey: null,
+                },
+              },
+            },
           ]}
           addTypename={false}
         >
-          <UnlockPage email="asd@gmail.com" unlockKey="asd" />
+          <UnlockPage
+            email="asd@gmail.com"
+            unlockKey="XwPp9xazJ0ku5CZnlmgAx2Dld8SHkAeT"
+          />
         </MockedProvider>
       );
 
