@@ -16,7 +16,7 @@ import { Track, TrackInput } from "../../entities/track";
 import { anonService } from "../../services/anonymization";
 import { assertIsValidDate } from "../../utils/assert";
 
-import type { IContext } from "../../../interfaces";
+import type { IContext } from "../../interfaces";
 @Resolver(() => Track)
 export class TrackResolver {
   @Authorized()

@@ -27,7 +27,7 @@ import {
 import { anonService } from "../../services/anonymization";
 import { sendMail, UnlockMail } from "../../services/mail";
 
-import type { IContext } from "../../../interfaces";
+import type { IContext } from "../../interfaces";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { User } from "../../entities/auth/user";
 

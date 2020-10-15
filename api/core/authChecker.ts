@@ -2,7 +2,7 @@ import "reflect-metadata";
 
 import { ADMIN } from "../constants";
 
-import type { IContext } from "../../interfaces";
+import type { IContext } from "../interfaces";
 import type { AuthChecker } from "type-graphql";
 
 export const authChecker: AuthChecker<IContext> = async (

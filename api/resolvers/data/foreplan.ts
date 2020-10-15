@@ -23,7 +23,7 @@ import {
 import { anonService } from "../../services/anonymization";
 import { assertIsDefined } from "../../utils/assert";
 
-import type { IContext, IfImplements } from "../../../interfaces";
+import type { IContext, IfImplements } from "../../interfaces";
 import type { PartialCourse } from "./course";
 
 @Resolver()

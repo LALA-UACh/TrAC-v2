@@ -42,6 +42,7 @@ import type {
   ITakenCourse,
   ITakenSemester,
 } from "../../../../interfaces";
+
 const ForeplanCourseCheckbox = dynamic(
   () => import("../foreplan/courseBox/Checkbox")
 );

@@ -4,6 +4,7 @@ module.exports = {
   moduleNameMapper: {
     "\\.(css|less|scss|sss|styl)$": "<rootDir>/node_modules/jest-css-modules",
   },
+  testMatch: ["**/__tests__/**/*.test.ts?(x)"],
   globals: {
     "ts-jest": {
       tsConfig: {

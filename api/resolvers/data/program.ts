@@ -32,7 +32,7 @@ import { assertIsDefined } from "../../utils/assert";
 
 import type { $PropertyType } from "utility-types";
 
-import type { IContext } from "../../../interfaces";
+import type { IContext } from "../../interfaces";
 import type {
   ArrayPropertyType,
   IfImplements,

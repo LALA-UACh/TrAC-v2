@@ -16,7 +16,7 @@ import { PersistenceTable } from "../../db/tables";
 import { Persistence } from "../../entities/auth/persistence";
 import { assertIsDefined } from "../../utils/assert";
 
-import type { IContext } from "../../../interfaces";
+import type { IContext } from "../../interfaces";
 
 const resetDataLoadersCachePM2Action = "resetDataLoadersCache";
 

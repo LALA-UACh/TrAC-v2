@@ -27,7 +27,7 @@ import {
 import { assertIsDefined } from "../../utils/assert";
 import { splitFeedbackQuestionOptions } from "./utils";
 
-import type { IContext } from "../../../interfaces";
+import type { IContext } from "../../interfaces";
 import type { PartialUser } from "../auth/user";
 type PartialFeedbackResult = Pick<
   FeedbackResult,

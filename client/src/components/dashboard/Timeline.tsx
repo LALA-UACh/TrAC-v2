@@ -14,7 +14,7 @@ import React, {
 import pixelWidth from "string-pixel-width";
 
 import { css } from "@emotion/core";
-import { AxisLeft } from "@vx/axis";
+import { AxisLeft, AxisScale } from "@vx/axis";
 
 import { SVG_TEXT } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
@@ -257,7 +257,7 @@ export const TimeLine: FC<{
             {config.GRADES_SCALES}
           </text>
           <AxisLeft
-            scale={YAxisScale}
+            scale={YAxisScale as AxisScale}
             left={40}
             top={40}
             hideAxisLine={false}

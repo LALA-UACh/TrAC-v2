@@ -1,4 +1,4 @@
-import { $ElementType, $PropertyType } from "utility-types";
+import type { $ElementType, $PropertyType } from "utility-types";
 
 /**
  * If B implements A, it gives A, otherwise, it gives never

@@ -36,7 +36,7 @@ import { sendMail, UnlockMail } from "../../services/mail";
 import { assertIsDefined } from "../../utils/assert";
 import { checkHasStudentData } from "./auth";
 
-import type { IContext } from "../../../interfaces";
+import type { IContext } from "../../interfaces";
 import type { ArrayPropertyType } from "../../../interfaces/utils";
 export type PartialUser = Pick<User, "email"> & Partial<User>;
 @Resolver(() => User)

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { toInteger, toString } from "lodash";
 import React, { FC, memo, useCallback, useContext, useMemo } from "react";
 
-import { AxisBottom, AxisLeft } from "@vx/axis";
+import { AxisBottom, AxisLeft, AxisScale } from "@vx/axis";
 
 import { IDistribution } from "../../../../interfaces";
 import { SVG_TEXT } from "../../../constants";
@@ -44,7 +44,7 @@ export const scaleAxisX = scaleLinear();
 const AxisNumbers = (() => {
   return (
     <AxisBottom
-      scale={scaleAxisX}
+      scale={scaleAxisX as AxisScale}
       left={5}
       top={80}
       hideAxisLine={true}
@@ -72,13 +72,13 @@ const XAxis: FC<{
 
         let x = scaleColorX(averageTwo(previousMax, min));
         let width =
-          scaleColorX(averageTwo(nextMin, max)) -
-          scaleColorX(averageTwo(previousMax, min));
+          scaleColorX(averageTwo(nextMin, max)) ??
+          0 - (scaleColorX(averageTwo(previousMax, min)) ?? 0);
 
         return (
           <rect
             key={key}
-            x={5 + x}
+            x={5 + (x ?? 0)}
             y={80}
             width={width}
             height={7}
@@ -155,7 +155,7 @@ export const Histogram: FC<{
           <AxisLeft
             left={40}
             top={10}
-            scale={axisLeftScale}
+            scale={axisLeftScale as AxisScale}
             hideAxisLine={true}
             tickLength={4}
             numTicks={4}

@@ -33,7 +33,7 @@ import { assertIsDefined } from "../../utils/assert";
 
 import type { $PropertyType } from "utility-types";
 
-import type { IContext } from "../../../interfaces";
+import type { IContext } from "../../interfaces";
 import type { Dropout } from "../../entities/data/dropout";
 import type { PartialProgram } from "./program";
 import type { PartialTerm } from "./term";

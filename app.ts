@@ -31,7 +31,7 @@ app.register(helmet, {
         "'self' https://cdn.jsdelivr.net https://fonts.googleapis.com 'unsafe-inline'",
       "script-src": IS_DEVELOPMENT
         ? "'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net"
-        : "'self' 'sha256-Iv6ZKjfnjexcRMz1Sa/SarrzKWoCIGfOMSG3u4ZFBpg=' 'sha256-YxOTuTvyNLHJOis3NYhQFhTdPRWuJIRWCv6cons2/b4=' https://cdn.jsdelivr.net",
+        : /** 'self' - altair - voyager - cdn */ "'self' 'sha256-US93NNvzxqNwZq4vsTymtyO9e1JOnGB6vGy83vG+uuw=' 'sha256-YxOTuTvyNLHJOis3NYhQFhTdPRWuJIRWCv6cons2/b4=' https://cdn.jsdelivr.net",
       "font-src":
         "'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:",
       "img-src": `'self' data:`,
