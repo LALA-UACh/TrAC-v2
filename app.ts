@@ -4,7 +4,7 @@ import "reflect-metadata";
 import AltairFastify from "altair-fastify-plugin";
 import Fastify from "fastify";
 import FastifyCookie from "fastify-cookie";
-import GQL from "fastify-gql";
+import mercurius from "mercurius";
 import helmet from "fastify-helmet";
 import FastifyNextJS from "fastify-nextjs";
 import { renderVoyagerPage } from "graphql-voyager/middleware";
@@ -70,7 +70,7 @@ if (SHOW_GRAPHQL_API || IS_DEVELOPMENT) {
   });
 }
 
-app.register(GQL, {
+app.register(mercurius, {
   path: "/api/graphql",
   schema,
   context: buildContext,
