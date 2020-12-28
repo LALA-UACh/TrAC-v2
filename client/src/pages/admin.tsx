@@ -2,7 +2,7 @@ import React, { FC, useEffect, useMemo } from "react";
 import { Message } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import { Flex, Stack } from "@chakra-ui/core";
+import { Flex, Stack } from "@chakra-ui/react";
 
 import { IS_NOT_TEST } from "../../constants";
 import { AdminConfig } from "../components/admin/BaseConfig";

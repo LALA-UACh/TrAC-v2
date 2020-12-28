@@ -18,7 +18,8 @@
     "pretty": true,
     "noUnusedLocals": true,
     "types": [
-      "@emotion/core",
+      "node",
+      "@emotion/react/types/css-prop",
       "@types/jest",
       "@types/testing-library__jest-dom"
     ],

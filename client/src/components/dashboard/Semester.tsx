@@ -1,6 +1,6 @@
 import React, { FC, memo, useContext } from "react";
 
-import { Stack, StackProps, Text } from "@chakra-ui/core";
+import { Stack, StackProps, Text } from "@chakra-ui/react";
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../context/Config";

@@ -2,7 +2,7 @@ import { FC, useContext } from "react";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa";
 
-import { Button } from "@chakra-ui/core";
+import { Button } from "@chakra-ui/react";
 
 import { ConfigContext } from "../../context/Config";
 import { ForeplanActiveStore } from "../../context/ForeplanContext";
@@ -30,8 +30,8 @@ const ForeplanModeSwitch: FC = () => {
           ? FOREPLAN_MODE_SWITCH_ACTIVE_BACKGROUND_COLOR
           : FOREPLAN_MODE_SWITCH_INACTIVE_BACKGROUND_COLOR
       }
-      leftIcon={AiOutlineSchedule}
-      rightIcon={isForeplanActive ? FaToggleOn : FaToggleOff}
+      leftIcon={<AiOutlineSchedule />}
+      rightIcon={isForeplanActive ? <FaToggleOn /> : <FaToggleOff />}
       variantColor="blue"
       color={
         isForeplanActive

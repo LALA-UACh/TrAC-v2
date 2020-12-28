@@ -168,7 +168,7 @@ export class UserResolver {
             locked,
             config,
           }) => {
-            const configPromise = new Promise(async (resolve, reject) => {
+            const configPromise = new Promise<void>(async (resolve, reject) => {
               if (!config) {
                 return resolve();
               }
@@ -200,7 +200,7 @@ export class UserResolver {
                 reject(err);
               }
             });
-            const userPromise = new Promise(async (resolve, reject) => {
+            const userPromise = new Promise<void>(async (resolve, reject) => {
               try {
                 const foundUser = await UserTable()
                   .select("email")

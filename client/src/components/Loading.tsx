@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 
-import { Flex, Spinner } from "@chakra-ui/core";
+import { Flex, Spinner } from "@chakra-ui/react";
 
 import { useIsDark } from "../context/Theme";
 
@@ -13,7 +13,7 @@ export const LoadingPage: FC = () => {
       height="100vh"
       width="100vw"
     >
-      <Spinner color={isDark ? "black" : undefined} size="xl" />
+      <Spinner color={isDark ? "black" : undefined} boxSize="xl" />
     </Flex>
   );
 };

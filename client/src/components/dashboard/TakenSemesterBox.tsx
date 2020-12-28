@@ -1,6 +1,6 @@
 import React, { FC, memo, useContext, useMemo } from "react";
 
-import { Badge, BadgeProps, Box, Stack } from "@chakra-ui/core";
+import { Badge, BadgeProps, Box, Stack } from "@chakra-ui/react";
 
 import { termTypeToNumber } from "../../../constants";
 import { ConfigContext } from "../../context/Config";

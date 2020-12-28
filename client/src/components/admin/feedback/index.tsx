@@ -15,7 +15,7 @@ import {
   ModalOverlay,
   Stack,
   useDisclosure,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 
 import { FeedbackQuestionType } from "../../../../constants";
 import {

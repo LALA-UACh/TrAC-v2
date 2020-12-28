@@ -17,7 +17,7 @@ import {
   ModalOverlay,
   Text,
   useDisclosure,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 
 import { ICourse } from "../../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";
@@ -35,7 +35,7 @@ const useWarningModal = ({
 }: Pick<ICourse, "code" | "name"> & { isPossible: boolean }) => {
   const config = useContext(ConfigContext);
   const [manuallyClosed, setManuallyClosed] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { CodeLabel, NameLabel } = useMemo(() => {
     const CodeLabel: FC = () => {
@@ -81,7 +81,7 @@ const useWarningModal = ({
               textAlign="center"
             >
               <AlertIcon
-                size={config.FOREPLAN_WARNING_INDIRECT_TAKE_ICON_SIZE}
+                boxSize={config.FOREPLAN_WARNING_INDIRECT_TAKE_ICON_SIZE}
               />
               <AlertTitle
                 fontSize={config.FOREPLAN_WARNING_INDIRECT_TAKE_TITLE_FONT_SIZE}
@@ -143,10 +143,9 @@ const useWarningModal = ({
 
 const { addCourseForeplan, removeCourseForeplan } = ForeplanActiveStore.actions;
 
-const ForeplanCourseCheckbox: FC<Pick<
-  ICourse,
-  "code" | "credits" | "name"
->> = memo(({ code, credits, name }) => {
+const ForeplanCourseCheckbox: FC<
+  Pick<ICourse, "code" | "credits" | "name">
+> = memo(({ code, credits, name }) => {
   const checked = ForeplanActiveStore.hooks.useIsForeplanCourseChecked(code);
   const isDirectTake = ForeplanHelperStore.hooks.useForeplanIsDirectTake(code);
   const isPredictedDirectTake = ForeplanActiveStore.hooks.useIsDirectTakePredicted(

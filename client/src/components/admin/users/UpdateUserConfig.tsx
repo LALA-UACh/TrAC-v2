@@ -13,7 +13,7 @@ export const useUpdateUserConfigModal = ({
   email,
   config: oldConfig,
 }: Pick<UserAdminInfoFragment, "email" | "config">) => {
-  const { isOpen, onOpen, onClose } = useDisclosure(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [config, setConfig] = useSetState<UserConfig>({
     ...baseUserConfig,

@@ -18,7 +18,7 @@ import {
   Stack,
   Text,
   useDisclosure,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 
 import {
   FeedbackQuestionType,
@@ -44,7 +44,7 @@ export const Feedback: FC<{
     notifyOnNetworkStatusChange: true,
   });
   const [answerFeedback] = useAnswerFeedbackFormMutation();
-  const modalDisclosure = useDisclosure(false);
+  const modalDisclosure = useDisclosure();
   const config = useContext(ConfigContext);
   const { register, handleSubmit, errors, watch } = useForm();
 

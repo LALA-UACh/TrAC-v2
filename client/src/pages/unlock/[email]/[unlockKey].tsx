@@ -15,7 +15,7 @@ import {
 import isEmail from "validator/lib/isEmail";
 import matches from "validator/lib/matches";
 
-import { Image } from "@chakra-ui/core";
+import { Image } from "@chakra-ui/react";
 
 import {
   STUDENT_DATA_NOT_FOUND,

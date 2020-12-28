@@ -25,8 +25,8 @@ import {
   Stack,
   Text,
   useDisclosure,
-} from "@chakra-ui/core";
-import { css } from "@emotion/core";
+} from "@chakra-ui/react";
+import { css } from "@emotion/react";
 
 import { UserType } from "../../../../constants";
 import { useTheme } from "../../../context/Theme";

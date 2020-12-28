@@ -13,7 +13,7 @@ import React, {
 } from "react";
 import pixelWidth from "string-pixel-width";
 
-import { css } from "@emotion/core";
+import { css } from "@emotion/react";
 import { AxisLeft, AxisScale } from "@vx/axis";
 
 import { SVG_TEXT } from "../../../constants";

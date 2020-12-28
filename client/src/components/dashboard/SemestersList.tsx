@@ -7,7 +7,7 @@ import {
   ListChildComponentProps,
 } from "react-window";
 
-import { Stack } from "@chakra-ui/core";
+import { Stack } from "@chakra-ui/react";
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../context/Config";

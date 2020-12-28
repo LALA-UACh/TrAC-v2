@@ -6,7 +6,7 @@ import {
 import React, { FC, memo, useEffect } from "react";
 import ToggleTheme from "react-toggle-theme";
 
-import { Box, BoxProps } from "@chakra-ui/core";
+import { Box, BoxProps } from "@chakra-ui/react";
 
 import { SVG_TEXT } from "../../constants";
 import {

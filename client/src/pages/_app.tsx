@@ -16,7 +16,7 @@ import {
   HttpLink,
   InMemoryCache,
 } from "@apollo/client";
-import { theme, ThemeProvider } from "@chakra-ui/core";
+import { theme, ChakraProvider } from "@chakra-ui/react";
 
 import { GRAPHQL_URL, IS_NOT_PRODUCTION } from "../../constants";
 import { RefreshToken } from "../components/RefreshToken";
@@ -58,14 +58,14 @@ const App: NextPage<AppProps> = ({ Component, pageProps }) => {
       <Head>
         <title>TrAC</title>
       </Head>
-
-      <ThemeProvider theme={theme}>
+      <ChakraProvider theme={theme}>
         <Config>
           <Component {...pageProps} />
         </Config>
-      </ThemeProvider>
-      <DarkMode render={false} />
-      <RefreshToken />
+
+        <DarkMode render={false} />
+        <RefreshToken />
+      </ChakraProvider>
     </ApolloProvider>
   );
 };

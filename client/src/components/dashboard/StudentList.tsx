@@ -34,8 +34,8 @@ import {
   Text,
   Tooltip,
   useDisclosure,
-} from "@chakra-ui/core";
-import { css } from "@emotion/core";
+} from "@chakra-ui/react";
+import { css } from "@emotion/react";
 
 import { IS_DEVELOPMENT } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
@@ -164,7 +164,9 @@ export const StudentList: FC<{
 
   const { user } = useUser();
 
-  const { isOpen, onOpen, onClose } = useDisclosure(initialOpen);
+  const { isOpen, onOpen, onClose } = useDisclosure({
+    defaultIsOpen: initialOpen,
+  });
 
   useUpdateEffect(() => {
     track({
@@ -184,7 +186,7 @@ export const StudentList: FC<{
     }, [isOpen]);
   }
 
-  const btnRef = useRef<HTMLElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   const [columnSort, setColumnSort] = useRememberState<columnNames[]>(
     "student_list_columns_sort",
@@ -282,7 +284,7 @@ export const StudentList: FC<{
         variantColor="blue"
         onClick={onOpen}
         cursor="pointer"
-        leftIcon={FaListOl}
+        leftIcon={<FaListOl />}
         fontFamily="Lato"
       >
         {STUDENT_LIST_TITLE}

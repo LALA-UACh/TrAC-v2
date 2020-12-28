@@ -12,7 +12,7 @@ import React, {
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { useClickAway } from "react-use";
 
-import { Box, Flex, Stack, Text } from "@chakra-ui/core";
+import { Box, Flex, Stack, Text } from "@chakra-ui/react";
 
 import { ICourse } from "../../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";

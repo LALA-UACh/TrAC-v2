@@ -24,7 +24,7 @@ import {
   PopoverTrigger,
   Stack,
   Text,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 
 import { ICourse } from "../../../../../interfaces";
 import { StateCourse } from "../../../../constants";
@@ -151,7 +151,6 @@ export const PredictState: FC<
       isOpen={isOpenPrediction}
       trigger="click"
       placement="right"
-      usePortal
     >
       <PopoverTrigger>{Trigger}</PopoverTrigger>
       <PopoverContent

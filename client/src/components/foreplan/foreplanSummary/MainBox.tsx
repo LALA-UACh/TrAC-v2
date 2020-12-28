@@ -28,7 +28,7 @@ import {
   Text,
   Tooltip,
   useDisclosure,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 
 import { ConfigContext } from "../../../context/Config";
 import {
@@ -172,7 +172,7 @@ const ForeplanTotalCredits: FC<{ isSummaryOpen?: boolean }> = memo(
   ({ isSummaryOpen }) => {
     const totalCredits = ForeplanActiveStore.hooks.useForeplanTotalCreditsTaken();
     const config = useContext(ConfigContext);
-    const { isOpen, onOpen, onClose } = useDisclosure(false);
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const isOverCredits = useMemo(() => {
       if (

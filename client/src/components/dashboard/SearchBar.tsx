@@ -29,7 +29,7 @@ import {
   InputGroup,
   InputRightElement,
   Tag,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 
 import { UserType } from "../../../constants";
 import { ConfigContext } from "../../context/Config";

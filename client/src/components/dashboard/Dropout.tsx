@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { FC, memo, useContext, useEffect, useState } from "react";
 
-import { Flex, Stack, Text } from "@chakra-ui/core";
+import { Flex, Stack, Text } from "@chakra-ui/react";
 
 import { ConfigContext } from "../../context/Config";
 import { setTrackingData, track } from "../../context/Tracking";

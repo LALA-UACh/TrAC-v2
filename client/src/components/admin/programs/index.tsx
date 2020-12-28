@@ -3,7 +3,7 @@ import React, { FC, useEffect } from "react";
 import { Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import { Flex, Stack } from "@chakra-ui/core";
+import { Flex, Stack } from "@chakra-ui/react";
 
 import { usePagination } from "../Pagination";
 import { ImportPrograms } from "./ImportPrograms";

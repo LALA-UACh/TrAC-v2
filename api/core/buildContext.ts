@@ -15,9 +15,15 @@ export const buildContext = async (req: FastifyRequest, res: FastifyReply) => {
   let user: IUser | undefined;
   let token: string | undefined;
   try {
-    const authorizationToken: string | undefined =
+    const authorizationToken: string | undefined | null =
       (req.cookies.authorization
-        ? res.unsignCookie(req.cookies.authorization)
+        ? (() => {
+            const unsignedCookie = res.unsignCookie(req.cookies.authorization);
+
+            if (unsignedCookie.valid) {
+              return unsignedCookie.value;
+            }
+          })()
         : null) || req.headers.authorization;
 
     if (authorizationToken) {

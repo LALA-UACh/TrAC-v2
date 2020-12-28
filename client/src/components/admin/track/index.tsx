@@ -10,17 +10,17 @@ import Select from "react-select";
 import { Button, Icon } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import { Box, Divider, Heading, Spinner, Stack, Text } from "@chakra-ui/core";
-import { css } from "@emotion/core";
+import { Box, Divider, Heading, Spinner, Stack, Text } from "@chakra-ui/react";
+import { css } from "@emotion/react";
 
 import { useIsDark } from "../../../context/Theme";
 import { TrackInfoQueryResult, useTrackInfoQuery } from "../../../graphql";
 import { trimEveryLine } from "../../../utils";
 import { usePagination } from "../Pagination";
 
-const textAlignCenter = css`
-  text-align: center;
-`;
+// const textAlignCenter = css`
+//   text-align: center;
+// `;
 
 const TrackerParser = new Parser<
   NonNullable<TrackInfoQueryResult["data"]>["trackInfo"][number]
@@ -117,7 +117,6 @@ export const AdminTrack: FC = () => {
             setMinDate(date.toISOString());
           }
         }}
-        css={textAlignCenter}
         showTimeSelect
         dateFormat="MM/dd/yyyy h:mm aa"
         selectsStart
@@ -133,7 +132,6 @@ export const AdminTrack: FC = () => {
             setMaxDate(date.toISOString());
           }
         }}
-        css={textAlignCenter}
         showTimeSelect
         dateFormat="MM/dd/yyyy h:mm aa"
         selectsEnd

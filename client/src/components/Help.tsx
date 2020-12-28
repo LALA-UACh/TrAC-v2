@@ -12,7 +12,7 @@ import {
   Stack,
   Text,
   Tooltip,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 
 import { ConfigContext } from "../context/Config";
 

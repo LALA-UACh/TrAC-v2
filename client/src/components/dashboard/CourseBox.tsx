@@ -13,10 +13,9 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  PseudoBoxProps,
   Stack,
   Text,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 
 import { StateCourse, termTypeToNumber } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
@@ -42,6 +41,7 @@ import type {
   ITakenCourse,
   ITakenSemester,
 } from "../../../../interfaces";
+// import { PseudoBoxProps } from "@chakra-ui/core";
 
 const ForeplanCourseCheckbox = dynamic(
   () => import("../foreplan/courseBox/Checkbox")
@@ -495,31 +495,31 @@ const HistoricalCircle: FC<{
 }> = ({ color, tooltipLabel, tooltipType }) => {
   const config = useContext(ConfigContext);
 
-  const tooltipProps = useMemo<PseudoBoxProps>(() => {
-    switch (tooltipType) {
-      case "info": {
-        return {
-          className: "info_popover popover",
-          background: "#3182CE",
-          color: "white",
-        };
-      }
-      case "error": {
-        return {
-          className: "error_popover popover",
-          background: "#E53E3E",
-          color: "white",
-        };
-      }
-      default:
-        return {
-          className: "white_popover popover",
-        };
-    }
-  }, [tooltipType]);
+  // const tooltipProps = useMemo<PseudoBoxProps>(() => {
+  //   switch (tooltipType) {
+  //     case "info": {
+  //       return {
+  //         className: "info_popover popover",
+  //         background: "#3182CE",
+  //         color: "white",
+  //       };
+  //     }
+  //     case "error": {
+  //       return {
+  //         className: "error_popover popover",
+  //         background: "#E53E3E",
+  //         color: "white",
+  //       };
+  //     }
+  //     default:
+  //       return {
+  //         className: "white_popover popover",
+  //       };
+  //   }
+  // }, [tooltipType]);
 
   return (
-    <Popover trigger="hover" usePortal placement="bottom">
+    <Popover trigger="hover" placement="bottom">
       <PopoverTrigger>
         <Box
           m={0}
@@ -543,10 +543,10 @@ const HistoricalCircle: FC<{
       </PopoverTrigger>
 
       <PopoverContent
-        width="fit-content"
-        {...tooltipProps}
-        pos="absolute"
-        zIndex={1000}
+      // width="fit-content"
+      // {...tooltipProps}
+      // pos="absolute"
+      // zIndex={1000}
       >
         <PopoverHeader fontWeight="bold">{tooltipLabel}</PopoverHeader>
       </PopoverContent>

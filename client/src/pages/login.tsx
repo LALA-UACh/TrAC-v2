@@ -17,7 +17,7 @@ import {
 import isEmail from "validator/lib/isEmail";
 import isLength from "validator/lib/isLength";
 
-import { Flex, FormLabel, Image, Switch } from "@chakra-ui/core";
+import { Flex, FormLabel, Image, Switch } from "@chakra-ui/react";
 
 import {
   LOCKED_USER,

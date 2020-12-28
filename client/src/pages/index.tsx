@@ -11,7 +11,7 @@ import React, {
 import ScrollContainer from "react-indiana-drag-scroll";
 import { useUpdateEffect } from "react-use";
 
-import { Box, Flex, Stack, useToast } from "@chakra-ui/core";
+import { Box, Flex, Stack, useToast } from "@chakra-ui/react";
 
 import {
   IS_NOT_TEST,

@@ -26,7 +26,7 @@ import {
 } from "semantic-ui-react";
 import isJSON from "validator/lib/isJSON";
 
-import { Flex, Stack, useToast } from "@chakra-ui/core";
+import { Flex, Stack, useToast } from "@chakra-ui/react";
 
 import { baseConfigAdmin } from "../../../constants/baseConfig";
 import { configValueToString } from "../../../constants/validation";

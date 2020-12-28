@@ -3,7 +3,7 @@ import { map, truncate } from "lodash";
 import React, { FC, memo, useContext } from "react";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 
-import { Box, Flex, Text, Tooltip } from "@chakra-ui/core";
+import { Box, Flex, Text, Tooltip } from "@chakra-ui/react";
 
 import { ICourse } from "../../../../../interfaces";
 import { ConfigContext } from "../../../context/Config";

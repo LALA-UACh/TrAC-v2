@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { Button, Icon } from "semantic-ui-react";
 
-import { Stack } from "@chakra-ui/core";
+import { Stack } from "@chakra-ui/react";
 
 import { useResetDataLoadersCacheAdminMutation } from "../../../graphql";
 import { Confirm } from "../../Confirm";

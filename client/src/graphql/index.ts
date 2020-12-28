@@ -4,6 +4,10 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -1008,9 +1012,7 @@ export function useAddUsersProgramsAdminMutation(
 export type AddUsersProgramsAdminMutationHookResult = ReturnType<
   typeof useAddUsersProgramsAdminMutation
 >;
-export type AddUsersProgramsAdminMutationResult = Apollo.MutationResult<
-  AddUsersProgramsAdminMutation
->;
+export type AddUsersProgramsAdminMutationResult = Apollo.MutationResult<AddUsersProgramsAdminMutation>;
 export type AddUsersProgramsAdminMutationOptions = Apollo.BaseMutationOptions<
   AddUsersProgramsAdminMutation,
   AddUsersProgramsAdminMutationVariables
@@ -1059,9 +1061,7 @@ export function useUpdateUserProgramsAdminMutation(
 export type UpdateUserProgramsAdminMutationHookResult = ReturnType<
   typeof useUpdateUserProgramsAdminMutation
 >;
-export type UpdateUserProgramsAdminMutationResult = Apollo.MutationResult<
-  UpdateUserProgramsAdminMutation
->;
+export type UpdateUserProgramsAdminMutationResult = Apollo.MutationResult<UpdateUserProgramsAdminMutation>;
 export type UpdateUserProgramsAdminMutationOptions = Apollo.BaseMutationOptions<
   UpdateUserProgramsAdminMutation,
   UpdateUserProgramsAdminMutationVariables
@@ -1110,9 +1110,7 @@ export function useUpsertUsersAdminMutation(
 export type UpsertUsersAdminMutationHookResult = ReturnType<
   typeof useUpsertUsersAdminMutation
 >;
-export type UpsertUsersAdminMutationResult = Apollo.MutationResult<
-  UpsertUsersAdminMutation
->;
+export type UpsertUsersAdminMutationResult = Apollo.MutationResult<UpsertUsersAdminMutation>;
 export type UpsertUsersAdminMutationOptions = Apollo.BaseMutationOptions<
   UpsertUsersAdminMutation,
   UpsertUsersAdminMutationVariables
@@ -1158,9 +1156,7 @@ export function useDeleteUserAdminMutation(
 export type DeleteUserAdminMutationHookResult = ReturnType<
   typeof useDeleteUserAdminMutation
 >;
-export type DeleteUserAdminMutationResult = Apollo.MutationResult<
-  DeleteUserAdminMutation
->;
+export type DeleteUserAdminMutationResult = Apollo.MutationResult<DeleteUserAdminMutation>;
 export type DeleteUserAdminMutationOptions = Apollo.BaseMutationOptions<
   DeleteUserAdminMutation,
   DeleteUserAdminMutationVariables
@@ -1212,9 +1208,7 @@ export function useLockMailUserAdminMutation(
 export type LockMailUserAdminMutationHookResult = ReturnType<
   typeof useLockMailUserAdminMutation
 >;
-export type LockMailUserAdminMutationResult = Apollo.MutationResult<
-  LockMailUserAdminMutation
->;
+export type LockMailUserAdminMutationResult = Apollo.MutationResult<LockMailUserAdminMutation>;
 export type LockMailUserAdminMutationOptions = Apollo.BaseMutationOptions<
   LockMailUserAdminMutation,
   LockMailUserAdminMutationVariables
@@ -1259,9 +1253,7 @@ export function useMailAllLockedUsersAdminMutation(
 export type MailAllLockedUsersAdminMutationHookResult = ReturnType<
   typeof useMailAllLockedUsersAdminMutation
 >;
-export type MailAllLockedUsersAdminMutationResult = Apollo.MutationResult<
-  MailAllLockedUsersAdminMutation
->;
+export type MailAllLockedUsersAdminMutationResult = Apollo.MutationResult<MailAllLockedUsersAdminMutation>;
 export type MailAllLockedUsersAdminMutationOptions = Apollo.BaseMutationOptions<
   MailAllLockedUsersAdminMutation,
   MailAllLockedUsersAdminMutationVariables
@@ -1308,9 +1300,7 @@ export function useEditConfigAdminMutation(
 export type EditConfigAdminMutationHookResult = ReturnType<
   typeof useEditConfigAdminMutation
 >;
-export type EditConfigAdminMutationResult = Apollo.MutationResult<
-  EditConfigAdminMutation
->;
+export type EditConfigAdminMutationResult = Apollo.MutationResult<EditConfigAdminMutation>;
 export type EditConfigAdminMutationOptions = Apollo.BaseMutationOptions<
   EditConfigAdminMutation,
   EditConfigAdminMutationVariables
@@ -1342,7 +1332,7 @@ export const UserPersistencesAdminDocument = gql`
  * });
  */
 export function useUserPersistencesAdminQuery(
-  baseOptions?: Apollo.QueryHookOptions<
+  baseOptions: Apollo.QueryHookOptions<
     UserPersistencesAdminQuery,
     UserPersistencesAdminQueryVariables
   >
@@ -1414,9 +1404,7 @@ export function useResetPersistenceAdminMutation(
 export type ResetPersistenceAdminMutationHookResult = ReturnType<
   typeof useResetPersistenceAdminMutation
 >;
-export type ResetPersistenceAdminMutationResult = Apollo.MutationResult<
-  ResetPersistenceAdminMutation
->;
+export type ResetPersistenceAdminMutationResult = Apollo.MutationResult<ResetPersistenceAdminMutation>;
 export type ResetPersistenceAdminMutationOptions = Apollo.BaseMutationOptions<
   ResetPersistenceAdminMutation,
   ResetPersistenceAdminMutationVariables
@@ -1461,9 +1449,7 @@ export function useResetDataLoadersCacheAdminMutation(
 export type ResetDataLoadersCacheAdminMutationHookResult = ReturnType<
   typeof useResetDataLoadersCacheAdminMutation
 >;
-export type ResetDataLoadersCacheAdminMutationResult = Apollo.MutationResult<
-  ResetDataLoadersCacheAdminMutation
->;
+export type ResetDataLoadersCacheAdminMutationResult = Apollo.MutationResult<ResetDataLoadersCacheAdminMutation>;
 export type ResetDataLoadersCacheAdminMutationOptions = Apollo.BaseMutationOptions<
   ResetDataLoadersCacheAdminMutation,
   ResetDataLoadersCacheAdminMutationVariables
@@ -1508,9 +1494,7 @@ export function useFeedbackResultsCsvAdminMutation(
 export type FeedbackResultsCsvAdminMutationHookResult = ReturnType<
   typeof useFeedbackResultsCsvAdminMutation
 >;
-export type FeedbackResultsCsvAdminMutationResult = Apollo.MutationResult<
-  FeedbackResultsCsvAdminMutation
->;
+export type FeedbackResultsCsvAdminMutationResult = Apollo.MutationResult<FeedbackResultsCsvAdminMutation>;
 export type FeedbackResultsCsvAdminMutationOptions = Apollo.BaseMutationOptions<
   FeedbackResultsCsvAdminMutation,
   FeedbackResultsCsvAdminMutationVariables
@@ -1618,7 +1602,7 @@ export const TrackInfoDocument = gql`
  * });
  */
 export function useTrackInfoQuery(
-  baseOptions?: Apollo.QueryHookOptions<TrackInfoQuery, TrackInfoQueryVariables>
+  baseOptions: Apollo.QueryHookOptions<TrackInfoQuery, TrackInfoQueryVariables>
 ) {
   return Apollo.useQuery<TrackInfoQuery, TrackInfoQueryVariables>(
     TrackInfoDocument,
@@ -1775,7 +1759,7 @@ export const CheckUnlockDocument = gql`
  * });
  */
 export function useCheckUnlockQuery(
-  baseOptions?: Apollo.QueryHookOptions<
+  baseOptions: Apollo.QueryHookOptions<
     CheckUnlockQuery,
     CheckUnlockQueryVariables
   >
@@ -1980,9 +1964,7 @@ export function useSearchProgramMutation(
 export type SearchProgramMutationHookResult = ReturnType<
   typeof useSearchProgramMutation
 >;
-export type SearchProgramMutationResult = Apollo.MutationResult<
-  SearchProgramMutation
->;
+export type SearchProgramMutationResult = Apollo.MutationResult<SearchProgramMutation>;
 export type SearchProgramMutationOptions = Apollo.BaseMutationOptions<
   SearchProgramMutation,
   SearchProgramMutationVariables
@@ -2073,9 +2055,7 @@ export function useSearchStudentMutation(
 export type SearchStudentMutationHookResult = ReturnType<
   typeof useSearchStudentMutation
 >;
-export type SearchStudentMutationResult = Apollo.MutationResult<
-  SearchStudentMutation
->;
+export type SearchStudentMutationResult = Apollo.MutationResult<SearchStudentMutation>;
 export type SearchStudentMutationOptions = Apollo.BaseMutationOptions<
   SearchStudentMutation,
   SearchStudentMutationVariables
@@ -2253,7 +2233,7 @@ export const StudentsListDocument = gql`
  * });
  */
 export function useStudentsListQuery(
-  baseOptions?: Apollo.QueryHookOptions<
+  baseOptions: Apollo.QueryHookOptions<
     StudentsListQuery,
     StudentsListQueryVariables
   >
@@ -2338,9 +2318,7 @@ export function usePerformanceLoadAdvicesMutation(
 export type PerformanceLoadAdvicesMutationHookResult = ReturnType<
   typeof usePerformanceLoadAdvicesMutation
 >;
-export type PerformanceLoadAdvicesMutationResult = Apollo.MutationResult<
-  PerformanceLoadAdvicesMutation
->;
+export type PerformanceLoadAdvicesMutationResult = Apollo.MutationResult<PerformanceLoadAdvicesMutation>;
 export type PerformanceLoadAdvicesMutationOptions = Apollo.BaseMutationOptions<
   PerformanceLoadAdvicesMutation,
   PerformanceLoadAdvicesMutationVariables
@@ -2390,9 +2368,7 @@ export function useDirectTakeCoursesMutation(
 export type DirectTakeCoursesMutationHookResult = ReturnType<
   typeof useDirectTakeCoursesMutation
 >;
-export type DirectTakeCoursesMutationResult = Apollo.MutationResult<
-  DirectTakeCoursesMutation
->;
+export type DirectTakeCoursesMutationResult = Apollo.MutationResult<DirectTakeCoursesMutation>;
 export type DirectTakeCoursesMutationOptions = Apollo.BaseMutationOptions<
   DirectTakeCoursesMutation,
   DirectTakeCoursesMutationVariables
@@ -2445,9 +2421,7 @@ export function useIndirectTakeCoursesMutation(
 export type IndirectTakeCoursesMutationHookResult = ReturnType<
   typeof useIndirectTakeCoursesMutation
 >;
-export type IndirectTakeCoursesMutationResult = Apollo.MutationResult<
-  IndirectTakeCoursesMutation
->;
+export type IndirectTakeCoursesMutationResult = Apollo.MutationResult<IndirectTakeCoursesMutation>;
 export type IndirectTakeCoursesMutationOptions = Apollo.BaseMutationOptions<
   IndirectTakeCoursesMutation,
   IndirectTakeCoursesMutationVariables
@@ -2478,7 +2452,7 @@ export const GetPersistenceValueDocument = gql`
  * });
  */
 export function useGetPersistenceValueQuery(
-  baseOptions?: Apollo.QueryHookOptions<
+  baseOptions: Apollo.QueryHookOptions<
     GetPersistenceValueQuery,
     GetPersistenceValueQueryVariables
   >
@@ -2553,9 +2527,7 @@ export function useSetPersistenceValueMutation(
 export type SetPersistenceValueMutationHookResult = ReturnType<
   typeof useSetPersistenceValueMutation
 >;
-export type SetPersistenceValueMutationResult = Apollo.MutationResult<
-  SetPersistenceValueMutation
->;
+export type SetPersistenceValueMutationResult = Apollo.MutationResult<SetPersistenceValueMutation>;
 export type SetPersistenceValueMutationOptions = Apollo.BaseMutationOptions<
   SetPersistenceValueMutation,
   SetPersistenceValueMutationVariables
@@ -2668,9 +2640,7 @@ export function useAnswerFeedbackFormMutation(
 export type AnswerFeedbackFormMutationHookResult = ReturnType<
   typeof useAnswerFeedbackFormMutation
 >;
-export type AnswerFeedbackFormMutationResult = Apollo.MutationResult<
-  AnswerFeedbackFormMutation
->;
+export type AnswerFeedbackFormMutationResult = Apollo.MutationResult<AnswerFeedbackFormMutation>;
 export type AnswerFeedbackFormMutationOptions = Apollo.BaseMutationOptions<
   AnswerFeedbackFormMutation,
   AnswerFeedbackFormMutationVariables
@@ -2781,9 +2751,7 @@ export function useUnlockTestMutation(
 export type UnlockTestMutationHookResult = ReturnType<
   typeof useUnlockTestMutation
 >;
-export type UnlockTestMutationResult = Apollo.MutationResult<
-  UnlockTestMutation
->;
+export type UnlockTestMutationResult = Apollo.MutationResult<UnlockTestMutation>;
 export type UnlockTestMutationOptions = Apollo.BaseMutationOptions<
   UnlockTestMutation,
   UnlockTestMutationVariables

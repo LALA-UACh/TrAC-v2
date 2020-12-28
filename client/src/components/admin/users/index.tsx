@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from "react";
 import { Button, Icon, Message, Table } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import { Flex, Stack } from "@chakra-ui/core";
+import { Flex, Stack } from "@chakra-ui/react";
 
 import { UserConfig } from "../../../../constants/userConfig";
 import {
