@@ -1,4 +1,4 @@
-import React, { FC, memo, useContext } from "react";
+import React, { FC, useContext } from "react";
 
 import { Stack, StackProps, Text } from "@chakra-ui/react";
 
@@ -39,7 +39,7 @@ export const Semester: FC<
     courses: ICourse[];
     n: number;
   } & StackProps
-> = memo(({ courses: semester, n, mr, ...stackProps }) => {
+> = ({ courses: semester, n, mr, ...stackProps }) => {
   const { SEMESTER_HEADER_TEXT_COLOR, SEMESTER_HEADER_FONT_SIZE } = useContext(
     ConfigContext
   );
@@ -58,4 +58,4 @@ export const Semester: FC<
       ))}
     </Stack>
   );
-});
+};

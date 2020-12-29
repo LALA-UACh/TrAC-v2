@@ -48,20 +48,20 @@ export const TakenSemesterBox: FC<{
       case "ELIM-REINC":
       case "REINCORP":
         return {
-          variantColor: "orange",
+          colorScheme: "orange",
         };
       case "ELIMINADO":
         return {
-          variantColor: "red",
+          colorScheme: "red",
         };
       case "EGRESADO": {
         return {
-          variantColor: "blue",
+          colorScheme: "blue",
         };
       }
       case "PENDIENTE":
         return {
-          variantColor: "purple",
+          colorScheme: "purple",
         };
     }
     return {

@@ -108,7 +108,7 @@ const useWarningModal = ({
           </ModalBody>
           <ModalFooter>
             <Button
-              variantColor="blue"
+              colorScheme="blue"
               mr={3}
               cursor="pointer"
               onClick={() => {

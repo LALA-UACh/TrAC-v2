@@ -35,6 +35,7 @@ import { UserType } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import {
   DashboardInputActions,
+  setMock,
   useChosenCurriculum,
   useIsMockActive,
 } from "../../context/DashboardInput";
@@ -48,18 +49,10 @@ import type { $ElementType } from "utility-types";
 const StudentList = dynamic(() => import("./StudentList"));
 
 const MockingMode: FC = memo(() => {
-  const { user } = useUser({ fetchPolicy: "cache-only" });
-  const [mock, setMock] = useRememberState("mockMode", !!user?.admin);
-  useEffect(() => {
-    DashboardInputActions.setMock(mock);
-  }, [mock]);
+  const mock = useIsMockActive();
 
   return (
-    <Button
-      basic
-      onClick={() => setMock((mode) => !mode)}
-      color={mock ? "blue" : "red"}
-    >
+    <Button basic onClick={() => setMock(!mock)} color={mock ? "blue" : "red"}>
       {mock ? "Mocking ON" : "Mocking OFF"}
     </Button>
   );
@@ -226,7 +219,7 @@ export const SearchBar: FC<{
 
         {(searchResult?.curriculums.length ?? 0) > 1 ? (
           <Flex mr={5}>
-            <Tag variantColor="blue" variant="outline">
+            <Tag colorScheme="blue" variant="outline">
               {searchResult?.program_id} | {CURRICULUM_LABEL}
             </Tag>
             <Box width={90} ml={2}>

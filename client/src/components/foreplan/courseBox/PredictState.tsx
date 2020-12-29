@@ -151,6 +151,7 @@ export const PredictState: FC<
       isOpen={isOpenPrediction}
       trigger="click"
       placement="right"
+      isLazy
     >
       <PopoverTrigger>{Trigger}</PopoverTrigger>
       <PopoverContent

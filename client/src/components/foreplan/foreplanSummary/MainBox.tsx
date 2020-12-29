@@ -223,6 +223,7 @@ const ForeplanTotalCredits: FC<{ isSummaryOpen?: boolean }> = memo(
           </Text>
         </Text>
         <Popover
+          isLazy
           isOpen={isOpen}
           onOpen={onOpen}
           onClose={onClose}

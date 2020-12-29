@@ -3,7 +3,7 @@ import React, { useEffect, useMemo } from "react";
 import { useSetState } from "react-use";
 import { Button, Checkbox, Icon, Input, Modal } from "semantic-ui-react";
 
-import { Box, Stack, useDisclosure } from "@chakra-ui/core";
+import { Box, Stack, useDisclosure } from "@chakra-ui/react";
 
 import { baseUserConfig, UserConfig } from "../../../../constants/userConfig";
 

@@ -18,4 +18,4 @@ generates:
         JSONObject: Record<string,any>
 hooks:
   afterAllFileWrite:
-    - yarn pretty-quick
+    - pnpx pretty-quick

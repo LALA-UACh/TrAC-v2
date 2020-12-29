@@ -1,15 +1,39 @@
 import { createStore } from "react-state-selector";
 
 export const {
+  hooks: { useIsMockActive },
+  actions: { setMock },
+} = createStore(
+  {
+    mock: 0,
+  },
+  {
+    storagePersistence: {
+      isActive: true,
+      persistenceKey: "MockIsActive",
+    },
+    hooks: {
+      useIsMockActive({ mock }) {
+        return Boolean(mock);
+      },
+    },
+    actions: {
+      setMock: (mock: boolean) => (draft) => {
+        draft.mock = mock ? 1 : 0;
+      },
+    },
+  }
+);
+
+export const {
   useStore: useDashboardInputState,
   actions: DashboardInputActions,
-  hooks: { useIsMockActive, useProgram, useStudent, useChosenCurriculum },
+  hooks: { useProgram, useStudent, useChosenCurriculum },
 } = createStore(
   {
     chosenCurriculum: undefined as string | undefined,
     program: undefined as string | undefined,
     student: undefined as string | undefined,
-    mock: false,
   },
   {
     devName: "DashboardInput",
@@ -23,9 +47,6 @@ export const {
       useChosenCurriculum: ({ chosenCurriculum }) => {
         return chosenCurriculum;
       },
-      useIsMockActive: ({ mock }) => {
-        return mock;
-      },
     },
     actions: {
       setProgram: (program?: string) => (draft) => {
@@ -36,9 +57,6 @@ export const {
       },
       setChosenCurriculum: (chosenCurriculum?: string) => (draft) => {
         draft.chosenCurriculum = chosenCurriculum;
-      },
-      setMock: (mock: boolean) => (draft) => {
-        draft.mock = mock;
       },
     },
   }

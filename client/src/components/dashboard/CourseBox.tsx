@@ -3,19 +3,9 @@ import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
 import { some, truncate } from "lodash";
 import dynamic from "next/dynamic";
-import React, { FC, memo, useContext, useMemo } from "react";
+import React, { FC, memo, ReactNode, useContext, useMemo } from "react";
 
-import {
-  Badge,
-  Box,
-  Flex,
-  Popover,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/react";
 
 import { StateCourse, termTypeToNumber } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
@@ -41,7 +31,8 @@ import type {
   ITakenCourse,
   ITakenSemester,
 } from "../../../../interfaces";
-// import { PseudoBoxProps } from "@chakra-ui/core";
+
+import { HistoricalCirclesComponent } from "./HistoricalCirclesComponent";
 
 const ForeplanCourseCheckbox = dynamic(
   () => import("../foreplan/courseBox/Checkbox")
@@ -488,128 +479,6 @@ const GradeComponent: FC<Pick<CurrentTakenData, "state" | "grade">> = memo(
   }
 );
 
-const HistoricalCircle: FC<{
-  color: string;
-  tooltipLabel?: string | number;
-  tooltipType?: "error" | "info" | "light";
-}> = ({ color, tooltipLabel, tooltipType }) => {
-  const config = useContext(ConfigContext);
-
-  // const tooltipProps = useMemo<PseudoBoxProps>(() => {
-  //   switch (tooltipType) {
-  //     case "info": {
-  //       return {
-  //         className: "info_popover popover",
-  //         background: "#3182CE",
-  //         color: "white",
-  //       };
-  //     }
-  //     case "error": {
-  //       return {
-  //         className: "error_popover popover",
-  //         background: "#E53E3E",
-  //         color: "white",
-  //       };
-  //     }
-  //     default:
-  //       return {
-  //         className: "white_popover popover",
-  //       };
-  //   }
-  // }, [tooltipType]);
-
-  return (
-    <Popover trigger="hover" placement="bottom">
-      <PopoverTrigger>
-        <Box
-          m={0}
-          p={0}
-          paddingBottom="0px"
-          color={color}
-          height="16px"
-          width="16px"
-          className="historicalCircle"
-        >
-          <svg width={16} height={16}>
-            <circle
-              cx={8}
-              cy={8}
-              r={6}
-              stroke={config.STATE_COURSE_CIRCLE_STROKE}
-              fill={color}
-            />
-          </svg>
-        </Box>
-      </PopoverTrigger>
-
-      <PopoverContent
-      // width="fit-content"
-      // {...tooltipProps}
-      // pos="absolute"
-      // zIndex={1000}
-      >
-        <PopoverHeader fontWeight="bold">{tooltipLabel}</PopoverHeader>
-      </PopoverContent>
-    </Popover>
-  );
-};
-
-const HistoricalCirclesComponent: FC<
-  Pick<ICourse, "taken"> & { isOpen: boolean }
-> = memo(({ taken, isOpen }) => {
-  const config = useContext(ConfigContext);
-  const isForeplanActive = ForeplanActiveStore.hooks.useIsForeplanActive();
-
-  const StateHistoryArray = useMemo(() => {
-    if (
-      !isOpen &&
-      isForeplanActive &&
-      taken[0]?.state === StateCourse.Current
-    ) {
-      return taken.slice(1, 2);
-    }
-    return taken.slice(1);
-  }, [isOpen, isForeplanActive, taken]);
-
-  return (
-    <Stack spacing={0.7} alignItems="center">
-      {StateHistoryArray.map(({ state, grade }, key) => {
-        let color: string;
-        let tooltipType: "error" | "info" | "light";
-        let tooltipLabel: number | string | undefined = grade;
-        switch (state) {
-          case StateCourse.Failed:
-            tooltipType = "error";
-            color = (failColorScale(grade || 0) as unknown) as string;
-            if (!tooltipLabel) {
-              tooltipLabel = config.STATE_FAILED_LABEL_MINI;
-            }
-            break;
-          case StateCourse.Current:
-            tooltipType = "info";
-            color = config.STATE_COURSE_CURRENT_COLOR;
-            break;
-          case StateCourse.Canceled:
-            tooltipLabel = config.CANCELED_HISTORIC_TOOLTIP_LABEL;
-            tooltipType = "light";
-            color = config.STATE_COURSE_CANCELED_COLOR;
-            break;
-          default:
-            return null;
-        }
-        return (
-          <HistoricalCircle
-            key={key}
-            color={color}
-            tooltipLabel={tooltipLabel}
-            tooltipType={tooltipType}
-          />
-        );
-      })}
-    </Stack>
-  );
-});
-
 const currentDistributionLabel = ({
   term,
   year,
@@ -622,9 +491,12 @@ const currentDistributionLabel = ({
   return `${label} ${term} ${year}`;
 };
 
-const HistogramsComponent: FC<
-  Pick<CurrentTakenData, "state"> & Pick<ICourse, "code">
-> = memo(({ children, state, code }) => {
+function HistogramsComponent({
+  children,
+  state,
+  code,
+}: Pick<CurrentTakenData, "state"> &
+  Pick<ICourse, "code"> & { children: ReactNode }) {
   const isPossibleToTake = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
     { state, course: code },
     [state, code]
@@ -654,7 +526,7 @@ const HistogramsComponent: FC<
       {children}
     </motion.div>
   );
-});
+}
 
 const HistogramNow: FC<
   Pick<ICourse, "taken" | "bandColors"> &

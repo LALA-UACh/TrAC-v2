@@ -10,7 +10,7 @@ import {
   useSetPersistenceValueMutation,
 } from "../graphql";
 import { stringListToBooleanMap } from "../utils";
-import { useDashboardInputState } from "./DashboardInput";
+import { useDashboardInputState, useIsMockActive } from "./DashboardInput";
 import { setIsDashboardLoading } from "./PersistenceLoading";
 import { setTrackingData, track } from "./Tracking";
 
@@ -204,10 +204,11 @@ const rememberCourseDashboardDataKey =
 
 export const CoursesDashbordManager: FC<{ distinct?: string }> = memo(
   ({ distinct }) => {
+    const mock = useIsMockActive();
     const {
       program,
       student,
-      mock,
+
       chosenCurriculum,
     } = useDashboardInputState();
 

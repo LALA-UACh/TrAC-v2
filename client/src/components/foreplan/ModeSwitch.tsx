@@ -32,7 +32,7 @@ const ForeplanModeSwitch: FC = () => {
       }
       leftIcon={<AiOutlineSchedule />}
       rightIcon={isForeplanActive ? <FaToggleOn /> : <FaToggleOff />}
-      variantColor="blue"
+      colorScheme="blue"
       color={
         isForeplanActive
           ? FOREPLAN_MODE_SWITCH_ACTIVE_TEXT_COLOR

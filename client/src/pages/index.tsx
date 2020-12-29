@@ -31,6 +31,7 @@ import { ConfigContext } from "../context/Config";
 import { CoursesDashbordManager } from "../context/CoursesDashboard";
 import {
   DashboardInputActions,
+  setMock,
   useChosenCurriculum,
   useIsMockActive,
   useProgram,
@@ -148,7 +149,7 @@ const Dashboard: FC = () => {
 
   useEffect(() => {
     if (!user?.admin && mock) {
-      DashboardInputActions.setMock(false);
+      setMock(false);
     }
   }, [user, mock]);
 
@@ -160,7 +161,7 @@ const Dashboard: FC = () => {
 
   useEffect(() => {
     if (searchStudentData?.student) {
-      DashboardInputActions.setMock(false);
+      setMock(false);
       setTrackingData({
         student: searchStudentData.student.id,
       });
@@ -180,7 +181,7 @@ const Dashboard: FC = () => {
         showingProgress: true,
         program: searchProgramData.program.id,
       });
-      DashboardInputActions.setMock(false);
+      setMock(false);
     } else {
       DashboardInputActions.setProgram(undefined);
       setTrackingData({

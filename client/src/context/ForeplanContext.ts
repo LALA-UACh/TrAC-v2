@@ -11,7 +11,7 @@ import {
 } from "../graphql";
 import { stringListToBooleanMap } from "../utils";
 import { useUser } from "../utils/useUser";
-import { useDashboardInputState } from "./DashboardInput";
+import { useDashboardInputState, useIsMockActive } from "./DashboardInput";
 import { setIsForeplanLoading } from "./PersistenceLoading";
 import { setTrackingData } from "./Tracking";
 
@@ -249,7 +249,8 @@ export const ForeplanActiveStore = createStore(defaultForeplanActiveData, {
 const rememberForeplanDataKey = PERSISTENCE_VERSION_PREFIX + "foreplan_data";
 
 export const ForeplanContextManager: FC = memo(() => {
-  const { program, student, mock, chosenCurriculum } = useDashboardInputState();
+  const mock = useIsMockActive();
+  const { program, student, chosenCurriculum } = useDashboardInputState();
 
   const state = ForeplanActiveStore.useStore();
 

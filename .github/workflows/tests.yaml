@@ -15,17 +15,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
-      - name: Get yarn cache
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn --frozen-lockfile
+      - run: npm install -g pnpm
+      - run: pnpm i --frozen-lockfile
         env:
           NODE_ENV: test
-      - run: yarn build
-      - run: yarn test --coverage
+      - run: pnpm build
+      - run: pnpm test --coverage

@@ -9,11 +9,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { FaListOl } from "react-icons/fa";
+import { FaListOl, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useUpdateEffect } from "react-use";
 import { Pagination, Progress, Table, TableCell } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
-
 import {
   Button,
   Drawer,
@@ -281,7 +280,7 @@ export const StudentList: FC<{
         isLoading={loadingData}
         m={2}
         ref={btnRef}
-        variantColor="blue"
+        colorScheme="blue"
         onClick={onOpen}
         cursor="pointer"
         leftIcon={<FaListOl />}
@@ -297,8 +296,7 @@ export const StudentList: FC<{
         finalFocusRef={btnRef}
         size="xl"
         scrollBehavior="inside"
-        isFullHeight
-        preserveScrollBarGap
+        preserveScrollBarGap={false}
       >
         <DrawerOverlay />
         <DrawerContent>
@@ -307,151 +305,145 @@ export const StudentList: FC<{
             {STUDENT_LIST_TITLE} {loadingData && <Spinner ml={3} />}
           </DrawerHeader>
 
-          <DrawerBody>
-            <Stack alignItems="center">
-              <Pagination
-                css={textAlignCenter}
-                totalPages={studentListChunks.length}
-                activePage={pageSelected}
-                onPageChange={(_, { activePage }) => {
-                  track({
-                    action: "click",
-                    target: `student-list-pagination`,
-                    effect: `set-student-list-page-to-${activePage}`,
-                  });
-                  setPageSelected(toInteger(activePage));
-                }}
-              />
+          <Pagination
+            css={[textAlignCenter, { alignSelf: "center" }]}
+            totalPages={studentListChunks.length}
+            activePage={pageSelected}
+            onPageChange={(_, { activePage }) => {
+              track({
+                action: "click",
+                target: `student-list-pagination`,
+                effect: `set-student-list-page-to-${activePage}`,
+              });
+              setPageSelected(toInteger(activePage));
+            }}
+          />
 
-              <Table sortable celled fixed>
-                <TableHeader
-                  columnSort={columnSort}
-                  directionSort={directionSort}
-                  handleSort={handleSort}
-                  showDropout={showDropout}
-                />
-                <Table.Body>
-                  {selectedStudents?.map(
-                    (
-                      {
-                        student_id,
-                        dropout_probability,
-                        start_year,
-                        progress,
-                        explanation,
-                      },
-                      key
-                    ) => {
-                      let color: string;
-                      if (dropout_probability > RISK_HIGH_THRESHOLD) {
-                        color = RISK_HIGH_COLOR;
-                      } else if (dropout_probability > RISK_MEDIUM_THRESHOLD) {
-                        color = RISK_MEDIUM_COLOR;
-                      } else {
-                        color = RISK_LOW_COLOR;
-                      }
-                      const integerProgress = toInteger(progress);
-                      const checkStudentLabel = `${CHECK_STUDENT_FROM_LIST_LABEL} ${student_id}`;
-                      return (
-                        <Table.Row key={key} verticalAlign="middle">
-                          <TableCell textAlign="center">
-                            {1 + key + (pageSelected - 1) * nStudentPerChunk}
-                          </TableCell>
-                          <Table.Cell
-                            className="cursorPointer"
-                            onClick={() => {
-                              searchStudent(student_id);
-                              onClose();
-                            }}
-                          >
-                            <Tooltip
-                              aria-label={checkStudentLabel}
-                              label={checkStudentLabel}
-                              zIndex={10000}
-                              placement="top"
-                              textAlign="center"
-                            >
-                              <Text>
-                                {truncate(student_id, { length: 16 })}
-                              </Text>
-                            </Tooltip>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <Text>{start_year}</Text>
-                          </Table.Cell>
-                          <Table.Cell verticalAlign="middle">
-                            <Progress
-                              css={[
-                                marginZero,
-                                progressTextShadow,
-                                integerProgress >= 10 &&
-                                  integerProgress < 20 &&
-                                  progressSmallText,
-                              ]}
-                              progress
-                              percent={integerProgress}
-                            />
-                          </Table.Cell>
-                          {showDropout && (
-                            <Table.Cell>
-                              <Stack
-                                isInline
-                                shouldWrapChildren
-                                alignItems="center"
-                              >
-                                <Text
-                                  margin={0}
-                                  textShadow="0.5px 0.5px 0px #a1a1a1"
-                                  color={
-                                    dropout_probability !== -1
-                                      ? color
-                                      : undefined
-                                  }
-                                  fontWeight="bold"
-                                >
-                                  {dropout_probability !== -1
-                                    ? `${toInteger(dropout_probability)}`
-                                    : "-"}
-                                </Text>
-                                {explanation ? (
-                                  <Popover trigger="hover">
-                                    <PopoverTrigger>
-                                      <Icon
-                                        display="flex"
-                                        name="info-outline"
-                                        size="13px"
-                                        cursor="help"
-                                      />
-                                    </PopoverTrigger>
-                                    <PopoverContent
-                                      width="fit-content"
-                                      zIndex={100}
-                                      padding="5px"
-                                    >
-                                      <PopoverArrow />
-                                      <PopoverBody>
-                                        <Text>
-                                          {explanation.charAt(0).toUpperCase() +
-                                            explanation.slice(1)}
-                                        </Text>
-                                      </PopoverBody>
-                                    </PopoverContent>
-                                  </Popover>
-                                ) : null}
-                              </Stack>
-                            </Table.Cell>
-                          )}
-                        </Table.Row>
-                      );
+          <DrawerBody>
+            <Table sortable celled fixed>
+              <TableHeader
+                columnSort={columnSort}
+                directionSort={directionSort}
+                handleSort={handleSort}
+                showDropout={showDropout}
+              />
+              <Table.Body>
+                {selectedStudents?.map(
+                  (
+                    {
+                      student_id,
+                      dropout_probability,
+                      start_year,
+                      progress,
+                      explanation,
+                    },
+                    key
+                  ) => {
+                    let color: string;
+                    if (dropout_probability > RISK_HIGH_THRESHOLD) {
+                      color = RISK_HIGH_COLOR;
+                    } else if (dropout_probability > RISK_MEDIUM_THRESHOLD) {
+                      color = RISK_MEDIUM_COLOR;
+                    } else {
+                      color = RISK_LOW_COLOR;
                     }
-                  )}
-                </Table.Body>
-              </Table>
-            </Stack>
+                    const integerProgress = toInteger(progress);
+                    const checkStudentLabel = `${CHECK_STUDENT_FROM_LIST_LABEL} ${student_id}`;
+                    return (
+                      <Table.Row key={key} verticalAlign="middle">
+                        <TableCell textAlign="center">
+                          {1 + key + (pageSelected - 1) * nStudentPerChunk}
+                        </TableCell>
+                        <Table.Cell
+                          className="cursorPointer"
+                          onClick={() => {
+                            searchStudent(student_id);
+                            onClose();
+                          }}
+                        >
+                          <Tooltip
+                            aria-label={checkStudentLabel}
+                            label={checkStudentLabel}
+                            zIndex={10000}
+                            placement="top"
+                            textAlign="center"
+                          >
+                            <Text>{truncate(student_id, { length: 16 })}</Text>
+                          </Tooltip>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Text>{start_year}</Text>
+                        </Table.Cell>
+                        <Table.Cell verticalAlign="middle">
+                          <Progress
+                            css={[
+                              marginZero,
+                              progressTextShadow,
+                              integerProgress >= 10 &&
+                                integerProgress < 20 &&
+                                progressSmallText,
+                            ]}
+                            progress
+                            percent={integerProgress}
+                          />
+                        </Table.Cell>
+                        {showDropout && (
+                          <Table.Cell>
+                            <Stack
+                              isInline
+                              shouldWrapChildren
+                              alignItems="center"
+                            >
+                              <Text
+                                margin={0}
+                                textShadow="0.5px 0.5px 0px #a1a1a1"
+                                color={
+                                  dropout_probability !== -1 ? color : undefined
+                                }
+                                fontWeight="bold"
+                              >
+                                {dropout_probability !== -1
+                                  ? `${toInteger(dropout_probability)}`
+                                  : "-"}
+                              </Text>
+                              {explanation ? (
+                                <Popover trigger="hover" isLazy>
+                                  <PopoverTrigger>
+                                    <Icon
+                                      display="flex"
+                                      name="info-outline"
+                                      size="13px"
+                                      cursor="help"
+                                    />
+                                  </PopoverTrigger>
+                                  <PopoverContent
+                                    width="fit-content"
+                                    zIndex={100}
+                                    padding="5px"
+                                  >
+                                    <PopoverArrow />
+                                    <PopoverBody>
+                                      <Text>
+                                        {explanation.charAt(0).toUpperCase() +
+                                          explanation.slice(1)}
+                                      </Text>
+                                    </PopoverBody>
+                                  </PopoverContent>
+                                </Popover>
+                              ) : null}
+                            </Stack>
+                          </Table.Cell>
+                        )}
+                      </Table.Row>
+                    );
+                  }
+                )}
+              </Table.Body>
+            </Table>
           </DrawerBody>
           <DrawerFooter justifyContent="flex-start">
             <Icon
-              name={isOpen ? "chevron-right" : "chevron-left"}
+              as={isOpen ? FaChevronRight : FaChevronLeft}
               size="35px"
               onClick={onClose}
               cursor="pointer"

@@ -31,30 +31,32 @@
       "pre-commit": "pretty-quick --staged"
     }
   },
-  "resolutions": {
-    "@babel/core": "^7.12.3",
-    "@types/node": "^14.14.0",
-    "@types/react": "^16.9.53",
-    "@types/react-dom": "^16.9.8",
-    "@types/validator": "^13.1.0",
-    "class-validator": "^0.12.2",
-    "graphql": "^15.3.0",
-    "node-fetch": "^2.6.1",
-    "node-forge": "^0.10.0",
-    "object-path": "^0.11.5",
-    "validator": "^13.1.17"
+  "pnpm": {
+    "overrides": {
+      "@babel/core": "^7.12.3",
+      "@types/node": "^14.14.0",
+      "@types/react": "^16.9.53",
+      "@types/react-dom": "^16.9.8",
+      "@types/validator": "^13.1.0",
+      "class-validator": "^0.12.2",
+      "graphql": "^15.3.0",
+      "node-fetch": "^2.6.1",
+      "node-forge": "^0.10.0",
+      "object-path": "^0.11.5",
+      "validator": "^13.1.17",
+      "@popperjs/core": "^2.6.0"
+    }
   },
   "dependencies": {
     "@apollo/client": "^3.3.6",
     "@babel/core": "^7.12.10",
-    "@chakra-ui/core": "^0.8.0",
     "@chakra-ui/react": "^1.1.0",
     "@emotion/babel-plugin": "^11.1.2",
     "@emotion/babel-preset-css-prop": "^11.0.0",
-    "@emotion/core": "^11.0.0",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
     "@pm2/io": "^4.3.5",
+    "@popperjs/core": "^2.6.0",
     "@sendgrid/mail": "^7.4.0",
     "@vx/axis": "^0.0.199",
     "@vx/scale": "^0.0.199",
@@ -115,6 +117,7 @@
     "react-hook-form": "^6.13.1",
     "react-icons": "^4.1.0",
     "react-indiana-drag-scroll": "^1.8.0",
+    "react-popper": "^2.2.4",
     "react-select": "^3.1.1",
     "react-state-selector": "^2.0.1",
     "react-toggle-theme": "^1.0.0",

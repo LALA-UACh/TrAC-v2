@@ -16,7 +16,7 @@ import {
   HttpLink,
   InMemoryCache,
 } from "@apollo/client";
-import { theme, ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import { GRAPHQL_URL, IS_NOT_PRODUCTION } from "../../constants";
 import { RefreshToken } from "../components/RefreshToken";
@@ -52,13 +52,20 @@ export const client = new ApolloClient({
   connectToDevTools: IS_NOT_PRODUCTION,
 });
 
+const customTheme = extendTheme({
+  config: {
+    useSystemColorMode: false,
+    initialColorMode: "light",
+  },
+});
+
 const App: NextPage<AppProps> = ({ Component, pageProps }) => {
   return (
     <ApolloProvider client={client}>
       <Head>
         <title>TrAC</title>
       </Head>
-      <ChakraProvider theme={theme}>
+      <ChakraProvider theme={customTheme}>
         <Config>
           <Component {...pageProps} />
         </Config>
