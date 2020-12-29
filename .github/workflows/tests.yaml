@@ -20,4 +20,4 @@ jobs:
         env:
           NODE_ENV: test
       - run: pnpm build
-      - run: pnpm test --coverage
+      - run: pnpm test
