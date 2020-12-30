@@ -1,50 +1,55 @@
-import classNames from "classnames";
-import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
 import { some, truncate } from "lodash";
 import dynamic from "next/dynamic";
-import React, { FC, memo, ReactNode, useContext, useMemo } from "react";
+import React, { FC, memo, useContext, useMemo } from "react";
 
-import { Badge, Box, Flex, Stack, Text } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Flex,
+  Stack,
+  Text,
+  useColorMode,
+  useColorModeValue,
+} from "@chakra-ui/react";
 
-import { StateCourse, termTypeToNumber } from "../../../constants";
-import { ConfigContext } from "../../context/Config";
+import { StateCourse } from "../../../../constants";
+import { ConfigContext } from "../../../context/Config";
 import {
   CoursesDashboardStore,
   pairTermYear,
   toggleOpenCourse,
-} from "../../context/CoursesDashboard";
+} from "../../../context/CoursesDashboard";
 import {
   ForeplanActiveStore,
   ForeplanHelperStore,
-} from "../../context/ForeplanContext";
-import { Theme, useTheme } from "../../context/Theme";
-import { track } from "../../context/Tracking";
-import { TEXT_WHITE_SHADOW, width100percent } from "../../utils/cssConstants";
-import { useUser } from "../../utils/useUser";
-import { PredictState } from "../foreplan/courseBox/PredictState";
-import styles from "./CourseBox.module.css";
-import { Histogram } from "./Histogram";
+} from "../../../context/ForeplanContext";
+import { track } from "../../../context/Tracking";
+import {
+  TEXT_WHITE_SHADOW,
+  width100percent,
+} from "../../../utils/cssConstants";
+import { useUser } from "../../../utils/useUser";
+import { PredictState } from "../../foreplan/courseBox/PredictState";
+import {
+  HistogramHistoric,
+  HistogramNow,
+  HistogramsComponent,
+} from "../Histogram";
+import { HistoricalCirclesComponent } from "../HistoricalCirclesComponent";
 
 import type {
   ICourse,
   ITakenCourse,
   ITakenSemester,
-} from "../../../../interfaces";
-
-import { HistoricalCirclesComponent } from "./HistoricalCirclesComponent";
-
+} from "../../../../../interfaces";
 const ForeplanCourseCheckbox = dynamic(
-  () => import("../foreplan/courseBox/Checkbox")
+  () => import("../../foreplan/courseBox/Checkbox")
 );
 
 const ForeplanCourseStats = dynamic(
-  () => import("../foreplan/courseBox/Stats")
+  () => import("../../foreplan/courseBox/Stats")
 );
-
-export const passColorScale = scaleLinear<string, number>();
-
-export const failColorScale = scaleLinear<string, number>();
 
 export type CurrentTakenData = Partial<ITakenCourse>;
 
@@ -177,10 +182,11 @@ const OuterCourseBox: FC<
 
     const boxShadow = `0px 0px 0px ${borderWidth} ${borderColor}`;
 
+    const color = useColorModeValue(config.COURSE_BOX_TEXT_COLOR, "white");
     return (
       <Flex
         m={1}
-        color={config.COURSE_BOX_TEXT_COLOR}
+        color={color}
         width={width}
         height={height}
         borderRadius={5}
@@ -204,6 +210,7 @@ const MainBlockOuter: FC<
 > = memo(({ children, code, flow, requisites, semestersTaken }) => {
   const isOpen = CoursesDashboardStore.hooks.useDashboardIsCourseOpen(code);
   const config = useContext(ConfigContext);
+  const bg = useColorModeValue(config.COURSE_BOX_BACKGROUND_COLOR, "#1A202C");
   return (
     <Flex
       w="100%"
@@ -214,7 +221,7 @@ const MainBlockOuter: FC<
       className="mainBlock"
       cursor="pointer"
       borderRadius="5px 0px 0x 5px"
-      bg={config.COURSE_BOX_BACKGROUND_COLOR}
+      bg={bg}
       onClick={() => {
         toggleOpenCourse(code);
 
@@ -279,7 +286,7 @@ const SecondaryBlockOuter: FC<
 > = memo(({ children, taken, bandColors, borderColor, state, grade }) => {
   const config = useContext(ConfigContext);
 
-  const theme = useTheme();
+  const { colorMode } = useColorMode();
 
   const stateColor = useMemo(() => {
     const bandColorsCourse = taken?.[0]?.bandColors ?? bandColors;
@@ -316,12 +323,12 @@ const SecondaryBlockOuter: FC<
         return config.STATE_COURSE_PENDING_COLOR;
       }
       default: {
-        return theme === Theme.LIGHT
+        return colorMode === "light"
           ? config.COURSE_BOX_BACKGROUND_COLOR
           : config.STATE_COURSE_DEFAULT_DARK_COLOR;
       }
     }
-  }, [state, theme, grade, bandColors, taken, config]);
+  }, [state, colorMode, grade, bandColors, taken, config]);
 
   return (
     <Flex
@@ -452,34 +459,38 @@ const GradeComponent: FC<Pick<CurrentTakenData, "state" | "grade">> = memo(
     const config = useContext(ConfigContext);
 
     return (
-      <Text mb={2} pt={1} textShadow={TEXT_WHITE_SHADOW}>
-        <b>
-          {(() => {
-            if (grade) {
-              return grade.toFixed(1);
-            }
-            switch (state) {
-              case StateCourse.Passed:
-                return config.STATE_PASSED_LABEL_MINI;
-              case StateCourse.Failed:
-                return config.STATE_FAILED_LABEL_MINI;
-              case StateCourse.Canceled:
-                return config.STATE_CANCELED_LABEL_MINI;
-              case StateCourse.Pending:
-                return config.STATE_PENDING_LABEL_MINI;
-              case StateCourse.Current:
-                return config.STATE_CURRENT_LABEL_MINI;
-              default:
-                return "BUG";
-            }
-          })()}
-        </b>
+      <Text
+        mb={2}
+        pt={1}
+        textShadow={TEXT_WHITE_SHADOW}
+        color="black"
+        fontWeight="bold"
+      >
+        {(() => {
+          if (grade) {
+            return grade.toFixed(1);
+          }
+          switch (state) {
+            case StateCourse.Passed:
+              return config.STATE_PASSED_LABEL_MINI;
+            case StateCourse.Failed:
+              return config.STATE_FAILED_LABEL_MINI;
+            case StateCourse.Canceled:
+              return config.STATE_CANCELED_LABEL_MINI;
+            case StateCourse.Pending:
+              return config.STATE_PENDING_LABEL_MINI;
+            case StateCourse.Current:
+              return config.STATE_CURRENT_LABEL_MINI;
+            default:
+              return "BUGasd";
+          }
+        })()}
       </Text>
     );
   }
 );
 
-const currentDistributionLabel = ({
+export const currentDistributionLabel = ({
   term,
   year,
   label,
@@ -491,90 +502,7 @@ const currentDistributionLabel = ({
   return `${label} ${term} ${year}`;
 };
 
-function HistogramsComponent({
-  children,
-  state,
-  code,
-}: Pick<CurrentTakenData, "state"> &
-  Pick<ICourse, "code"> & { children: ReactNode }) {
-  const isPossibleToTake = ForeplanActiveStore.hooks.useIsPossibleToTakeForeplan(
-    { state, course: code },
-    [state, code]
-  );
-  return (
-    <motion.div
-      key="histograms"
-      initial={{
-        opacity: 0,
-        scale: 0,
-      }}
-      animate={{
-        scale: 1,
-        opacity: 1,
-        position: "static",
-      }}
-      exit={{
-        opacity: 0,
-        scale: 0.4,
-        position: "absolute",
-      }}
-      className={classNames({
-        [styles.histogramBox]: true,
-        [styles.foreplanActive]: isPossibleToTake,
-      })}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-const HistogramNow: FC<
-  Pick<ICourse, "taken" | "bandColors"> &
-    Pick<CurrentTakenData, "currentDistribution" | "term" | "year" | "grade">
-> = memo(({ currentDistribution, term, year, taken, grade, bandColors }) => {
-  const { GRADES_LABEL: label } = useContext(ConfigContext);
-
-  return (
-    (currentDistribution &&
-      some(currentDistribution, ({ value }) => value) &&
-      term &&
-      year && (
-        <Histogram
-          key="now"
-          label={currentDistributionLabel({
-            term: termTypeToNumber(term),
-            year,
-            label,
-          })}
-          distribution={currentDistribution}
-          grade={grade}
-          bandColors={taken?.[0]?.bandColors ?? bandColors}
-        />
-      )) ||
-    null
-  );
-});
-
-const HistogramHistoric: FC<
-  Pick<ICourse, "historicDistribution" | "bandColors"> &
-    Pick<CurrentTakenData, "grade">
-> = memo(({ historicDistribution, bandColors, grade }) => {
-  const config = useContext(ConfigContext);
-  return historicDistribution &&
-    some(historicDistribution, ({ value }) => value) ? (
-    <Histogram
-      key="historic"
-      label={config.HISTORIC_GRADES}
-      distribution={historicDistribution}
-      grade={grade}
-      bandColors={bandColors}
-    />
-  ) : (
-    <Badge>{config.NO_HISTORIC_DATA}</Badge>
-  );
-});
-
-export const CourseBox: FC<ICourse> = ({
+export function CourseBox({
   code,
   name,
   credits,
@@ -583,7 +511,7 @@ export const CourseBox: FC<ICourse> = ({
   bandColors,
   requisites,
   flow,
-}) => {
+}: ICourse) {
   const config = useContext(ConfigContext);
 
   const semestersTaken = useMemo(() => {
@@ -762,4 +690,4 @@ export const CourseBox: FC<ICourse> = ({
       </SecondaryBlockOuter>
     </OuterCourseBox>
   );
-};
+}

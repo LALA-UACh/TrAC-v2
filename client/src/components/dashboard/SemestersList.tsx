@@ -10,6 +10,7 @@ import {
 import { Stack } from "@chakra-ui/react";
 
 import { ICourse } from "../../../../interfaces";
+import { IS_TOUCH_DEVICE } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import { Semester } from "./Semester";
 
@@ -38,13 +39,13 @@ export const SemestersList: FC<{
   }, [semesters]);
 
   const Column = useCallback<FC<ListChildComponentProps>>(
-    memo(({ index }) => {
+    ({ index }) => {
       return SemestersComponent[index];
-    }),
+    },
     [semesters]
   );
 
-  if (isMobile) {
+  if (isMobile && IS_TOUCH_DEVICE) {
     return (
       <AutoSizer>
         {({ width }) => {

@@ -1,4 +1,3 @@
-import { scaleLinear } from "d3-scale";
 import { AnimatePresence, motion } from "framer-motion";
 import { last, round, toInteger } from "lodash";
 import React, {
@@ -13,15 +12,16 @@ import React, {
 } from "react";
 import pixelWidth from "string-pixel-width";
 
+import { useColorModeValue } from "@chakra-ui/react";
 import { css } from "@emotion/react";
 import { AxisLeft, AxisScale } from "@vx/axis";
 
-import { SVG_TEXT } from "../../../constants";
-import { ConfigContext } from "../../context/Config";
+import { ConfigContext } from "../../../context/Config";
 import {
   checkExplicitSemesterCallback,
   CoursesDashboardStore,
-} from "../../context/CoursesDashboard";
+} from "../../../context/CoursesDashboard";
+import { GradeScale, YAxisScale } from "./TimelineHelpers";
 
 const TimeLineTooltip: FC<{
   children: ReactElement;
@@ -48,6 +48,8 @@ const TimeLineTooltip: FC<{
     [children, setShow]
   );
 
+  const textColor = useColorModeValue(TIMELINE_TOOLTIP_TEXT_COLOR, "white");
+
   const Tooltip = useMemo(
     () => (
       <AnimatePresence>
@@ -69,8 +71,7 @@ const TimeLineTooltip: FC<{
             <text
               x={(children.props?.cx ?? children.props?.x ?? 0) + 11}
               y={(children.props?.cy ?? children.props?.y ?? 0) - 5}
-              fill={TIMELINE_TOOLTIP_TEXT_COLOR}
-              className={SVG_TEXT}
+              fill={textColor}
             >
               {gradeString}
             </text>
@@ -88,10 +89,6 @@ const TimeLineTooltip: FC<{
     </g>
   );
 };
-
-export const GradeScale = scaleLinear();
-
-export const YAxisScale = scaleLinear();
 
 const transitionCSS = css`
   transition: "all 0.4s ease-in-out";
@@ -243,6 +240,18 @@ export const TimeLine: FC<{
       [semestralGrades, cumulatedGrades, programGrades, config]
     );
 
+    const textColor = useColorModeValue("black", "white");
+
+    const timelineAxisColor = useColorModeValue(
+      config.TIMELINE_AXIS_COLOR,
+      "white"
+    );
+
+    const passLineColor = useColorModeValue(
+      config.TIMELINE_PASS_LINE_COLOR,
+      "white"
+    );
+
     const LabelAxisComponent = useMemo(
       () => (
         <>
@@ -251,7 +260,7 @@ export const TimeLine: FC<{
             x={10}
             fontSize="1em"
             fontWeight="bold"
-            className={SVG_TEXT}
+            fill={textColor}
             css={transitionCSS}
           >
             {config.GRADES_SCALES}
@@ -263,8 +272,8 @@ export const TimeLine: FC<{
             hideAxisLine={false}
             tickLength={4}
             numTicks={5}
-            stroke={config.TIMELINE_AXIS_COLOR}
-            tickStroke={config.TIMELINE_AXIS_COLOR}
+            stroke={timelineAxisColor}
+            tickStroke={timelineAxisColor}
             tickLabelProps={() => ({
               dx: "-0.25em",
               dy: "0.25em",
@@ -278,7 +287,7 @@ export const TimeLine: FC<{
             y1={170}
             x2={cumulatedGrades.length * 100 + 160}
             y2={40 + 130}
-            stroke={config.TIMELINE_AXIS_COLOR}
+            stroke={timelineAxisColor}
             css={transitionCSS}
           />
           <line
@@ -286,7 +295,7 @@ export const TimeLine: FC<{
             y1={GradeScale(config.PASS_GRADE)}
             x2={cumulatedGrades.length * 100 + 160}
             y2={GradeScale(config.PASS_GRADE)}
-            stroke={config.TIMELINE_PASS_LINE_COLOR}
+            stroke={passLineColor}
             strokeDasharray="2"
             css={transitionCSS}
           />
@@ -299,7 +308,7 @@ export const TimeLine: FC<{
             css={transitionCSS}
           />
 
-          <text x={160} y={20} className={SVG_TEXT} css={transitionCSS}>
+          <text x={160} y={20} fill={textColor} css={transitionCSS}>
             {config.SEMESTRAL_GRADE_LABEL}
           </text>
           <circle
@@ -309,7 +318,7 @@ export const TimeLine: FC<{
             fill={config.CUMULATED_GRADE_COLOR}
             css={transitionCSS}
           />
-          <text x={260} y={20} className={SVG_TEXT} css={transitionCSS}>
+          <text x={260} y={20} fill={textColor} css={transitionCSS}>
             {config.CUMULATED_GRADE_LABEL}
           </text>
           <circle
@@ -319,15 +328,21 @@ export const TimeLine: FC<{
             fill={config.PROGRAM_GRADE_COLOR}
             css={transitionCSS}
           />
-          <text x={360} y={20} className={SVG_TEXT} css={transitionCSS}>
+          <text x={360} y={20} fill={textColor} css={transitionCSS}>
             {config.PROGRAM_GRADE_LABEL}
           </text>
         </>
       ),
-      [cumulatedGrades, config]
+      [cumulatedGrades, config, textColor]
     );
     const height = 270;
     const scale = 0.7;
+
+    const svgCSS = css`
+      tspan {
+        fill: ${textColor};
+      }
+    `;
 
     const viewBox = useMemo(() => `0 0 ${width * scale} ${height * scale}`, [
       width,
@@ -335,7 +350,7 @@ export const TimeLine: FC<{
       scale,
     ]);
     return (
-      <svg width={width} height={height} viewBox={viewBox}>
+      <svg width={width} height={height} viewBox={viewBox} css={svgCSS}>
         {LabelAxisComponent}
         {StrokesComponent}
         {CirclesComponent}

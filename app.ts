@@ -35,7 +35,8 @@ app.register(helmet, {
       "font-src":
         "'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:",
       "img-src": `'self' data:`,
-      "connect-src": "'self' https://cdn.jsdelivr.net",
+      "connect-src":
+        "'self' https://cdn.jsdelivr.net https://fonts.googleapis.com",
       "worker-src": "'self' blob:",
       "object-src": "'self' data:",
     },

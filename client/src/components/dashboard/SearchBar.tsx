@@ -176,24 +176,139 @@ export const SearchBar: FC<{
 
   const apolloClient = useApolloClient();
 
+  const rightSide = useMemo(() => {
+    return (
+      <Flex
+        wrap="wrap"
+        justifyContent="flex-end"
+        alignItems="center"
+        className="stack"
+      >
+        {user?.admin && <MockingMode />}
+        {isDirector && user?.config?.SHOW_STUDENT_LIST && (
+          <StudentList
+            program_id={program?.value}
+            mockData={
+              mock
+                ? range(160).map(() => {
+                    const dropout_probability = Math.round(Math.random() * 100);
+                    return {
+                      student_id: "mock_" + generate(),
+                      dropout_probability,
+                      start_year: 2005 + Math.round(Math.random() * 14),
+                      progress: Math.round(Math.random() * 100),
+                      explanation: `se estima que el ${dropout_probability}% de todos los estudiantes tienen más riesgo de abandono que el estudiante en análisis`,
+                    };
+                  })
+                : undefined
+            }
+            searchStudent={async (student_id: string) => {
+              if (program) {
+                setStudentId(student_id);
+                const onSearchResult = await onSearch({
+                  student_id,
+                  program_id: program?.value,
+                });
+                switch (onSearchResult) {
+                  case "student": {
+                    addStudentOption(student_id);
+                    setStudentId("");
+                    setStudentIdShow(student_id);
+                    track({
+                      action: "click",
+                      effect: "load-student",
+                      target: "student-list-row",
+                    });
+                    break;
+                  }
+                  case "program": {
+                    setStudentIdShow("");
+                    setTrackingData({
+                      student: undefined,
+                    });
+                    track({
+                      action: "click",
+                      effect: "load-program",
+                      target: "student-list-row",
+                    });
+                    break;
+                  }
+                  default: {
+                    setStudentIdShow("");
+                    setTrackingData({
+                      student: student_id,
+                    });
+                    track({
+                      action: "click",
+                      effect: "wrong-student",
+                      target: "student-list-row",
+                    });
+                  }
+                }
+              }
+            }}
+          />
+        )}
+
+        {HELP_ENABLED && <Help />}
+
+        <Button
+          css={marginLeft5px}
+          negative
+          size="large"
+          disabled={logoutLoading}
+          loading={logoutLoading}
+          onClick={async () => {
+            const confirmed = window.confirm(LOGOUT_CONFIRMATION_LABEL);
+            if (!confirmed) return;
+
+            setLogoutLoading(true);
+
+            apolloClient.clearStore().catch(console.error);
+
+            track({
+              action: "click",
+              effect: "logout",
+              target: "logoutButton",
+            });
+            setTimeout(() => {
+              Router.push("/logout");
+            }, 1000);
+          }}
+          icon
+          labelPosition="left"
+        >
+          <Icon name="power off" />
+          {LOGOUT_BUTTON_LABEL}
+        </Button>
+      </Flex>
+    );
+  }, [
+    user,
+    isDirector,
+    setLogoutLoading,
+    track,
+    LOGOUT_BUTTON_LABEL,
+    addStudentOption,
+    setStudentId,
+    setStudentIdShow,
+    setTrackingData,
+    logoutLoading,
+    program,
+    mock,
+    onSearch,
+    HELP_ENABLED,
+  ]);
+
   useEffect(() => {
     setTrackingData({
       program_menu: program?.value,
     });
   }, [program, setTrackingData]);
 
-  return (
-    <Flex
-      width="100%"
-      justifyContent="space-between"
-      alignItems="center"
-      alignContent="flex-end"
-      backgroundColor={SEARCH_BAR_BACKGROUND_COLOR}
-      p={3}
-      cursor="default"
-      wrap="wrap"
-    >
-      <Flex wrap="wrap" alignItems="center">
+  const programOptionsComponent = useMemo(() => {
+    return (
+      <>
         {isDirector && (
           <Box width={300} mr={4} fontSize="0.85em">
             <Select<{ value: string; label: string }>
@@ -213,9 +328,34 @@ export const SearchBar: FC<{
                   selected as $ElementType<typeof programsOptions, number>
                 );
               }}
+              css={{ color: "black" }}
             />
           </Box>
         )}
+      </>
+    );
+  }, [
+    programsOptions,
+    program,
+    isSearchLoading,
+    track,
+    setProgram,
+    PROGRAM_NOT_SPECIFIED_PLACEHOLDER,
+  ]);
+
+  return (
+    <Flex
+      width="100%"
+      justifyContent="space-between"
+      alignItems="center"
+      alignContent="flex-end"
+      backgroundColor={SEARCH_BAR_BACKGROUND_COLOR}
+      p={3}
+      cursor="default"
+      wrap="wrap"
+    >
+      <Flex wrap="wrap" alignItems="center">
+        {programOptionsComponent}
 
         {(searchResult?.curriculums.length ?? 0) > 1 ? (
           <Flex mr={5}>
@@ -276,8 +416,10 @@ export const SearchBar: FC<{
         {isDirector && (
           <form>
             <Flex wrap="wrap" alignItems="center">
-              <InputGroup size="lg" mt={2} mb={2}>
+              <InputGroup size="lg" width="fit-content" mt={2} mb={2}>
                 <Input
+                  color="black"
+                  bg="white"
                   borderColor="gray.400"
                   fontFamily="Lato"
                   variant="outline"
@@ -412,110 +554,7 @@ export const SearchBar: FC<{
         )}
       </Flex>
 
-      <Flex
-        wrap="wrap"
-        justifyContent="flex-end"
-        alignItems="center"
-        className="stack"
-      >
-        {user?.admin && <MockingMode />}
-        {isDirector && user?.config?.SHOW_STUDENT_LIST && (
-          <StudentList
-            program_id={program?.value}
-            mockData={
-              mock
-                ? range(160).map(() => {
-                    const dropout_probability = Math.round(Math.random() * 100);
-                    return {
-                      student_id: "mock_" + generate(),
-                      dropout_probability,
-                      start_year: 2005 + Math.round(Math.random() * 14),
-                      progress: Math.round(Math.random() * 100),
-                      explanation: `se estima que el ${dropout_probability}% de todos los estudiantes tienen más riesgo de abandono que el estudiante en análisis`,
-                    };
-                  })
-                : undefined
-            }
-            searchStudent={async (student_id: string) => {
-              if (program) {
-                setStudentId(student_id);
-                const onSearchResult = await onSearch({
-                  student_id,
-                  program_id: program?.value,
-                });
-                switch (onSearchResult) {
-                  case "student": {
-                    addStudentOption(student_id);
-                    setStudentId("");
-                    setStudentIdShow(student_id);
-                    track({
-                      action: "click",
-                      effect: "load-student",
-                      target: "student-list-row",
-                    });
-                    break;
-                  }
-                  case "program": {
-                    setStudentIdShow("");
-                    setTrackingData({
-                      student: undefined,
-                    });
-                    track({
-                      action: "click",
-                      effect: "load-program",
-                      target: "student-list-row",
-                    });
-                    break;
-                  }
-                  default: {
-                    setStudentIdShow("");
-                    setTrackingData({
-                      student: student_id,
-                    });
-                    track({
-                      action: "click",
-                      effect: "wrong-student",
-                      target: "student-list-row",
-                    });
-                  }
-                }
-              }
-            }}
-          />
-        )}
-
-        {HELP_ENABLED && <Help />}
-
-        <Button
-          css={marginLeft5px}
-          negative
-          size="large"
-          disabled={logoutLoading}
-          loading={logoutLoading}
-          onClick={async () => {
-            const confirmed = window.confirm(LOGOUT_CONFIRMATION_LABEL);
-            if (!confirmed) return;
-
-            setLogoutLoading(true);
-
-            apolloClient.clearStore().catch(console.error);
-
-            track({
-              action: "click",
-              effect: "logout",
-              target: "logoutButton",
-            });
-            setTimeout(() => {
-              Router.push("/logout");
-            }, 1000);
-          }}
-          icon
-          labelPosition="left"
-        >
-          <Icon name="power off" />
-          {LOGOUT_BUTTON_LABEL}
-        </Button>
-      </Flex>
+      {rightSide}
     </Flex>
   );
 });

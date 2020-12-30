@@ -1,45 +1,42 @@
 import { scaleLinear } from "d3-scale";
 import { motion } from "framer-motion";
 import { toInteger, toString } from "lodash";
-import React, { FC, memo, useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 
+import { useColorModeValue } from "@chakra-ui/react";
+import { css } from "@emotion/react";
 import { AxisBottom, AxisLeft, AxisScale } from "@vx/axis";
 
-import { IDistribution } from "../../../../interfaces";
-import { SVG_TEXT } from "../../../constants";
-import { ConfigContext } from "../../context/Config";
+import { IDistribution } from "../../../../../interfaces";
+import { ConfigContext } from "../../../context/Config";
+import { averageTwo, scaleAxisX, scaleColorX } from "./HistogramHelpers";
 
-const SingleBar: FC<{
+function SingleBar({
+  grey,
+  height,
+  x,
+}: {
   grey?: boolean;
   x?: number;
-  y?: number;
   height?: number;
-}> = memo(({ grey, y: propY, height, x }) => {
+}) {
   const { HISTOGRAM_BAR_ACTIVE, HISTOGRAM_BAR_INACTIVE } = useContext(
     ConfigContext
   );
   const fill = grey ? HISTOGRAM_BAR_ACTIVE : HISTOGRAM_BAR_INACTIVE;
-  const y = (propY ?? 0) - (height ?? 0);
+
   return (
     <motion.rect
+      className="ignore_dark_mode"
       width={40}
       x={x}
-      y={y}
       height={height}
       animate={{ fill }}
       transition={{ duration: 1 }}
       fill={fill}
     />
   );
-});
-
-const averageTwo = (a: number | undefined, b: number | undefined) => {
-  return ((a ?? b ?? 0) + (b ?? a ?? 0)) / 2;
-};
-
-export const scaleColorX = scaleLinear();
-
-export const scaleAxisX = scaleLinear();
+}
 
 const AxisNumbers = (() => {
   return (
@@ -61,9 +58,11 @@ const AxisNumbers = (() => {
   );
 })();
 
-const XAxis: FC<{
+function XAxis({
+  bandColors,
+}: {
   bandColors: { min: number; max: number; color: string }[];
-}> = ({ bandColors }) => {
+}) {
   const AxisColor = useMemo(
     () =>
       bandColors.map(({ min, max, color }, key) => {
@@ -94,14 +93,19 @@ const XAxis: FC<{
       {AxisNumbers}
     </>
   );
-};
+}
 
-export const Histogram: FC<{
+export function Histogram({
+  distribution,
+  label,
+  grade,
+  bandColors,
+}: {
   distribution: IDistribution[];
   label?: string;
   grade?: number;
   bandColors: { min: number; max: number; color: string }[];
-}> = ({ distribution, label, grade, bandColors }) => {
+}) {
   const barsScale = useCallback(
     scaleLinear()
       .domain([0, Math.max(...distribution.map(({ value }) => value))])
@@ -132,23 +136,39 @@ export const Histogram: FC<{
     return -1;
   }, [grade, distribution]);
 
+  const textColor = useColorModeValue("black", "white");
+
+  const svgCSS = css`
+    tspan {
+      fill: ${textColor};
+    }
+  `;
+
   return (
-    <svg width={300} height={130}>
+    <svg width={300} height={130} css={svgCSS}>
       <svg x={35} y={23}>
         <XAxis bandColors={bandColors} />
-        {distribution.map(({ value }, key) => (
-          <SingleBar
-            x={5 + 40 * key + 2 * key}
-            y={77}
-            key={key}
-            grey={key === greyN}
-            height={barsScale(value)}
-          />
-        ))}
+        <g
+          css={{
+            transform: "rotate(180deg) translate(1%,41%) scaleX(-1)",
+            transformOrigin: "50% 50%",
+          }}
+        >
+          {distribution.map(({ value }, key) => {
+            return (
+              <SingleBar
+                x={5 + 21 * key}
+                key={key}
+                grey={key === greyN}
+                height={barsScale(value)}
+              />
+            );
+          })}
+        </g>
       </svg>
 
       <svg x={0}>
-        <text y={20} x={30} fontWeight="bold" className={SVG_TEXT}>
+        <text y={20} x={30} fontWeight="bold" fill={textColor}>
           {label ?? "Undefined"}
         </text>
         <svg x={-5} y={20}>
@@ -159,9 +179,12 @@ export const Histogram: FC<{
             hideAxisLine={true}
             tickLength={4}
             numTicks={4}
+            stroke={textColor}
+            tickStroke={textColor}
+            labelProps={{ fill: textColor }}
           />
         </svg>
       </svg>
     </svg>
   );
-};
+}

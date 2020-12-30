@@ -21,7 +21,6 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { GRAPHQL_URL, IS_NOT_PRODUCTION } from "../../constants";
 import { RefreshToken } from "../components/RefreshToken";
 import { Config } from "../context/Config";
-import { DarkMode } from "../utils/dynamicDarkMode";
 
 Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
@@ -70,7 +69,6 @@ const App: NextPage<AppProps> = ({ Component, pageProps }) => {
           <Component {...pageProps} />
         </Config>
 
-        <DarkMode render={false} />
         <RefreshToken />
       </ChakraProvider>
     </ApolloProvider>

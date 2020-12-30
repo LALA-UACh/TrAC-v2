@@ -32,6 +32,8 @@ export const IS_NOT_TEST = !IS_TEST;
 
 export const IS_BROWSER = typeof window !== "undefined";
 
+export const IS_TOUCH_DEVICE = IS_BROWSER ? "ontouchstart" in window : false;
+
 export const GRAPHQL_URL = IS_BROWSER
   ? "/api/graphql"
   : `${process.env.DOMAIN || "http://localhost:3000"}/api/graphql`;
@@ -127,8 +129,6 @@ export const termTypeToNumber = (type?: string): number => {
       return 0;
   }
 };
-
-export const SVG_TEXT = "svg_text";
 
 export enum PerformanceLoadUnit {
   Credits = "Credits",

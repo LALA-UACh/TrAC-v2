@@ -24,12 +24,12 @@ import {
   Spinner,
   Stack,
   Text,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import { css } from "@emotion/react";
 
 import { UserType } from "../../../../constants";
-import { useTheme } from "../../../context/Theme";
 import {
   AllUsersAdminDocument,
   AllUsersAdminQuery,
@@ -56,7 +56,7 @@ const UserPersistence: FC<{ user: string }> = memo(({ user }) => {
     notifyOnNetworkStatusChange: true,
   });
 
-  const theme = useTheme();
+  const { colorMode } = useColorMode();
 
   const [
     resetPersistence,
@@ -121,7 +121,7 @@ const UserPersistence: FC<{ user: string }> = memo(({ user }) => {
               confirmButton="Yes, i'm sure"
             >
               <Button
-                inverted={theme === "dark"}
+                inverted={colorMode === "dark"}
                 basic
                 negative
                 icon

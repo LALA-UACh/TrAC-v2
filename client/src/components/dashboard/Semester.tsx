@@ -4,7 +4,7 @@ import { Stack, StackProps, Text } from "@chakra-ui/react";
 
 import { ICourse } from "../../../../interfaces";
 import { ConfigContext } from "../../context/Config";
-import { CourseBox } from "./CourseBox";
+import { CourseBox } from "./CourseBox/CourseBox";
 
 const toRoman = (num: number, first = false): string => {
   if (first && num === 0) {

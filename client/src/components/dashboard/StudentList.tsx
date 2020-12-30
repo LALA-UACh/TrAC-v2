@@ -9,10 +9,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { FaListOl, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaListOl } from "react-icons/fa";
 import { useUpdateEffect } from "react-use";
 import { Pagination, Progress, Table, TableCell } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
+
 import {
   Button,
   Drawer,
@@ -300,7 +301,7 @@ export const StudentList: FC<{
       >
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerCloseButton background="white" />
+          <DrawerCloseButton shadow="md" borderWidth="1px" borderRadius="5px" />
           <DrawerHeader height={20} display="flex" alignItems="center">
             {STUDENT_LIST_TITLE} {loadingData && <Spinner ml={3} />}
           </DrawerHeader>

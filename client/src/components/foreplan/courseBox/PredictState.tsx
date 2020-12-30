@@ -88,6 +88,7 @@ export const PredictState: FC<
       case StateCourse.Passed: {
         return (
           <Text
+            color="black"
             className="cursorPointer"
             fontSize="2em"
             fontWeight="bold"
@@ -107,6 +108,7 @@ export const PredictState: FC<
       case StateCourse.Failed: {
         return (
           <Text
+            color="black"
             className="cursorPointer"
             fontSize="2em"
             fontWeight="bold"
@@ -126,6 +128,7 @@ export const PredictState: FC<
       default: {
         return (
           <Text
+            color="black"
             className="cursorPointer"
             fontSize="2em"
             fontWeight="bold"

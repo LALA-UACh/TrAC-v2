@@ -10,10 +10,17 @@ import Select from "react-select";
 import { Button, Icon } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import { Box, Divider, Heading, Spinner, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Divider,
+  Heading,
+  Spinner,
+  Stack,
+  Text,
+  useColorMode,
+} from "@chakra-ui/react";
 import { css } from "@emotion/react";
 
-import { useIsDark } from "../../../context/Theme";
 import { TrackInfoQueryResult, useTrackInfoQuery } from "../../../graphql";
 import { trimEveryLine } from "../../../utils";
 import { usePagination } from "../Pagination";
@@ -104,7 +111,7 @@ export const AdminTrack: FC = () => {
     data: filteredData,
   });
 
-  const isDark = useIsDark();
+  const isDark = useColorMode().colorMode === "dark";
 
   return (
     <Stack alignItems="center">

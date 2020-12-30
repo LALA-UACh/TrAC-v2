@@ -22,6 +22,7 @@ import {
   USED_OLD_PASSWORD,
   WRONG_INFO,
 } from "../../../../constants";
+import { ToggleDarkMode } from "../../../components/DarkMode";
 import { LoadingPage } from "../../../components/Loading";
 import { ConfigContext } from "../../../context/Config";
 import {
@@ -30,7 +31,6 @@ import {
   useCheckUnlockQuery,
   useUnlockMutation,
 } from "../../../graphql";
-import { DarkMode } from "../../../utils/dynamicDarkMode";
 
 const UnlockPage: NextPage<{
   email: string;
@@ -282,7 +282,7 @@ const UnlockPage: NextPage<{
         </Grid.Row>
       ) : null}
       <Grid.Row>
-        <DarkMode />
+        <ToggleDarkMode />
       </Grid.Row>
     </Grid>
   );

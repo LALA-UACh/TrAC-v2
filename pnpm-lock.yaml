@@ -19,7 +19,6 @@ dependencies:
   crypto-js: 4.0.0
   csvtojson: 2.0.10
   d3-scale: 3.2.3
-  darkreader: 4.9.26
   dataloader: 2.0.0
   date-fns: 2.16.1
   date-fns-tz: 1.0.12_date-fns@2.16.1
@@ -5515,10 +5514,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-2mvhstTFcMvwStWd9Tj3e6CEqtOivtD8AUiHT8ido/xmzrI9ijrUUihZ6nHuf/vsScRBonagOdj0Vv+SEL5G3Q==
-  /darkreader/4.9.26:
-    dev: false
-    resolution:
-      integrity: sha512-8Mixd/u3VTXEjld7dl+Rtz6NvHkCDpp9JweZemLsxtS9o00YxRDLTH+lkJTGg2jD+qOQblh7ahyLvEby5JBNDw==
   /dashdash/1.14.1:
     dependencies:
       assert-plus: 1.0.0
@@ -14431,7 +14426,6 @@ specifiers:
   crypto-js: ^4.0.0
   csvtojson: ^2.0.10
   d3-scale: ^3.2.3
-  darkreader: ^4.9.26
   dataloader: ^2.0.0
   date-fns: ^2.16.1
   date-fns-tz: ^1.0.12

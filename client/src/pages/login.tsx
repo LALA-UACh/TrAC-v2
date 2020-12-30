@@ -24,10 +24,10 @@ import {
   STUDENT_DATA_NOT_FOUND,
   WRONG_INFO,
 } from "../../constants";
+import { ToggleDarkMode } from "../components/DarkMode";
 import { LoadingPage } from "../components/Loading";
 import { ConfigContext } from "../context/Config";
 import { CurrentUserDocument, useLoginMutation } from "../graphql";
-import { DarkMode } from "../utils/dynamicDarkMode";
 import { useUser } from "../utils/useUser";
 
 const Login: FC = () => {
@@ -211,7 +211,7 @@ const Login: FC = () => {
         }}
       </Form>
       <Grid.Row>
-        <DarkMode />
+        <ToggleDarkMode />
       </Grid.Row>
     </Grid>
   );

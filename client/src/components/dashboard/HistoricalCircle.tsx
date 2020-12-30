@@ -1,8 +1,7 @@
 import React, { useContext, useMemo, useState } from "react";
+import { usePopper } from "react-popper";
 
 import { Badge } from "@chakra-ui/react";
-
-import { usePopper } from "react-popper";
 
 import { ConfigContext } from "../../context/Config";
 
@@ -53,6 +52,7 @@ export function HistoricalCircle({
   return (
     <>
       <svg
+        css={{ cursor: "help" }}
         onMouseOver={() => {
           setShow(true);
         }}

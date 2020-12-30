@@ -12,9 +12,9 @@ import { AdminMenu } from "../components/admin/Menu";
 import { Programs } from "../components/admin/programs";
 import { AdminTrack } from "../components/admin/track";
 import { Users } from "../components/admin/users";
+import { ToggleDarkMode } from "../components/DarkMode";
 import { LoadingPage } from "../components/Loading";
 import { useAllUsersAdminQuery } from "../graphql";
-import { DarkMode } from "../utils/dynamicDarkMode";
 import { useUser } from "../utils/useUser";
 
 export enum AdminMenuTypes {
@@ -87,7 +87,7 @@ const Admin: FC = () => {
   return (
     <Stack alignItems="center" spacing="1em" padding="5px">
       <Flex position="absolute" justifyContent="flex-end" width="100%">
-        <DarkMode p={3} />
+        <ToggleDarkMode p={3} />
       </Flex>
       <Flex>
         <AdminMenu active={active} setActive={setActive} />

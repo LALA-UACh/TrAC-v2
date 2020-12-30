@@ -6,9 +6,15 @@ import { baseConfig } from "../../constants/baseConfig";
 import {
   failColorScale,
   passColorScale,
-} from "../components/dashboard/CourseBox";
-import { scaleAxisX, scaleColorX } from "../components/dashboard/Histogram";
-import { GradeScale, YAxisScale } from "../components/dashboard/Timeline";
+} from "../components/dashboard/CourseBox/CourseBoxHelpers";
+import {
+  scaleAxisX,
+  scaleColorX,
+} from "../components/dashboard/Histogram/HistogramHelpers";
+import {
+  GradeScale,
+  YAxisScale,
+} from "../components/dashboard/Timeline/TimelineHelpers";
 import {
   failRateColorScaleNegative,
   failRateColorScalePositive,

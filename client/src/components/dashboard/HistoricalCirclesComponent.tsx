@@ -1,11 +1,13 @@
 import React, { useContext, useMemo } from "react";
+
 import { Stack } from "@chakra-ui/react";
+
+import { ICourse } from "../../../../interfaces";
 import { StateCourse } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
 import { ForeplanActiveStore } from "../../context/ForeplanContext";
-import { ICourse } from "../../../../interfaces";
+import { failColorScale } from "./CourseBox/CourseBoxHelpers";
 import { HistoricalCircle } from "./HistoricalCircle";
-import { failColorScale } from "./CourseBox";
 
 export function HistoricalCirclesComponent({
   taken,

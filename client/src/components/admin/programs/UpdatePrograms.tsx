@@ -2,8 +2,9 @@ import { isEqual, truncate } from "lodash";
 import React, { cloneElement, FC, useEffect, useMemo, useState } from "react";
 import { Button, Dropdown, Grid, Icon, Label, Modal } from "semantic-ui-react";
 
+import { useColorMode } from "@chakra-ui/react";
+
 import { Confirm } from "../../../components/Confirm";
-import { useIsDark } from "../../../context/Theme";
 import {
   useAllProgramsAdminQuery,
   useUpdateUserProgramsAdminMutation,
@@ -49,7 +50,7 @@ export const UpdatePrograms: FC<{
     });
   };
 
-  const isDark = useIsDark();
+  const isDark = useColorMode().colorMode === "dark";
 
   return (
     <Modal
