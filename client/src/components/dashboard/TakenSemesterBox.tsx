@@ -1,6 +1,12 @@
 import React, { FC, memo, useContext, useMemo } from "react";
 
-import { Badge, BadgeProps, Box, Stack } from "@chakra-ui/react";
+import {
+  Badge,
+  BadgeProps,
+  Box,
+  Stack,
+  useColorModeValue,
+} from "@chakra-ui/react";
 
 import { termTypeToNumber } from "../../../constants";
 import { ConfigContext } from "../../context/Config";
@@ -70,6 +76,8 @@ export const TakenSemesterBox: FC<{
     };
   }, [comments]);
 
+  const badgeBgColor = useColorModeValue(undefined, "#202020");
+
   return (
     <Box
       textAlign="center"
@@ -102,7 +110,12 @@ export const TakenSemesterBox: FC<{
             <b>{`${termTypeToNumber(term)}S ${year}`}</b>
           </Box>
           <Box>
-            <Badge borderRadius="5px" fontSize="0.5em" {...badgeProps}>
+            <Badge
+              bg={badgeBgColor}
+              borderRadius="5px"
+              fontSize="0.5em"
+              {...badgeProps}
+            >
               {comments}
             </Badge>
           </Box>
