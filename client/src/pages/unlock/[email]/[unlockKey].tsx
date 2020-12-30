@@ -15,7 +15,7 @@ import {
 import isEmail from "validator/lib/isEmail";
 import matches from "validator/lib/matches";
 
-import { Image } from "@chakra-ui/react";
+import { Image, Text, useColorModeValue } from "@chakra-ui/react";
 
 import {
   STUDENT_DATA_NOT_FOUND,
@@ -130,12 +130,19 @@ const UnlockPage: NextPage<{
     };
   };
 
+  const labelColor = useColorModeValue("black", "white !important");
+
+  const imageBg = useColorModeValue(undefined, "white");
+
   if (loadingCheck) return <LoadingPage />;
 
   return (
     <Grid centered padded>
       <Grid.Row>
         <Image
+          padding="10px"
+          borderRadius="10px"
+          bg={imageBg}
           alt="LALA"
           src="/lalalink.png"
           height="20vh"
@@ -150,7 +157,6 @@ const UnlockPage: NextPage<{
           <Grid.Row>
             <Message info>{email}</Message>
           </Grid.Row>
-          (
           <Form<{ password: string; confirm_password: string }>
             onSubmit={({ password }) => {
               unlock({
@@ -177,7 +183,9 @@ const UnlockPage: NextPage<{
                               <FormSemantic.Field
                                 error={dirty || touched ? invalid : false}
                               >
-                                <label>{UNLOCK_NEW_PASSWORD_LABEL}</label>
+                                <Text color={labelColor} as="label">
+                                  {UNLOCK_NEW_PASSWORD_LABEL}
+                                </Text>
                                 <FormSemantic.Input
                                   {...input}
                                   disabled={loadingUnlock}
@@ -196,7 +204,9 @@ const UnlockPage: NextPage<{
                             <FormSemantic.Field
                               error={dirty || touched ? invalid : false}
                             >
-                              <label>{UNLOCK_NEW_PASSWORD_REPEAT_LABEL}</label>
+                              <Text color={labelColor} as="label">
+                                {UNLOCK_NEW_PASSWORD_REPEAT_LABEL}
+                              </Text>
                               <FormSemantic.Input
                                 {...input}
                                 disabled={loadingUnlock}

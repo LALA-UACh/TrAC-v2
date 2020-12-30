@@ -2,7 +2,7 @@ import React, { FC, useEffect, useMemo } from "react";
 import { Message } from "semantic-ui-react";
 import { useRememberState } from "use-remember-state";
 
-import { Flex, Stack } from "@chakra-ui/react";
+import { Flex, Stack, useColorMode } from "@chakra-ui/react";
 
 import { IS_NOT_TEST } from "../../constants";
 import { AdminConfig } from "../components/admin/BaseConfig";
@@ -12,7 +12,6 @@ import { AdminMenu } from "../components/admin/Menu";
 import { Programs } from "../components/admin/programs";
 import { AdminTrack } from "../components/admin/track";
 import { Users } from "../components/admin/users";
-import { ToggleDarkMode } from "../components/DarkMode";
 import { LoadingPage } from "../components/Loading";
 import { useAllUsersAdminQuery } from "../graphql";
 import { useUser } from "../utils/useUser";
@@ -84,11 +83,18 @@ const Admin: FC = () => {
     );
   }
 
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  console.log(888, colorMode);
+
+  useEffect(() => {
+    if (colorMode === "dark") {
+      toggleColorMode();
+    }
+  }, [colorMode, toggleColorMode]);
+
   return (
     <Stack alignItems="center" spacing="1em" padding="5px">
-      <Flex position="absolute" justifyContent="flex-end" width="100%">
-        <ToggleDarkMode p={3} />
-      </Flex>
       <Flex>
         <AdminMenu active={active} setActive={setActive} />
       </Flex>

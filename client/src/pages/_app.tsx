@@ -53,7 +53,7 @@ export const client = new ApolloClient({
 
 const customTheme = extendTheme({
   config: {
-    useSystemColorMode: false,
+    useSystemColorMode: true,
     initialColorMode: "light",
   },
 });

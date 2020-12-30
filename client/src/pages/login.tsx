@@ -17,7 +17,14 @@ import {
 import isEmail from "validator/lib/isEmail";
 import isLength from "validator/lib/isLength";
 
-import { Flex, FormLabel, Image, Switch } from "@chakra-ui/react";
+import {
+  Flex,
+  FormLabel,
+  Image,
+  Switch,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
 
 import {
   LOCKED_USER,
@@ -71,10 +78,17 @@ const Login: FC = () => {
     ERROR_STUDENT_ACCOUNT_NO_DATA_MESSAGE,
   } = useContext(ConfigContext);
 
+  const labelColor = useColorModeValue("black", "white !important");
+
+  const imageBg = useColorModeValue(undefined, "white");
+
   return (
     <Grid centered padded>
       <Grid.Row>
         <Image
+          padding="10px"
+          borderRadius="10px"
+          bg={imageBg}
           alt="LALA"
           src="/lalalink.png"
           height="20vh"
@@ -148,7 +162,7 @@ const Login: FC = () => {
       >
         {({ handleSubmit, pristine, invalid }) => {
           return (
-            <FormSemantic size="big" onSubmit={handleSubmit}>
+            <FormSemantic size="big" onSubmit={handleSubmit} color={labelColor}>
               <Segment size="big" basic>
                 <Field name="email" type="email" initialValue="">
                   {({ input, meta: { touched, error } }) => (
@@ -156,9 +170,13 @@ const Login: FC = () => {
                       error={error && touched}
                       disabled={loading}
                     >
-                      <label>{LOGIN_EMAIL_LABEL}</label>
+                      <Text color={labelColor} as="label">
+                        {LOGIN_EMAIL_LABEL}
+                      </Text>
                       <Input {...input} placeholder={LOGIN_EMAIL_PLACEHOLDER} />
-                      <label>{touched && error}</label>
+                      <Text color={labelColor} as="label">
+                        {touched && error}
+                      </Text>
                     </FormSemantic.Field>
                   )}
                 </Field>
@@ -169,12 +187,18 @@ const Login: FC = () => {
                       error={error && touched}
                       disabled={loading}
                     >
-                      <label>{LOGIN_PASSWORD_LABEL}</label>
+                      <Text color={labelColor} as="label">
+                        {LOGIN_PASSWORD_LABEL}
+                      </Text>
                       <Input
                         {...input}
                         placeholder={LOGIN_PASSWORD_PLACEHOLDER}
                       />
-                      {<label>{touched && error}</label>}
+                      {
+                        <Text color={labelColor} as="label">
+                          {touched && error}
+                        </Text>
+                      }
                     </FormSemantic.Field>
                   )}
                 </Field>
