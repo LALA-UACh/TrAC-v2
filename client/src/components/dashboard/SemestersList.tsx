@@ -71,7 +71,7 @@ export const SemestersList: FC<{
       vertical={false}
       activationDistance={5}
     >
-      <Stack isInline>
+      <Stack isInline paddingLeft="5px">
         {semesters.map(({ courses, n }, key) => {
           return <Semester key={key} courses={courses} n={n} />;
         })}

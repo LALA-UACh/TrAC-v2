@@ -94,6 +94,9 @@ const transitionCSS = css`
   transition: "all 0.4s ease-in-out";
 `;
 
+const xTranslateMultiplier = 72.7;
+const xTranslateAdded = 70;
+
 export const TimeLine: FC<{
   cumulatedGrades: number[];
   semestralGrades: number[];
@@ -143,7 +146,7 @@ export const TimeLine: FC<{
               <TimeLineTooltip grade={CUMULATED_GRADE}>
                 <circle
                   cy={GradeScale(CUMULATED_GRADE)}
-                  cx={key * 70 + 70}
+                  cx={key * xTranslateMultiplier + xTranslateAdded}
                   r={5}
                   fill={config.CUMULATED_GRADE_COLOR}
                   css={transitionCSS}
@@ -152,7 +155,7 @@ export const TimeLine: FC<{
               <TimeLineTooltip grade={programGrades[key]}>
                 <circle
                   cy={GradeScale(programGrades[key])}
-                  cx={key * 70 + 70}
+                  cx={key * xTranslateMultiplier + xTranslateAdded}
                   r={5}
                   fill={config.PROGRAM_GRADE_COLOR}
                   css={transitionCSS}
@@ -162,7 +165,7 @@ export const TimeLine: FC<{
                 <TimeLineTooltip grade={semestralGrades[key]}>
                   <circle
                     cy={GradeScale(semestralGrades[key])}
-                    cx={key * 70 + 70}
+                    cx={key * xTranslateMultiplier + xTranslateAdded}
                     r={5}
                     fill={
                       checkExplicitSemester({
@@ -206,9 +209,12 @@ export const TimeLine: FC<{
               {!!(nextSemestralGrade && currentSemestralGrade) && (
                 <line
                   stroke={config.SEMESTRAL_GRADE_COLOR}
-                  x1={key * 70 + 70}
+                  x1={key * xTranslateMultiplier + xTranslateAdded}
                   y1={GradeScale(currentSemestralGrade)}
-                  x2={(nextSemestralGradeKey + key + 1) * 70 + 70}
+                  x2={
+                    (nextSemestralGradeKey + key + 1) * xTranslateMultiplier +
+                    70
+                  }
                   y2={GradeScale(nextSemestralGrade)}
                   css={transitionCSS}
                 />
@@ -216,9 +222,9 @@ export const TimeLine: FC<{
               {cumulatedGrades[key + 1] !== undefined && (
                 <line
                   stroke={config.CUMULATED_GRADE_COLOR}
-                  x1={key * 70 + 70}
+                  x1={key * xTranslateMultiplier + xTranslateAdded}
                   y1={GradeScale(cumulatedGrades[key])}
-                  x2={(key + 1) * 70 + 70}
+                  x2={(key + 1) * xTranslateMultiplier + xTranslateAdded}
                   y2={GradeScale(cumulatedGrades[key + 1])}
                   css={transitionCSS}
                 />
@@ -227,9 +233,9 @@ export const TimeLine: FC<{
                 programGrades[key + 1] !== undefined && (
                   <line
                     stroke={config.PROGRAM_GRADE_COLOR}
-                    x1={key * 70 + 70}
+                    x1={key * xTranslateMultiplier + xTranslateAdded}
                     y1={GradeScale(programGrades[key])}
-                    x2={(key + 1) * 70 + 70}
+                    x2={(key + 1) * xTranslateMultiplier + xTranslateAdded}
                     y2={GradeScale(programGrades[key + 1])}
                     css={transitionCSS}
                   />
