@@ -12,6 +12,7 @@
     "build-client": "next build client",
     "clean": "rm -rf logs/*",
     "dev": "run-p -l watch-*",
+    "preinstall": "npx only-allow pnpm",
     "postinstall": "run-s migrate",
     "migrate": "ts-node -T -P api/tsconfig.json ./api/db/migration.ts",
     "pretty": "pretty-quick",
@@ -29,22 +30,6 @@
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
-    }
-  },
-  "pnpm": {
-    "overrides": {
-      "@babel/core": "^7.12.3",
-      "@types/node": "^14.14.0",
-      "@types/react": "^16.9.53",
-      "@types/react-dom": "^16.9.8",
-      "@types/validator": "^13.1.0",
-      "class-validator": "^0.12.2",
-      "graphql": "^15.3.0",
-      "node-fetch": "^2.6.1",
-      "node-forge": "^0.10.0",
-      "object-path": "^0.11.5",
-      "validator": "^13.1.17",
-      "@popperjs/core": "^2.6.0"
     }
   },
   "dependencies": {
@@ -202,5 +187,21 @@
     "tsc-watch": "^4.2.9",
     "typescript": "^4.1.3",
     "wait-for-expect": "^3.0.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@babel/core": "^7.12.3",
+      "@types/node": "^14.14.0",
+      "@types/react": "^16.9.53",
+      "@types/react-dom": "^16.9.8",
+      "@types/validator": "^13.1.0",
+      "class-validator": "^0.12.2",
+      "graphql": "^15.3.0",
+      "node-fetch": "^2.6.1",
+      "node-forge": "^0.10.0",
+      "object-path": "^0.11.5",
+      "validator": "^13.1.17",
+      "@popperjs/core": "^2.6.0"
+    }
   }
 }
