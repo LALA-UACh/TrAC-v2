@@ -1,7 +1,9 @@
-// This file is intented to be used simply calling "yarn" or "yarn migrate"
+// This file is intented to be used simply calling "pnpm i" or "pnpm migrate"
 
 import type { FeedbackQuestionOption } from "../entities/feedback";
 import type { FeedbackQuestionType } from "../../client/constants";
+import fs from "fs";
+import path from "path";
 
 const migration = async () => {
   const { FeedbackQuestionType, UserType } = await import(
@@ -719,4 +721,49 @@ if (process.env.NODE_ENV !== "test") {
     console.error(err);
     process.exit(1);
   });
+
+  const envFilePath = path.join(process.cwd(), ".env");
+
+  if (!fs.existsSync(envFilePath)) {
+    fs.promises
+      .writeFile(
+        envFilePath,
+        `# Generate a couple of random strings, from https://onlinerandomtools.com/generate-random-string for example
+SECRET=uhqktjgizfvmmjbiwgcrbtuvactkvazsnivphziciuywppuefeelitsigcvlly
+COOKIE_SECRET=njfkpaignxcbksisfvksofmzoupagshkkqbiyfsksfmglihzuyibstciqxeeix
+
+# This domain in production has to be changed to the target domain
+# It should include the HTTP/s protocol
+DOMAIN=http://localhost:3000
+
+# Mail service credentials
+# Sendgrid API key https://sendgrid.com/
+# In development is optional, but in production is required
+SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EMAIL_ADDRESS=no-reply@example.com
+EMAIL_ADDRESS_NAME=Support example
+EMAIL_ADDRESS_REPLY_TO=support@emample.com
+
+# Optional, 3000 by default
+PORT=3000
+
+# Optional, "localhost" with no credentials required by default
+# The target db user is always "postgres"
+POSTGRES_HOST=localhost
+# POSTGRES_PASSWORD=asvpvmhbqmipzojxfzdqsgovhxqzdpgueixyylkyorxpctfjeqmytfvceuheqi
+
+
+# By default in production environment the GraphQL Playground Altair https://altair.sirmuel.design/ & Voyager are disabled.
+# Specify this environment variable to show them anyways, it's recommended to be either recommended or commented
+# SHOW_GRAPHQL_API=true
+
+# This environment variable is only required for the production deployment in UACh, keep it commented or remove otherwise
+# ANONYMOUS_ID_SERVICE=http://anonymous-id-service.com/example
+`,
+        {
+          encoding: "utf-8",
+        }
+      )
+      .catch(console.error);
+  }
 }
