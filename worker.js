@@ -1,33 +1,33 @@
 const { workerGitCI } = require("git-polling-worker-ci");
 
 workerGitCI({
-  command: "yarn start-pm2-dev",
+  command: "pnpm start-pm2-dev",
   pollingInterval: "45 seconds",
   continueAfterExecution: true,
   directoryChangedScripts: {
     options: [
       {
-        directories: ["./package.json", "./yarn.lock"],
-        script: "yarn --frozen-lockfile",
+        directories: ["./package.json", "./pnpm-lock.yaml"],
+        script: "pnpm i --frozen-lockfile",
       },
       {
         directories: [
           "./package.json",
-          "./yarn.lock",
+          "./pnpm-lock.yaml",
           "./api/",
           "./app.ts",
           "./interfaces/",
         ],
-        script: "yarn build-api",
+        script: "pnpm build-api",
       },
       {
         directories: [
           "./package.json",
-          "./yarn.lock",
+          "./pnpm-lock.yaml",
           "./client/",
           "./interfaces/",
         ],
-        script: "yarn build-client",
+        script: "pnpm, build-client",
       },
     ],
   },
