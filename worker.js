@@ -27,7 +27,7 @@ workerGitCI({
           "./client/",
           "./interfaces/",
         ],
-        script: "pnpm, build-client",
+        script: "pnpm build-client",
       },
     ],
   },
