@@ -393,6 +393,7 @@ export const SearchBar: FC<{
                 }}
                 placeholder="..."
                 noOptionsMessage={() => NO_CURRICULUMS_LABEL}
+                css={{ color: "black" }}
               />
             </Box>
           </Flex>
