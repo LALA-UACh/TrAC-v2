@@ -71,8 +71,12 @@ const defaultCourseDashboardData: ICoursesDashboardData = Object.freeze({
 });
 
 export const toggleOpenCourse = throttle(
-  (code: string) => {
-    CoursesDashboardStore.actions.toggleOpenCourse(code);
+  (code: string, callback: (wasOpen: boolean) => void) => {
+    const { coursesOpen } = CoursesDashboardStore.actions.toggleOpenCourse(
+      code
+    );
+
+    callback(!coursesOpen[code]);
   },
   300,
   {

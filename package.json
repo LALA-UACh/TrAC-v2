@@ -25,7 +25,7 @@
     "typecheck-api": "tsc -P api --watch --preserveWatchOutput --noUnusedLocals --noEmit --incremental false",
     "typecheck-client": "tsc -P client --watch --preserveWatchOutput --noUnusedLocals --noEmit",
     "watch-app": "tsc-watch --noUnusedLocals --noClear -P api --onSuccess \"run-s app-inspect\"",
-    "watch-gql": "graphql-codegen --watch"
+    "watch-gql": "graphql-codegen --watch --errors-only"
   },
   "husky": {
     "hooks": {

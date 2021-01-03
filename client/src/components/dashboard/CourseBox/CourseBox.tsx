@@ -208,7 +208,6 @@ const MainBlockOuter: FC<
     semestersTaken: ITakenSemester[];
   }
 > = memo(({ children, code, flow, requisites, semestersTaken }) => {
-  const isOpen = CoursesDashboardStore.hooks.useDashboardIsCourseOpen(code);
   const config = useContext(ConfigContext);
   const bg = useColorModeValue(config.COURSE_BOX_BACKGROUND_COLOR, "#1A202C");
   return (
@@ -223,23 +222,23 @@ const MainBlockOuter: FC<
       borderRadius="5px 0px 0x 5px"
       bg={bg}
       onClick={() => {
-        toggleOpenCourse(code);
+        toggleOpenCourse(code, (wasOpen) => {
+          if (!wasOpen) {
+            CoursesDashboardStore.actions.addCourse({
+              course: code,
+              flow,
+              requisites,
+              semestersTaken,
+            });
+          } else {
+            CoursesDashboardStore.actions.removeCourse(code);
+          }
 
-        if (!isOpen) {
-          CoursesDashboardStore.actions.addCourse({
-            course: code,
-            flow,
-            requisites,
-            semestersTaken,
+          track({
+            action: "click",
+            target: `course-box-${code}`,
+            effect: `${wasOpen ? "close" : "open"}-course-box`,
           });
-        } else {
-          CoursesDashboardStore.actions.removeCourse(code);
-        }
-
-        track({
-          action: "click",
-          target: `course-box-${code}`,
-          effect: `${isOpen ? "close" : "open"}-course-box`,
         });
       }}
     >
