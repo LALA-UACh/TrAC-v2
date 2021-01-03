@@ -19,7 +19,7 @@ import { IS_DEVELOPMENT, IS_NOT_TEST } from "./client/constants";
 
 export const app = Fastify({
   trustProxy: true,
-  pluginTimeout: ms("60 seconds"),
+  pluginTimeout: ms("300 seconds"),
   logger,
 });
 
