@@ -115,7 +115,7 @@ export class StudentResolver {
   async students(
     @Ctx() { user }: IContext,
     @Arg("program_id") program_id: string,
-    @Arg("last_n_years", () => Int, { defaultValue: 1 }) last_n_years: number
+    @Arg("last_n_years", () => Int, { defaultValue: 2 }) last_n_years: number
   ): Promise<PartialStudent[]> {
     assertIsDefined(user, `Error on authorization context`);
 
@@ -133,7 +133,7 @@ export class StudentResolver {
 
     const sinceNYear = new Date().getFullYear() - last_n_years;
     const filteredStudentList = studentList.filter(({ last_term }) => {
-      return ((last_term / 10) | 0) >= sinceNYear;
+      return (last_term / 10 || 0) >= sinceNYear;
     });
 
     return filteredStudentList;

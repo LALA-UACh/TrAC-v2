@@ -224,7 +224,7 @@ type Query {
   getPersistenceValue(key: String!): Persistence
   myPrograms: [Program!]!
   programs: [Program!]!
-  students(last_n_years: Int = 1, program_id: String!): [Student!]!
+  students(last_n_years: Int = 2, program_id: String!): [Student!]!
   trackInfo(maxDate: DateTime!, minDate: DateTime!): [Track!]!
   unansweredForm: FeedbackForm
   userPersistences(user: String!): [Persistence!]!
