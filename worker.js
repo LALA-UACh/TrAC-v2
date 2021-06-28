@@ -8,7 +8,7 @@ workerGitCI({
     options: [
       {
         directories: ["./package.json", "./pnpm-lock.yaml"],
-        script: "pnpm i --frozen-lockfile",
+        script: "pnpm add -g pnpm@latest && pnpm i --frozen-lockfile",
       },
       {
         directories: [
