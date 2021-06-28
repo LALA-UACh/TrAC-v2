@@ -14,6 +14,7 @@
     "dev": "run-p -l watch-*",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "run-s migrate",
+    "licenses": "license-checker --csv --out \"./licenses.csv\"",
     "migrate": "ts-node -T -P api/tsconfig.json ./api/db/migration.ts",
     "pretty": "pretty-quick",
     "start": "cross-env NODE_ENV=production node ./dist/app.js",
@@ -176,6 +177,7 @@
     "husky": "^4.3.6",
     "jest": "^26.6.3",
     "jest-css-modules": "^2.1.0",
+    "license-checker": "^25.0.1",
     "mock-knex": "^0.4.9",
     "npm-run-all": "^4.1.5",
     "pm2": "^4.5.1",
@@ -187,6 +189,9 @@
     "tsc-watch": "^4.2.9",
     "typescript": "^4.1.3",
     "wait-for-expect": "^3.0.2"
+  },
+  "engines": {
+    "pnpm": ">=6"
   },
   "pnpm": {
     "overrides": {
