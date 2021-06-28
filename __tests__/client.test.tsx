@@ -3,7 +3,7 @@ import "@testing-library/jest-dom/extend-expect";
 import React from "react";
 import waitForExpect from "wait-for-expect";
 
-import { MockedProvider } from "@apollo/react-testing";
+import { MockedProvider } from "@apollo/client/testing";
 import { act, cleanup, render } from "@testing-library/react";
 
 import { UserType } from "../client/constants";
