@@ -79,7 +79,7 @@
     "json-stringify-safe": "^5.0.1",
     "json2csv": "^5.0.5",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.21.15",
+    "knex": "^2.4.0",
     "lodash": "^4.17.20",
     "lru_map": "^0.4.1",
     "markdown-to-jsx": "^7.1.0",
